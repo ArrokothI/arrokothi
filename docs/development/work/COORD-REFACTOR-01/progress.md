@@ -64,3 +64,6 @@ The resume point for any session continuing this packet. Newest facts first with
   declarations and `@types/node`/`undici-types` (entries copied from `value-cost.json`) so the zone analysis
   typechecks in its temporary copy. Fresh-clone run of the four cases: `selected_cases_passed`, 10/10 killed at the
   named killers, determinism passed. Their V-ENV hold-register entries come with item 8.
+- Item 6 done: 8 `value-cost.json` mutant edits and 7 `value-cost-c1-ports.json` `at_c` edits re-pointed from
+  `coordinator.ts` to `state.ts` (each anchor absent from the coordinator and unique in the owner; `before`/`after`,
+  IDs, `at_b` and `original_at_c` unchanged); `value-cost-source-files.json` gains the three modules.

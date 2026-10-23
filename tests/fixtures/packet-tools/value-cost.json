@@ -1385,7 +1385,7 @@
       "mutants": [
         {
           "id": "mutation-57c323583982e8e65bc36137185cc24408c5aa0a6ef846b76ebfd0156da1274e",
-          "path": "packages/kernel/src/coordinator.ts",
+          "path": "packages/kernel/src/state.ts",
           "before": "    payload: entry.payload.value,",
           "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,",
           "operator": "c1-ablation",
@@ -1393,7 +1393,7 @@
         },
         {
           "id": "mutation-4737cc2855a9a9a53c3044b8528860a4807e445fbb481363ec7d6ba601052755",
-          "path": "packages/kernel/src/coordinator.ts",
+          "path": "packages/kernel/src/state.ts",
           "before": "    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);",
           "after": "    this.#byCreationRequestId.set(creationRequestIdKey(creationRequestId), record);",
           "operator": "c1-ablation",
@@ -1401,7 +1401,7 @@
         },
         {
           "id": "mutation-49a0843576c5fe717a4193ceb629a7e6e57efb415244c780e0a00726b3a7e7c0",
-          "path": "packages/kernel/src/coordinator.ts",
+          "path": "packages/kernel/src/state.ts",
           "before": "    mapSet(this.#executions, executionId, record);",
           "after": "    this.#executions.set(executionId, record);",
           "operator": "c1-ablation",
@@ -1409,7 +1409,7 @@
         },
         {
           "id": "mutation-7608de310b05f470a8e396b4f55a5e900dfcdf10e0c2b8a66d410ed3a61edccc",
-          "path": "packages/kernel/src/coordinator.ts",
+          "path": "packages/kernel/src/state.ts",
           "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload.value,",
           "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,",
           "operator": "c1-ablation",
@@ -1544,7 +1544,7 @@
       "mutants": [
         {
           "id": "mutation-57c323583982e8e65bc36137185cc24408c5aa0a6ef846b76ebfd0156da1274e",
-          "path": "packages/kernel/src/coordinator.ts",
+          "path": "packages/kernel/src/state.ts",
           "before": "    payload: entry.payload.value,",
           "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,",
           "operator": "c1-ablation",
@@ -1552,7 +1552,7 @@
         },
         {
           "id": "mutation-7608de310b05f470a8e396b4f55a5e900dfcdf10e0c2b8a66d410ed3a61edccc",
-          "path": "packages/kernel/src/coordinator.ts",
+          "path": "packages/kernel/src/state.ts",
           "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload.value,",
           "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,",
           "operator": "c1-ablation",
@@ -1610,7 +1610,7 @@
       "mutants": [
         {
           "id": "mutation-5d1c7d87cb781c6bb2abdd5eec05fb3c8ae121dbc9655c3089375cd95586e263",
-          "path": "packages/kernel/src/coordinator.ts",
+          "path": "packages/kernel/src/state.ts",
           "before": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    appendOwn(record.receipts, receipt);",
           "after": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    record.receipts.push(receipt);",
           "operator": "c1-ablation",
@@ -1618,7 +1618,7 @@
         },
         {
           "id": "mutation-00f410e88769bb3aa2385091f5268bed18b04ddd6f4352d0c401c6c30dc0b855",
-          "path": "packages/kernel/src/coordinator.ts",
+          "path": "packages/kernel/src/state.ts",
           "before": "    appendOwn(record.mailbox, entry);",
           "after": "    record.mailbox.push(entry);",
           "operator": "c1-ablation",
