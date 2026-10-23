@@ -1,9 +1,9 @@
 # Owner progress summary
 
-Snapshot: checked 2026-10-23 against remote main `7626a623` (PR #55, COORD-REFACTOR-01's release).
+Snapshot: checked 2026-10-23 against remote main `d17ea6d1`, the merge of COORD-REFACTOR-01 (PR #56).
 COORD-REFACTOR-01's accepted H is `23c8919f949b932b67567a6ee3f54d8b77b76449` and its payload C is
-`9f1412d1b3f6f41120609a4886a51b4c32c69880`. Its [cleanup](work/COORD-REFACTOR-01/cleanup-01.md) is complete;
-integration is pending the owner's merge. The
+`9f1412d1b3f6f41120609a4886a51b4c32c69880`. Its [cleanup](work/COORD-REFACTOR-01/cleanup-01.md) is complete and it is
+[integrated](work/COORD-REFACTOR-01/integration-01.md). The
 [status ledger](007-work-packets.md) and linked records own exact acceptance, integration and release
 identities.
 
@@ -17,7 +17,7 @@ identities.
 | Value-capture claim holds | None remain. V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)) was released for the bytes core on 2026-10-22 ([hold release](work/BINDING-01/hold-release-01.md)); the SDK wrapper makes no V-ENV claim (017 L-01). The V-D1 and classification holds were released on 2026-10-19 ([hold release](work/K1.1-correction-03/hold-release-01.md)) |
 | DESIGN-AUDIT-01 | Accepted, integrated and owner-closed. Owner [decision-01](work/DESIGN-AUDIT-01/decision-01.md) adopts CORE as the target direction and answers PROXY-01 (refuse every Proxy). [Decision-02](work/DESIGN-AUDIT-01/decision-02.md) gives the wrapper to the SDK, moved in stages |
 | BINDING-01 | Independently accepted at H `b7a24c79`; integrated at `cd8d9250` (PR #53) |
-| COORD-REFACTOR-01 | Independently accepted at H above; cleanup complete; integration pending the owner's merge |
+| COORD-REFACTOR-01 | Independently accepted at H above; integrated at `d17ea6d1` (PR #56) |
 | TOOLS-01 | Independently accepted at H `a50c3886`; integrated at `8f829003` (PR #45) |
 | TOOLS-02 | Planned remaining corpus extraction; brief 01 drafted, not released; acceptance and integration required before K1.4 acceptance |
 | TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
@@ -212,7 +212,7 @@ The lesson from its review is that a fault argument in a design needs a fault te
 creation-key fault left an Execution findable but unlisted. The design had considered that split and argued it
 away.
 
-Status: independently accepted at H `23c8919f`; integration pending the owner's merge. Limits: plan selection
+Status: independently accepted at H `23c8919f` and integrated at `d17ea6d1` (PR #56). Limits: plan selection
 and refusal precedence stay semantic claims, checked by the oracle and the suites (017 L-15). The structural
 checks are bounded syntactic guards (L-11). The supported SDK is unchanged.
 
@@ -252,10 +252,10 @@ principle 6: build right what later work builds on, and record the rest in [017]
    hold-register entries and the reopened origins, without new credit, and three P3 items listed in its
    [cleanup](work/BINDING-01/cleanup-01.md). From COORD-REFACTOR-01 it takes one reopened origin and three P3
    items, listed in its [cleanup](work/COORD-REFACTOR-01/cleanup-01.md). Brief 01 is drafted on
-   `claude/tools-02-brief`, with the owner's scope B; its release follows COORD-REFACTOR-01's integration. Hold-register entries held under the now-released V-D1 and
+   `claude/tools-02-brief`, with the owner's scope B; its release can now follow, since COORD-REFACTOR-01 is integrated. Hold-register entries held under the now-released V-D1 and
    classification claims need revalidation. TOOLS-02 must be accepted and integrated before K1.4
    acceptance; 007 does not make it a prerequisite for BINDING-01 or K1.3.
-3. **COORD-REFACTOR-01** is accepted; integration is pending the owner's merge. **K1.3** is next. It needs
+3. **COORD-REFACTOR-01** is accepted and integrated. **K1.3** is next. It needs
    an owner release and a brief, and adds its waits, deadlines and cancellation as new plan variants.
 4. **K1.4** owns the SDK host bridge and full K1/E1 gate. The external dependency is unchanged:
    before K1.3 closes, the benchmark owner must confirm that E1 fixtures drive the new supported
