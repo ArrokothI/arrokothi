@@ -5567,8 +5567,8 @@
           "edits": [
             {
               "path": "packages/kernel/src/state.ts",
-              "before": "import { creationRequestIdKey, inputIdKey, type InputId, type Receipt } from \"./identity.ts\";",
-              "after": "import { hostMember } from \"./envelope.ts\";\nimport { creationRequestIdKey, inputIdKey, type InputId, type Receipt } from \"./identity.ts\";"
+              "before": "import { creationRequestIdKey, inputIdKey, mayReachScope, type AuthenticatedCaller, type InputId, type Receipt } from \"./identity.ts\";",
+              "after": "import { hostMember } from \"./envelope.ts\";\nimport { creationRequestIdKey, inputIdKey, mayReachScope, type AuthenticatedCaller, type InputId, type Receipt } from \"./identity.ts\";"
             },
             {
               "path": "packages/kernel/src/state.ts",
@@ -5576,7 +5576,7 @@
               "after": "    const refusal = plan.refusal;\n    const probe = hostMember(plan, \"refusal\");\n"
             }
           ],
-          "id": "mutation-f74ab4e32e5f2e7d2d4a203b8161e826e81ea614509a6d1ee20508c62ebcca38"
+          "id": "mutation-05224643a6842115c906adb0b72e1421d803fef13f46930f62f86bf00d340a3c"
         }
       ]
     },
