@@ -55,3 +55,7 @@ The resume point for any session continuing this packet. Newest facts first with
 - Item 3 done: `state-types.test.ts` 10/10 — in-memory fixtures with codes pinned per line: function member TS2322,
   unknown kind TS2322, missing coupled field TS2741, data-only proof TS2344, reader write TS2540, reader import as
   value TS1485 + construction TS1362, private records TS18013, absent mutator TS2339; plus a clean control.
+- Item 4 done: `fault-paths-child.ts` + `fault-paths.test.ts` 4/4 — one case per owner-choice-01 path (dispatch,
+  input, failed(), delivered()); each pins the fault fired once in the chosen build, the new outcome, the documented
+  historical outcome, and equality of view, receipts, IDs and next decisions with the run without the faulting call.
+  Poison sweep over the three new kernel test files passes in all four modes.
