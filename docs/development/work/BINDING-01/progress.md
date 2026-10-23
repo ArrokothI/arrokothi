@@ -1,6 +1,6 @@
 # BINDING-01 progress
 
-- Phase: WAITING_FOR_REVIEW. C `da945d3f8ba42f6d1ec6d5e3bcd74ae6a604502f`; CI `39868378094` `checks_passed` 18/18 (the brain session read the artifact). H is the commit containing implementation-01.md. Ledger WAITING_FOR_REVIEW.
+- Phase: ACCEPTED (review 01 of H `b7a24c79`); [cleanup 01](cleanup-01.md) complete; integration pending the owner's merge. V-ENV hold not released. C `da945d3f8ba42f6d1ec6d5e3bcd74ae6a604502f`; CI `39868378094` `checks_passed` 18/18.
 - Branch: `claude/binding-01`; B: `af9e3b0ece4786ec41940f1dfa5f0468d83ddd08`.
 - Start: fetched/switched/pulled at release `482802294e3077544bffed32393608bb06841a28`.
 - Design: `43f03d9a`, checked independently by the owner’s Opus brain session; APPROVED WITH D01-CHK-01 (primitive identity strings). Check recorded at `81df324d`; L-09 core/wrapper qualification accepted.
