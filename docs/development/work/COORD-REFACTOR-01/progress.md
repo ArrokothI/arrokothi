@@ -113,3 +113,17 @@ The resume point for any session continuing this packet. Newest facts first with
   exception; check every arm for the same pattern; fault each creation publication in turn and pin B's outcome
   (thrown error, inspect, listing, retry with the same and a different key). Same session continues (Claude Code
   desktop, `claude-opus-5-5`).
+- CR1-R1-CREATION-01 fixed (`58388239`, `2c2c42de`): the Execution map is the listing again. The owner's
+  `visibleExecutionIds(caller)` walks it with B's `Map.forEach` statement; the creation links (`next`,
+  `#first`/`#last`, `nextExecution`) are removed, and the creation arm commits B's two `mapSet` calls in B's order.
+  Moving the links up would not have been enough: after a creation-key fault a same-key retry publishes the same ID
+  again, which `Map.set` keeps in place and a link list would append. Every other arm was compared with B's
+  statement order; creation was the only instance. The DEC-9 effect analysis split captured provenance into a
+  binding's own object and its reach, since the walk's append to its fresh list was reported as a state change; five
+  new negative controls, one killing the ablation that drops the split. `creation-faults.test.ts` and its child pin
+  B's outcome for each publication fault (pass at B, fail at H, pass at the fix). Design 01 revision 2; BASELINE.
+- Mechanical follow-ups: `state-owner-controls.json` family test counts 83/73/92 (`b7ac50f3`); the CR1-4c
+  import-line mutant follows the owner's `identity.ts` import, ID recomputed by `mutation_key` (`db9aa211`);
+  adoption regenerated (`1257c167`): 11 control-commits rule-1 holds shift lines, 40 preserved rows change reads
+  and 2 positions, no status changes; corpus `revalidation_complete` with suite credit 3, preserved 30 and origins
+  33/121 as in round 1 (no new credit). Repository tests 4,412; both sweeps pass.
