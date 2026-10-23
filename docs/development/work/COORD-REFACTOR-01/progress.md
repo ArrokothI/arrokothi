@@ -2,7 +2,11 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- Phase: IN_PROGRESS. [Design 01](design-01.md) written; waiting for the GPT-6 design check (8 questions). No production code yet.
+- Phase: IN_PROGRESS, building. [Design check](design-01-check.md) (GPT-6, of `b0a1e491`): APPROVED WITH REQUIRED CHANGES
+  D01-CHK-1..4. [Owner choice 01](owner-choice-01.md) answers D01-CHK-1 (three engine-fault paths become atomic; one
+  fault-injection test each; BASELINE states the exception). Both merged fast-forward at `dde21bd8`. Design 01 revision 1
+  folds in D01-CHK-2..4 (getters modelled in zone-analysis; control-commits ported with phase/exit/basis guards;
+  per-variant commit table and per-field arm table; R4 value/type split).
 - Branch: `claude/coord-refactor-01`; B: `7626a623dad8acfc73584e08212c126b5b6daefc` (main after PR #55, which
   merged [release 01](release-01.md) and [brief 01](brief-01.md)).
 - Implementer: Claude Code desktop, Claude Opus 5.5 (`claude-opus-5-5`), Mac arm64, 2026-10-22

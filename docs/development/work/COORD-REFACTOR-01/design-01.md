@@ -348,3 +348,95 @@ The Layer-3 maintenance in the build candidate:
 - an 017 limit: plan selection stays an oracle claim.
 
 No `OPEN(` marker changes. No third-party code is used.
+
+## Revision 1 — design check and owner choice 01
+
+The [design check](design-01-check.md) (GPT-6) approved design 01 with required changes D01-CHK-1 to D01-CHK-4.
+[Owner choice 01](owner-choice-01.md) answers D01-CHK-1. This section supersedes the text above where they
+differ. The plan/owner boundary is unchanged, so no new design check is needed.
+
+**D01-CHK-1, fault paths (owner choice 01).** Three paths change, as a bounded exception to CR1-3:
+
+1. A `dispatch` or `submitInput` build fault consumes no position and no Activation ID.
+2. A build fault in `failed(reason)` leaves the row `pending`.
+3. A build fault in any other settlement plan, `delivered()` included, changes nothing.
+
+`boundDiagnostic` catches its own faults and returns the fallback. So for `failed` today, a bounding fault
+records the fallback, and no operation can fault before the status write. After the refactor, the faultable
+steps are the status view and the plan's construction, both before `apply`.
+
+A new child `packages/kernel/tests/fault-paths-child.ts` wraps the load-time `Object.freeze` and
+`Reflect.apply` before the Kernel loads, as the sweep's child does. It arms one fault inside the chosen
+build. `fault-paths.test.ts` runs one case per path. Each case pins:
+
+- the documented historical outcome;
+- the new outcome;
+- that the whole view, the next refusal and acceptance positions, the next Activation ID and the next
+  decision equal a run without the faulting call.
+
+The oracle, `fault-scenarios.ts` and the sweeps are not edited. BASELINE states the exception. Any other
+difference found stops for the owner.
+
+**D01-CHK-2, getters.** The readers keep getters, because three scenario exit snippets read reader members
+as properties (`${exchange.codeHold.reason}`, `${exchange.activation.writerEpoch}`,
+`intent.activation.activationId`). `zone-analysis.ts` therefore models getter bodies:
+
+- `Fn` and `isFn` include `GetAccessorDeclaration`, so getters are discovered, owned (`get <name>`) and
+  visited by `writeOwners`;
+- a property read whose symbol is a zone getter is evaluated as a call of that getter on its receiver:
+  its mutation and foreign summary join the reading node's effects, and its returned provenance replaces
+  the default member-read provenance;
+- `GetAccessor` joins the permitted syntax. `SetAccessor` does not.
+
+New negative controls in the ported `control-commits.test.ts` must fail for their intended assertion:
+
+- a reader getter that writes its record's field is reported by the writers check as a writer outside
+  its arm;
+- a mutating getter read by a planner before `apply` is reported by the pre-apply effect check;
+- a getter that returns a live record list, which a planner then appends to, is reported by the writers
+  check through the returned alias.
+
+**D01-CHK-3, phase guards.** `control-commits.test.ts` is **ported**, not retired:
+
+- **Pre-apply effects.** Planner methods end in an apply suffix: one `this.#state.apply(<prebuilt plan
+  local>)`, then optionally `this.#deliver(<reader>)`, then `return <prebuilt local>`. `submitOutcome`
+  ends in `return ok(this.#accept(…))`, and `#accept` ends in the suffix. Before the suffix, no node may
+  mutate a pre-existing object, module bindings included, except a refusal exit. Control 17 is kept as a
+  negative control.
+- **Refusal exits.** A `RefusalPlan` is applied only by `#refusal`, which may appear only as
+  `return err(this.#refusal(…))` or `return this.#refusal(…)`. `#requireControl` and `#openExchange` keep
+  their call-then-exit form, and the `isRefusalExit`, `refusalHelperViolations` and `exitsOnRefusal`
+  checks stay. Controls 18–20 are kept.
+- **Basis timing.** Each planner binds `const basis = <reader>.version;` as its first reader read after its
+  last foreign call. No foreign call follows it before `apply`, and every plan literal's `basis` is that
+  binding, or a parameter that every caller passes it as. The takeover binds it after `isSafeToReplace`
+  and its refusal, before the DEC-19 revalidation. Revalidation keeps its classified refusals; the basis
+  check stays a backstop. Control 25 becomes a negative control: a callback moved after the binding.
+- **Redelivery.** Its answer is built before `#deliver` and returned through the suffix, so the
+  prebuilt-answer rule covers it.
+- **R4.** The rule check reads `ImportDeclaration`/`ExportDeclaration` type-only flags itself.
+  `module-graph.ts` has none. R1–R3 count every edge; R4 counts value edges only, and its must-fail
+  fixtures include a type-only import that passes and a value import that fails.
+
+**D01-CHK-4, coupled commits.** The coverage check now pins commits, not reads:
+
+- A declared table lists, for each plan kind, the exact commit statements of its `#apply<Kind>` arm. Each
+  entry is a target field with its form (append, map insert, write, or a disposition loop), and the plan
+  field or prepared container that supplies it. The check derives the same facts from the arm's commit
+  phase, following `const` aliases and container initializers back to `plan.<field>`, and requires
+  equality. A statement outside the commit grammar is a violation.
+- A second table keeps the per-field restriction, as `WRITE_SITES` did: each record field and its exact
+  set of permitted arms, compared with `writeOwners`.
+- The four dropped-field mutants keep their `const` bindings and delete only the commit. They must be
+  killed by the commit-table check, and by the existing resulting-state assertions in the recovery-history,
+  receipts, hold and grant suites. A compile or load failure is not a kill.
+
+**Creation listing.** The creation-ordered list becomes a link on each record (`next`) with `#first`/`#last` on
+`KernelState`. Appending is three plain writes after the two `mapSet` publications, so it cannot fault, and
+no listing/lookup split appears that does not exist today. Readers expose `nextExecution`; `visibleExecutions`
+walks it live, as `Map.forEach` does.
+
+Updated test-file list:
+- `control-commits.test.ts` is **ported**: same obligations, new shapes, with the controls above added.
+- New: `fault-paths.test.ts` and `fault-paths-child.ts`.
+- Everything else is as listed above.
