@@ -102,3 +102,5 @@ The resume point for any session continuing this packet. Newest facts first with
   censuses, typecheck and builder docs finished).
 - CI dispatched once at C `71e2ddfe`: `packet-verify.yml` run `39932022363`
   (https://github.com/ArrokothI/arrokothi/actions/runs/39932022363). Not polled; H waits for its result.
+- CI run `39932022363` succeeded (owner-reported). H: [implementation report 01](implementation-01.md) and the 007 row
+  WAITING_FOR_REVIEW. Next: independent review by Codex GPT-6.
