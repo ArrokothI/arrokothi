@@ -1,9 +1,10 @@
-# Brief 01 — TOOLS-02 (DRAFT, not released)
+# Brief 01 — TOOLS-02
 
 Planner: the owner's Claude Code desktop session (`claude-opus-5-5`), 2026-10-22, at the owner's request
 ("draft the TOOLS-02 brief (not released)"). It is written under
 [006 working principle 6](../../006-development-process.md#working-principles) and
-[017](../../017-known-limitations.md). The owner chose scope B on 2026-10-23 (see the end). It is still not released.
+[017](../../017-known-limitations.md). The owner chose scope B and released it on 2026-10-23 ([release 01](release-01.md)), unchanged except for
+this header and the owner answers at the end.
 
 ## Goal
 
@@ -95,5 +96,5 @@ This brief therefore separates what to build right now from what a declared boun
 
 **Owner answer to decision 1 (2026-10-23), verbatim:** "ok. pick B". Scope B applies: T2-1 to T2-4 are
 blocking, and T2-5 is settled by the declared triage with a sampled audit. Owner choices 04–06 are amended
-for the retired class only. Decision 2 and the release itself remain open, after COORD-REFACTOR-01 is
-integrated.
+for the retired class only. **Release 01 (2026-10-23):** released. Roles follow COORD-REFACTOR-01's pattern (fresh Opus implements;
+GPT-6 checks and reviews); see [release 01](release-01.md).

@@ -19,7 +19,7 @@ identities.
 | BINDING-01 | Independently accepted at H `b7a24c79`; integrated at `cd8d9250` (PR #53) |
 | COORD-REFACTOR-01 | Independently accepted at H above; integrated at `d17ea6d1` (PR #56) |
 | TOOLS-01 | Independently accepted at H `a50c3886`; integrated at `8f829003` (PR #45) |
-| TOOLS-02 | Planned remaining corpus extraction; brief 01 drafted, not released; acceptance and integration required before K1.4 acceptance |
+| TOOLS-02 | Released 2026-10-23 ([release 01](work/TOOLS-02/release-01.md)), scope B; not started; acceptance and integration required before K1.4 acceptance |
 | TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
 | K1.1-correction-03 | Independently accepted at H `4b121d7b`; integrated at `b976f3a3` (PR #48) |
 | Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-15) under 006 working principle 6 |
@@ -251,8 +251,8 @@ principle 6: build right what later work builds on, and record the rest in [017]
    review 03's three P3 observations. TOOLS-02A has already closed KC3-R3-CENSUS-01: the composed verify now passes in a clean checkout and in CI. From BINDING-01 it takes the 853 rule-1 V-ENV
    hold-register entries and the reopened origins, without new credit, and three P3 items listed in its
    [cleanup](work/BINDING-01/cleanup-01.md). From COORD-REFACTOR-01 it takes one reopened origin and three P3
-   items, listed in its [cleanup](work/COORD-REFACTOR-01/cleanup-01.md). Brief 01 is drafted on
-   `claude/tools-02-brief`, with the owner's scope B; its release can now follow, since COORD-REFACTOR-01 is integrated. Hold-register entries held under the now-released V-D1 and
+   items, listed in its [cleanup](work/COORD-REFACTOR-01/cleanup-01.md). It is released ([release 01](work/TOOLS-02/release-01.md)) with the owner's scope B:
+   tooling fixes first, then origin triage with a sampled audit. Hold-register entries held under the now-released V-D1 and
    classification claims need revalidation. TOOLS-02 must be accepted and integrated before K1.4
    acceptance; 007 does not make it a prerequisite for BINDING-01 or K1.3.
 3. **COORD-REFACTOR-01** is accepted and integrated. **K1.3** is next. It needs
