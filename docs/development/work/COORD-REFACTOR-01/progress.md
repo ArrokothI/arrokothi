@@ -2,7 +2,7 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- Phase: IN_PROGRESS. Writing [design 01](design-01.md); then stop for the GPT-6 design check.
+- Phase: IN_PROGRESS. [Design 01](design-01.md) written; waiting for the GPT-6 design check (8 questions). No production code yet.
 - Branch: `claude/coord-refactor-01`; B: `7626a623dad8acfc73584e08212c126b5b6daefc` (main after PR #55, which
   merged [release 01](release-01.md) and [brief 01](brief-01.md)).
 - Implementer: Claude Code desktop, Claude Opus 5.5 (`claude-opus-5-5`), Mac arm64, 2026-10-22
@@ -13,3 +13,9 @@ The resume point for any session continuing this packet. Newest facts first with
   composed verify in [Packet verify](../../../../.github/workflows/packet-verify.yml). Before each dispatch:
   tool-tests, both mutation registries (`mutations.json`, `value-cost.json`) and the full verify in a fresh
   clone (`git clone --no-local`, `npm ci`, nothing untracked). Dispatch, record the run ID, end the turn; never poll.
+- B baseline (local, Mac arm64, Node v26.10.0): `npm run typecheck` exit 0; `npm test` 4,345/4,345 pass;
+  fault sweep 66 scenarios / 13,673 runs / 57 exits, 0 violations (~2 s); poison sweep passed (228 s).
+- Design summary: `plan.ts` (closed plan union), `state-records.ts` (mutable record types, imported only by
+  `state.ts`), `state.ts` (`KernelState`: `#private` records, `apply(plan)`, live read-only readers),
+  `coordinator.ts` (planner/shell). Basis = per-Execution version checked by `apply`. Retire
+  `control-commits.test.ts` with mapping; port ambient-reads/zone-inventory/zone-analysis and the fault-oracle locator.
