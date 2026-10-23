@@ -17,7 +17,7 @@ identities.
 | Value-capture claim holds | None remain. V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)) was released for the bytes core on 2026-10-22 ([hold release](work/BINDING-01/hold-release-01.md)); the SDK wrapper makes no V-ENV claim (017 L-01). The V-D1 and classification holds were released on 2026-10-19 ([hold release](work/K1.1-correction-03/hold-release-01.md)) |
 | DESIGN-AUDIT-01 | Accepted, integrated and owner-closed. Owner [decision-01](work/DESIGN-AUDIT-01/decision-01.md) adopts CORE as the target direction and answers PROXY-01 (refuse every Proxy). [Decision-02](work/DESIGN-AUDIT-01/decision-02.md) gives the wrapper to the SDK, moved in stages |
 | BINDING-01 | Independently accepted at H above; integrated at `cd8d9250` (PR #53) |
-| COORD-REFACTOR-01 | Planned; not released |
+| COORD-REFACTOR-01 | Released 2026-10-22 ([release 01](work/COORD-REFACTOR-01/release-01.md)); not started |
 | TOOLS-01 | Independently accepted at H above; integrated at `8f829003` (PR #45) |
 | TOOLS-02 | Planned remaining corpus extraction; not released; acceptance and integration required before K1.4 acceptance |
 | TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
@@ -232,8 +232,9 @@ principle 6: build right what later work builds on, and record the rest in [017]
    [cleanup](work/BINDING-01/cleanup-01.md). Hold-register entries held under the now-released V-D1 and
    classification claims need revalidation. TOOLS-02 must be accepted and integrated before K1.4
    acceptance; 007 does not make it a prerequisite for BINDING-01 or K1.3.
-3. **COORD-REFACTOR-01**, now that BINDING-01 is integrated, then **K1.3** retain their planned sequence. They have no
-   release from this cleanup.
+3. **COORD-REFACTOR-01** is released ([release 01](work/COORD-REFACTOR-01/release-01.md)): a
+   behaviour-preserving plan/apply refactor of the coordinator, so that K1.3 adds waits and Effects as plan
+   variants. **K1.3** follows it and is not released.
 4. **K1.4** owns the SDK host bridge and full K1/E1 gate. The external dependency is unchanged:
    before K1.3 closes, the benchmark owner must confirm that E1 fixtures drive the new supported
    entry. An unavailable fixture makes K1.4 BLOCKED_EXTERNAL. Fixture preparation is not an E1

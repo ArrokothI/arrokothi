@@ -1,7 +1,8 @@
-# Brief 01 — COORD-REFACTOR-01 (DRAFT, not released)
+# Brief 01 — COORD-REFACTOR-01
 
 Planner: the owner's Claude Code desktop session (`claude-opus-5-5`), 2026-10-22, at the owner's request
-(Prompt D). It is written under [006 working principle 6](../../006-development-process.md#working-principles)
+(Prompt D). Released by the owner on 2026-10-22 ([release 01](release-01.md)), unchanged except for this
+header and the owner answers below. It is written under [006 working principle 6](../../006-development-process.md#working-principles)
 and [017](../../017-known-limitations.md): build right now what K1.3 builds on, and record the rest as limits.
 
 ## Goal
@@ -79,8 +80,8 @@ K1.3 and every later Kernel packet will extend these shapes, so they are expensi
   Kernel surface would change; if new semantics seem needed; or if a correctly targeted bypass mutant
   survives.
 
-## Owner decisions needed to release
+## Owner answers (release 01)
 
-- Implementer, and design-check session.
-- Whether retiring the source-site inventories (suspect design 1) is in scope here, or whether they are
-  ported and retirement moves to TOOLS-02.
+- **Implementer:** a fresh Claude Opus 5.5 session. **Design check and review:** Codex GPT-6 sessions.
+- **Source-site inventories** (suspect design 1): the design note decides port or retire per inventory, with
+  a coverage mapping for each retirement.
