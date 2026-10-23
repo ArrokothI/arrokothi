@@ -52,3 +52,6 @@ The resume point for any session continuing this packet. Newest facts first with
   failure, with their refusals; reader witness with a recipe per member (unclassified member fails); inspection
   freshness witness; runtime brand. Spot check: a live `recoveryHistory` in `viewOf` and a live-mailbox getter are
   both killed.
+- Item 3 done: `state-types.test.ts` 10/10 — in-memory fixtures with codes pinned per line: function member TS2322,
+  unknown kind TS2322, missing coupled field TS2741, data-only proof TS2344, reader write TS2540, reader import as
+  value TS1485 + construction TS1362, private records TS18013, absent mutator TS2339; plus a clean control.
