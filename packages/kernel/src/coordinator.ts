@@ -1121,17 +1121,7 @@ export class ExecutionCoordinator {
    * reveal a hidden ID through its shape: the returned list contains exactly the visible IDs.
    */
   visibleExecutions(caller: AuthenticatedCaller): readonly string[] {
-    const visible: string[] = [];
-    // A live walk of the owner's creation-order links: neither the iterator protocol
-    // (`Symbol.iterator`) nor `Array.prototype.push` is consulted, and each visible ID is installed
-    // as this list's own data, so persistent ambient pollution left behind by an earlier boundary
-    // observation cannot hide or duplicate listed IDs (K11-R6-STATE-02: this path takes no caller
-    // value of its own, so the pollution it has to survive is the residue of an earlier call). As
-    // with the `Map.forEach` it replaces, an Execution created during the walk is visited too.
-    for (let record = this.#state.firstExecution; record !== null; record = record.nextExecution) {
-      if (mayReachScope(caller, record.scope)) appendOwn(visible, record.executionId);
-    }
-    return visible;
+    return this.#state.visibleExecutionIds(caller);
   }
 
   // -- Outcome acceptance (K1.2) ---------------------------------------------

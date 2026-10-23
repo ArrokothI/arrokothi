@@ -666,20 +666,24 @@ const passedTo = (
 
 /**
  * Where an object may come from, relative to the function evaluating an expression. `exact` names a
- * parameter's own object; `parameters` anything reachable from one. A function's receiver, captured
- * bindings and anything of unknown origin are always taken with everything reachable from them. An
- * empty provenance is a primitive or no object at all.
+ * parameter's own object; `parameters` anything reachable from one. Captured bindings are split the same
+ * way: `capturedExact` names a binding's own object, `captured` anything reachable from one, so a closure
+ * that appends to a list its enclosing function built is, at that function, a change to the fresh list
+ * and not to what the list holds (review 01, CR1-R1-CREATION-01). A function's receiver and anything of
+ * unknown origin are always taken with everything reachable from them. An empty provenance is a
+ * primitive or no object at all.
  */
 export interface Provenance {
   readonly fresh: boolean; // created during this call
   readonly exact: ReadonlySet<number>;
   readonly parameters: ReadonlySet<number>;
   readonly self: boolean; // the receiver of a method: for the coordinator, its accepted state
-  readonly captured: ReadonlySet<ts.Symbol>; // bindings of an enclosing function
+  readonly capturedExact: ReadonlySet<ts.Symbol>; // the own objects of bindings of an enclosing function
+  readonly captured: ReadonlySet<ts.Symbol>; // anything reachable from bindings of an enclosing function
   readonly other: boolean; // module or global state, or a value of unknown origin
 }
 
-const NONE: Provenance = { fresh: false, exact: new Set(), parameters: new Set(), self: false, captured: new Set(), other: false };
+const NONE: Provenance = { fresh: false, exact: new Set(), parameters: new Set(), self: false, capturedExact: new Set(), captured: new Set(), other: false };
 const FRESH: Provenance = { ...NONE, fresh: true };
 const OTHER: Provenance = { ...NONE, other: true };
 const SELF: Provenance = { ...NONE, self: true };
@@ -689,6 +693,7 @@ const join = (...parts: readonly Provenance[]): Provenance => ({
   exact: new Set(parts.flatMap((part) => [...part.exact])),
   parameters: new Set(parts.flatMap((part) => [...part.parameters])),
   self: parts.some((part) => part.self),
+  capturedExact: new Set(parts.flatMap((part) => [...part.capturedExact])),
   captured: new Set(parts.flatMap((part) => [...part.captured])),
   other: parts.some((part) => part.other),
 });
@@ -696,10 +701,10 @@ const withoutFresh = (value: Provenance): Provenance => ({ ...value, fresh: fals
 
 /** Whether a provenance can reach an object that existed before the call. */
 export const isPreExisting = (value: Provenance): boolean =>
-  value.exact.size > 0 || value.parameters.size > 0 || value.self || value.captured.size > 0 || value.other;
+  value.exact.size > 0 || value.parameters.size > 0 || value.self || value.capturedExact.size > 0 || value.captured.size > 0 || value.other;
 
 /** Whether a provenance can reach the coordinator's accepted state, or an object of unknown origin. */
-export const reachesAcceptedState = (value: Provenance): boolean => value.self || value.captured.size > 0 || value.other;
+export const reachesAcceptedState = (value: Provenance): boolean => value.self || value.capturedExact.size > 0 || value.captured.size > 0 || value.other;
 
 export interface Effects {
   /** Objects this function's own code (and its zone callees) may mutate. */
@@ -1030,7 +1035,7 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
   const bindingIdentity = (symbol: ts.Symbol, fn: Fn): Provenance => {
     const binding = bindingOf(symbol, fn);
     if (binding.kind === "parameter") return { ...NONE, exact: new Set([binding.index]) };
-    if (binding.kind === "captured") return { ...NONE, captured: new Set([symbol]) };
+    if (binding.kind === "captured") return { ...NONE, capturedExact: new Set([symbol]) };
     if (binding.kind === "other") return OTHER;
     const { declaration } = binding;
     return memo(`identity:${declaration.getSourceFile().fileName}:${declaration.pos}`, () =>
@@ -1176,6 +1181,7 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
       if (argument !== undefined) parts.push(reach(argument, fn));
     }
     if (summary.self) parts.push(ts.isNewExpression(call) ? FRESH : callee.receiver === undefined ? OTHER : reach(callee.receiver, fn));
+    for (const symbol of summary.capturedExact) parts.push(bindingIdentity(symbol, fn));
     for (const symbol of summary.captured) parts.push(bindingReach(symbol, fn));
     if (summary.other) parts.push(OTHER);
     return join(...parts);
@@ -1220,6 +1226,7 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
     // The callback's parameters receive values the callee chose: anything the call's arguments reach.
     if (summary.mutated.exact.size > 0 || summary.mutated.parameters.size > 0) parts.push(...resolve(call).args.map((argument) => reach(argument, fn)));
     if (summary.mutated.self) parts.push(SELF);
+    for (const symbol of summary.mutated.capturedExact) parts.push(bindingIdentity(symbol, fn));
     for (const symbol of summary.mutated.captured) parts.push(bindingReach(symbol, fn));
     if (summary.mutated.other) parts.push(OTHER);
     return { mutated: join(...parts), foreign: summary.foreign };
@@ -1301,7 +1308,7 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
   };
 
   const text = (value: Provenance): string =>
-    `${value.fresh}/${[...value.exact].sort().join(",")}/${[...value.parameters].sort().join(",")}/${value.self}/${value.captured.size}/${value.other}`;
+    `${value.fresh}/${[...value.exact].sort().join(",")}/${[...value.parameters].sort().join(",")}/${value.self}/${value.capturedExact.size}/${value.captured.size}/${value.other}`;
   const signature = (summary: Effects): string =>
     `${text(summary.mutated)}|${text(summary.returned)}|${summary.returnsFresh}|${summary.foreign}|${[...summary.callsParameters].sort().join(",")}`;
 
@@ -1496,7 +1503,7 @@ export function refusalsWithoutExit(zone: Zone): string[] {
  */
 const reachesState = (checker: ts.TypeChecker, value: Provenance): boolean => {
   if (value.self || value.other) return true;
-  for (const symbol of value.captured) {
+  for (const symbol of [...value.capturedExact, ...value.captured]) {
     const declaration = symbol.valueDeclaration;
     const fresh =
       declaration !== undefined && ts.isVariableDeclaration(declaration) && (declaration.parent.flags & ts.NodeFlags.Const) !== 0 && declaration.initializer !== undefined &&
@@ -1772,8 +1779,7 @@ export interface ArmCheck {
  * - `x.field = value;` (`write`), and its `if (value !== null)` form (`write?`);
  * - `appendOwn(x.field, value);`, `appendAllOwn(x.field, value);` (`append`), and `if (value !== null)`;
  * - `mapSet(x.field, key, value);` (`insert`);
- * - `for (…) (readAt(list, index) as T).field = value;` (`each`);
- * - `if (a === null) this.#first = value; else a.next = value;` (`link`).
+ * - `for (…) (readAt(list, index) as T).field = value;` (`each`).
  *
  * Each commit is reported as `<form> <field> ← <source>`, where the source is the plan field the value
  * comes from (following `const` bindings and container literals), so the caller can pin each arm's exact
@@ -1831,11 +1837,6 @@ export function checkArm(zone: Zone, analysis: EffectAnalysis, arm: ts.MethodDec
       if (statement.elseStatement === undefined && ts.isBinaryExpression(condition) && condition.operatorToken.kind === K.ExclamationEqualsEqualsToken && condition.right.kind === K.NullKeyword) {
         const inner = commitOf(statement.thenStatement);
         return inner?.map((fact) => fact.replace(/^(\w+) /, "$1? "));
-      }
-      if (statement.elseStatement !== undefined && ts.isBinaryExpression(condition) && condition.operatorToken.kind === K.EqualsEqualsEqualsToken && condition.right.kind === K.NullKeyword) {
-        const first = commitOf(statement.thenStatement);
-        const second = commitOf(statement.elseStatement);
-        return first === undefined || second === undefined ? undefined : [...first, ...second].map((fact) => fact.replace(/^write /, "link "));
       }
       return undefined;
     }
@@ -1998,7 +1999,7 @@ export function writeOwners(
 /** Every function's summary as text, keyed by file and position: for comparing two analyses. */
 export function summaries(analysis: EffectAnalysis): Map<string, string> {
   const text = (value: Provenance): string =>
-    `${value.fresh ? "F" : ""}${[...value.exact].sort().map((index) => `x${index}`).join("")}${[...value.parameters].sort().map((index) => `p${index}`).join("")}${value.self ? "S" : ""}${[...value.captured].map((symbol) => `c:${symbol.getName()}`).sort().join("")}${value.other ? "O" : ""}`;
+    `${value.fresh ? "F" : ""}${[...value.exact].sort().map((index) => `x${index}`).join("")}${[...value.parameters].sort().map((index) => `p${index}`).join("")}${value.self ? "S" : ""}${[...value.capturedExact].map((symbol) => `e:${symbol.getName()}`).sort().join("")}${[...value.captured].map((symbol) => `c:${symbol.getName()}`).sort().join("")}${value.other ? "O" : ""}`;
   const out = new Map<string, string>();
   for (const [fn, summary] of analysis.effects) {
     out.set(`${basename(fn.getSourceFile().fileName)}:${fn.getStart()} ${fnName(fn) ?? "<anonymous>"}`, `mutated=${text(summary.mutated)} returned=${text(summary.returned)} fresh=${summary.returnsFresh} foreign=${summary.foreign} calls=${[...summary.callsParameters].sort().join(",")}`);

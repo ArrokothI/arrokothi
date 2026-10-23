@@ -36,7 +36,7 @@
  */
 
 import type { Activation, ActivationEvent, SubmissionGrant } from "./driver.ts";
-import { creationRequestIdKey, inputIdKey, type InputId, type Receipt } from "./identity.ts";
+import { creationRequestIdKey, inputIdKey, mayReachScope, type AuthenticatedCaller, type InputId, type Receipt } from "./identity.ts";
 import type {
   ActivationView,
   DeliveryAttemptView,
@@ -72,6 +72,7 @@ const PrimordialReflectApply = Reflect.apply;
 const PrimordialMap = Map;
 const PrimordialMapGet = Map.prototype.get;
 const PrimordialMapSet = Map.prototype.set;
+const PrimordialMapForEach = Map.prototype.forEach;
 /** `Error` for a refused plan: an invariant violation, never a refusal of a request. */
 const PrimordialError = Error;
 
@@ -254,12 +255,6 @@ class ExecutionReader {
     return this.#record.mailbox.length;
   }
 
-  /** The next Execution in creation order, or `null`. */
-  get nextExecution(): ExecutionReader | null {
-    const next = this.#record.next;
-    return next === null ? null : new ExecutionReader(next);
-  }
-
   /** The mailbox entry at `index`, which must be below `mailboxLength`. */
   entryAt(index: number): EntryReader {
     return new EntryReader(readAt(this.#record.mailbox, index) as MailboxEntry);
@@ -306,10 +301,6 @@ export type { EntryReader, ExchangeReader, ExecutionReader };
 export class KernelState {
   readonly #executions = new PrimordialMap<string, ExecutionRecord>();
   readonly #byCreationRequestId = new PrimordialMap<string, ExecutionRecord>();
-  // Creation order, as links on the records: appending writes plain fields and calls nothing, so it
-  // cannot separate an Execution's listing from its lookup.
-  #first: ExecutionRecord | null = null;
-  #last: ExecutionRecord | null = null;
 
   /** The Execution with this ID, or `null`. */
   find(executionId: string): ExecutionReader | null {
@@ -323,10 +314,26 @@ export class KernelState {
     return record === undefined ? null : new ExecutionReader(record);
   }
 
-  /** The first Execution in creation order, or `null`. */
-  get firstExecution(): ExecutionReader | null {
-    const first = this.#first;
-    return first === null ? null : new ExecutionReader(first);
+  /**
+   * The IDs of the Executions `caller` may reach, in creation order.
+   *
+   * The Execution map is the listing, as it was before the owner existed: an Execution is listed exactly
+   * when `find` returns it, whichever creation publication faulted, and a creation that publishes an ID
+   * again keeps that ID's place (CR1-R1-CREATION-01).
+   */
+  visibleExecutionIds(caller: AuthenticatedCaller): string[] {
+    const visible: string[] = [];
+    // `Map.forEach` through the load-time reference: neither the `values()` iterator protocol
+    // (`Symbol.iterator`) nor `Array.prototype.push` is consulted, and each visible ID is installed
+    // as this list's own data, so persistent ambient pollution left behind by an earlier boundary
+    // observation cannot hide or duplicate listed IDs (K11-R6-STATE-02: this path takes no caller
+    // value of its own, so the pollution it has to survive is the residue of an earlier call).
+    PrimordialReflectApply(PrimordialMapForEach, this.#executions, [
+      (record: ExecutionRecord) => {
+        if (mayReachScope(caller, record.scope)) appendOwn(visible, record.executionId);
+      },
+    ]);
+    return visible;
   }
 
   /** One delivery attempt's status, or `null` when no such attempt is recorded. */
@@ -438,14 +445,9 @@ export class KernelState {
       activationsMinted: 0,
       recoveryHistory: [],
       version: plan.basis + 1,
-      next: null,
     };
-    const last = this.#last;
     mapSet(this.#executions, executionId, record);
     mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);
-    if (last === null) this.#first = record;
-    else last.next = record;
-    this.#last = record;
   }
 
   #applyInput(plan: InputPlan): void {

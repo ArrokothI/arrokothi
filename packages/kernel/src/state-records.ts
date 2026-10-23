@@ -135,6 +135,4 @@ export interface ExecutionRecord {
   readonly recoveryHistory: RecoveryHistoryRecord[];
   /** The number of plans applied to this Execution: the basis a plan names. In no view or answer. */
   version: number;
-  /** The next Execution in creation order, for listing. */
-  next: ExecutionRecord | null;
 }

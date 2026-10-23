@@ -271,7 +271,7 @@ describe("CR1-2: the owner's views alias nothing it holds", () => {
       KernelState: {
         find: () => state.find(executionId),
         findCreation: () => state.findCreation(creationRequestIdKey({ producerNamespace: "app-a", scope: "tenant-a", requestKey: "report-17" })),
-        firstExecution: () => state.firstExecution,
+        visibleExecutionIds: () => state.visibleExecutionIds(author),
         deliveryStatus: () => state.deliveryStatus(executionId, first.activationId, 1),
       },
       ExecutionReader: {

@@ -94,7 +94,7 @@ const CREATED = "{authorityContext+basis+creationIdentity+creationRequestId+defi
 
 /** Each arm's commit statements, in order: `<form> <field> ← <plan field it comes from>` (D01-CHK-4). */
 const COMMITS: Readonly<Record<string, readonly string[]>> = {
-  "#applyCreation": [`insert #executions ← ${CREATED}`, `insert #byCreationRequestId ← ${CREATED}`, `link #first ← ${CREATED}`, `link next ← ${CREATED}`, `write #last ← ${CREATED}`],
+  "#applyCreation": [`insert #executions ← ${CREATED}`, `insert #byCreationRequestId ← ${CREATED}`],
   "#applyInput": ["write version ← basis", "write nextAcceptancePosition ← entry", "append mailbox ← {QUEUED+entry}", "insert byInputId ← {QUEUED+entry}", "append receipts ← entry"],
   "#applyDispatch": ["write version ← basis", "write activationsMinted ← activationsMinted", "write nextAcceptancePosition ← receipt", "write activation ← {activation+batch+receipt+submission}", 'write state ← "RUNNING"', "append receipts ← receipt"],
   "#applyDelivery": ["write version ← basis", "append deliveries ← {activationId+attempt+writerEpoch}"],
@@ -136,9 +136,6 @@ const COMMITS: Readonly<Record<string, readonly string[]>> = {
 const ARM_WRITERS: Readonly<Record<string, readonly string[]>> = {
   "#executions": ["#applyCreation"],
   "#byCreationRequestId": ["#applyCreation"],
-  "#first": ["#applyCreation"],
-  "#last": ["#applyCreation"],
-  next: ["#applyCreation"],
   mailbox: ["#applyInput"],
   byInputId: ["#applyInput"],
   refusals: ["#applyRefusal"],
@@ -188,7 +185,7 @@ function recordFields(zone: Zone): Map<string, string | undefined> {
       fields.set(member.name.getText(), element);
     }
   });
-  for (const field of ["#executions", "#byCreationRequestId", "#first", "#last"]) fields.set(field, undefined);
+  for (const field of ["#executions", "#byCreationRequestId"]) fields.set(field, undefined);
   return fields;
 }
 
@@ -394,6 +391,13 @@ const MUTANTS: readonly { readonly name: string; readonly edits: readonly (reado
   { name: "a dropped hold write (binding kept)", edits: [at(STATE, CONTROL_COMMIT, "    appendOwn(record.recoveryHistory, stored);\n    exchange.protocolFailureHold = protocolFailureHold;")], reason: "#applyControl: commits differ from the declared table" },
   { name: "a dropped receipt append (binding kept)", edits: [at(STATE, "    appendOwn(record.receipts, receipt);\n    if (cleared !== null)", "    if (cleared !== null)")], reason: "#applyTakeover: commits differ from the declared table" },
   { name: "a dropped grant write (binding kept)", edits: [at(STATE, "    exchange.submission = submission;\n", "")], reason: "#applyTakeover: commits differ from the declared table" },
+  // Review 01, CR1-R1-CREATION-01: the Execution map is published first, as B did, and is the listing.
+  { name: "the creation-key index published before the Execution map", edits: [at(STATE, "    mapSet(this.#executions, executionId, record);\n    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);", "    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);\n    mapSet(this.#executions, executionId, record);")], reason: "#applyCreation: commits differ from the declared table" },
+  // Review 01: a closure's change to a list its function built is local; to anything older it is not.
+  { name: "an early append, inside a callback, through an alias of a record list", edits: [prepare("const list = record.receipts;\n    const probe = mapOwn([receipt], (item) => {\n      appendOwn(list, item);\n      return item;\n    });")], reason: "#applyTakeover: mutates before its commit" },
+  { name: "an early append, inside a callback, to a record list a fresh container holds", edits: [prepare("const holder = { list: record.receipts };\n    const probe = mapOwn([receipt], (item) => {\n      appendOwn(holder.list, item);\n      return item;\n    });")], reason: "#applyTakeover: mutates before its commit" },
+  { name: "the listing walk writes the Execution map through a captured alias, seen at the coordinator's call", edits: [at(STATE, "    const visible: string[] = [];\n    // `Map.forEach`", "    const visible: string[] = [];\n    const all = this.#executions;\n    // `Map.forEach`"), at(STATE, "        if (mayReachScope(caller, record.scope)) appendOwn(visible, record.executionId);", "        if (mayReachScope(caller, record.scope)) mapSet(all, record.executionId, record);")], reason: "visibleExecutions: changes accepted state outside a hand-over" },
+  { name: "the listing walk appends to a record list", edits: [at(STATE, "        if (mayReachScope(caller, record.scope)) appendOwn(visible, record.executionId);", "        if (mayReachScope(caller, record.scope)) appendOwn(record.receipts, record.creationReceipt);")], reason: "receipts written by" },
   // Controls 29–31: holds and history written in the wrong place.
   { name: "29: a protocol hold written while preparing", edits: [at(STATE, "    const stored = plan.history;", "    const stored = plan.history;\n    const probe = (exchange.protocolFailureHold = null);")], reason: "#applyControl: mutates before its commit" },
   { name: "30: a hold written by the wrong arm", edits: [at(STATE, "    appendOwn(exchange.deliveries, attempt);", "    appendOwn(exchange.deliveries, attempt);\n    exchange.codeHold = null;")], reason: "codeHold written by #applyControl, #applyDelivery" },
