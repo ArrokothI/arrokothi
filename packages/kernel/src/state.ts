@@ -390,7 +390,8 @@ export class KernelState {
   #applyCreation(plan: CreationPlan): void {
     const executionId = plan.executionId;
     const creationRequestId = plan.creationRequestId;
-    if (mapGet(this.#executions, executionId) !== undefined || mapGet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId)) !== undefined) {
+    // The planner decided on the creation-key index alone, so that is the basis the plan names.
+    if (plan.basis !== 0 || mapGet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId)) !== undefined) {
       throw new PrimordialError(STALE_PLAN);
     }
     const receipt = plan.receipt;

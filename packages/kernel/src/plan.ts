@@ -223,7 +223,7 @@ export interface EntryFacts {
 export interface CreationPlan {
   readonly kind: "creation";
   readonly executionId: string;
-  /** Always 0: there is no record yet, and the owner refuses the plan if one exists. */
+  /** Always 0: no record has this Creation request ID yet, and the owner refuses the plan if one has. */
   readonly basis: number;
   readonly creationRequestId: CreationRequestId;
   readonly scope: string;
