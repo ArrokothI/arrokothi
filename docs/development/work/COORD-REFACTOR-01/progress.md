@@ -133,3 +133,5 @@ The resume point for any session continuing this packet. Newest facts first with
   three repository tests in untouched files (`byte-shadows.test.ts`, two SDK capture tests) hit their `spawnSync`
   timeouts at load average ~169, after the killed children had printed their correct answers (local load flake;
   TOOLS-02). Rerun in the same clean clone, 16:29–17:38Z: `checks_passed`, 18/18, repository tests 4,412.
+- CI dispatched once at round 2 C `9f1412d1`: `packet-verify.yml` run `39996755805`
+  (https://github.com/ArrokothI/arrokothi/actions/runs/39996755805). Not polled; H (implementation-02) waits for its result.
