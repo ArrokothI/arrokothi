@@ -4,7 +4,7 @@
   "families": {
     "write-outside-apply": {
       "files": ["packages/kernel/tests/control-commits.test.ts", "packages/kernel/tests/state-plans.test.ts"],
-      "test_count": 78,
+      "test_count": 83,
       "killers": [
         "each record field has fixed arms, and the coordinator changes accepted state only by handing plans over",
         "every reader member returns a primitive, a reader, frozen data or a fresh list of frozen values"
@@ -12,7 +12,7 @@
     },
     "dropped-coupled-field": {
       "files": ["packages/kernel/tests/control-commits.test.ts"],
-      "test_count": 68,
+      "test_count": 73,
       "killers": [
         "#applyControl: prepares without changing anything, then commits exactly its declared statements",
         "#applyTakeover: prepares without changing anything, then commits exactly its declared statements"
@@ -20,7 +20,7 @@
     },
     "callback-inside-apply": {
       "files": ["packages/kernel/tests/control-commits.test.ts", "packages/kernel/tests/state-plans.test.ts", "tests/conformance/architecture/kernel-state-ownership.test.ts"],
-      "test_count": 87,
+      "test_count": 92,
       "killers": [
         "every call resolves to zone code, a classified primordial or an inventoried foreign call; the owner reaches none",
         "the real zone keeps every rule, and every rule matches real files and edges",
