@@ -183,9 +183,10 @@ detectable kinds are claimed again. The owner released the holds of
 [invalidation-02](work/K1.2/invalidation-02.md) and
 [DESIGN-AUDIT-01 invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md) on 2026-10-19
 ([hold release](work/K1.1-correction-03/hold-release-01.md)). The deliberate limits are listed in
-[known limitations](017-known-limitations.md). V-ENV stays held by [invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md) until owner release.
-BINDING-01's eligible core claim is limited to admission, parsed content and equality after trusted
-initialization: call-time binding replacement/shadowing cannot steer them. Wrapper stable-realm
+[known limitations](017-known-limitations.md). The owner released [invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)'s V-ENV hold for the core
+on 2026-10-22 ([hold release](work/BINDING-01/hold-release-01.md)). The core claim is limited to admission,
+parsed content and equality after trusted initialization: call-time binding replacement/shadowing cannot
+steer them. The SDK wrapper makes no V-ENV claim (L-01). Wrapper stable-realm
 fidelity, pre-import poisoning and containment remain outside it. The 853 rule-1 held entries remain
 TOOLS-02 bookkeeping; no historical evidence is promoted by this relocation.
 
