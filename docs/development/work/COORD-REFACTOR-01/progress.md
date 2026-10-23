@@ -127,3 +127,9 @@ The resume point for any session continuing this packet. Newest facts first with
   adoption regenerated (`1257c167`): 11 control-commits rule-1 holds shift lines, 40 preserved rows change reads
   and 2 positions, no status changes; corpus `revalidation_complete` with suite credit 3, preserved 30 and origins
   33/121 as in round 1 (no new credit). Repository tests 4,412; both sweeps pass.
+- Round 2 C `9f1412d1b3f6f41120609a4886a51b4c32c69880`. Fresh clone (`git clone --no-local`, `npm ci`, nothing
+  untracked before or after; Mac arm64, Node v26.10.0), 12:46Z: tool-tests 615 OK; `mutations.json` 119/119,
+  `value-cost.json` 238/238, `refusal-guards.json` 322/322 killed. The first full verify was `attention_required`:
+  three repository tests in untouched files (`byte-shadows.test.ts`, two SDK capture tests) hit their `spawnSync`
+  timeouts at load average ~169, after the killed children had printed their correct answers (local load flake;
+  TOOLS-02). Rerun in the same clean clone, 16:29–17:38Z: `checks_passed`, 18/18, repository tests 4,412.
