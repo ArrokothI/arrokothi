@@ -27,11 +27,15 @@ const KERNEL_LIST = "a Kernel-built dense list (appendOwn/literal), read below i
 const STRING = "a string, read below its own length: an own character position, no prototype consulted";
 
 export const ACCESS_INVENTORY: readonly InventoryEntry[] = [
+  { file: "own-array.ts", kind: "dynamic", mode: "write", text: "bytes[index]", count: 1, reason: "writeByte: owned Uint8Array integer-indexed storage has no inherited setter fallback; encoder supplies in-range offsets" },
+  { file: "canonical-bytes.ts", kind: "optional", mode: "read", text: 'Object.getOwnPropertyDescriptor(PrimordialTypedArrayPrototype, "length")!.get', count: 1, reason: "trusted load-time capture of the native typed-array length getter, an own accessor" },
+  { file: "canonical-bytes.ts", kind: "optional", mode: "read", text: 'Object.getOwnPropertyDescriptor(PrimordialTypedArrayPrototype, "buffer")!.get', count: 1, reason: "trusted load-time capture of the native typed-array buffer getter, an own accessor" },
+  { file: "canonical-bytes.ts", kind: "dynamic", mode: "read", text: "bytes[index]", count: 2, reason: "decodeUtf8 reads its owned typed view within a native-length check; continuation length is checked before the inner loop" },
+  { file: "canonical-bytes.ts", kind: "index", mode: "read", text: "keys[index]", count: 1, bounded: true, reason: "Object.keys of the owned parse yields a dense own-data list; captured sort preserves it" },
+  { file: "canonical-bytes.ts", kind: "dynamic", mode: "read", text: "(value as { readonly [key: string]: BoundaryValue })[key]", count: 1, reason: "encoder consumes only frozen parse-owned records and a key from Object.keys of that same record" },
+  { file: "envelope.ts", kind: "spread", mode: "read", text: "...problem", count: 1, reason: "identityTextIssue returns a frozen own-data issue made by the core" },
   // coordinator.ts
   { file: "coordinator.ts", kind: "assertion", mode: "introduce", text: "initialObserved as InputContent", count: 1, reason: "an observed caller value already checked to be a non-null object; acceptInputContent reads it only through observeField (its parameter is an envelope seed below)" },
-  { file: "coordinator.ts", kind: "envelope", mode: "read", text: "captured.available.definitionRevisions", count: 1, reason: "CapturedRecovery.available is captureRecovery's frozen Kernel copy, which reuses the CodeAvailability interface" },
-  { file: "coordinator.ts", kind: "envelope", mode: "read", text: "captured.available.runtimeContractRevisions", count: 1, reason: "the same frozen Kernel copy of the availability lists" },
-  { file: "coordinator.ts", kind: "envelope", mode: "read", text: "captured.available.progressCodecs", count: 1, reason: "the same frozen Kernel copy of the availability lists" },
   { file: "coordinator.ts", kind: "index", mode: "read", text: "controls[index]", count: 1, bounded: true, reason: "the trusted host's controlScopes list (DEC-8 host contract), read below its own length" },
   { file: "coordinator.ts", kind: "index", mode: "read", text: "scalars[scalarIndex]", count: 1, bounded: true, reason: KERNEL_LIST },
   { file: "coordinator.ts", kind: "spread", mode: "read", text: "...already.decision", count: 1, reason: "the frozen Kernel-built decision retained for replay" },
@@ -67,25 +71,7 @@ export const ACCESS_INVENTORY: readonly InventoryEntry[] = [
   ...(["value", "writable", "enumerable", "configurable", "get", "set"] as const).map((field): InventoryEntry => ({
     file: "own-array.ts", kind: "optional", mode: "write", text: `safe.${field}`, count: 1, reason: "a null-prototype descriptor under construction: no chain to consult",
   })),
-  // values.ts
-  { file: "values.ts", kind: "assertion", mode: "introduce", text: "PrimordialArrayIteratorPrototype as { readonly next: unknown }", count: 1, reason: "load-time capture of %ArrayIteratorPrototype%.next, an own member, before any caller code runs" },
-  { file: "values.ts", kind: "assertion", mode: "introduce", text: "container as { length: unknown }", count: 1, getter: true, reason: "observeArrayLength: the ordinary read of `length` on a value capture already classified as a non-Proxy Array exotic object, which owns `length` as data by construction; its own descriptor is read and compared first (K1.1-correction-03 moved this read out of captureArray)" },
-  { file: "values.ts", kind: "assertion", mode: "strengthen", text: "entry as { occurrences: number }", count: 1, reason: "a suffix entry (index 8 or more), which only pushIssue appends, always with an own `occurrences`; control-commits.test.ts verifies that pushIssue is the only mutator of these lists" },
-  { file: "values.ts", kind: "builtin", mode: "read", text: "PrimordialSymbol.iterator", count: 1, reason: "a non-writable, non-configurable own property of the load-time Symbol constructor" },
-  { file: "values.ts", kind: "dynamic", mode: "delete", text: "(entry.holder as Record<string | symbol, unknown>)[entry.key]", count: 2, reason: "the serializer environment removing and restoring saved own slots: [[Delete]] of an own property" },
-  { file: "values.ts", kind: "dynamic", mode: "read", text: "(container as Record<string, unknown>)[key]", count: 2, getter: true, reason: "observeElement and readMember: the one ordinary read of a position, only after its own descriptor proved own data, on a value capture already found not to be a Proxy (K1.1-correction-03 moved it out of describedValue)" },
-  { file: "values.ts", kind: "index", mode: "read", text: "Array.prototype[Symbol.iterator]", count: 1, reason: "load-time primordial capture, before any caller code runs" },
-  { file: "values.ts", kind: "index", mode: "read", text: "holders[holderIndex]", count: 2, bounded: true, reason: "a module-private literal list of primordial holders, read below its length" },
-  { file: "values.ts", kind: "index", mode: "read", text: "keys[keyIndex]", count: 1, bounded: true, reason: "the engine-built own-keys list, read below its length" },
-  { file: "values.ts", kind: "index", mode: "read", text: "name[0]", count: 1, reason: "first code unit of a member name of length above 1" },
-  { file: "values.ts", kind: "index", mode: "read", text: "name[index]", count: 1, bounded: true, reason: STRING },
-  { file: "values.ts", kind: "index", mode: "read", text: "names[nameIndex]", count: 6, bounded: true, reason: "the engine-built own-names list, read below its length" },
-  { file: "values.ts", kind: "index", mode: "read", text: "text[index]", count: 2, bounded: true, reason: STRING },
-  { file: "values.ts", kind: "optional", mode: "read", text: "descriptor.enumerable", count: 1, reason: "every engine-built descriptor owns `enumerable`" },
-  { file: "values.ts", kind: "optional", mode: "read", text: "descriptor.value", count: 4, guard: "descriptor", reason: DESCRIPTOR },
-  { file: "values.ts", kind: "optional", mode: "read", text: "innerDescriptor.value", count: 1, guard: "innerDescriptor", reason: DESCRIPTOR },
-  { file: "values.ts", kind: "optional", mode: "read", text: "lengthDescriptor.value", count: 3, guard: "lengthDescriptor", reason: DESCRIPTOR },
-  { file: "values.ts", kind: "optional", mode: "read", text: "lengthDescriptorInner.value", count: 2, guard: "lengthDescriptorInner", reason: DESCRIPTOR },
+
 ];
 
 /**
@@ -97,7 +83,6 @@ export const EXTRA_ENVELOPE_PARAMETERS: readonly string[] = ["acceptInputContent
 /** Calls into code outside the zone, by `foreignCallKey`. Each may run arbitrary code and reenter. */
 export const FOREIGN_CALLS: ReadonlyMap<string, string> = new Map([
   ["#deliver this.#driver.deliver(intent.activation, settlement, intent.submission)", "the Driver's delivery of the frozen Activation, a fresh settlement capability and the frozen grant, after the decision is recorded (post-commit)"],
-  ["encode canonicalizeJcs(toSerializationSafe(value))", "the approved JCS dependency on the frozen serialization clone, inside the restored serializer environment"],
   ["hostMember PrimordialReflectApply(getter, holder, [])", "a trusted host object's own accessor for an optional member, with the host as receiver"],
   ["requestTakeover PrimordialReflectApply(establish, this.#driver, [exchange.activation])", "the Driver's safe-replacement callback on the frozen current Activation; K1.2-DEC-19 revalidates after it"],
 ]);
@@ -109,7 +94,6 @@ export const FOREIGN_CALLS: ReadonlyMap<string, string> = new Map([
  * work callback it is given.
  */
 export const EFFECT_OVERRIDES: ReadonlyMap<string, { readonly foreign: boolean; readonly mutates: boolean; readonly callsParameters: readonly number[]; readonly reason: string }> = new Map([
-  ["withSerializerEnvironment", { foreign: true, mutates: false, callsParameters: [0], reason: "install-and-restore of built-in slots around the serializer call (K1.1 serializer boundary)" }],
 ]);
 
 export const getterReads = (): Set<string> =>

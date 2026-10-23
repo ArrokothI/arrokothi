@@ -1,0 +1,440 @@
+{
+  "reason": "BINDING-01 mechanical reopening under approved design-01. Historical held-witness and C2-LIMIT bindings below no longer bind the changed source at C; retain them as history, with no hold release or replacement credit. Semantic revalidation belongs to TOOLS-02.",
+  "witnesses": [
+    {
+      "id": "witness.values.1361.3.fb228bec8c58",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ea5444a6d42154e413fe0f2e"
+      ],
+      "members": [
+        "packages/kernel/tests/values.test.ts:1361:3@fb228bec8c58"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Serializer-window output independence, refusal or restoration under environment pollution: held by invalidation-03 for BINDING-01. Test: an unresettable chain degrades to a refusal, never to wrong bytes"
+    },
+    {
+      "id": "witness.values.1424.3.fb228bec8c58",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ea5444a6d42154e413fe0f2e"
+      ],
+      "members": [
+        "packages/kernel/tests/values.test.ts:1424:3@fb228bec8c58"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: the refusal is located, the bytes are never wrong, and the borrowed slots are handed back"
+    },
+    {
+      "id": "witness.boundary.84.3.2f74754bd710",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-22cf4ca80f2139455173765a",
+        "artifact-ab4a0cceaeed3b426232f62f"
+      ],
+      "members": [
+        "packages/kernel/tests/boundary.test.ts:84:3@2f74754bd710"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the JCS substrate is the owner-approved exact dependency (K11-R1-JCS-01)"
+    },
+    {
+      "id": "witness.boundary.191.3.2f74754bd710",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-22cf4ca80f2139455173765a",
+        "artifact-ab4a0cceaeed3b426232f62f"
+      ],
+      "members": [
+        "packages/kernel/tests/boundary.test.ts:191:3@2f74754bd710"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: every import in the zone is internal, a node: builtin, or the approved JCS dependency"
+    },
+    {
+      "id": "witness.control-commits.145.3.1cc0368ebe2d",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ada9f66cd74e3bc95eef93d6"
+      ],
+      "members": [
+        "packages/kernel/tests/control-commits.test.ts:145:3@1cc0368ebe2d"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: values.ts: only pushIssue itself mutates an issue list, so every suffix entry owns `occurrences`"
+    },
+    {
+      "id": "witness.nondisclosure.228.3.4976648bb62a",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-3737bddc25971e833c283b6b"
+      ],
+      "members": [
+        "packages/kernel/tests/nondisclosure.test.ts:228:3@4976648bb62a"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: hidden refusals attached to hidden Executions disclose nothing to A"
+    },
+    {
+      "id": "witness.nondisclosure.247.3.4976648bb62a",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-3737bddc25971e833c283b6b"
+      ],
+      "members": [
+        "packages/kernel/tests/nondisclosure.test.ts:247:3@4976648bb62a"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: hidden refusals naming no Execution disclose nothing to A"
+    },
+    {
+      "id": "witness.nondisclosure.306.3.4976648bb62a",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-3737bddc25971e833c283b6b"
+      ],
+      "members": [
+        "packages/kernel/tests/nondisclosure.test.ts:306:3@4976648bb62a"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: hidden work striped across several hidden Executions discloses nothing to A"
+    },
+    {
+      "id": "witness.unsupported.46.3.567586506cc6",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-e4b5e509ed4c9252343fc29c"
+      ],
+      "members": [
+        "packages/kernel/tests/unsupported.test.ts:46:3@567586506cc6"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the package exports exactly the K1.1 and K1.2 runtime surface and nothing that could look like a later packet's"
+    },
+    {
+      "id": "witness.kernel-landing-zone.136.3.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:136:3@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the target zone's real import graph reaches nothing outside itself except the approved JCS dependency"
+    },
+    {
+      "id": "witness.kernel-landing-zone.149.3.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:149:3@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: that result is not vacuous: the graph has real files and a real internal edge"
+    },
+    {
+      "id": "witness.kernel-landing-zone.184.3.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:184:3@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the zone refuses unimplemented surfaces rather than answering with a no-op"
+    },
+    {
+      "id": "witness.kernel-landing-zone.407.3.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:407:3@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: an import of an unapproved third-party package is rejected"
+    },
+    {
+      "id": "witness.kernel-landing-zone.424.3.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:424:3@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the approved canonicalize specifier is accepted"
+    },
+    {
+      "id": "witness.kernel-landing-zone.494.3.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:494:3@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: nothing outside the zone depends on the unimplemented target Kernel"
+    },
+    {
+      "id": "witness.kernel-landing-zone.860.3.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:860:3@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a malformed keyed dependency row fails closed in either position (K10-R4-01)"
+    },
+    {
+      "id": "witness.kernel-landing-zone.885.3.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:885:3@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a dependency row with no recognisable key fails closed (K10-R4-01)"
+    },
+    {
+      "id": "witness.kernel-landing-zone.924.3.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:924:3@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: duplicate cross-boundary dependency rows fail closed (K10-R3-01)"
+    },
+    {
+      "id": "witness.kernel-landing-zone.1027.3.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:1027:3@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: contradictory dependency rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+    },
+    {
+      "id": "witness.kernel-landing-zone.1205.9.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:1205:9@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: `a Dependency body row beginning with the header label is accounted for, ${position} the correct row, with ${edge}`"
+    },
+    {
+      "id": "witness.kernel-landing-zone.1526.5.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:1526:5@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the structural boundary holds for the second relation as well"
+    },
+    {
+      "id": "witness.kernel-landing-zone.3025.5.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:3025:5@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a count cell is a whole decimal number or it is unreadable"
+    },
+    {
+      "id": "witness.kernel-landing-zone.3041.5.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:3041:5@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a genuine count still decodes, including zero and a multi-digit measurement"
+    },
+    {
+      "id": "witness.kernel-landing-zone.3381.5.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:3381:5@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a widened dependency header cannot authorize an unread fifth body cell"
+    },
+    {
+      "id": "witness.kernel-landing-zone.3521.5.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:3521:5@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a header that renames or reorders a non-first position is reported"
+    },
+    {
+      "id": "witness.kernel-landing-zone.3566.5.78eea61cab49",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-1e3d57f18b66af569805e605"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:3566:5@78eea61cab49"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a narrowed or widened header cannot change what a schema-correct body means"
+    },
+    {
+      "id": "witness.kernel-landing-zone.136.3.deedd7950724",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-9fd619f5375d598ebb2b88aa"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:136:3@deedd7950724"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the target zone's real import graph reaches nothing outside itself except the approved JCS dependency"
+    },
+    {
+      "id": "witness.kernel-landing-zone.402.3.deedd7950724",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-9fd619f5375d598ebb2b88aa"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:402:3@deedd7950724"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: an import of an unapproved third-party package is rejected"
+    },
+    {
+      "id": "witness.kernel-landing-zone.419.3.deedd7950724",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-9fd619f5375d598ebb2b88aa"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:419:3@deedd7950724"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the approved canonicalize specifier is accepted"
+    },
+    {
+      "id": "witness.kernel-landing-zone.489.3.deedd7950724",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-9fd619f5375d598ebb2b88aa"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:489:3@deedd7950724"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: nothing outside the zone depends on the unimplemented target Kernel"
+    },
+    {
+      "id": "witness.kernel-landing-zone.1521.5.deedd7950724",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-9fd619f5375d598ebb2b88aa"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:1521:5@deedd7950724"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the structural boundary holds for the second relation as well"
+    },
+    {
+      "id": "witness.kernel-landing-zone.3020.5.deedd7950724",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-9fd619f5375d598ebb2b88aa"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:3020:5@deedd7950724"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a count cell is a whole decimal number or it is unreadable"
+    },
+    {
+      "id": "witness.kernel-landing-zone.3036.5.deedd7950724",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-9fd619f5375d598ebb2b88aa"
+      ],
+      "members": [
+        "tests/conformance/architecture/kernel-landing-zone.test.ts:3036:5@deedd7950724"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: a genuine count still decodes, including zero and a multi-digit measurement"
+    }
+  ],
+  "extras": [
+    {
+      "origin": "artifact-73555fe668cc180905b1e49a",
+      "member": "packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab",
+      "target": "target.dispatch.1426.3.5a8d958ffdab"
+    },
+    {
+      "origin": "artifact-9fd619f5375d598ebb2b88aa",
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:149:3@deedd7950724",
+      "target": "target.kernel-landing-zone.149.3.deedd7950724"
+    },
+    {
+      "origin": "artifact-9fd619f5375d598ebb2b88aa",
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:179:3@deedd7950724",
+      "target": "target.kernel-landing-zone.179.3.deedd7950724"
+    },
+    {
+      "origin": "artifact-9fd619f5375d598ebb2b88aa",
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:3376:5@deedd7950724",
+      "target": "target.kernel-landing-zone.3376.5.deedd7950724"
+    },
+    {
+      "origin": "artifact-9fd619f5375d598ebb2b88aa",
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:3516:5@deedd7950724",
+      "target": "target.kernel-landing-zone.3516.5.deedd7950724"
+    },
+    {
+      "origin": "artifact-9fd619f5375d598ebb2b88aa",
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:3561:5@deedd7950724",
+      "target": "target.kernel-landing-zone.3561.5.deedd7950724"
+    },
+    {
+      "origin": "artifact-9fd619f5375d598ebb2b88aa",
+      "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:919:3@deedd7950724",
+      "target": "target.kernel-landing-zone.919.3.deedd7950724"
+    }
+  ]
+}

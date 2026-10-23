@@ -23,7 +23,7 @@ The response is lost, and the application retries under the same key. The retry 
 }
 ```
 
-Not one byte lines up with the first request. The keys are in a different order, there is whitespace everywhere, and `37` has become `37.0`. Yet the Kernel answers the retry from the decision it already made, and exactly one Execution exists. The two requests carry the same value, spelled two ways. Before comparing anything, the Kernel reduces each value to one fixed byte sequence, its **canonical form**, and the two canonical forms are identical.
+Not one byte lines up with the first request. The keys are in a different order, there is whitespace everywhere, and `37` has become `37.0`. Yet the Kernel answers the retry from the decision it already made, and exactly one Execution exists. The two requests carry the same value, spelled two ways. Before comparison, the transport adapter reduces each value to one fixed byte sequence, its **canonical form**. The Kernel validates those bytes itself, and the two canonical forms are identical.
 
 Now change the story twice, and watch the same comparison say no.
 
@@ -36,7 +36,7 @@ Three different encodings touched this report, and it matters which is which:
 
 - **On the wire.** The gateway wrote JSON its own way. That is a transport codec, and it may spell values however it likes.
 - **Inside the Runtime.** The Agent keeps its continuation in a format of its own choosing. That is a progress codec, and only the Agent and its Driver can read it.
-- **At the Kernel.** The Kernel computed canonical bytes to decide sameness and size. That is the canonical value encoding, and it is fixed exactly, down to the byte.
+- **At the Kernel.** The Kernel validated canonical bytes to decide sameness and size. That is the canonical value encoding, and it is fixed exactly, down to the byte.
 
 The rest of the page takes those in turn. [Codec](#codec) separates the three encodings. [Boundary value and root](#boundary-value-and-root) says which values the protocol governs. [Canonical form](#canonical-form) says when two values are the same, and [fixed semantic limits](#fixed-semantic-limits) says how large one may be. [In-process value capture](#in-process-value-capture) gives the extra obligations of one particular binding, and [the last section](#what-these-rules-do-not-cover) marks where these rules stop.
 
@@ -130,7 +130,7 @@ The canonical form follows [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785), t
 
 Rules 1 to 5 are JCS, adopted rather than reinterpreted. If this page and RFC 8785 ever seem to disagree, this page has a defect; ArrokothI has no variant of JCS. Rule 6 and the use of canonical bytes for equality and size are ArrokothI's own rules. They are not claims about what JCS says.
 
-Use an unmodified, conforming JCS implementation, not a serializer that is almost the same. "Almost" is exactly where two implementations stop agreeing on identity. A JCS library does not do the whole job, though. The boundary checks and the size limits still have to be enforced around it, and before it: a serializer built on `JSON.stringify` writes `NaN` as `null` without complaint, so the library must only ever see a value that has already passed the checks.
+Every encoder must produce exactly JCS bytes. The SDK capture wrapper uses the approved, unmodified JCS library on its validated snapshot. The Kernel core independently validates and re-encodes its owned parse: a JCS serializer alone cannot verify canonical input or recover duplicate keys erased by a general JSON parser. This project-written validator/encoder changes no encoding rule. A serializer built on `JSON.stringify` writes `NaN` as `null`, so the wrapper must reject it before serialization; the core rejects a non-finite number during decoding.
 
 ### The rules at work
 
@@ -192,11 +192,11 @@ All four limits apply at once. A value exactly at a limit passes that limit, and
 
 A value over a limit is refused in the same way as any other malformed value. It is never truncated to fit. Truncation would accept content the sender never sent.
 
-Refusing a value must also be cheap. The limits bound what is accepted, and they have to bound the work of finding out as well: no value may cost more time or memory to refuse than a value at the limits costs to accept. So the limits are checked while a value is read, not after it has been expanded in full. This matters wherever a small input can stand for a very large value. A live object in the [in-process binding](#in-process-value-capture) can hold the same member in many places, which JSON text cannot. Thirty-two arrays, each except the innermost holding the next one twice, pass the depth limit and stand for a value of more than four billion arrays. Every occurrence counts in full toward the root's size, just as it appears in full in the canonical form. Such a value has to be refused once the running size passes 1 MiB, not after it has been expanded. A parsed YAML document with aliases produces exactly this shape.
+The limits are checked while a value is read, before unbounded expansion. For the live-object SDK wrapper, refusal cost has the metered meaning below; it is not a wall-clock or heap bound. The core instead caps byte input before copying and validates only owned data. This matters wherever a small input can stand for a very large value. A live object in the [in-process binding](#in-process-value-capture) can hold the same member in many places, which JSON text cannot. Thirty-two arrays, each except the innermost holding the next one twice, pass the depth limit and stand for a value of more than four billion arrays. Every occurrence counts in full toward the root's size, just as it appears in full in the canonical form. Such a value has to be refused once the running size passes 1 MiB, not after it has been expanded. A parsed YAML document with aliases produces exactly this shape.
 
-In the in-process binding, "cost" means **metered Kernel work**, not wall-clock time or heap
-samples. Each root is captured with its own work meter. Every operation the Kernel chooses to perform
-while capturing charges it: each observation of the caller's value, each piece of Kernel bookkeeping
+In the SDK live-object wrapper, "cost" means **metered capture work**, not wall-clock time or heap
+samples. Each root is captured with its own work meter. Every operation the wrapper chooses to perform
+while capturing charges it: each observation of the caller's value, each piece of wrapper bookkeeping
 whose amount depends on that value, and each diagnostic it records. An operation whose engine work
 grows with a length charges that length. A string is charged before it is scanned, and an own-key
 listing is charged as soon as it returns. The budget `B` is derived from the four limits: it is at
@@ -216,14 +216,13 @@ measurements remain useful observations. They are not part of the claim.
 Every unit stands for engine work bounded by a constant that depends only on the limits, apart
 from the residuals below, because capture never runs a trap of a value that is itself a Proxy and
 never invokes an accessor. **Every Proxy is refused before it is observed.** A Proxy is an object whose internal methods are caller-defined, so observing it would
-run caller code inside an operation the Kernel cannot size. The binding tests for a Proxy before any
+run caller code inside an operation the wrapper cannot size. The binding tests for a Proxy before any
 other observation of an object or function, at every depth. The test refuses it whatever its target
 or handler, and also when it is revoked or callable, and no trap runs. Accessors are refused from
 their descriptors without being called. This is a claim about capturing a boundary value, not about
 the whole call into the Kernel. The [request envelope](#in-process-value-capture) is read under its
 own rule, which lets an own accessor or a Proxy envelope run caller code between root captures.
-Removing caller code from that path belongs to the binding that moves capture to the caller's side
-(BINDING-01). These limits do not provide it.
+Both core and wrapper retain this envelope rule. Moving value roots to bytes does not remove caller code from envelope observation (L-09).
 
 Four residuals remain outside the per-unit constant, and each is stated rather than claimed:
 
@@ -239,9 +238,9 @@ Four residuals remain outside the per-unit constant, and each is stated rather t
   storage that deleted indices leave behind. A listing is charged for the names it returns, so an
   object carrying many such entries costs more engine work per unit. With sharing, that cost
   repeats on every occurrence. No observation reports how many such entries an object has, so
-  this binding cannot meter them. BINDING-01's bytes core removes R4 from the Kernel: the core
-  receives canonical bytes and never lists a caller object. The caller-side wrapper that then lists
-  caller objects carries it under the wrapper's cooperative contract.
+  the SDK wrapper cannot meter them. R1, R2 and R4 concern the wrapper's caller-object traversal.
+  The core receives bytes and never lists caller value objects; its ordinary maps still have
+  engine-dependent cost, as R3 qualifies for wrapper capture.
 
 Protection against hostile in-process code requires isolation or transport containment, and these
 semantic limits do not provide it. The binding provides neither CPU preemption nor physical
@@ -261,7 +260,7 @@ traversal stop, whether the size limit or the work meter stopped it. The same co
 applies when several roots are captured eagerly before a request's authority is decided; their
 semantic budgets remain separate.
 <!-- OPEN(implementation): diagnostic storage and the work meter for bounded refusal cost. The
-in-process binding retains the first eight bounded details per root followed by exact occurrence
+SDK wrapper retains the first eight bounded details per root followed by exact occurrence
 counts per remaining code, ordered by first remaining occurrence; paths are bounded before
 construction and messages before retention. Type labels use only null/typeof classification, without
 another structural or property observation of the caller value. Its unit table: visit 1, own-key
@@ -270,7 +269,7 @@ descriptor 1, object member read 1, string its
 UTF-16 length (at most 131,072; a longer string is refused by length at no string cost), diagnostic
 1. B = 3 × 1,048,576 = 3,145,728, derived from at most three units per canonical byte of each
 accepted node; the costliest acceptance found costs 3,094,930 units, so B is a proven bound, not an
-attained maximum. The meter stop is the issue code too_much_work. The choices are recorded in
+attained maximum. The meter stop is the issue code too_much_work. These wrapper choices are recorded in
 BASELINE #value-refusal-diagnostics. Other bindings may choose a different representation and unit
 table meeting V-D1; record a binding choice here and in its baseline without changing semantic
 limits. Leave this marker while representation remains an implementation choice. rewrite-index.md §4 -->
@@ -281,16 +280,51 @@ It follows that these limits do not protect anything from an oversized message. 
 
 Why fixed numbers, rather than a setting for each deployment? The limits are stated at the semantic level, with exact units, so that a conformance fixture can build a case exactly at each limit and one past it, without waiting for any wire codec to exist. Fixed rules, fixed limits and fixed bytes together mean that "valid", "equal" and "too large" have one answer everywhere.
 
+## Canonical-bytes core
+
+Every core value-root consumer takes a `Uint8Array`: creation authority context and initial input,
+ingress payload, the three recovery availability lists, Outcome progress, each Emission, and result
+or error. Before validation the core copies the exact view using captured native typed-array
+operations. A length preflight refuses more than 1 MiB before allocation. Proxy or non-byte views,
+detached storage and shared backing memory are refused; ordinary Buffer and subarray views work.
+The caller's iterator, methods, species and property overrides are never consulted.
+
+The core accepts only exact canonical UTF-8. It rejects malformed UTF-8, BOM, malformed Unicode,
+decoded duplicate keys, noncanonical key/number/string spelling, whitespace, trailing data and
+any semantic-limit violation. Parsing preserves decoded names until duplication is checked;
+re-encoding the owned parse must reproduce the entire input. A refusal installs no value.
+
+Accepted bytes, canonical text and size remain private. Every reader receives deeply frozen values
+parsed from those bytes, including inspection, mailbox, Driver Activations, progress, Emissions
+and terminal results. Later buffer mutation or transfer cannot alter identity or replay, and a
+reader cannot change retained content. The core never recaptures a reader's value.
+
+Caller-chosen identity fields are primitive strings, not JSON-quoted byte roots: creation key,
+scope, Definition/Runtime/codec pins, input key/kind/subscription class and Emission key. They keep
+the existing Unicode and string limits. Kernel-issued coordinates retain their own producer rule.
+
+After trusted module initialization, validation, encoding and identity-text checks use captured
+intrinsics, including number decoding and printing. Call-time global replacement or lexical
+shadowing cannot change admitted content or equality. This requires genuine intrinsics at load;
+it is not protection from pre-import poisoning or hostile code with ambient process authority.
+
+The internal JSON transport adapter accepts up to 8 MiB of UTF-8 text, checks the cap before its
+own copying/decoding, refuses decoded duplicate keys, then encodes and invokes strict core
+validation. It can normalize whitespace or `37.0` to `37`; the core entry itself cannot. A future
+transport must cap accumulation and decompression before constructing that input buffer. Decoder
+metering is a recorded limit; no remote transport, request-wide semantic cap or wall-clock bound
+is supplied here.
+
 ## In-process value capture
 
 The sections above assume a value that has already been decoded. What has to happen before that point depends on how a value reaches the Kernel, not on what kind of value it is. Any root can arrive either way, whether it is creation input, an Event payload, an Outcome's progress or an Effect's arguments:
 
 - **Over a wire binding,** it arrives as bytes, and a decoder turns them into a value. The duplicate-key rule applies there.
-- **Through the in-process TypeScript binding,** the caller runs in the same JavaScript process and hands the Kernel a live object. There are no bytes to decode.
+- **Through the internal SDK TypeScript wrapper,** the caller hands capture a live object. The wrapper produces canonical bytes, which then pass through the same strict core admission. This module is not a public SDK entry; K1.4 owns that bridge.
 
 A decoded value is plain data that nobody else holds. A live object differs in three ways:
 
-- **It can still change.** The Kernel receives a reference, not a copy. After calling `create({ input })`, the caller can still set `input.count = 2`.
+- **It can still change.** The wrapper receives a reference, not a copy. After calling `create({ input })`, the caller can still set `input.count = 2`.
 - **It can answer two reads differently.** A getter or a `Proxy` runs code on every read, so validation, canonicalization and storage could each see a different `count`.
 - **It can hold what JSON cannot.** Plain JSON conversion drops or alters `undefined` members, symbol keys, array holes, Maps and Dates. For example, `{a: undefined}` becomes `{}`.
 
@@ -304,7 +338,7 @@ This section gives the binding's extra obligations. Together they turn a live ob
 - what inspection shows;
 - what later Activations carry.
 
-The caller's object is never consulted again. If the application submits `{count: 1}` and then changes its own object to `{count: 2}`, the accepted content still says `1`, and so do the canonical bytes that decided its identity. The structure whose canonical bytes decided identity is the same structure the Kernel keeps and later shows. Canonicalizing what was retained reproduces the bytes that accepted it.
+The caller's object is never consulted again. If the application submits `{count: 1}` and then changes its own object to `{count: 2}`, the accepted content still says `1`, and so do the canonical bytes that decided its identity. The core keeps and shows its own frozen parse of those bytes, with the same logical content as the wrapper snapshot. Canonicalizing what was retained reproduces the bytes that accepted it.
 
 **What a snapshot may be made of.** In this binding:
 
@@ -340,20 +374,20 @@ these objects has handed over the plain data it now presents.
 
 **One reading or none.** An object can present two different stories about itself. A member's own data descriptor can disagree with what an ordinary property read returns. An array's length can claim a position the array does not own. Merely observing the structure can throw. The binding refuses such a value. It does not pick whichever reading happened to come first, and it does not repair the disagreement. A value that has no single reading has no single content to give an identity to.
 
-**Canonical bytes that the environment cannot steer.** The binding produces canonical bytes with the approved JCS implementation, unmodified, run only on data taken from the snapshot. That library runs in the same JavaScript realm as the caller, and ordinary JavaScript consults shared state along the way, such as the prototypes of arrays and objects. Code in the same process could alter that state, and in doing so change the bytes. So the binding has three obligations:
+**Cooperative serializer environment.** The wrapper keeps K1.1-correction-03's capture and
+serializer behavior unchanged. Its temporary environment is restored after serialization, and a
+failed setup refuses the value. But a global lexical binding such as `let JSON` can bypass property
+restoration and steer the library. Wrapper fidelity therefore requires a stable cooperative realm;
+frozen intrinsics and property pins alone do not establish it. The core validates the bytes it
+receives, not the caller's original object, so it cannot recover data a disturbed wrapper changed.
+This is L-01, not a core canonicality guarantee. Realm hardening and containment are separate work.
 
-- Host state the library consults during the call must not change its output.
-- If the binding cannot establish the environment the call needs, it refuses the value. A refusal costs availability; wrong bytes would cost identity.
-- Any temporary environment the binding installs for the call is restored afterwards.
-
-These are guarantees about accepting a value. They do not contain code that shares the process. Anything running in that process can still do whatever the process can do, and preventing that belongs to [physical enforcement](../mechanisms/resources.md#containment-claims), which has its own owner and its own evidence.
-
-**The request envelope is read differently.** A call into the binding, such as a create or a submit, takes an envelope whose fields hold identity text, a destination, and payload values. The payloads are boundary values and are captured by the rules above. The envelope's own fields are observed under a different rule, and the difference goes in both directions:
+**The request envelope is read differently.** A core call, such as a create or a submit, takes an envelope whose fields hold identity text, a destination, and byte roots. Wrapper callers also use envelopes around live roots. The core copies and validates each byte root immediately when its field is observed, before a later field accessor can mutate that buffer. The envelope's own fields are observed under a different rule, and the difference goes in both directions:
 
 - **Inherited fields.** A field the envelope carries only through inheritance reads as missing, exactly as if it had been omitted. Ambient state somewhere up a prototype chain must not be able to supply a field the caller never wrote.
 - **Accessors.** An own accessor on the envelope may run. The envelope boundary observes it as the caller's own answer. A boundary value would refuse an accessor; the envelope does not. Because an accessor can answer differently each time, each envelope field is read once, and that one answer is used for everything the call does with it: validation, authorization, lookup and what is recorded.
 
-Keep the two apart. The envelope rule decides which fields the caller supplied. The capture rules decide what value a supplied payload has.
+Keep the two apart. The envelope rule decides which fields the caller supplied. Wrapper capture and core byte admission decide what value a supplied payload has. Own getters and Proxy envelopes can run caller code between roots in either layer; neither has an envelope-hardening claim.
 
 ## What these rules do not cover
 
@@ -367,7 +401,7 @@ The same gap runs the other way. Values that look identical on a screen can be d
 
 **Progress.** The Kernel canonicalizes an inline progress value to measure and compare it, and nothing more. What the progress means belongs to the Runtime, its [progress codec](#codec) and its [Runtime contract](core.md#runtime-contract).
 
-**Transport and storage.** How values travel and how they are stored are implementation choices, as the [codec](#codec) section says. So is whether a deployment writes canonical bytes anywhere at all.
+**Transport and storage.** How values travel and how they are stored are implementation choices, as the [codec](#codec) section says. The core retains canonical bytes in memory; whether a deployment persists them and how it lays them out remain storage choices.
 
 **Authority.** No comparison on this page grants anything. Equal canonical bytes, or a matching hash, establish that two values are the same value. They say nothing about who sent it, whether it was permitted, or whether anyone approved it. [Content is not authority](../mechanisms/authority.md#content-is-not-authority) owns that boundary.
 

@@ -8,8 +8,8 @@
  * built-in roots. An accessor that does run was reached by walking past the object, and the sweep
  * attributes it:
  *
- * - **Zone.** The first non-built-in stack frame above the accessor is a zone source file (or the
- *   `canonicalize` dependency the zone calls): a Kernel read of a member its object does not own.
+ * - **Zone.** The first non-built-in frame is in the declared core source. The catalog can also
+ *   declare the SDK capture root and its canonicalize dependency; those are wrapper findings.
  *   The mode decides what happens next. `count` records it and answers as the prototype would have;
  *   `throw` records it and throws; `reenter` records it, re-enters the Kernel through the window's
  *   reentry hook, then answers as the prototype would have.
@@ -198,6 +198,8 @@ export interface PoisonOptions {
   readonly names: readonly (string | symbol)[];
   /** Directory of the zone sources: frames there are Kernel frames. */
   readonly zoneRoot: string;
+  /** Optional SDK capture zone, used only by the combined capture/core catalog. */
+  readonly captureRoot?: string;
   /** The prototypes to poison; all four of `HOLDERS` when omitted. */
   readonly holders?: readonly (readonly [object, HolderName])[];
 }
@@ -249,6 +251,8 @@ const siteOf = (site: NodeJS.CallSite): string | undefined => {
 export function createPoison(options: PoisonOptions): PoisonController {
   const zoneUrl = `${pathToFileURL(options.zoneRoot).href}/`;
   const zonePath = `${options.zoneRoot}/`;
+  const captureUrl = options.captureRoot === undefined ? undefined : `${pathToFileURL(options.captureRoot).href}/`;
+  const capturePath = options.captureRoot === undefined ? undefined : `${options.captureRoot}/`;
   const ownFile = fileURLToPath(import.meta.url);
   const ownUrl = import.meta.url;
   const handlers = new WeakSet<object>();
@@ -290,7 +294,9 @@ export function createPoison(options: PoisonOptions): PoisonController {
   };
 
   const isZone = (site: string): boolean =>
-    startsWith(site, zoneUrl) || startsWith(site, zonePath) || includes(site, "/node_modules/canonicalize/");
+    startsWith(site, zoneUrl) || startsWith(site, zonePath) ||
+    (captureUrl !== undefined && capturePath !== undefined &&
+      (startsWith(site, captureUrl) || startsWith(site, capturePath) || includes(site, "/node_modules/canonicalize/")));
 
   /** Every accessor this controller ever installed, by getter and by setter. */
   const installations = new WeakMap<object, Installation>();

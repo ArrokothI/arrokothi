@@ -27,12 +27,12 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import ts from "typescript";
-import { canonicalize, boundaryValueIssues, captureWithWork, isBoundaryValue, type CaptureWork, type ValueIssue, type ValueIssueCode } from "../src/values.ts";
-import { captureOutcome } from "../src/outcome.ts";
-import { explainDiagnosticIssues, located, explain } from "../src/envelope.ts";
-import { ExecutionCoordinator } from "../src/index.ts";
-import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
-import { assertOnlyRefusal } from "./refusal-diagnostics-fixture.ts";
+import { canonicalize, boundaryValueIssues, captureWithWork, isBoundaryValue, type CaptureWork, type ValueIssue, type ValueIssueCode } from "../src/internal/value-capture.ts";
+import { captureWrapperRoots, outcomeWrapperRoots } from "./wrapper-roots.ts";
+import { explainDiagnosticIssues, located, explain } from "../../kernel/src/envelope.ts";
+import { ExecutionCoordinator } from "../../kernel/tests/binding-facade.ts";
+import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "../../kernel/tests/harness.ts";
+import { assertOnlyRefusal } from "../../kernel/tests/refusal-diagnostics-fixture.ts";
 import { countingProxy, inWrappedChild, revokedCountingProxy, type OperationCounts } from "./capture-instruments.ts";
 
 const PROXY_MESSAGE = "value is a Proxy; capture refuses every Proxy before observing it";
@@ -398,10 +398,10 @@ test("V-D1 suffix counts preserve late codes and first occurrence order across r
   assert.match(explain(located(issues, "payload")), /payload undefined_member \(2 additional occurrences; locations omitted\)/);
 });
 
-const ENVELOPE_URL = new URL("../src/envelope.ts", import.meta.url).href;
-const HARNESS_URL = new URL("./harness.ts", import.meta.url).href;
-const FIXTURE_URL = new URL("./refusal-diagnostics-fixture.ts", import.meta.url).href;
-const OUTCOME_URL = new URL("../src/outcome.ts", import.meta.url).href;
+const ENVELOPE_URL = new URL("../../kernel/src/envelope.ts", import.meta.url).href;
+const HARNESS_URL = new URL("../../kernel/tests/harness.ts", import.meta.url).href;
+const FIXTURE_URL = new URL("../../kernel/tests/refusal-diagnostics-fixture.ts", import.meta.url).href;
+const OUTCOME_URL = new URL("../../kernel/src/outcome.ts", import.meta.url).href;
 
 test("V-D1 own-only multiplicity under ambient pollution and capture-time mutation", () => {
   // K1.1-correction-03: converted from a getPrototypeOf-trap Proxy that installed the pollution mid-capture
@@ -499,7 +499,7 @@ interface ContainerUses {
  * witness cannot see.
  */
 function helperContainerUses(helper: string): ContainerUses {
-  const source = ts.createSourceFile("values.ts", readFileSync(new URL("../src/values.ts", import.meta.url), "utf8"), ts.ScriptTarget.Latest, true);
+  const source = ts.createSourceFile("values.ts", readFileSync(new URL("../src/internal/value-capture.ts", import.meta.url), "utf8"), ts.ScriptTarget.Latest, true);
   let declared: ts.Expression | undefined;
   const find = (node: ts.Node): void => {
     if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.name.text === helper) declared = node.initializer;
@@ -540,42 +540,22 @@ interface EagerArm {
   readonly delivered: number;
 }
 
-test("V-D1 eight eager roots before authority: every position once, no forbidden mutation", () => {
+test("V-D1 eight SDK roots: every position once, no core submission", () => {
   // K1.1-correction-03: converted from a Proxy root counting its descriptors and reads (owner decision-01
   // item 2). The Proxy is now refused at each of the eight root positions before any trap (witness below).
   // A tracked genuine array in a wrapped child counts every Kernel observation of it, per position; a read
   // witness and a structural pin on the element helper replace the read count, which a genuine array
   // cannot expose. The meter's element unit below is a cost pin only.
-  const s = setup();
   const proxyRoot = countingProxy(Array(4096).fill(undefined));
-  const proxyProposal = outcomeFor(s.executionId, s.open, { progress: proxyRoot.proxy, emissions: Array.from({ length: 6 }, (_, i) => ({ emissionKey: `e${i}`, value: proxyRoot.proxy })), next: { step: "complete", result: proxyRoot.proxy } });
   const rootLabels = ["progress", ...Array.from({ length: 6 }, (_, i) => `emissions[${i}].value`), "next.result"];
-  for (const [grant, classification] of [[undefined, "unauthorized_submission"], [s.grant, "malformed_envelope"]] as const) {
-    const before = s.view(), sent = s.driver.seen.length;
-    const refusal = refused(s.kernel.submitOutcome(observer("visible"), proxyProposal, grant!));
-    assert.equal(proxyRoot.calls(), 0, "every root position refused before any trap ran");
-    assert.equal(refusal.classification, classification);
-    if (grant) {
-      assert.equal(refusal.reason, `Outcome for Activation ${s.open.activationId} refused whole: ${rootLabels.map(label => `${label} unsupported_form (${PROXY_MESSAGE})`).join("; ")}`);
-    } else assert.doesNotMatch(refusal.reason, /unsupported_form|additional issues/);
-    assertOnlyRefusal(before, s.view(), refusal);
-    assert.equal(s.driver.seen.length, sent);
-  }
-  const proxyCapture = captureOutcome(proxyProposal, 256);
+  const proxyCapture = captureWrapperRoots(rootLabels.map(label => [label, proxyRoot.proxy]));
   assert.deepEqual(proxyCapture.issues.map(issue => [issue.code, issue.message]), rootLabels.map(() => ["unsupported_form", PROXY_MESSAGE]));
+  assert.equal(proxyCapture.acceptedRoots, 0, "wrapper refusals never reach the core");
   assert.equal(proxyRoot.calls(), 0);
-  accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), s.grant));
 
   const probe = inWrappedChild<{ arms: EagerArm[]; capture: { issues: number; total: number; observed: EagerArm["observed"] } }>(`
-    const h = await import(${JSON.stringify(HARNESS_URL)});
-    const { assertOnlyRefusal } = await import(${JSON.stringify(FIXTURE_URL)});
-    const { captureOutcome } = await import(${JSON.stringify(OUTCOME_URL)});
+    const { outcomeWrapperRoots } = await import(${JSON.stringify(new URL('./wrapper-roots.ts', import.meta.url).href)});
     const ROW = 4096;
-    const who = h.caller("cost"), driver = h.recordingDriver(), coordinator = new kernel.ExecutionCoordinator({ driver });
-    const { executionId } = h.accepted(coordinator.createExecution(who, h.createRequest()));
-    const open = h.accepted(coordinator.dispatch(who, executionId, { bound: 1 }));
-    const grant = h.submissionFor(driver, open.activationId);
-    const view = () => h.accepted(coordinator.inspect(who, executionId));
     // One tracked genuine array, eight root positions; every Kernel observation of it is counted.
     const fixture = (fill, answer) => {
       const root = track(Array(ROW).fill(fill));
@@ -592,11 +572,11 @@ test("V-D1 eight eager roots before authority: every position once, no forbidden
         else counts.unexpected++;
         return answer === undefined ? real : answer;
       };
-      const proposal = h.outcomeFor(executionId, open, {
+      const proposal = {
         progress: root,
         emissions: Array.from({ length: 6 }, (_, i) => ({ emissionKey: "e" + i, value: root })),
         next: { step: "complete", result: root },
-      });
+      };
       const observed = () => {
         let positionMin = Infinity, positionMax = 0;
         for (const seen of positions) { positionMin = Math.min(positionMin, seen); positionMax = Math.max(positionMax, seen); }
@@ -605,34 +585,29 @@ test("V-D1 eight eager roots before authority: every position once, no forbidden
       return { proposal, observed };
     };
     const arms = [];
-    const submit = (arm, f, actorGrant) => {
-      const before = view(), sent = driver.seen.length;
-      const refusal = h.refused(coordinator.submitOutcome(h.observer("visible"), f.proposal, actorGrant));
-      assertOnlyRefusal(before, view(), refusal);
-      arms.push({ arm, classification: refusal.classification, reason: refusal.reason, observed: f.observed(), delivered: driver.seen.length - sent });
+    const captureArm = (arm, f) => {
+      const captured = outcomeWrapperRoots(f.proposal);
+      assert.equal(captured.acceptedRoots, 0);
+      arms.push({ arm, reason: captured.diagnostic, observed: f.observed() });
     };
-    submit("none", fixture(undefined), undefined);
-    submit("grant", fixture(undefined), grant);
-    // The element holds 0 and its own descriptor says undefined: a position whose read happens disagrees.
-    submit("read witness", fixture(0, { value: undefined, writable: true, enumerable: true, configurable: true }), grant);
+    captureArm("first", fixture(undefined));
+    captureArm("repeat", fixture(undefined));
+    captureArm("read witness", fixture(0, { value: undefined, writable: true, enumerable: true, configurable: true }));
     const f = fixture(undefined);
-    const outcome = captureOutcome(f.proposal, 256);
+    const outcome = outcomeWrapperRoots(f.proposal);
     const capture = { issues: outcome.issues.length, total: outcome.issues.reduce((n, issue) => n + (issue.occurrences ?? 1), 0), observed: f.observed() };
-    h.accepted(coordinator.submitOutcome(who, h.outcomeFor(executionId, open), grant));
     emit({ arms, capture });
   `);
 
   // Eight roots, each the same 4,096-position array: one prototype observation, one names and one symbols
   // listing, one length descriptor and one descriptor per position, per root, and nothing else.
   const everyPositionOnce = { prototypes: 8, names: 8, symbols: 8, lengthDescriptors: 8, descriptors: 8 * 4096, unexpected: 0, positionMin: 8, positionMax: 8 };
-  assert.deepEqual(probe.arms.map(arm => arm.arm), ["none", "grant", "read witness"]);
+  assert.deepEqual(probe.arms.map(arm => arm.arm), ["first", "repeat", "read witness"]);
   for (const arm of probe.arms) {
     assert.deepEqual(arm.observed, everyPositionOnce, `${arm.arm}: every root captured eagerly, each position observed once`);
-    assert.equal(arm.classification, arm.arm === "none" ? "unauthorized_submission" : "malformed_envelope");
-    assert.equal(arm.delivered, 0);
   }
   const [none, grant, witness] = probe.arms as [EagerArm, EagerArm, EagerArm];
-  assert.doesNotMatch(none.reason, /undefined_member|additional issues/);
+  assert.match(none.reason, /32760 additional issues: undefined_member=32760$/);
   assert.match(grant.reason, /32760 additional issues: undefined_member=32760$/);
   // Every one of the 8 x 4,096 positions was read: each read (0) disagrees with its descriptor (undefined).
   assert.match(witness.reason, /32760 additional issues: unstable_representation=32760$/);
@@ -652,33 +627,32 @@ test("V-D1 eight eager roots before authority: every position once, no forbidden
   assert.deepEqual(helperContainerUses("readMember"), { descriptor: 0, read: 1, other: 0, loops: 0 });
 });
 
-test("V-D1 creation, ingress, all recovery roots, complete and fail consume weighted evidence", () => {
-  const s = setup(), root = Array(64).fill(undefined);
-  const bad = root as never;
-  const creation = refused(s.kernel.createExecution(s.who, createRequest({ creationKey: "bad", authorityContext: bad, initialInput: { kind: "application.message", payload: bad } })));
-  assert.match(creation.reason, /authorityContext undefined_member \(56 additional occurrences/);
-  assert.match(creation.reason, /initialInput.payload undefined_member \(56 additional occurrences/);
-  const before = s.view();
-  const ingress = refused(s.kernel.submitInput(s.who, { destination: s.executionId, requestKey: "bad", kind: "application.message", payload: bad }));
-  assert.match(ingress.reason, /56 additional occurrences/);
-  assertOnlyRefusal(before, s.view(), ingress);
-  const recovery = refused(s.kernel.recoverExecution(s.who, s.executionId, { activationId: s.open.activationId, available: { definitionRevisions: bad, runtimeContractRevisions: bad, progressCodecs: bad } }));
-  assert.match(recovery.reason, /184 additional issues: undefined_member=184$/);
+test("V-D1 wrapper creation, ingress, recovery, complete and fail roots consume weighted evidence without core calls", () => {
+  const root = Array(64).fill(undefined);
+  const creation = captureWrapperRoots([["authorityContext", root], ["initialInput.payload", root]]);
+  for (const label of ["authorityContext", "initialInput.payload"]) {
+    const issues = creation.issues.filter(issue => issue.root === label);
+    assert.equal(total(issues as ValueIssue[]), 64);
+    assert.equal(issues[8]?.occurrences, 56);
+  }
+  const ingress = captureWrapperRoots([["payload", root]]);
+  assert.match(ingress.diagnostic, /56 additional issues: undefined_member=56$/);
+  const recovery = captureWrapperRoots(["definitionRevisions", "runtimeContractRevisions", "progressCodecs"].map(label => [`available.${label}`, root]));
+  assert.match(recovery.diagnostic, /184 additional issues: undefined_member=184$/);
   for (const step of ["complete", "fail"] as const) {
-    const proposal = outcomeFor(s.executionId, s.open, { progress: bad, next: step === "complete" ? { step, result: bad } : { step, error: bad } });
-    const capture = captureOutcome(proposal, 256);
+    const capture = outcomeWrapperRoots({ progress: root, next: step === "complete" ? { step, result: root } : { step, error: root } });
+    assert.equal(capture.acceptedRoots, 0);
     assert.equal(total(capture.issues as ValueIssue[]), 128);
-    assert.match(refused(s.kernel.submitOutcome(s.who, proposal, s.grant)).reason, /120 additional issues: undefined_member=120$/);
+    assert.match(capture.diagnostic, /120 additional issues: undefined_member=120$/);
   }
 });
 
-test("V-D1 different root suffixes compose in global capture order", () => {
-  const s = setup();
-  const proposal = outcomeFor(s.executionId, s.open, {
-    progress: [...Array(8).fill(undefined), NaN, Symbol(), NaN] as never,
-    emissions: [{ emissionKey: "next-root", value: [Symbol(), undefined, NaN, ...Array(8).fill(undefined)] as never }],
+test("V-D1 different wrapper root suffixes compose in global capture order", () => {
+  const capture = outcomeWrapperRoots({
+    progress: [...Array(8).fill(undefined), NaN, Symbol(), NaN],
+    emissions: [{ emissionKey: "next-root", value: [Symbol(), undefined, NaN, ...Array(8).fill(undefined)] }],
     next: { step: "fail", error: Infinity },
   });
-  const refusal = refused(s.kernel.submitOutcome(s.who, proposal, s.grant));
-  assert.match(refusal.reason, /15 additional issues: non_finite_number=4, unsupported_form=2, undefined_member=9$/);
+  assert.equal(capture.acceptedRoots, 0);
+  assert.match(capture.diagnostic, /15 additional issues: non_finite_number=4, unsupported_form=2, undefined_member=9$/);
 });

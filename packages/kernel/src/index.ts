@@ -18,8 +18,7 @@
  * `docs/development/kernel-ownership.md` and enforced by
  * `tests/conformance/architecture/kernel-landing-zone.test.ts`: nothing here may import
  * `@arrokothi/core`, any provider or Runtime integration, or the SDK. External reach is `node:`
- * builtins plus exactly the single owner-approved third-party specifier `canonicalize` (exact
- * `canonicalize@3.0.0`, K11-R1-JCS-01) — no other third-party package is permitted.
+ * builtins only. BINDING-01 moves live-object capture and its JCS dependency to SDK internal code.
  *
  * The current, supported, explicitly legacy implementation remains `@arrokothi/core`. Nothing here
  * replaces it, and no existing consumer is routed through this package.
@@ -79,5 +78,5 @@ export type { RefusalClassification, RefusalRecord } from "./refusal.ts";
 export { err, ok } from "./result.ts";
 export type { Err, Ok, Result } from "./result.ts";
 
-export { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue } from "./values.ts";
-export type { BoundaryValue, CanonicalValue, ValueIssue, ValueIssueCode } from "./values.ts";
+export { BOUNDARY_LIMITS, validateCanonicalBytes } from "./values.ts";
+export type { BoundaryValue, ValueIssue, ValueIssueCode } from "./values.ts";

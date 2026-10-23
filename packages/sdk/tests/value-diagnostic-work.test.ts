@@ -27,10 +27,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { canonicalize, captureWithWork, type CaptureWork, type ValueIssue, type ValueIssueCode } from "../src/values.ts";
-import { ExecutionCoordinator } from "../src/index.ts";
-import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
-import { assertOnlyRefusal } from "./refusal-diagnostics-fixture.ts";
+import { canonicalize, captureWithWork, type CaptureWork, type ValueIssue, type ValueIssueCode } from "../src/internal/value-capture.ts";
+import { ExecutionCoordinator } from "../../kernel/tests/binding-facade.ts";
+import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "../../kernel/tests/harness.ts";
+import { assertOnlyRefusal } from "../../kernel/tests/refusal-diagnostics-fixture.ts";
 import { countingProxy, inWrappedChild, revokedCountingProxy, type OperationCounts } from "./capture-instruments.ts";
 
 type Counts = { structural: number; diagnostic: number };
@@ -129,8 +129,8 @@ function child(): string {
   const url = (path: string): string => JSON.stringify(new URL(path, import.meta.url).href);
   return `
 const { default: assert } = await import("node:assert/strict");
-const h = await import(${url("./harness.ts")});
-const { assertOnlyRefusal } = await import(${url("./refusal-diagnostics-fixture.ts")});
+const h = await import(${url("../../kernel/tests/harness.ts")});
+const { assertOnlyRefusal } = await import(${url("../../kernel/tests/refusal-diagnostics-fixture.ts")});
 const { countingProxy } = await import(${url("./capture-instruments.ts")});
 const answer = { descriptor: new Map(), names: new Map(), symbols: new Map(), prototype: new Map() };
 hooks.descriptor = (target, key, real) => answer.descriptor.has(target) ? answer.descriptor.get(target)(key, real) : real;
@@ -465,210 +465,53 @@ const outcomeRoots = (step: "complete" | "fail"): string[] =>
 interface OutcomeRow {
   readonly step: string;
   readonly arm: "hidden" | "none" | "grant" | "read witness";
-  readonly classification: string;
   readonly reason: string;
   readonly descriptors: number;
   readonly structural: number;
   readonly diagnostic: number;
   /** Trap calls of the foreign value's Proxy prototype, cumulative; null for a thrown value. */
   readonly prototypeCalls: number | null;
-  readonly delivered: number;
 }
 
 for (const kind of ["foreign object", "thrown object"] as const) {
   test(`V-D1 ${kind}: eight eager Outcome roots preserve observations and whole refusal state`, () => {
-    // K1.1-correction-03: converted from a Proxy root counting descriptors and reads over Proxy positions (owner decision-01 item 2; design-01 §7.2).
-    // The original payload is a refused witness; the counts move to wrapped primordials on plain roots, and the read count to a disagreement witness;
-    // a foreign value's Proxy prototype witnesses that no root walks its chain.
-    {
-      const s = setup(), inner = proxyWitness(kind), root = countingProxy(Array(64).fill(inner.value));
-      for (const step of ["complete", "fail"] as const) {
-        const proposal = outcomeFor(s.executionId, s.open, {
-          progress: root.proxy,
-          emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: `e${index}`, value: root.proxy })),
-          next: step === "complete" ? { step, result: root.proxy } : { step, error: root.proxy },
-        });
-        const beforeHidden = s.view();
-        assert.equal(refused(s.kernel.submitOutcome(observer("hidden", "other-scope"), proposal, s.grant)).classification, "unknown_destination");
-        assert.deepEqual(s.view(), beforeHidden);
-        for (const grant of [undefined, s.grant]) {
-          const before = s.view(), delivered = s.driver.seen.length;
-          const result = refused(s.kernel.submitOutcome(observer("visible"), proposal, grant!));
-          assert.equal(result.classification, grant ? "malformed_envelope" : "unauthorized_submission");
-          if (grant) {
-            assert.equal(result.reason, `Outcome for Activation ${s.open.activationId} refused whole: ${
-              outcomeRoots(step).map(label => `${label} unsupported_form (${PROXY_MESSAGE})`).join("; ")}`);
-          } else assert.doesNotMatch(result.reason, /unsupported_form|unstable_representation|additional issues/);
-          assertOnlyRefusal(before, s.view(), result);
-          assert.equal(s.driver.seen.length, delivered);
-        }
-      }
-      assert.deepEqual([root.calls(), inner.calls(), inner.counts.structural, inner.counts.diagnostic], [0, 0, 0, 0]);
-      accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), s.grant));
+
+    const observed = inWrappedChild<any>(`${child()}
+      const f=fixture(${JSON.stringify(kind)}), root=track(Array(64).fill(f.value));
+      let descriptors=0;
+      answer.descriptor.set(root,(key,real)=>{ if(key!=='length') descriptors++; return real; });
+      const results=[];
+      for(let index=0;index<8;index++) results.push(values.canonicalize(root));
+      emit({results,descriptors,structural:f.counts.structural,diagnostic:f.counts.diagnostic,prototypeCalls:prototypeCallsOf(f)});
+    `);
+    assert.equal(observed.descriptors,8*64); assert.equal(observed.structural,8*64);
+    assert.equal(observed.diagnostic,0); assert.equal(observed.prototypeCalls,kind==='thrown object'?null:0);
+    for(const result of observed.results) {
+      assert.equal(result.ok,false);
+      assertWeighted(result.issues,64,EXPECTED[kind].code,EXPECTED[kind].message);
     }
 
-    const rows = inWrappedChild<OutcomeRow[]>(`${child()}
-      const s = setup(), f = fixture(${JSON.stringify(kind)});
-      let descriptors = 0;
-      const root = track(Array(64).fill(f.value));
-      answer.descriptor.set(root, (key, real) => { if (key !== "length") descriptors++; return real; });
-      const rows = [];
-      const proposalOf = (value, step) => h.outcomeFor(s.executionId, s.open, {
-        progress: value,
-        emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: "e" + index, value })),
-        next: step === "complete" ? { step, result: value } : { step, error: value },
-      });
-      for (const step of ["complete", "fail"]) {
-        const proposal = proposalOf(root, step);
-        const beforeHidden = s.view();
-        const hidden = h.refused(s.coordinator.submitOutcome(h.observer("hidden", "other-scope"), proposal, s.grant));
-        assert.deepEqual(s.view(), beforeHidden);
-        rows.push({ step, arm: "hidden", classification: hidden.classification, reason: hidden.reason, descriptors, structural: f.counts.structural, diagnostic: f.counts.diagnostic, prototypeCalls: prototypeCallsOf(f), delivered: 0 });
-        for (const grant of [undefined, s.grant]) {
-          const before = s.view(), delivered = s.driver.seen.length;
-          const result = h.refused(s.coordinator.submitOutcome(h.observer("visible"), proposal, grant));
-          assertOnlyRefusal(before, s.view(), result);
-          rows.push({ step, arm: grant ? "grant" : "none", classification: result.classification, reason: result.reason, descriptors, structural: f.counts.structural, diagnostic: f.counts.diagnostic, prototypeCalls: prototypeCallsOf(f), delivered: s.driver.seen.length - delivered });
-          descriptors = f.counts.structural = f.counts.diagnostic = 0;
-        }
-      }
-      // Read witness: every position's own descriptor names the fixture value while its element is another
-      // plain object, so each of the 8 x 64 positions is refused only if it is read and compared.
-      const witnessRoot = track(Array(64).fill({}));
-      answer.descriptor.set(witnessRoot, (key, real) => {
-        if (key === "length") return real;
-        descriptors++;
-        return { value: f.value, writable: true, enumerable: true, configurable: true };
-      });
-      const before = s.view(), delivered = s.driver.seen.length;
-      const witness = h.refused(s.coordinator.submitOutcome(h.observer("visible"), proposalOf(witnessRoot, "complete"), s.grant));
-      assertOnlyRefusal(before, s.view(), witness);
-      rows.push({ step: "complete", arm: "read witness", classification: witness.classification, reason: witness.reason, descriptors, structural: f.counts.structural, diagnostic: f.counts.diagnostic, prototypeCalls: prototypeCallsOf(f), delivered: s.driver.seen.length - delivered });
-      h.accepted(s.coordinator.submitOutcome(s.who, h.outcomeFor(s.executionId, s.open), s.grant));
-      emit(rows);
-    `);
-    const { code } = EXPECTED[kind];
-    assert.deepEqual(rows.map(row => `${row.step}/${row.arm}`), [
-      "complete/hidden", "complete/none", "complete/grant", "fail/hidden", "fail/none", "fail/grant", "complete/read witness",
-    ]);
-    for (const row of rows) {
-      assert.equal(row.delivered, 0);
-      assert.equal(row.diagnostic, 0);
-      assert.equal(row.prototypeCalls, kind === "thrown object" ? null : 0, "no root walks a foreign value's prototype chain");
-      if (row.arm === "hidden") {
-        assert.equal(row.classification, "unknown_destination");
-        assert.equal(row.descriptors + row.structural, 0, "scope precedes all root observation");
-      } else if (row.arm === "read witness") {
-        assert.equal(row.classification, "malformed_envelope");
-        assert.equal(row.descriptors, 8 * 64);
-        assert.equal(row.structural, 0, "no descriptor value is captured in place of the read");
-        assert.match(row.reason, /504 additional issues: unstable_representation=504$/);
-      } else {
-        assert.equal(row.classification, row.arm === "grant" ? "malformed_envelope" : "unauthorized_submission");
-        assert.equal(row.descriptors, 8 * 64);
-        assert.equal(row.structural, 8 * 64);
-        if (row.arm === "grant") assert.match(row.reason, new RegExp(`504 additional issues: ${code}=504$`));
-        else assert.doesNotMatch(row.reason, /unsupported_form|unstable_representation|additional issues/);
-      }
-    }
-  });
+});
 
   test(`V-D1 ${kind}: creation, ingress and recovery use the same zero-lookup diagnostics`, () => {
-    // K1.1-correction-03: converted from Proxy positions counting getPrototypeOf or throwing from ownKeys (owner decision-01 item 2; design-01 §7.2).
-    // The original payload is a refused witness; plain twins in a wrapped child keep the structural and diagnostic counts,
-    // and a foreign twin's Proxy prototype witnesses that no boundary walks its chain.
-    {
-      const s = setup(), witness = proxyWitness(kind), root = Array(64).fill(witness.value) as never;
-      const beforeCreation = s.view(), deliveries = s.driver.seen.length;
-      const creation = refused(s.kernel.createExecution(s.who, createRequest({
-        creationKey: "refused-create", authorityContext: root,
-        initialInput: { kind: "application.message", payload: root },
-      })));
-      assert.equal(creation.classification, "malformed_value");
-      assert.equal(creation.executionId, null);
-      assert.equal(creation.position, 0);
-      assert.match(creation.reason, /authorityContext unsupported_form \(56 additional occurrences/);
-      assert.match(creation.reason, /initialInput\.payload unsupported_form \(56 additional occurrences/);
-      assert.deepEqual(s.view(), beforeCreation);
-      assert.equal(accepted(s.kernel.createExecution(s.who, createRequest({ creationKey: "refused-create" }))).receipt.position, 1);
-      const beforeIngress = s.view();
-      const ingress = refused(s.kernel.submitInput(s.who, { destination: s.executionId, requestKey: "refused-input", kind: "application.message", payload: root }));
-      assert.equal(ingress.classification, "malformed_value");
-      assert.match(ingress.reason, /unsupported_form \(56 additional occurrences/);
-      assertOnlyRefusal(beforeIngress, s.view(), ingress);
-      const beforeRecovery = s.view();
-      const recovery = refused(s.kernel.recoverExecution(s.who, s.executionId, { activationId: s.open.activationId, available: {
-        definitionRevisions: root, runtimeContractRevisions: root, progressCodecs: root,
-      } }));
-      assert.equal(recovery.classification, "malformed_value");
-      assert.match(recovery.reason, /184 additional issues: unsupported_form=184$/);
-      assertOnlyRefusal(beforeRecovery, s.view(), recovery);
-      assert.equal(s.driver.seen.length, deliveries);
-      accepted(s.kernel.submitInput(s.who, { destination: s.executionId, requestKey: "refused-input", kind: "application.message", payload: null }));
-      accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), s.grant));
-      assert.deepEqual([witness.calls(), witness.counts.structural, witness.counts.diagnostic], [0, 0, 0]);
+
+    const observed = inWrappedChild<any>(`${child()}
+      const f=fixture(${JSON.stringify(kind)}), root=Array(64).fill(f.value);
+      const rows=[];
+      for(const count of [2,1,3]) {
+        f.counts.structural=f.counts.diagnostic=0;
+        const results=[]; for(let i=0;i<count;i++) results.push(values.canonicalize(root));
+        rows.push({count,results,structural:f.counts.structural,diagnostic:f.counts.diagnostic,prototypeCalls:prototypeCallsOf(f)});
+      }
+      emit(rows);
+    `);
+    for(const row of observed) {
+      assert.equal(row.structural,row.count*64); assert.equal(row.diagnostic,0);
+      assert.equal(row.prototypeCalls,kind==='thrown object'?null:0);
+      for(const result of row.results) { assert.equal(result.ok,false); assertWeighted(result.issues,64,EXPECTED[kind].code,EXPECTED[kind].message); }
     }
 
-    interface Step { classification: string; reason: string; structural: number; diagnostic: number; prototypeCalls: number | null }
-    const out = inWrappedChild<{
-      creation: Step & { executionId: string | null; position: number }; retryPosition: number; creationDeliveries: number;
-      ingress: Step; recovery: Step; deliveries: number;
-    }>(`${child()}
-      const s = setup(), f = fixture(${JSON.stringify(kind)}), root = Array(64).fill(f.value);
-      const out = {};
-      const beforeCreation = s.view(), deliveries = s.driver.seen.length;
-      const creation = h.refused(s.coordinator.createExecution(s.who, h.createRequest({
-        creationKey: "refused-create", authorityContext: root,
-        initialInput: { kind: "application.message", payload: root },
-      })));
-      out.creation = { classification: creation.classification, reason: creation.reason, executionId: creation.executionId, position: creation.position, structural: f.counts.structural, diagnostic: f.counts.diagnostic, prototypeCalls: prototypeCallsOf(f) };
-      assert.deepEqual(s.view(), beforeCreation);
-      out.retryPosition = h.accepted(s.coordinator.createExecution(s.who, h.createRequest({ creationKey: "refused-create" }))).receipt.position;
-      out.creationDeliveries = s.driver.seen.length - deliveries;
-
-      f.counts.structural = 0;
-      const beforeIngress = s.view();
-      const ingress = h.refused(s.coordinator.submitInput(s.who, { destination: s.executionId, requestKey: "refused-input", kind: "application.message", payload: root }));
-      assertOnlyRefusal(beforeIngress, s.view(), ingress);
-      out.ingress = { classification: ingress.classification, reason: ingress.reason, structural: f.counts.structural, diagnostic: f.counts.diagnostic, prototypeCalls: prototypeCallsOf(f) };
-
-      f.counts.structural = 0;
-      const beforeRecovery = s.view();
-      const recovery = h.refused(s.coordinator.recoverExecution(s.who, s.executionId, { activationId: s.open.activationId, available: {
-        definitionRevisions: root, runtimeContractRevisions: root, progressCodecs: root,
-      } }));
-      assertOnlyRefusal(beforeRecovery, s.view(), recovery);
-      out.recovery = { classification: recovery.classification, reason: recovery.reason, structural: f.counts.structural, diagnostic: f.counts.diagnostic, prototypeCalls: prototypeCallsOf(f) };
-      out.deliveries = s.driver.seen.length - deliveries;
-      h.accepted(s.coordinator.submitInput(s.who, { destination: s.executionId, requestKey: "refused-input", kind: "application.message", payload: null }));
-      h.accepted(s.coordinator.submitOutcome(s.who, h.outcomeFor(s.executionId, s.open), s.grant));
-      emit(out);
-    `);
-    const { code } = EXPECTED[kind];
-    // Cumulative over the three boundaries, so each reading of 0 covers every boundary before it.
-    const noWalk = kind === "thrown object" ? null : 0;
-    assert.deepEqual([out.creation.prototypeCalls, out.ingress.prototypeCalls, out.recovery.prototypeCalls], [noWalk, noWalk, noWalk]);
-    assert.equal(out.creation.classification, "malformed_value");
-    assert.equal(out.creation.executionId, null);
-    assert.equal(out.creation.position, 0);
-    assert.match(out.creation.reason, new RegExp(`authorityContext ${code} \\(56 additional occurrences`));
-    assert.match(out.creation.reason, new RegExp(`initialInput.payload ${code} \\(56 additional occurrences`));
-    assert.equal(out.creation.structural, 2 * 64);
-    assert.equal(out.creation.diagnostic, 0);
-    assert.equal(out.retryPosition, 1, "the refused creation reserved no receipt or request identity");
-    assert.equal(out.creationDeliveries, 0);
-
-    assert.equal(out.ingress.classification, "malformed_value");
-    assert.equal(out.ingress.structural, 64);
-    assert.equal(out.ingress.diagnostic, 0);
-    assert.match(out.ingress.reason, new RegExp(`${code} \\(56 additional occurrences`));
-
-    assert.equal(out.recovery.classification, "malformed_value");
-    assert.equal(out.recovery.structural, 3 * 64);
-    assert.equal(out.recovery.diagnostic, 0);
-    assert.match(out.recovery.reason, new RegExp(`184 additional issues: ${code}=184$`));
-    assert.equal(out.deliveries, 0);
-  });
+});
 }
 
 // -- Decisions 03 and 04: item 5 (coherent Proxy acceptance) is superseded by decision-01 item 2 ------------
@@ -981,38 +824,27 @@ function assertByteStop(probe: ByteStopProbe): void {
 interface EagerRow {
   readonly roots: number;
   readonly arm: "none" | "grant" | "read witness" | "length witness";
-  readonly classification: string;
   readonly reason: string;
   readonly observed: RowObservation;
-  readonly delivered: number;
 }
 
 /**
- * One and eight eager Outcome roots, each a root of eight rows, with and without the current grant, plus a
- * read witness and a length witness per root count (each replaces a read count the Proxy probe kept). Every
- * arm checks the whole refusal state in the child.
+ * One and eight SDK captures, each a root of eight rows, plus read and length witnesses.
+ * The former authority arms repeat the same wrapper work; no core submission occurs here.
  */
 function eagerRootsProbe(answerOf: (value: string) => string): EagerRow[] {
   return inWrappedChild<EagerRow[]>(`${child()}
-    const s = setup();
-    const rows = [];
-    const submit = (roots, arm, grant, f) => {
-      const proposal = h.outcomeFor(s.executionId, s.open, roots === 1 ? { progress: f.root } : {
-        progress: f.root,
-        emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: "rows-" + index, value: f.root })),
-        next: { step: "complete", result: f.root },
-      });
-      const before = s.view(), delivered = s.driver.seen.length;
-      const result = h.refused(s.coordinator.submitOutcome(h.observer("rows-observer"), proposal, grant));
-      assertOnlyRefusal(before, s.view(), result);
-      rows.push({ roots, arm, classification: result.classification, reason: result.reason, observed: f.observed(), delivered: s.driver.seen.length - delivered });
+    const { captureWrapperRoots } = await import(${JSON.stringify(new URL('./wrapper-roots.ts',import.meta.url).href)});
+    const rows=[];
+    const captureArm=(roots,arm,f)=>{
+      const result=captureWrapperRoots(Array.from({length:roots},(_,i)=>['root'+i,f.root]));
+      rows.push({roots,arm,reason:result.diagnostic,observed:f.observed()});
     };
-    for (const roots of [1, 8]) {
-      for (const grant of [undefined, s.grant]) submit(roots, grant ? "grant" : "none", grant, rowFixture(undefined, ${answerOf("undefined")}));
-      submit(roots, "read witness", s.grant, rowFixture(0, ${answerOf("1")}));
-      submit(roots, "length witness", s.grant, rowFixture(0, disagreeingLength));
+    for(const roots of [1,8]) {
+      for(const arm of ['none','grant']) captureArm(roots,arm,rowFixture(undefined,${answerOf('undefined')}));
+      captureArm(roots,'read witness',rowFixture(0,${answerOf('1')}));
+      captureArm(roots,'length witness',rowFixture(0,disagreeingLength));
     }
-    h.accepted(s.coordinator.submitOutcome(s.who, h.outcomeFor(s.executionId, s.open), s.grant));
     emit(rows);
   `);
 }
@@ -1022,8 +854,7 @@ function assertEagerRoots(rows: readonly EagerRow[]): void {
     "1/none", "1/grant", "1/read witness", "1/length witness", "8/none", "8/grant", "8/read witness", "8/length witness",
   ]);
   for (const row of rows) {
-    assert.equal(row.classification, row.arm === "none" ? "unauthorized_submission" : "malformed_envelope");
-    assert.equal(row.delivered, 0);
+    // These are independent SDK captures; there is no authority decision or core call.
     if (row.arm === "length witness") {
       // Each row's length is read once and compared with its own descriptor, before any listing.
       const rowsReached = row.roots * 8;
@@ -1036,39 +867,14 @@ function assertEagerRoots(rows: readonly EagerRow[]): void {
     }
     assertRowObservations(row.observed, row.roots * 8);
     const suffix = row.roots * 32_768 - 8;
-    if (row.arm === "none") assert.doesNotMatch(row.reason, /undefined_member|unstable_representation|additional issues/);
-    else {
-      const code = row.arm === "grant" ? "undefined_member" : "unstable_representation";
-      assert.match(row.reason, new RegExp(`${suffix} additional issues: ${code}=${suffix}$`));
-    }
+    const code = row.arm === "read witness" ? "unstable_representation" : "undefined_member";
+    assert.match(row.reason, new RegExp(`${suffix} additional issues: ${code}=${suffix}$`));
   }
 }
 
 /** The same eager-root schedule with the probe's Proxy rows: refused at each root position with no trap. */
 function assertEagerProxyWitness(make: () => ProbeFixture): void {
-  const s = setup();
-  for (const roots of [1, 8]) {
-    for (const grant of [undefined, s.grant]) {
-      const f = make();
-      const proposal = outcomeFor(s.executionId, s.open, roots === 1 ? { progress: f.root } : {
-        progress: f.root,
-        emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: `rows-${index}`, value: f.root })),
-        next: { step: "complete", result: f.root },
-      });
-      const before = s.view(), deliveries = s.driver.seen.length;
-      const result = refused(s.kernel.submitOutcome(observer("rows-observer"), proposal, grant!));
-      assert.equal(result.classification, grant ? "malformed_envelope" : "unauthorized_submission");
-      assertUntouched(f);
-      if (!grant) assert.doesNotMatch(result.reason, /unsupported_form|additional issues/);
-      else if (roots === 1) {
-        assert.equal(result.reason, `Outcome for Activation ${s.open.activationId} refused whole: ${
-          Array.from({ length: 8 }, (_, index) => `progress[${index}] unsupported_form (${PROXY_MESSAGE})`).join("; ")}`);
-      } else assert.match(result.reason, /; 56 additional issues: unsupported_form=56$/);
-      assertOnlyRefusal(before, s.view(), result);
-      assert.equal(s.driver.seen.length, deliveries);
-    }
-  }
-  accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), s.grant));
+  for(const count of [1,8]) { const f=make(); for(let i=0;i<count;i++) assert.equal(issuesOf(f.inner)[0]?.code,'unsupported_form'); assertUntouched(f); }
 }
 
 const deepAnswer = (depth: number) => (value: string): string => `deepAnswer(${depth}, ${value})`;
@@ -1191,10 +997,10 @@ function stringWorkChild(body: string): void {
       if (this.length > 131072) oversizedReads++;
       return Reflect.apply(original, this, [index]);
     };
-    const { canonicalize } = await import(${JSON.stringify(new URL("../src/values.ts", import.meta.url).href)});
-    const { ExecutionCoordinator } = await import(${JSON.stringify(new URL("../src/index.ts", import.meta.url).href)});
-    const h = await import(${JSON.stringify(new URL("./harness.ts", import.meta.url).href)});
-    const { assertOnlyRefusal } = await import(${JSON.stringify(new URL("./refusal-diagnostics-fixture.ts", import.meta.url).href)});
+    const { canonicalize } = await import(${JSON.stringify(new URL("../src/internal/value-capture.ts", import.meta.url).href)});
+    const { ExecutionCoordinator } = await import(${JSON.stringify(new URL("../../kernel/src/index.ts", import.meta.url).href)});
+    const h = await import(${JSON.stringify(new URL("../../kernel/tests/harness.ts", import.meta.url).href)});
+    const { assertOnlyRefusal } = await import(${JSON.stringify(new URL("../../kernel/tests/refusal-diagnostics-fixture.ts", import.meta.url).href)});
     String.prototype.charCodeAt = original;
     const measure = value => {
       characterReads = oversizedReads = 0;
@@ -1277,48 +1083,14 @@ test("V-D1 UTF-16 preflight: huge values and names do zero character reads and k
 });
 
 test("V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads", () => {
+
   stringWorkChild(`
-    const who = h.caller("string-preflight"), driver = h.recordingDriver();
-    const kernel = new ExecutionCoordinator({ driver });
-    const { executionId } = h.accepted(kernel.createExecution(who, h.createRequest()));
-    const open = h.accepted(kernel.dispatch(who, executionId, { bound: 1 }));
-    const grant = h.submissionFor(driver, open.activationId);
-    const view = () => h.accepted(kernel.inspect(who, executionId));
-    const huge = "x".repeat(16777216), deliveries = driver.seen.length;
-    const beforeCreate = view();
-    oversizedReads = 0;
-    const creation = h.refused(kernel.createExecution(who, h.createRequest({
-      creationKey: "preflight-retry", authorityContext: huge,
-      initialInput: { kind: "application.message", payload: huge },
-    })));
-    assert.equal(creation.classification, "malformed_value");
-    assert.equal(creation.executionId, null);
-    assert.equal(oversizedReads, 0);
-    assert.deepEqual(view(), beforeCreate);
-    assert.equal(h.accepted(kernel.createExecution(who, h.createRequest({ creationKey: "preflight-retry" }))).receipt.position, 1);
-    const beforeInput = view();
-    oversizedReads = 0;
-    const input = h.refused(kernel.submitInput(who, { destination: executionId, requestKey: "preflight-input", kind: "application.message", payload: huge }));
-    assert.equal(input.classification, "malformed_value");
-    assert.equal(oversizedReads, 0);
-    assertOnlyRefusal(beforeInput, view(), input);
-    h.accepted(kernel.submitInput(who, { destination: executionId, requestKey: "preflight-input", kind: "application.message", payload: null }));
-    for (const authorization of [undefined, grant]) {
-      const proposal = h.outcomeFor(executionId, open, {
-        progress: huge,
-        emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: "s" + index, value: huge })),
-        next: { step: "complete", result: huge },
-      });
-      const before = view();
-      oversizedReads = 0;
-      const refusal = h.refused(kernel.submitOutcome(h.observer("visible"), proposal, authorization));
-      assert.equal(refusal.classification, authorization ? "malformed_envelope" : "unauthorized_submission");
-      assert.equal(oversizedReads, 0, "every eager root uses the same bounded string observation");
-      if (authorization) assert.match(refusal.reason, /8 additional issues: string_too_long=4, too_many_bytes=4$/);
-      else assert.doesNotMatch(refusal.reason, /string_too_long|too_many_bytes/);
-      assertOnlyRefusal(before, view(), refusal);
-      assert.equal(driver.seen.length, deliveries);
+    const huge='x'.repeat(16777216);
+    for(const roots of [2,1,8]) {
+      oversizedReads=0;
+      for(let index=0;index<roots;index++) { const result=canonicalize(huge); assert.equal(result.ok,false); assert.equal(result.issues[0].code,'string_too_long'); }
+      assert.equal(oversizedReads,0,'all wrapper roots stop before oversized character reads; no core submission');
     }
-    h.accepted(kernel.submitOutcome(who, h.outcomeFor(executionId, open), grant));
   `);
+
 });

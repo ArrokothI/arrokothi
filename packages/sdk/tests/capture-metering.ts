@@ -39,9 +39,9 @@
 import { resolve } from "node:path";
 import ts from "typescript";
 
-import { buildZone, isFn, ownNodes, SOURCE_ROOT, typeErrors, type Fn } from "./zone-analysis.ts";
+import { buildZone, isFn, ownNodes, SOURCE_ROOT, typeErrors, type Fn } from "../../kernel/tests/zone-analysis.ts";
 
-export const VALUES_FILE = resolve(SOURCE_ROOT, "values.ts");
+export const VALUES_FILE = resolve(SOURCE_ROOT, "../../sdk/src/internal/value-capture.ts");
 
 /** Module-level bindings of engine operations that observe a caller value or allocate caller-sized state. */
 export const OBSERVATION_PRIMORDIALS: ReadonlySet<string> = new Set([

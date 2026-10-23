@@ -27,7 +27,7 @@ import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 import { describe, test } from "node:test";
 
-import { BOUNDARY_LIMITS, CAPTURE_WORK_BUDGET, captureWithWork } from "../src/values.ts";
+import { BOUNDARY_LIMITS, CAPTURE_WORK_BUDGET, captureWithWork } from "../src/internal/value-capture.ts";
 import { inWrappedChild, REPO_ROOT, type OperationCounts } from "./capture-instruments.ts";
 
 const B = 3 * 1_048_576;
@@ -57,11 +57,11 @@ Object.getOwnPropertySymbols = function (target) {
   if (target === watched) listing.targetSymbols += 1;
   return result;
 };
-const values = await import(${url("../src/values.ts")});
-const kernel = await import(${url("../src/index.ts")});
+const values = await import(${url("../src/internal/value-capture.ts")});
+const kernel = await import(${url("../../kernel/src/index.ts")});
 Object.getOwnPropertyNames = realNames;
 Object.getOwnPropertySymbols = realSymbols;
-const h = await import(${url("./harness.ts")});
+const h = await import(${url("../../kernel/tests/harness.ts")});
 const watch = (target) => { watched = target; listing.units = 0; listing.targetNames = []; listing.targetSymbols = 0; };
 const B = values.CAPTURE_WORK_BUDGET;
 const foreign = Object.create(Object.create(null));
@@ -171,59 +171,31 @@ interface ConsumerRow {
   readonly classification: string;
   readonly targetNames: number[];
   readonly targetSymbols: number;
-  readonly unchanged: boolean;
-  readonly refusalsKept: boolean;
+  readonly coreCalls: number;
 }
 
-describe("KC3-R1-STOP-01 the same boundary through every root consumer, each root on its own meter", () => {
+describe("KC3-R1-STOP-01 the same SDK capture at every root position, each root on its own meter", () => {
   const consumers = inListingChild<ConsumerRow[]>(`
-    const setup = () => {
-      const who = h.caller("stop-review");
-      const driver = h.recordingDriver();
-      const coordinator = new kernel.ExecutionCoordinator({ driver });
-      const { executionId } = h.accepted(coordinator.createExecution(who, h.createRequest()));
-      const open = h.accepted(coordinator.dispatch(who, executionId, { bound: 1 }));
-      return { who, coordinator, executionId, open, grant: h.submissionFor(driver, open.activationId) };
-    };
     const out = [];
     for (const kind of ["canonicalize", "boundaryValueIssues", "isBoundaryValue", "creation-authority", "creation-input", "ingress",
       "recovery-definitionRevisions", "recovery-runtimeContractRevisions", "recovery-progressCodecs",
       "outcome-progress", "outcome-emission", "outcome-result", "outcome-error", "eager-eight"]) {
       const { value, last } = fixture();
-      const s = setup();
-      const before = h.accepted(s.coordinator.inspect(s.who, s.executionId));
       watch(last);
       let classification;
+      let coreCalls = 0;
       if (kind === "canonicalize") classification = values.canonicalize(value).ok ? "accepted" : "refused";
       else if (kind === "boundaryValueIssues") classification = values.boundaryValueIssues(value).length > 0 ? "refused" : "accepted";
       else if (kind === "isBoundaryValue") classification = values.isBoundaryValue(value) ? "accepted" : "refused";
       else {
-        let answer;
-        if (kind === "creation-authority") answer = s.coordinator.createExecution(s.who, h.createRequest({ creationKey: "second", authorityContext: value }));
-        else if (kind === "creation-input") answer = s.coordinator.createExecution(s.who, h.createRequest({ creationKey: "second", initialInput: { kind: "k", payload: value } }));
-        else if (kind === "ingress") answer = s.coordinator.submitInput(s.who, { destination: s.executionId, requestKey: "input", kind: "k", payload: value });
-        else if (kind.startsWith("recovery-")) {
-          const available = { definitionRevisions: ["definition@1"], runtimeContractRevisions: ["runtime-contract@1"], progressCodecs: ["inline-json@1"] };
-          available[kind.slice("recovery-".length)] = value;
-          answer = s.coordinator.recoverExecution(s.who, s.executionId, { activationId: s.open.activationId, available });
-        } else {
-          const overrides = kind === "outcome-progress" ? { progress: value }
-            : kind === "outcome-emission" ? { emissions: [{ emissionKey: "e", value }] }
-            : kind === "outcome-result" ? { next: { step: "complete", result: value } }
-            : kind === "outcome-error" ? { next: { step: "fail", error: value } }
-            : { progress: value, emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: "e" + index, value })), next: { step: "complete", result: value } };
-          const eager = kind === "eager-eight";
-          answer = s.coordinator.submitOutcome(eager ? h.observer("visible") : s.who, h.outcomeFor(s.executionId, s.open, overrides), eager ? undefined : s.grant);
+        const roots = kind === "eager-eight" ? 8 : 1;
+        for (let index = 0; index < roots; index++) {
+          const result = values.captureCanonicalBytes(value);
+          if (result.ok) coreCalls++;
         }
-        classification = h.refused(answer).classification;
+        classification = coreCalls === 0 ? "refused" : "accepted";
       }
-      const counted = { targetNames: listing.targetNames, targetSymbols: listing.targetSymbols };
-      const after = h.accepted(s.coordinator.inspect(s.who, s.executionId));
-      const { refusals: oldRefusals, ...oldView } = before;
-      const { refusals: newRefusals, ...newView } = after;
-      out.push({ kind, classification, ...counted,
-        unchanged: JSON.stringify(newView) === JSON.stringify(oldView),
-        refusalsKept: JSON.stringify(newRefusals.slice(0, oldRefusals.length)) === JSON.stringify(oldRefusals) });
+      out.push({ kind, classification, targetNames: listing.targetNames, targetSymbols: listing.targetSymbols, coreCalls });
     }
     console.log(JSON.stringify(out));
   `);
@@ -232,17 +204,17 @@ describe("KC3-R1-STOP-01 the same boundary through every root consumer, each roo
     canonicalize: "refused",
     boundaryValueIssues: "refused",
     isBoundaryValue: "refused",
-    "creation-authority": "malformed_value",
-    "creation-input": "malformed_value",
-    ingress: "malformed_value",
-    "recovery-definitionRevisions": "malformed_value",
-    "recovery-runtimeContractRevisions": "malformed_value",
-    "recovery-progressCodecs": "malformed_value",
-    "outcome-progress": "malformed_envelope",
-    "outcome-emission": "malformed_envelope",
-    "outcome-result": "malformed_envelope",
-    "outcome-error": "malformed_envelope",
-    "eager-eight": "unauthorized_submission",
+    "creation-authority": "refused",
+    "creation-input": "refused",
+    ingress: "refused",
+    "recovery-definitionRevisions": "refused",
+    "recovery-runtimeContractRevisions": "refused",
+    "recovery-progressCodecs": "refused",
+    "outcome-progress": "refused",
+    "outcome-emission": "refused",
+    "outcome-result": "refused",
+    "outcome-error": "refused",
+    "eager-eight": "refused",
   };
 
   test("all fourteen consumers ran", () => {
@@ -250,15 +222,14 @@ describe("KC3-R1-STOP-01 the same boundary through every root consumer, each roo
   });
 
   for (const kind of Object.keys(expected)) {
-    test(`${kind}: refused, the target never listed after its stop, accepted state unchanged`, () => {
+    test(`${kind}: refused, the target never listed after its stop, no core submission`, () => {
       const row = consumers.find((candidate) => candidate.kind === kind)!;
       const roots = kind === "eager-eight" ? 8 : 1;
       assert.equal(row.classification, expected[kind]);
       // Every root reaches the target with its own budget and stops on its symbol diagnostic.
       assert.equal(row.targetSymbols, roots, "one symbols listing per root");
       assert.deepEqual(row.targetNames, [], "no names listing after any root's stop");
-      assert.ok(row.unchanged, "accepted state unchanged");
-      assert.ok(row.refusalsKept, "earlier refusal records kept");
+      assert.equal(row.coreCalls, 0, "wrapper refusal stops before core submission");
     });
   }
 });
@@ -278,10 +249,11 @@ describe("KC3-R1-STOP-01 the lower-threshold seam is evidence only", () => {
     assert.equal(captureWithWork([0], CAPTURE_WORK_BUDGET, 3).result.ok, true);
   });
 
-  test("no Kernel module but values.ts names it, and the package entry does not export it", () => {
-    const source = new URL("../src/", import.meta.url);
+  test("only the SDK internal capture module names the work-meter seam", () => {
+    const source = new URL("../src/internal/", import.meta.url);
     const naming = readdirSync(source).filter((name) => name.endsWith(".ts") && readFileSync(new URL(name, source), "utf8").includes("captureWithWork"));
-    assert.deepEqual(naming, ["values.ts"]);
+    assert.deepEqual(naming, ["value-capture.ts"]);
+    assert.doesNotMatch(readFileSync(new URL("../src/index.ts", import.meta.url), "utf8"), /captureWithWork|value-capture/);
   });
 });
 

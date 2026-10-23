@@ -1,0 +1,107 @@
+{
+  "revision": "c02c9e384ab5eff9979550b4937ba7c70a1b89f4",
+  "machine": "Mac arm64",
+  "node": "v26.10.0",
+  "case": "value-cost.c1.ingress",
+  "selection": {
+    "file": "packages/kernel/tests/ingress.test.ts",
+    "pattern": "^(?:SDK split: )?(?:K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress|K11-R2-VAL-02 ingress identity and replay agree under an Object\\.keys replacement installed in the same call|an inherited setter at the next mailbox index cannot make an accepted Event go unretained|a creation whose initial-input payload field traps the first mailbox index still binds its initial Event|a payload field whose observation installs get\\/set still retains the accepted Event)$",
+    "additional_files": [
+      "packages/sdk/tests/wrapper-boundary-split.test.ts"
+    ]
+  },
+  "mutant": {
+    "id": "mutation-8326241e1a83d5154bddbc25c7c6a4cf30eceabf76dae3bce73b6394126b575c",
+    "path": "packages/sdk/src/internal/value-capture.ts",
+    "before": "  return finishObject(prototype, captured);\n}",
+    "after": "  return container as unknown as BoundaryValue;\n}",
+    "operator": "c1-ablation",
+    "name": "VAL-snapshot-is-caller-object (C1: killed by the ingress converted tests at B and at C)"
+  },
+  "observations": [
+    {
+      "side": "control",
+      "state": "passed",
+      "status": "survived",
+      "leaves": 5,
+      "pass": 5,
+      "fail": 0,
+      "selected_tests": [
+        {
+          "file": "packages/kernel/tests/ingress.test.ts",
+          "name": "K11-R2-VAL-02 ingress identity and replay agree under an Object.keys replacement installed in the same call",
+          "event": "pass"
+        },
+        {
+          "file": "packages/kernel/tests/ingress.test.ts",
+          "name": "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+          "event": "pass"
+        },
+        {
+          "file": "packages/kernel/tests/ingress.test.ts",
+          "name": "a creation whose initial-input payload field traps the first mailbox index still binds its initial Event",
+          "event": "pass"
+        },
+        {
+          "file": "packages/kernel/tests/ingress.test.ts",
+          "name": "a payload field whose observation installs get/set still retains the accepted Event",
+          "event": "pass"
+        },
+        {
+          "file": "packages/sdk/tests/wrapper-boundary-split.test.ts",
+          "name": "SDK split: K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress",
+          "event": "pass"
+        }
+      ]
+    },
+    {
+      "side": "mutant",
+      "state": "passed",
+      "status": "survived",
+      "leaves": 5,
+      "pass": 5,
+      "fail": 0,
+      "selected_tests": [
+        {
+          "file": "packages/kernel/tests/ingress.test.ts",
+          "name": "K11-R2-VAL-02 ingress identity and replay agree under an Object.keys replacement installed in the same call",
+          "event": "pass"
+        },
+        {
+          "file": "packages/kernel/tests/ingress.test.ts",
+          "name": "an inherited setter at the next mailbox index cannot make an accepted Event go unretained",
+          "event": "pass"
+        },
+        {
+          "file": "packages/kernel/tests/ingress.test.ts",
+          "name": "a creation whose initial-input payload field traps the first mailbox index still binds its initial Event",
+          "event": "pass"
+        },
+        {
+          "file": "packages/kernel/tests/ingress.test.ts",
+          "name": "a payload field whose observation installs get/set still retains the accepted Event",
+          "event": "pass"
+        },
+        {
+          "file": "packages/sdk/tests/wrapper-boundary-split.test.ts",
+          "name": "SDK split: K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress",
+          "event": "pass"
+        }
+      ]
+    }
+  ],
+  "reach": {
+    "method": "supplementary NODE_V8_COVERAGE mutant repeat, no source edits",
+    "state": "passed",
+    "leaves": 5,
+    "source": "packages/sdk/src/internal/value-capture.ts",
+    "offset_utf16": 75024,
+    "function": "captureObject",
+    "smallest_covering_range": {
+      "startOffset": 67848,
+      "endOffset": 75071,
+      "count": 18
+    }
+  },
+  "raw_isolation_sha256": "fc491cc8710f9f3afbad67c675f9ce190452b02797cf9bba263d0d942e6d1690"
+}

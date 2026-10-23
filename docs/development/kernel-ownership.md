@@ -32,30 +32,18 @@ Measured over the candidate tree (the payload commit named in the implementation
 same analyzer the guards use, over every `.ts` file in each zone, following relative paths,
 package roots and package subpaths.
 
-This table is maintained by whichever packet changes the tree it measures; it is not a K1.0
-historical record. K1.0 created the `target-kernel` row, which did not exist at its base
-`c9a9ed7e6e538ab0542fc6a999426264abb6212a`, and left the other three unchanged from it. **K1.1**
-raised `target-kernel` from 2 `.ts` files to 10 by implementing creation, input ingress, reservation
-and dispatch in that zone, and to 11 in its round-8 correction, which gives the rule for building and
-reading a Kernel-owned list one owning module (`own-array.ts`, K11-R6-STATE-02); that module is
-internal to the zone and adds no exported name. Its base is `777b9955fb3a443f700b4f3d1f4f2aef1869345b`
-and its own row is true only of its candidate tree. The other three zones are unchanged by K1.1 as well: it moves and
-edits no source in them (base→payload touches none of their files, verified by
-`git diff --name-only`), so those rows reproduce at either tree. **K1.2** raised `target-kernel` from 11
-to 13 `.ts` files: `outcome.ts` reads the Outcome envelope and the exchange controls, and
-`envelope.ts` holds the own-field observation helpers K1.1 wrote inside `coordinator.ts`, moved so both
-boundaries share one copy. Both are internal to the zone; K1.2 adds exported types but no exported
-runtime name. It edits no source in the other three zones either, so their rows are unchanged. What has
-**not** changed across these packets is the target zone's legacy column: it still reaches no legacy code.
-Its third-party column gains exactly one entry in K1.1 round 3: the owner-approved JCS implementation
-`canonicalize` (see below); K1.2 adds none.
+This table describes the current tree, not historical packet evidence. BINDING-01 adds the
+canonical-byte codec, value types and internal JSON transport adapter to the Kernel (16 files),
+and moves live-object capture plus its own-array helper to SDK internal code (6 files).
+The core reaches no legacy, SDK or third-party module. The wrapper retains the unchanged
+`canonicalize@3.0.0` dependency; it imports no Kernel module and adds no public SDK export.
 
 | Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |
 |---|---|---|---|
-| `target-kernel` | 13 | nothing | `canonicalize` |
+| `target-kernel` | 16 | nothing | nothing |
 | `legacy-core` | 143 | — | nothing |
 | `runtime-integrations` | 16 | `@arrokothi/core`, `@arrokothi/core/execution`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `@langchain/core/documents`, `@langchain/textsplitters`, `@modelcontextprotocol/client`, `@modelcontextprotocol/server`, `@strands-agents/sdk` |
-| `host-sdk` | 4 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | nothing |
+| `host-sdk` | 6 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `canonicalize` |
 
 Every zone reaches `node:` builtins; those are omitted above. `legacy-core` reaching no third-party
 package is the existing vendor-neutrality property, retained and re-attributed to the legacy zone by
@@ -86,11 +74,8 @@ packet that intends to change a public surface changes them deliberately.
 
 1. Modules inside `packages/kernel/src`.
 2. `node:` builtins.
-3. Exactly one third-party specifier: `canonicalize` (exact `canonicalize@3.0.0`), owner-approved
-   for K1.1 round 3 under [AGENTS.md's third-party review](../../AGENTS.md) as the unmodified
-   conforming JCS implementation `values.md` requires (K11-R1-JCS-01). The executable rule holds this
-   as an exact-specifier allowance, not a prefix: similarly-named packages and subpaths stay refused.
-4. Nothing else.
+3. Nothing else. BINDING-01 removes the former exact `canonicalize` allowance from the core.
+   The wrapper's exact package pin and the core's rejection of that import have separate guards.
 
 There is **no approved portable leaf** at K1.0. `packages/core/src/util/{hash,json,result}.ts` and
 `packages/core/src/schema/value-schema.ts` are the plausible candidates, and the guard demonstrates
@@ -101,7 +86,7 @@ real use. Adding an entry is a reviewed decision in the packet that needs it, no
 
 A further third-party package for the target zone needs a new owner decision under
 [AGENTS.md's third-party review](../../AGENTS.md), not an allowlist edit in a test. The
-`canonicalize` approval above is that decision for this one specifier; its source, version, license,
+former `canonicalize` approval remains applicable to the unchanged dependency now used by SDK capture; its source, version, license,
 reuse method and obligations are recorded in [K1.1's round-3 report](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1/implementation-03.md).
 
 ## Deferred extraction and bridge owners
@@ -139,9 +124,9 @@ obligations against actual behaviour.
 
 K1.1 owns four of the deferred rows above. An assignment is an owner, not a promise to preserve the
 behaviour, and this is that owner's decision. No entry was added to `TARGET_KERNEL_ALLOWED_LEAVES`:
-the approved-leaf list is still empty. The target zone imports nothing outside itself except `node:`
-builtins and, since round 3, the single owner-approved third-party specifier `canonicalize`
-(exact `canonicalize@3.0.0`; see "What the target zone may import" above).
+the approved-leaf list is still empty. The target zone now imports only internal modules and
+`node:` builtins. The following dispositions retain their original extraction decisions; BINDING-01
+moves the live-object implementation of DX-2 to the SDK wrapper.
 
 - **DX-1** (`util/hash.ts`, migratable) — **not extracted, and not needed.** K1.1 compares logical
   values by their canonical bytes directly, so no content hash takes part in any identity decision.
@@ -152,8 +137,8 @@ builtins and, since round 3, the single owner-approved third-party specifier `ca
   `util/hash.ts`, alongside `util/json.ts`'s validity walk) maps `undefined` to `null`, admits
   non-finite numbers through `JSON.stringify`, enforces none of the four semantic limits and rejects
   no invalid value. Extracting it would import exactly the repair-on-encode behaviour
-  [values](../../mental-model/concepts/values.md) forbids. `packages/kernel/src/values.ts` keeps
-  ArrokothI's own boundary validation, limits and single capture pass, and calls unmodified
+  [values](../../mental-model/concepts/values.md) forbids. `packages/sdk/src/internal/value-capture.ts` now keeps
+  that validation, limits and single capture pass, and calls unmodified
   `canonicalize@3.0.0` only to serialize the immutable snapshot that capture produced. Owner approval
   and the AGENTS.md third-party record are in [K1.1's round-3 report](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/development/work/K1.1/implementation-03.md);
   the former K1.1-OPEN-2 question is closed by that decision. K1.1 round 4 removed the separately
@@ -176,7 +161,7 @@ specifier was added.
 
 - **DX-4** (`schema/value-schema.ts`, migratable) — **not extracted, and not needed.** Whole-envelope
   Outcome validation checks one fixed shape, which `packages/kernel/src/outcome.ts` reads field by field
-  from the envelope's own data, capturing each value root once through `values.ts`. A general schema
+  from its own fields, validating each copied byte root once through `values.ts`. A general schema
   language adds nothing to that. The legacy module would also bring in its optional lossless coercion
   (`"420"` becoming `420`), which [values](../../mental-model/concepts/values.md) forbids at a Kernel
   boundary: a value is validated, never repaired. The row stays open for the packet that first validates

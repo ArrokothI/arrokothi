@@ -1,5 +1,5 @@
-// Maintained assertions over the sealed review-03 reproducers. A witness reproduces a held defect;
-// it does not assert that the binding is safe. Each invocation is a separate disposable process.
+// Maintained comparisons over review-03 reproducers and explicitly declared byte-core ports.
+// Each invocation is a separate disposable process; claim attribution remains in the registry.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';

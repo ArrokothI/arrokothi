@@ -142,24 +142,7 @@ describe("correction DEC-9: recovery-control commits are prebuilt and applied wi
     }
   });
 
-  test("values.ts: only pushIssue itself mutates an issue list, so every suffix entry owns `occurrences`", () => {
-    // The precondition of the inventoried `entry as { occurrences: number }` assertion.
-    const leaf = new Set(["appendOwn", "appendAllOwn", "defineAt", "defineData", "truncateOwn"]);
-    const mutators = new Set<string>();
-    for (const fn of analysis.effects.keys()) {
-      if (basename(fn.getSourceFile().fileName) !== "values.ts") continue;
-      ownNodes(fn, (node) => {
-        const listTyped = (expression: ts.Expression): boolean => /(?:^|\b)ValueIssue\[\]$/.test(zone.checker.typeToString(zone.checker.getTypeAtLocation(expression)));
-        if (ts.isCallExpression(node) && (leaf.has(node.expression.getText()) || analysis.resolve(node).kind === "primordial")) {
-          for (const argument of mutatedArguments(analysis, node)) if (listTyped(argument)) mutators.add(ownerName(node));
-        }
-        if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken && (ts.isElementAccessExpression(node.left) || ts.isPropertyAccessExpression(node.left)) && listTyped(node.left.expression)) {
-          mutators.add(ownerName(node));
-        }
-      });
-    }
-    assert.deepEqual([...mutators].sort(), ["pushIssue"]);
-  });
+
 });
 
 // -- Negative controls ----------------------------------------------------------------

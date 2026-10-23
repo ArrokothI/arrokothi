@@ -69,6 +69,8 @@ class RepositoryControls(ProbeFixture):
         root = self.tree()
         shutil.copytree(REPO / 'packages/kernel/src', root / 'packages/kernel/src')
         shutil.copytree(REPO / 'packages/kernel/tests', root / 'packages/kernel/tests')
+        shutil.copytree(REPO / 'packages/sdk/src/internal', root / 'packages/sdk/src/internal')
+        shutil.copytree(REPO / 'packages/sdk/tests', root / 'packages/sdk/tests')
         for relative in ['package.json', 'tsconfig.json', REGISTRY]:
             (root / relative).parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(REPO / relative, root / relative)
@@ -91,7 +93,7 @@ class RepositoryControls(ProbeFixture):
         self.assertIsNone(tool.apply_edits(root, tool.mutation_edits(mutant)))
         run, outcome, observation = self.run_case(root, entry)
         self.assertEqual((observation['state'], outcome['status']), ('assertion_failed', 'killed'))
-        self.assertTrue(all(name.startswith('packages/kernel/tests/capture-work.test.ts > ') and name.endswith(']')
+        self.assertTrue(all(name.startswith('packages/sdk/tests/capture-work.test.ts > ') and name.endswith(']')
                             for name in observation['failures']))
 
     def test_repeated_runs_observe_the_same_structure(self):
@@ -110,12 +112,12 @@ class RepositoryControls(ProbeFixture):
             self.assertEqual(pair[0], pair[1])
             runs.append(pair[0])
         self.assertEqual([runs[0]['state'], runs[1]['state']], ['passed', 'assertion_failed'])
-        self.assertEqual({row['declaration']['file'] for row in runs[0]['observations']}, {'packages/kernel/tests/capture-work.test.ts'})
-        self.assertEqual({row['module'] for row in runs[1]['witnesses']}, {'packages/kernel/tests/capture-work.test.ts'})
+        self.assertEqual({row['declaration']['file'] for row in runs[0]['observations']}, {'packages/sdk/tests/capture-work.test.ts'})
+        self.assertEqual({row['module'] for row in runs[1]['witnesses']}, {'packages/sdk/tests/capture-work.test.ts'})
 
     def test_review_01_parse_failure_is_not_a_kill(self):
         root, entry = self.copy()
-        source = root / 'packages/kernel/src/values.ts'
+        source = root / 'packages/sdk/src/internal/value-capture.ts'
         source.write_text(source.read_text() + '\nconst = ;\n')
         run, outcome, observation = self.run_case(root, entry)
         self.assertEqual((run['exit'], observation['state'], observation['reached']), (3, 'parse_error', False))
@@ -124,7 +126,7 @@ class RepositoryControls(ProbeFixture):
 
     def test_review_01_module_load_throw_is_not_a_kill(self):
         root, entry = self.copy()
-        source = root / 'packages/kernel/src/values.ts'
+        source = root / 'packages/sdk/src/internal/value-capture.ts'
         source.write_text(source.read_text() + '\nthrow new Error("independent-review setup failure");\n')
         run, outcome, observation = self.run_case(root, entry)
         self.assertEqual((run['exit'], observation['state'], observation['reached']), (3, 'load_error', False))
@@ -210,6 +212,19 @@ class SyntheticControls(ProbeFixture):
     def test_a_test_side_assertion_is_a_kill(self):
         observation = self.assertState('^a selected assertion fails$', 'assertion_failed', 'killed', 17)
         self.assertEqual(observation['failures'], ['packages/kernel/tests/synthetic.test.mjs > a selected assertion fails [assert.equal]'])
+
+    def test_a_moved_sdk_witness_is_selected_and_attributed_to_its_file(self):
+        moved = 'packages/sdk/tests/moved.test.mjs'
+        entry = case('split', 'packages/kernel/tests/synthetic.test.mjs',
+                     '^(control passes|moved assertion)$', additional_files=[moved])
+        root = self.synthetic(entry)
+        (root / moved).parent.mkdir(parents=True)
+        (root / moved).write_text("import {test} from 'node:test'; import assert from 'node:assert/strict';\n"
+                                 "test('moved assertion', () => assert.equal(1, 2));\n")
+        run, outcome, observation = self.run_case(root, entry)
+        self.assertEqual((run['exit'], outcome['status']), (17, 'killed'))
+        self.assertEqual(observation['failures'], [moved + ' > moved assertion [assert.equal]'])
+        self.assertEqual(observation['leaves'], 2)
 
     def test_a_helper_assertion_is_a_kill(self):
         observation = self.assertState('^a helper fails through assert.fail$', 'assertion_failed', 'killed', 17)

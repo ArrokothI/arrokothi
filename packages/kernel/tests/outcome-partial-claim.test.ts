@@ -1,3 +1,4 @@
+import { jsonBytes } from "./binding-facade.ts";
 /**
  * K12-R11-ORDER-01 - total Outcome refusal-classification for partial (mixed) claims.
  *
@@ -33,11 +34,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  ExecutionCoordinator,
-  type ExecutionView,
-  type SubmissionGrant,
-} from "../src/index.ts";
+import { type ExecutionView, type SubmissionGrant } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import {
   accepted,
   caller,
@@ -112,7 +110,7 @@ describe("K12-R11 partial stale epoch: well-formed stale writerEpoch with malfor
     for (const [grantLabel, grantKind] of [["retired", "retired"], ["forged", "forged"], ["absent", "absent"], ["current", "current"]] as const) {
       for (const [contentLabel, content] of [
         ["valid content", { progress: 1 }],
-        ["invalid content", { progress: deepProgress(40), emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }], next: { step: "fail", error: "\ud800" } }],
+        ["invalid content", { progress: jsonBytes(deepProgress(40)), emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }], next: { step: "fail", error: jsonBytes("\ud800") } }],
       ] as const) {
         test(`stale epoch 1 + ${baseLabel} + ${grantLabel} grant + ${contentLabel} -> stale_exchange`, () => {
           const { kernel, executionId, open, retired, current } = postTakeover(`r11-b-${baseLabel}-${grantLabel}-${contentLabel}`.replace(/[^a-z0-9-]/gi, "-"));
@@ -190,7 +188,7 @@ describe("K12-R11 partial stale base: malformed writerEpoch with well-formed sta
           grantKind === "current" ? current : grantKind === "forged" ? forged(executionId, open.activationId, 2) : (undefined as unknown as SubmissionGrant);
         const who = grantKind === "current" ? author : dashboard;
         const base = outcomeFor(executionId, open, {
-          progress: deepProgress(40),
+          progress: jsonBytes(deepProgress(40)),
           emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
         }) as unknown as Record<string, unknown>;
         if (isMissing) delete base["writerEpoch"];
@@ -219,7 +217,7 @@ describe("K12-R11 partial stale base: malformed writerEpoch with well-formed sta
     assert.equal(second.baseProgressRevision, 1);
     const grant = submissionFor(driver, second.activationId);
     const base = outcomeFor(executionId, second, {
-      progress: deepProgress(40),
+      progress: jsonBytes(deepProgress(40)),
       emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
     }) as unknown as Record<string, unknown>;
     delete base["writerEpoch"];
@@ -238,9 +236,9 @@ describe("K12-R11 non-stale partial claims keep Case B/C behavior (current + mal
   test("current epoch with malformed base and no grant is unauthorized with no claim disclosure", () => {
     const { kernel, executionId, open } = postTakeover("r11-d-current-malformed");
     const bad = outcomeFor(executionId, { activationId: open.activationId, writerEpoch: 2, baseProgressRevision: 0 }, {
-      progress: deepProgress(40),
+      progress: jsonBytes(deepProgress(40)),
       emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
-      next: { step: "fail", error: "\ud800" },
+      next: { step: "fail", error: jsonBytes("\ud800") },
     }) as unknown as Record<string, unknown>;
     delete bad["baseProgressRevision"];
     const before = view(kernel, executionId);
@@ -256,9 +254,9 @@ describe("K12-R11 non-stale partial claims keep Case B/C behavior (current + mal
     const { kernel, driver, executionId, open } = postTakeover("r11-d-entitled");
     const current = submissionFor(driver, open.activationId);
     const bad = outcomeFor(executionId, { activationId: open.activationId, writerEpoch: 2, baseProgressRevision: 0 }, {
-      progress: deepProgress(40),
+      progress: jsonBytes(deepProgress(40)),
       emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
-      next: { step: "fail", error: "\ud800" },
+      next: { step: "fail", error: jsonBytes("\ud800") },
     }) as unknown as Record<string, unknown>;
     delete bad["baseProgressRevision"];
     const before = view(kernel, executionId);
@@ -354,7 +352,7 @@ describe("K12-R11 activation identity, replay/conflict, terminal and scope prece
     );
     assert.equal(view(kernel, executionId).state, "COMPLETED");
     const stale = outcomeFor(executionId, open, {
-      progress: deepProgress(40),
+      progress: jsonBytes(deepProgress(40)),
       emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
     }) as unknown as Record<string, unknown>;
     stale["writerEpoch"] = 1;
@@ -438,12 +436,12 @@ describe("K1.2 decision-02 malformed Activation identity distinguishing schedule
   };
 
   const invalidContent = {
-    progress: deepProgress(40),
+    progress: jsonBytes(deepProgress(40)),
     emissions: [
       { emissionKey: "x", value: 1 },
       { emissionKey: "x", value: 2 },
     ],
-    next: { step: "fail", error: "\ud800" },
+    next: { step: "fail", error: jsonBytes("\ud800") },
   };
 
   const assertNoRawValue = (reason: string, forbidden: string[], label: string): void => {

@@ -16,7 +16,8 @@ class AdapterInputTests(unittest.TestCase):
         case = next(row for row in registry['cases'] if row['id'] == case_id)
         change(case['input'])
         files = {REGISTRY: json.dumps(registry).encode()}
-        paths = list((ROOT / 'packages/kernel/src').rglob('*.ts'))
+        paths = [ROOT / name for name in registry['files'] if name != REGISTRY]
+        paths += [path for tree in registry['source_trees'] for path in (ROOT / tree).rglob('*') if path.is_file()]
         paths += [ROOT / 'tests/tooling' / name for name in
                   ('identity-probe.mjs', 'work-charge-probe.mjs', 'realm-probe.mjs', 'capture-witness.mjs')]
         for path in paths:

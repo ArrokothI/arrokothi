@@ -10,7 +10,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator, type ExecutionView, type OutcomeEnvelope } from "../src/index.ts";
+import { type ExecutionView } from "../src/index.ts";
+import { ExecutionCoordinator, type OutcomeEnvelope } from "./binding-facade.ts";
 import {
   accepted,
   caller,

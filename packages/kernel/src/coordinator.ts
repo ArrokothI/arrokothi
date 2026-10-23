@@ -137,7 +137,7 @@ import { appendAllOwn, appendOwn, copyOwn, mapOwn, readAt } from "./own-array.ts
 import { UNKNOWN_DESTINATION_REASON, mintRefusal, type RefusalClassification, type RefusalRecord } from "./refusal.ts";
 import { err, ok, type Result } from "./result.ts";
 import { refuseUnsupportedSurface } from "./unsupported.ts";
-import { canonicalize, type BoundaryValue, type CanonicalValue, type ValueIssue } from "./values.ts";
+import { acceptCanonicalBytes, type BoundaryValue, type CanonicalValue, type ValueIssue } from "./values.ts";
 
 /**
  * Load-time references used on paths that run after caller-owned state has been observed.
@@ -217,7 +217,7 @@ const mapSet = <K, V>(map: Map<K, V>, key: K, value: V): void => {
 /** The content of one input Event, independent of which boundary accepts it. */
 export interface InputContent {
   readonly kind: string;
-  readonly payload: BoundaryValue;
+  readonly payload: Uint8Array;
   /**
    * The declared input-subscription class, when the producer declares one. Matched by K1.3, not here.
    *
@@ -245,7 +245,7 @@ export interface CreateExecutionRequest {
   /** The progress codec pinned for this Execution's continuation data. */
   readonly progressCodec: string;
   /** Opaque application authority context, supplied to the Runtime as its execution view. */
-  readonly authorityContext: BoundaryValue;
+  readonly authorityContext: Uint8Array;
   readonly initialInput: InputContent;
 }
 
@@ -264,7 +264,7 @@ export interface SubmitInputRequest {
   /** The producer's request key: the third member of the Input ID triple. */
   readonly requestKey: string;
   readonly kind: string;
-  readonly payload: BoundaryValue;
+  readonly payload: Uint8Array;
   readonly subscriptionClass?: string;
 }
 
@@ -367,7 +367,7 @@ interface MailboxEntry {
   /** The injective packing of this input's content parts; equal identity means equal content. */
   readonly contentIdentity: string;
   readonly kind: string;
-  readonly payload: BoundaryValue;
+  readonly payload: CanonicalValue;
   readonly subscriptionClass: string | null;
   readonly acceptancePosition: number;
   readonly receipt: Receipt;
@@ -430,6 +430,8 @@ interface ResolvedExchange {
 
 /** The retained decision an exact replay answers from (OA-2). */
 interface AcceptedOutcomeRecord {
+  /** Owned bytes/text/count for every accepted root, retained privately for future byte readers. */
+  readonly content: CapturedOutcome;
   /** The captured content's identity; equality is an exact duplicate. */
   readonly identity: string;
   /** Frozen; everything a replay returns except the `replayed` flag. */
@@ -443,7 +445,7 @@ interface ExecutionRecord {
   readonly definitionRevision: string;
   readonly runtimeContractRevision: string;
   readonly progressCodec: string;
-  readonly authorityContext: BoundaryValue;
+  readonly authorityContext: CanonicalValue;
   /** The injective packing of the complete creation content this key is bound to. */
   readonly creationIdentity: string;
   readonly creationReceipt: Receipt;
@@ -712,16 +714,15 @@ function acceptInputContent(content: InputContent, prefix: string): Result<Accep
   // and again for packing would let a shifting envelope validate as one kind and bind as another.
   const kindField = observeField(content, "kind", `${prefix}kind`, issues);
   const payloadField = observeField(content, "payload", `${prefix}payload`, issues);
+  const payload = payloadField.ok ? acceptCanonicalBytes(payloadField.observed) : null;
   const subscriptionField = observeField(content, "subscriptionClass", `${prefix}subscriptionClass`, issues);
-  if (!kindField.ok || !payloadField.ok || !subscriptionField.ok) return err(issues);
+  if (!kindField.ok || !payloadField.ok || payload === null || !subscriptionField.ok) return err(issues);
   const kindObserved: unknown = kindField.observed;
-  const payloadObserved: unknown = payloadField.observed;
   const subscriptionObserved: unknown = subscriptionField.observed;
   const hasSubscription = subscriptionObserved !== undefined;
   // `kind` and `subscriptionClass` are packed into this input's content identity, so they are held
   // to the identity-text rule rather than only to the boundary-value rules.
   const kindOk = acceptIdentityText(kindObserved, `${prefix}kind`, issues);
-  const payload = canonicalize(payloadObserved);
   if (!payload.ok) appendIssues(issues, located(payload.issues, `${prefix}payload`));
 
   let subscriptionClass: string | null = null;
@@ -786,11 +787,10 @@ function acceptCreationContent(
     if (!acceptIdentityText(scalar[1], scalar[0], issues)) scalarsOk = false;
   }
   const authorityField = observeField(request, "authorityContext", "authorityContext", issues);
+  const authorityContext = authorityField.ok ? acceptCanonicalBytes(authorityField.observed) : null;
   const initialField = observeField(request, "initialInput", "initialInput", issues);
-  if (!authorityField.ok || !initialField.ok) return err(issues);
-  const authorityObserved: unknown = authorityField.observed;
+  if (!authorityField.ok || authorityContext === null || !initialField.ok) return err(issues);
   const initialObserved: unknown = initialField.observed;
-  const authorityContext = canonicalize(authorityObserved);
   if (!authorityContext.ok) appendIssues(issues, located(authorityContext.issues, "authorityContext"));
   const initialInput =
     initialObserved !== undefined && initialObserved !== null && typeof initialObserved === "object"
@@ -984,7 +984,7 @@ export class ExecutionCoordinator {
       inputId: initialInputId,
       contentIdentity: initial.identity,
       kind: initial.kind,
-      payload: initial.payload.value,
+      payload: initial.payload,
       subscriptionClass: initial.subscriptionClass,
       acceptancePosition: 1,
       // The initial input is accepted by the creation boundary, in the same atomic decision, so it
@@ -1008,7 +1008,7 @@ export class ExecutionCoordinator {
       definitionRevision: content.value.definitionRevision,
       runtimeContractRevision: content.value.runtimeContractRevision,
       progressCodec: content.value.progressCodec,
-      authorityContext: content.value.authorityContext.value,
+      authorityContext: content.value.authorityContext,
       creationIdentity: content.value.identity,
       creationReceipt: receipt,
       initialEventId: eventId,
@@ -1137,7 +1137,7 @@ export class ExecutionCoordinator {
       inputId,
       contentIdentity: content.value.identity,
       kind: content.value.kind,
-      payload: content.value.payload.value,
+      payload: content.value.payload,
       subscriptionClass: content.value.subscriptionClass,
       // One accepted decision carries one acceptance number: the mailbox entry shares the
       // receipt's position rather than consuming a second one (`#mint` above already advanced
@@ -1269,7 +1269,7 @@ export class ExecutionCoordinator {
       progressCodec: record.progressCodec,
       acceptedProgress: record.acceptedProgress,
       events: PrimordialObjectFreeze(carriedEvents),
-      executionView: record.authorityContext,
+      executionView: record.authorityContext.value,
     });
 
     const intent: ActivationRecord = {
@@ -2163,7 +2163,7 @@ export class ExecutionCoordinator {
     // The replay index entry is itself a retained decision record (OA-2: the exact replay answers
     // from it; K1.2-DEC-12 retains accepted-Outcome records): frozen here with the other decision
     // records, so the apply phase below only inserts the prebuilt wrapper.
-    const stored: AcceptedOutcomeRecord = PrimordialObjectFreeze({ identity: outcome.identity, decision });
+    const stored: AcceptedOutcomeRecord = PrimordialObjectFreeze({ identity: outcome.identity, decision, content: outcome });
 
     // -- The decision, applied. Nothing below can refuse, and nothing below reads caller state.
     // The acceptance index advances here, with the rest of the commit, not before building: a
@@ -2332,7 +2332,7 @@ const toActivationEvent = (entry: MailboxEntry): ActivationEvent => {
     eventId: entry.eventId,
     destination: entry.inputId.destination,
     kind: entry.kind,
-    payload: entry.payload,
+    payload: entry.payload.value,
     sourceCategory: "application_input",
     acceptancePosition: entry.acceptancePosition,
   } as const;
@@ -2408,7 +2408,7 @@ const toMailboxView = (entry: MailboxEntry, isReserved: (eventId: string) => boo
   eventId: entry.eventId,
   inputId: { ...entry.inputId },
   kind: entry.kind,
-  payload: entry.payload,
+  payload: entry.payload.value,
   subscriptionClass: entry.subscriptionClass,
   sourceCategory: "application_input",
   acceptancePosition: entry.acceptancePosition,
@@ -2453,7 +2453,7 @@ function viewOf(record: ExecutionRecord): ExecutionView {
     progressCodec: record.progressCodec,
     acceptedProgress: record.acceptedProgress,
     progressRevision: record.progressRevision,
-    authorityContext: record.authorityContext,
+    authorityContext: record.authorityContext.value,
     activation: record.activation === null ? null : toActivationView(record.activation),
     recoveryHolds: record.activation === null ? [] : holdsOf(record.activation),
     recoveryHistory: copyOwn(record.recoveryHistory),

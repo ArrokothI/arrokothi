@@ -72,15 +72,8 @@ export const TARGET_KERNEL_ENTRY_MODULES: readonly string[] = ["packages/kernel/
  */
 export const TARGET_KERNEL_ALLOWED_EXTERNAL_PREFIXES: readonly string[] = ["node:"];
 
-/**
- * Exact third-party specifiers the target Kernel zone may reach.
- *
- * Exactly one entry, owner-approved for K1.1 round 3 under AGENTS.md third-party review:
- * `canonicalize` (exact `canonicalize@3.0.0`, Apache-2.0), the unmodified conforming JCS
- * implementation `values.md` requires (K11-R1-JCS-01). Exact match only — unlike the prefix
- * list above, this does not extend to similarly-named packages or subpaths.
- */
-export const TARGET_KERNEL_ALLOWED_EXTERNAL_SPECIFIERS: readonly string[] = ["canonicalize"];
+/** BINDING-01: canonicalize belongs to SDK capture; the core has no third-party dependency. */
+export const TARGET_KERNEL_ALLOWED_EXTERNAL_SPECIFIERS: readonly string[] = [];
 
 /**
  * Portable leaves from outside the zone that the target Kernel may reuse.
@@ -188,7 +181,7 @@ export function boundaryViolations(graph: ModuleGraph, rules: BoundaryRules): Bo
     violations.push({
       from: edge.from,
       specifier: edge.specifier,
-      reason: "imports an external package; the zone may use node: builtins and the approved canonicalize package only",
+      reason: "imports an external package; the zone may use node: builtins only",
     });
   }
 

@@ -17,10 +17,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  ExecutionCoordinator,
-  type ExecutionView,
-} from "../src/index.ts";
+import { type ExecutionView } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import {
   accepted,
   caller,

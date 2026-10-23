@@ -14,8 +14,8 @@ import { execFileSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, type BoundaryValue } from "../src/index.ts";
-import type { CaptureWork } from "../src/values.ts";
+import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue, type BoundaryValue } from "../src/internal/value-capture.ts";
+import type { CaptureWork } from "../src/internal/value-capture.ts";
 import { countingProxy, inWrappedChild } from "./capture-instruments.ts";
 import {
   arrayIteratorPrototype,
@@ -29,7 +29,7 @@ import {
   recordOwn,
   trapInheritedIndices,
   type DescriptorPollution,
-} from "./harness.ts";
+} from "../../kernel/tests/harness.ts";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 
@@ -89,7 +89,7 @@ const SUMMARIZE = `
 `;
 
 /** `harness.ts` for a child probe: it shares the child's Kernel modules, which the prelude loaded first. */
-const HARNESS_URL = new URL("./harness.ts", import.meta.url).href;
+const HARNESS_URL = new URL("../../kernel/tests/harness.ts", import.meta.url).href;
 
 /** A work record with every unit kind the case does not charge at zero; `units` is their sum. */
 const workOf = (parts: Partial<Omit<CaptureWork, "units">> & { readonly stop: CaptureWork["stop"] }): CaptureWork => {
@@ -883,7 +883,7 @@ describe("refusing a value costs no more than the size limit allows", () => {
   const inBoundedChild = <T>(body: string, prelude = ""): T => {
     const probe = `
       ${prelude}
-      const { canonicalize, BOUNDARY_LIMITS } = await import("./packages/kernel/src/index.ts");
+      const { canonicalize, BOUNDARY_LIMITS } = await import("./packages/sdk/src/internal/value-capture.ts");
       const started = performance.now();
       ${body}
     `;
@@ -2309,7 +2309,7 @@ describe("K11-R16-VAL-01 (R2) canonical bytes do not depend on prototype-chain s
     // The disturbed host is permanent by definition (non-extensible holder with a wrong link),
     // so this runs in a child process rather than poisoning the suite.
     const probe = `
-      const { canonicalize } = await import("./packages/kernel/src/index.ts");
+      const { canonicalize } = await import("./packages/sdk/src/internal/value-capture.ts");
       const clean = canonicalize({ a: 1 });
       const hostile = {};
       Object.defineProperty(hostile, "0", {
@@ -2370,7 +2370,7 @@ describe("K11-R6-VAL-05 an unremovable index shadow degrades to a refusal, never
    */
   test("the refusal is located, the bytes are never wrong, and the borrowed slots are handed back", () => {
     const probe = `
-      const { canonicalize } = await import("./packages/kernel/src/index.ts");
+      const { canonicalize } = await import("./packages/sdk/src/internal/value-capture.ts");
       const clean = canonicalize({ a: 1 });
       Object.defineProperty(Array.prototype, "0", {
         configurable: false,

@@ -7,7 +7,7 @@
  *   unit counts at or below B; one byte more is refused by the byte stop, not the meter.
  * - KC3-4 (K12C1-R8-VALUE-DEPTH-01): review 08's refused family charges the same per-position work at
  *   depths 2, 16 and 31, by meter counts and by wrapped engine-operation counts, and stops at B + 1; eight
- *   such roots from a visible caller with no grant end in `unauthorized_submission` with nothing changed.
+ *   such SDK roots stop independently without a core call. Core byte authority witnesses are separate.
  * - KC3-1 runtime oracle: every wrapped engine operation is accounted for by the units charged, so an
  *   unmetered observation, a weakened charge or extra helper work shows up as a mismatch.
  *
@@ -20,11 +20,11 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
-import { ExecutionCoordinator } from "../src/index.ts";
-import { BOUNDARY_LIMITS, CAPTURE_WORK_BUDGET, captureWithWork, type CaptureWork, type ValueIssue } from "../src/values.ts";
+import { ExecutionCoordinator } from "../../kernel/tests/binding-facade.ts";
+import { BOUNDARY_LIMITS, CAPTURE_WORK_BUDGET, captureWithWork, type CaptureWork, type ValueIssue } from "../src/internal/value-capture.ts";
 import { inWrappedChild, type OperationCounts } from "./capture-instruments.ts";
-import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
-import { assertOnlyRefusal } from "./refusal-diagnostics-fixture.ts";
+import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "../../kernel/tests/harness.ts";
+import { assertOnlyRefusal } from "../../kernel/tests/refusal-diagnostics-fixture.ts";
 
 const B = 3 * BOUNDARY_LIMITS.canonicalBytes;
 const work = (value: unknown): CaptureWork => captureWithWork(value).work;
@@ -300,12 +300,12 @@ describe("KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on ne
 
   test("each of the eight eager Outcome roots does the work of one direct capture, no more (packet review BM-03)", () => {
     // In one wrapped child: a direct capture of review 08's family (depth 2) stops at B + 1, and the
-    // eight-root Outcome from a visible caller with no grant runs the Proxy test exactly eight times as
+    // eight independent SDK captures runs the Proxy test exactly eight times as
     // often (every value of this family is an object, so the Proxy test runs once per completed visit),
-    // over the envelope work of the same Outcome whose eight roots are a small refused value (one foreign
+    // over the same eight captures of a small refused value (one foreign
     // object in an array), measured the same way.
-    const observed = inWrappedChild<{ direct: { units: number; stop: string; isProxy: number; prototype: number }; small: { isProxy: number; prototype: number }; outcome: { classification: string; isProxy: number; prototype: number }; control: { classification: string; isProxy: number; prototype: number } }>(`
-      const h = await import(${JSON.stringify(new URL("./harness.ts", import.meta.url).href)});
+    const observed = inWrappedChild<{ direct: { units: number; stop: string; isProxy: number; prototype: number }; small: { isProxy: number; prototype: number }; outcome: { acceptedRoots: number; isProxy: number; prototype: number }; control: { acceptedRoots: number; isProxy: number; prototype: number } }>(`
+      const h = await import(${JSON.stringify(new URL("../../kernel/tests/harness.ts", import.meta.url).href)});
       const foreign = Object.create(null);
       const row = Array.from({ length: 4096 }, () => Object.create(foreign));
       const root = Array(256).fill(row);
@@ -316,21 +316,12 @@ describe("KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on ne
       reset();
       values.captureWithWork(small);
       const smallCounts = snapshot();
-      const who = h.caller("depth");
-      const driver = h.recordingDriver();
-      const coordinator = new kernel.ExecutionCoordinator({ driver });
-      const { executionId } = h.accepted(coordinator.createExecution(who, h.createRequest()));
-      const open = h.accepted(coordinator.dispatch(who, executionId, { bound: 1 }));
       const submit = (value) => {
-        const proposal = h.outcomeFor(executionId, open, {
-          progress: value,
-          emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: "e" + index, value })),
-          next: { step: "complete", result: value },
-        });
         reset();
-        const answer = coordinator.submitOutcome(h.observer("visible"), proposal, undefined);
+        let acceptedRoots = 0;
+        for (let root = 0; root < 8; root++) if (values.canonicalize(value).ok) acceptedRoots++;
         const counted = snapshot();
-        return { classification: answer.ok ? "accepted" : answer.error.classification, isProxy: counted.isProxy, prototype: counted.prototype };
+        return { acceptedRoots, isProxy: counted.isProxy, prototype: counted.prototype };
       };
       emit({
         direct: { units: direct.work.units, stop: direct.work.stop, isProxy: directCounts.isProxy, prototype: directCounts.prototype },
@@ -341,34 +332,24 @@ describe("KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on ne
     `, { timeout: 600_000 });
     assert.equal(observed.direct.stop, "work");
     assert.equal(observed.direct.units, B + 1);
-    assert.equal(observed.control.classification, "unauthorized_submission");
-    assert.equal(observed.outcome.classification, "unauthorized_submission");
+    assert.equal(observed.control.acceptedRoots, 0);
+    assert.equal(observed.outcome.acceptedRoots, 0);
     assert.equal(observed.outcome.isProxy - observed.control.isProxy, 8 * (observed.direct.isProxy - observed.small.isProxy));
     assert.equal(observed.outcome.prototype - observed.control.prototype, 8 * (observed.direct.prototype - observed.small.prototype));
   });
 
-  test("eight such roots from a visible caller with no grant: unauthorized_submission, nothing changed", () => {
-    const who = caller("depth");
-    const driver = recordingDriver();
-    const kernel = new ExecutionCoordinator({ driver });
-    const { executionId } = accepted(kernel.createExecution(who, createRequest()));
-    const open = accepted(kernel.dispatch(who, executionId, { bound: 1 }));
-    const grant = submissionFor(driver, open.activationId);
+  test("eight wrapper roots each stop at their own budget before any core call", () => {
     const root = depthFamily(31);
-    const proposal = outcomeFor(executionId, open, {
-      progress: root,
-      emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: `e${index}`, value: root })),
-      next: { step: "complete", result: root },
-    });
-    const before = accepted(kernel.inspect(who, executionId));
-    const delivered = driver.seen.length;
-    const refusal = refused(kernel.submitOutcome(observer("visible"), proposal, undefined as never));
-    assert.equal(refusal.classification, "unauthorized_submission");
-    assert.doesNotMatch(refusal.reason, /unsupported_form|too_much_work|additional issues/, "no content diagnostic before authority");
-    assertOnlyRefusal(before, accepted(kernel.inspect(who, executionId)), refusal);
-    assert.equal(driver.seen.length, delivered, "no delivery");
-    // The exchange is still answerable.
-    accepted(kernel.submitOutcome(who, outcomeFor(executionId, open), grant));
+    let coreCalls = 0;
+    for (let index = 0; index < 8; index++) {
+      const { result, work: counted } = captureWithWork(root);
+      if (result.ok) coreCalls++;
+      assert.equal(result.ok, false);
+      assert.equal(counted.stop, "work");
+      assert.equal(counted.units, B + 1);
+      if (!result.ok) assert.equal(result.issues.at(-1)?.code, "too_much_work");
+    }
+    assert.equal(coreCalls, 0);
   });
 });
 

@@ -1,3 +1,5 @@
+import { jsonBytes } from "./binding-facade.ts";
+import { rawBytes } from "./binding-facade.ts";
 /**
  * K1.2 - Outcome acceptance: scope, replay, whole-envelope validation and one atomic commit.
  *
@@ -15,7 +17,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator, type ExecutionView, type OutcomeEnvelope, type SubmissionGrant } from "../src/index.ts";
+import { type ExecutionView, type SubmissionGrant } from "../src/index.ts";
+import { ExecutionCoordinator, type OutcomeEnvelope } from "./binding-facade.ts";
 import { accepted, caller, createRequest, outcomeFor, recordingDriver, refused, submissionFor, type RecordingDriver } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
@@ -170,7 +173,7 @@ describe("K1.2-C2 an exact duplicate replays; anything else under an accepted id
       ["a different epoch", { ...envelope, writerEpoch: 2 }],
       // Content that could not be accepted now cannot equal what was accepted: the lookup precedes
       // validation (OA-2), so this is a conflict, not a malformed envelope.
-      ["an invalid value", { ...envelope, progress: Number.NaN }],
+      ["an invalid value", { ...envelope, progress: rawBytes("1e400") }],
       ["a proposed Effect", { ...envelope, effects: [{ operation: "publish_report" }] }],
     ];
     for (const [label, variant] of variants) {
@@ -261,7 +264,7 @@ describe("K1.2-C3 a new proposal must answer the open exchange, or it is refused
     const base = outcomeFor(executionId, dispatched);
     const cases: [string, Record<string, unknown>, RegExp][] = [
       ["missing progress", { ...base, progress: undefined }, /progress missing_field/],
-      ["a non-boundary progress", { ...base, progress: { when: new Date(0) } }, /progress\.when unsupported_form/],
+      ["a non-finite byte progress", { ...base, progress: jsonBytes({ when: Infinity }) }, /progress\.when non_finite_number/],
       ["missing next", { ...base, next: undefined }, /next missing_field/],
       ["an unknown next step", { ...base, next: { step: "pause" } }, /next\.step unsupported_form/],
       ["an extra field on next", { ...base, next: { step: "continue", wait: {} } }, /next\.wait unknown_field/],
@@ -293,7 +296,7 @@ describe("K1.2-C3 a new proposal must answer the open exchange, or it is refused
     const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     const refusal = refused(
-      kernel.submitOutcome(author, { ...outcomeFor(executionId, dispatched), progress: Number.POSITIVE_INFINITY, next: { step: "pause" }, extra: 1 } as never, submissionFor(driver, dispatched.activationId)),
+      kernel.submitOutcome(author, { ...outcomeFor(executionId, dispatched), progress: jsonBytes(Number.POSITIVE_INFINITY), next: { step: "pause" }, extra: 1 } as never, submissionFor(driver, dispatched.activationId)),
     );
     assert.match(refusal.reason, /progress non_finite_number/);
     assert.match(refusal.reason, /next\.step unsupported_form/);

@@ -1,12 +1,9 @@
 # Owner progress summary
 
-Snapshot: checked 2026-10-19 against remote main `b976f3a3761e4f130aa1eb683cb3eb1799e3417a`, the merge of
-K1.1-correction-03 (PR #48) onto `7af0cd11` (PR #47, the known-limitations register). K1.1-correction-03's
-accepted H is `4b121d7ba665182b22857f049c05f019f25d0c65`, payload C is
-`2bf220e9e426c810f2505fa2d74d70197807e584`, independent review 03 is recorded at
-`06ec8f25025d1d7c8d4ad020644fd787c6f41d62`, and acceptance record A is
-`0137dc0df27824b9f821f92f2045a2f3126cd835`. Its [cleanup](work/K1.1-correction-03/cleanup-01.md) is
-complete and it is [integrated](work/K1.1-correction-03/integration-01.md). The
+Snapshot: checked 2026-10-22 against remote main `8f487f8159e17c1af790f3a235b167ed23b2a0fa` (PR #52, the
+TOOLS-02A receipt). BINDING-01's accepted H is `b7a24c79d547958c419b01e615e859f94ca3132b` and its payload C is
+`da945d3f8ba42f6d1ec6d5e3bcd74ae6a604502f`. Its [cleanup](work/BINDING-01/cleanup-01.md) is complete and
+integration is pending the owner's merge. The
 [status ledger](007-work-packets.md) and linked records own exact acceptance, integration and release
 identities.
 
@@ -17,14 +14,15 @@ identities.
 | Repository cleanup and planning | DOCS-CLEANUP-01 and PLAN-01 accepted, integrated and owner-closed; the archive is kept locally only, by owner choice, and was re-verified on 2026-10-02 |
 | Value-capture refusal bound | K1.1-correction-02 accepted, integrated and owner-closed; K1.1-correction-03 restores its V-D1 claim as a metered bound |
 | K1.2 Outcome acceptance | K1.2 and its cumulative correction K1.2-correction-01 accepted, integrated and owner-closed; the earlier H14 integration hold is lifted |
-| Held value-capture claims | Environment-independent canonical bytes, V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)), for BINDING-01. The V-D1 and classification holds were released on 2026-10-19 ([hold release](work/K1.1-correction-03/hold-release-01.md)) |
+| Held value-capture claims | Environment-independent canonical bytes, V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)). BINDING-01's acceptance makes its narrowed core claim eligible for owner release; it is not released. The V-D1 and classification holds were released on 2026-10-19 ([hold release](work/K1.1-correction-03/hold-release-01.md)) |
 | DESIGN-AUDIT-01 | Accepted, integrated and owner-closed. Owner [decision-01](work/DESIGN-AUDIT-01/decision-01.md) adopts CORE as the target direction and answers PROXY-01 (refuse every Proxy). [Decision-02](work/DESIGN-AUDIT-01/decision-02.md) gives the wrapper to the SDK, moved in stages |
-| BINDING-01, COORD-REFACTOR-01 | Planned; not released |
+| BINDING-01 | Independently accepted at H above; integration pending the owner's merge |
+| COORD-REFACTOR-01 | Planned; not released |
 | TOOLS-01 | Independently accepted at H above; integrated at `8f829003` (PR #45) |
 | TOOLS-02 | Planned remaining corpus extraction; not released; acceptance and integration required before K1.4 acceptance |
 | TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
 | K1.1-correction-03 | Independently accepted at H above; integrated at `b976f3a3` (PR #48) |
-| Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-13) under 006 working principle 6 |
+| Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-14) under 006 working principle 6 |
 | K1.3 | Planned; not released |
 | K1 / E1 | Open; no E1 gate result |
 
@@ -175,10 +173,27 @@ Status: independently accepted at H `4b121d7b` and integrated at `b976f3a3` (PR 
   others) are still accepted as plain data (L-08). A Proxy request envelope can still run caller code
   between root captures (L-09).
 - The in-process binding has a cooperative contract; it is no defence against hostile code in the same
-  process (L-02). V-ENV stays held for BINDING-01.
+  process (L-02). V-ENV stays held; BINDING-01 (below) makes its core claim eligible for release.
 - The static checks are bounded syntactic guards, and mutation credit covers a declared assertion
   vocabulary only (L-11, L-12). The reviewer's run of the full verify failed on a census difference,
   which TOOLS-02 owns.
+
+**A bytes-only Kernel value core.** BINDING-01 answered whether the Kernel can admit values without
+trusting caller objects or the globals present at call time. The private Kernel now:
+
+- takes each value root as a `Uint8Array`, copied into Kernel-owned storage on entry;
+- validates it with its own strict canonical parser, which refuses invalid UTF-8, duplicate keys and any
+  spelling other than the canonical one, using intrinsics captured at load;
+- produces bytes identical to the earlier `canonicalize@3.0.0` identity over the accepted corpus;
+- has an internal transport adapter that refuses any root over 8 MiB before decoding it.
+
+Live-value capture, with its Proxy and brand refusals and its work meter, moved unchanged into
+`packages/sdk` as an internal, unexported wrapper.
+
+Status: independently accepted at H `b7a24c79`; integration is pending the owner's merge. Limits: the wrapper
+keeps K1.1-correction-03's cooperative limits (017 L-04–L-09) and is Node-only. Realm hardening is not done
+(L-01, narrowed to the wrapper). The decoder has no metered cost bound (L-14). The supported SDK surface is
+unchanged until K1.4. The V-ENV hold stays until the owner releases it.
 
 **A smaller current documentation tree.** DOCS-CLEANUP-01 answered how to preserve closed evidence
 while making current guidance easier to find. The sealed archive and relocated active fixtures now
@@ -205,21 +220,19 @@ All successors remain unreleased. The dependencies below come from 007 and becom
 owner release only after their prerequisites are accepted and integrated. Briefs follow 006 working
 principle 6: build right what later work builds on, and record the rest in [017](017-known-limitations.md).
 
-1. **BINDING-01** depends on TOOLS-01 and correction-03, both accepted and integrated; it needs an owner release. It owns the canonical-bytes core, the
-   8 MiB transport adapter and the capture wrapper moved into the SDK as an internal module, plus the
-   V-ENV hold. Moving capture out of the Kernel also retires most of 017's L-04–L-09. It must classify
-   the 853 rule-1 V-ENV entries. Runtime evidence, such as evaluating Node's `--frozen-intrinsics`, is a
-   candidate approach for its brief, not an owner-selected design or evidence that the hold can be
-   lifted. The supported SDK surface changes at K1.4, as
-   [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies.
+1. **BINDING-01** is accepted; integration waits for the owner's merge. Releasing invalidation-03's V-ENV
+   hold for the narrowed core claim is a separate owner decision. The supported SDK surface changes at
+   K1.4, as [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies.
 2. **TOOLS-02** also depends on TOOLS-01. It owns the remaining extraction, mention triage and
    mutation-family work, target-set assertion-provenance design, and the transferred origins.
    These include [choice 11](work/TOOLS-01/owner-choice-11.md)'s three origins, the limited member
    `kernel-landing-zone.test.ts:1200:9@deedd7950724`, the origins K1.1-correction-03 transferred, and
-   review 03's three P3 observations. TOOLS-02A has already closed KC3-R3-CENSUS-01: the composed verify now passes in a clean checkout and in CI. Hold-register entries held under the now-released V-D1 and
+   review 03's three P3 observations. TOOLS-02A has already closed KC3-R3-CENSUS-01: the composed verify now passes in a clean checkout and in CI. From BINDING-01 it takes the 853 rule-1 V-ENV
+   hold-register entries and the reopened origins, without new credit, and three P3 items listed in its
+   [cleanup](work/BINDING-01/cleanup-01.md). Hold-register entries held under the now-released V-D1 and
    classification claims need revalidation. TOOLS-02 must be accepted and integrated before K1.4
    acceptance; 007 does not make it a prerequisite for BINDING-01 or K1.3.
-3. **COORD-REFACTOR-01**, after BINDING-01, then **K1.3** retain their planned sequence. They have no
+3. **COORD-REFACTOR-01**, after BINDING-01 is integrated, then **K1.3** retain their planned sequence. They have no
    release from this cleanup.
 4. **K1.4** owns the SDK host bridge and full K1/E1 gate. The external dependency is unchanged:
    before K1.3 closes, the benchmark owner must confirm that E1 fixtures drive the new supported

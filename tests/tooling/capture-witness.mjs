@@ -1,7 +1,7 @@
 // Current observations superseded by decision-01. These are held evidence, not legal outcomes.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { canonicalize } from '../../packages/kernel/src/values.ts';
+import { canonicalize } from '../../packages/sdk/src/internal/value-capture.ts';
 const id = process.argv[2];
 const entry = JSON.parse(readFileSync('tests/fixtures/packet-tools/mutations.json', 'utf8'))
   .cases.find(row => row.id === id);

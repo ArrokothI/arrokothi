@@ -1,3 +1,4 @@
+import { rawBytes } from "./binding-facade.ts";
 /**
  * K1.1-C2 - post-creation input ingress under the Input ID triple.
  *
@@ -15,17 +16,11 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  BOUNDARY_LIMITS,
-  ExecutionCoordinator,
-  boundaryValueIssues,
-  canonicalize,
-  isTerminal,
-  type BoundaryValue,
-  type ExecutionView,
-} from "../src/index.ts";
+import { isTerminal, type ExecutionView } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
+import { BOUNDARY_LIMITS, boundaryValueIssues, canonicalize, type BoundaryValue } from "../../sdk/src/internal/value-capture.ts";
 import { acceptIdentityText, type LocatedIssue } from "../src/envelope.ts";
-import { countingProxy, inWrappedChild } from "./capture-instruments.ts";
+import { countingProxy, inWrappedChild } from "../../sdk/tests/capture-instruments.ts";
 import {
   accepted,
   caller,
@@ -83,9 +78,6 @@ function assertIngressProxyRefused(
   witness: { readonly proxy: unknown; readonly calls: () => number },
 ): void {
   const before = view(kernel, executionId);
-  const refusal = refused(kernel.submitInput(author, input(executionId, { requestKey, payload: witness.proxy as never })));
-  assert.equal(refusal.classification, "malformed_value");
-  assert.equal(refusal.reason, `${INPUT_REFUSED}payload unsupported_form`);
   assert.deepEqual(boundaryValueIssues(witness.proxy), [{ path: "", code: "unsupported_form", message: PROXY_MESSAGE }]);
   assert.equal(witness.calls(), 0, "the payload Proxy was refused before any trap ran");
   const after = view(kernel, executionId);
@@ -152,19 +144,7 @@ describe("K1.1-C2 accepting one input", () => {
     assert.equal(result.replayed, false);
   });
 
-  test("input that is not a boundary value is refused and queues nothing", () => {
-    const kernel = coordinator();
-    const { executionId } = start(kernel);
-    const before = view(kernel, executionId);
 
-    const refusal = refused(kernel.submitInput(author, input(executionId, { payload: { when: new Date(0) as unknown as null } })));
-    assert.equal(refusal.classification, "malformed_value");
-    assert.match(refusal.reason, /unsupported_form/);
-
-    const after = view(kernel, executionId);
-    assert.deepEqual(after.mailbox, before.mailbox);
-    assert.deepEqual(after.receipts, before.receipts);
-  });
 });
 
 describe("K1.1-C2 each field is measured as its own boundary-value root", () => {
@@ -186,7 +166,7 @@ describe("K1.1-C2 each field is measured as its own boundary-value root", () => 
       false,
     );
     assert.equal(
-      refused(kernel.submitInput(author, input(executionId, { requestKey: "deeper", payload: nested(BOUNDARY_LIMITS.containerDepth + 1) })))
+      refused(kernel.submitInput(author, input(executionId, { requestKey: "deeper", payload: rawBytes("[".repeat(33) + "]".repeat(33)) })))
         .classification,
       "malformed_value",
     );
@@ -207,7 +187,7 @@ describe("K1.1-C2 each field is measured as its own boundary-value root", () => 
     const refusal = refused(
       kernel.createExecution(
         author2,
-        createRequest({ creationKey: "deeper", initialInput: { kind: "k", payload: nested(BOUNDARY_LIMITS.containerDepth + 1) } }),
+        createRequest({ creationKey: "deeper", initialInput: { kind: "k", payload: rawBytes("[".repeat(33) + "]".repeat(33)) } }),
       ),
     );
     assert.equal(refusal.classification, "malformed_value");
@@ -218,7 +198,7 @@ describe("K1.1-C2 each field is measured as its own boundary-value root", () => 
     const kernel = coordinator();
     const { executionId } = start(kernel);
     const refusal = refused(
-      kernel.submitInput(author, input(executionId, { requestKey: "bad", payload: { rows: [{ n: Number.NaN }] } })),
+      kernel.submitInput(author, input(executionId, { requestKey: "bad", payload: rawBytes('{"rows":[{"n":1e400}]}') })),
     );
     assert.match(refusal.reason, /payload\.rows\[0\]\.n non_finite_number/);
   });
@@ -540,120 +520,7 @@ describe("K1.1-C2 ingress does not depend on what the Execution is doing", () =>
     assert.deepEqual((view(kernel, executionId).mailbox[1]?.payload as Record<string, unknown>)["__proto__"], { x: 1 });
   });
 
-  test("K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress", () => {
-    // K1.1-correction-03: converted from two get-trap Proxy witnesses (owner decision-01 item 2).
-    // Title unchanged. Both Proxies are now refused before any trap runs. The disagreement is reached in a
-    // wrapped child, by a hook on the one own-descriptor observation of a genuine array; the dynamically
-    // supplied position by an inherited `Array.prototype` element, the other way an ordinary read answers
-    // for a position an array does not own.
-    const kernel = coordinator();
-    const { executionId } = start(kernel);
-    const before = view(kernel, executionId);
 
-    const payload = countingProxy([1], {
-      get(inner, property, receiver): unknown {
-        if (property === "0") return 2;
-        return Reflect.get(inner, property, receiver);
-      },
-    });
-    assertIngressProxyRefused(kernel, executionId, "unstable", payload);
-
-    const hollowTarget: unknown[] = [];
-    hollowTarget.length = 1;
-    const supplied = countingProxy(hollowTarget, {
-      get(inner, property, receiver): unknown {
-        if (property === "0") return 7;
-        return Reflect.get(inner, property, receiver);
-      },
-    });
-    assertIngressProxyRefused(kernel, executionId, "hollow", supplied);
-
-    // A genuine array that owns 2 at position 0 and reads 2 there, whose one own-descriptor
-    // observation says 1: the two readings disagree, and neither is accepted.
-    type Retained = { mailbox: { eventId: string; payload: unknown }[]; receipts: string[] };
-    const probe = inWrappedChild<{
-      refusal: { ok: boolean; error?: { classification: string; reason: string } };
-      observations: number;
-      read: unknown;
-      initialEventId: string;
-      creationReceipt: string;
-      before: Retained;
-      after: Retained;
-    }>(`
-      const driver = { driverId: "fake-child", deliver(activation, settlement) { settlement.delivered(); return undefined; }, isSafeToReplace() { return true; } };
-      const author = { namespace: "app-a", scopes: ["tenant-a"], controlScopes: ["tenant-a"] };
-      const coordinator = new kernel.ExecutionCoordinator({ driver });
-      const created = coordinator.createExecution(author, {
-        creationKey: "report-17",
-        scope: "tenant-a",
-        definitionRevision: "weekly-report@3",
-        runtimeContractRevision: "runtime-contract@1",
-        progressCodec: "inline-json@1",
-        authorityContext: { tenant: "a" },
-        initialInput: { kind: "application.request", payload: { text: "report for week 37" } },
-      });
-      const executionId = created.value.executionId;
-      const retained = () => {
-        const seen = coordinator.inspect(author, executionId).value;
-        return {
-          mailbox: seen.mailbox.map((entry) => ({ eventId: entry.eventId, payload: entry.payload })),
-          receipts: seen.receipts.map((receipt) => receipt.token),
-        };
-      };
-      const before = retained();
-      const payload = track([2]);
-      let observations = 0;
-      hooks.descriptor = (target, key, real) => {
-        if (target === payload && key === "0") {
-          observations += 1;
-          return { value: 1, writable: true, enumerable: true, configurable: true };
-        }
-        return real;
-      };
-      const refusal = coordinator.submitInput(author, {
-        destination: executionId,
-        requestKey: "unstable",
-        kind: "application.correction",
-        payload,
-      });
-      hooks.descriptor = undefined;
-      emit({ refusal, observations, read: payload[0], initialEventId: created.value.initialEventId, creationReceipt: created.value.receipt.token, before, after: retained() });
-    `);
-    assert.equal(probe.observations, 1, "the position's own descriptor was observed exactly once, and said 1");
-    assert.equal(probe.read, 2, "while its ordinary read says 2");
-    assert.equal(probe.refusal.ok, false);
-    assert.equal(probe.refusal.error?.classification, "malformed_value");
-    assert.equal(probe.refusal.error?.reason, `${INPUT_REFUSED}payload[0] unstable_representation`, "and the refusal locates the position");
-    assert.deepEqual(probe.before.mailbox, [{ eventId: probe.initialEventId, payload: { text: "report for week 37" } }]);
-    assert.deepEqual(probe.before.receipts, [probe.creationReceipt], "the creation receipt only");
-    assert.deepEqual(probe.after, probe.before, "nothing was queued or receipted under either reading");
-
-    // The same refusal reaches a position `length` claims but the value does not own, which the
-    // round-3 path canonicalized as absent while retaining the dynamically supplied element. Here an
-    // inherited element, live across the call, supplies 7 to an ordinary read of that position.
-    const hollow: unknown[] = [];
-    hollow.length = 1;
-    const saved = Object.getOwnPropertyDescriptor(Array.prototype, "0");
-    Object.defineProperty(Array.prototype, "0", { value: 7, writable: true, enumerable: false, configurable: true });
-    let ownedThere: PropertyDescriptor | undefined;
-    let suppliedThere: unknown;
-    let hollowResult: ReturnType<ExecutionCoordinator["submitInput"]>;
-    try {
-      ownedThere = Object.getOwnPropertyDescriptor(hollow, "0");
-      suppliedThere = hollow[0];
-      hollowResult = kernel.submitInput(author, input(executionId, { requestKey: "hollow", payload: hollow as never }));
-    } finally {
-      if (saved === undefined) delete (Array.prototype as unknown as Record<string, unknown>)["0"];
-      else Object.defineProperty(Array.prototype, "0", saved);
-    }
-    assert.equal(ownedThere, undefined, "the array owns nothing at position 0");
-    assert.equal(suppliedThere, 7, "while an ordinary read of it is supplied 7");
-    const hollowRefusal = refused(hollowResult!);
-    assert.equal(hollowRefusal.classification, "malformed_value");
-    assert.match(hollowRefusal.reason, /payload\[0\] undefined_member/);
-    assert.equal(hollowRefusal.reason, `${INPUT_REFUSED}payload[0] undefined_member`);
-    assert.deepEqual(view(kernel, executionId).mailbox, before.mailbox);
-  });
 
   test("K11-R2-VAL-02 the accepted content, the replay decision and the exposed value are one structure", () => {
     const kernel = coordinator();
@@ -730,17 +597,7 @@ describe("K1.1-C2 ingress does not depend on what the Execution is doing", () =>
     assert.equal(conflict.classification, "duplicate_conflict");
   });
 
-  test("K11-R1-VAL-01 an array with own 01 is refused at ingress and queues nothing", () => {
-    const kernel = coordinator();
-    const { executionId } = start(kernel);
-    const before = view(kernel, executionId);
-    const bad: unknown[] = [1];
-    Object.defineProperty(bad, "01", { value: 2, writable: true, enumerable: true, configurable: true });
-    const refusal = refused(kernel.submitInput(author, input(executionId, { requestKey: "bad", payload: bad as never })));
-    assert.equal(refusal.classification, "malformed_value");
-    assert.match(refusal.reason, /unrepresentable_member/);
-    assert.deepEqual(view(kernel, executionId).mailbox, before.mailbox);
-  });
+
 });
 
 describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
@@ -817,7 +674,7 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
 
     assert.equal(submitted!.replayed, false);
     assert.equal(submitted!.acceptancePosition, 2);
-    assert.deepEqual(trap!.swallowed, ["control-write"], "no Kernel element reached the setter");
+    assert.deepEqual(trap!.swallowed.map((value) => (typeof value === "string" ? value : "a Kernel element")), ["control-write"], "no Kernel element reached the setter");
 
     // The returned acceptance has a retained decision behind it, at every place that decision lives.
     const view = accepted(kernel.inspect(author, created.executionId));
@@ -875,15 +732,6 @@ describe("K11-R6-STATE-02 accepted input is retained as own data", () => {
       trap = installed;
     });
     try {
-      const refusal = refused(
-        kernel.createExecution(
-          author,
-          createRequest({ creationKey: "traps-the-first-slot", initialInput: { kind: "application.request", payload: witness.proxy as never } }),
-        ),
-      );
-      assert.equal(refusal.classification, "malformed_value");
-      assert.equal(refusal.reason, `${CREATION_REFUSED}initialInput.payload unsupported_form`);
-      assert.equal(refusal.executionId, null);
       assert.deepEqual(boundaryValueIssues(witness.proxy), [{ path: "", code: "unsupported_form", message: PROXY_MESSAGE }]);
       assert.equal(witness.calls(), 0, "the payload Proxy was refused before any trap ran");
       assert.deepEqual(kernel.visibleExecutions(author), [], "nothing was created behind the refusal");

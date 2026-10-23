@@ -10,7 +10,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import { accepted, caller, createRequest, outcomeFor, recordingDriver, submissionFor } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");

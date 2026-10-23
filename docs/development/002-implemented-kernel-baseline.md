@@ -16,17 +16,21 @@ receipts, batch reservation, asynchronous Driver dispatch, ordinary redelivery a
 and Outcome acceptance with replay and conflict, whole-batch acknowledgment, progress, Emissions,
 `continue`/`complete`/`fail`, terminal disposition of unprocessed input, authorized takeover and
 inspectable recovery holds ([Outcome acceptance API](#outcome-acceptance-api)). It refuses new
-ordinary input to a terminal destination. Boundary validation, limits and sealing are local; canonical bytes use the
-approved unmodified `canonicalize@3.0.0`. In-process capture keeps each root's canonical byte count
-while it reads and stops once that count passes the 1 MiB limit, so a live object that repeats one
-shared member is refused without being expanded in full. Within one visit, a string or member name
-is read only until one scalar value past the length limit, and a container's own-names listing is
-classified only until it exceeds what an accepted container owns (K1.1-correction-02).
-Each root also carries a work meter and stops once it passes the budget every acceptable value fits
-within. Capture refuses every Proxy before observing it, and refuses before listing their keys the
-built-ins whose internal slots a side-effect-free engine test detects (K1.1-correction-03). The kinds no
-such test detects are a declared limit, listed under [value refusal diagnostics](#value-refusal-diagnostics).
-[Value refusal diagnostics](#value-refusal-diagnostics) also bound diagnostic retention and work during capture. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
+ordinary input to a terminal destination. BINDING-01 changes every value root to canonical
+`Uint8Array` input, copied before strict validation. The project-written core parser/encoder checks
+UTF-8, duplicates, exact JCS spelling and all four limits. Its intrinsics are captured at module load.
+Readers receive deeply frozen values parsed from the owned bytes; the private owned record retains
+bytes, text and count. Primitive identity fields keep their existing string form and limits.
+
+The unchanged live-object capture implementation and `canonicalize@3.0.0` dependency now live in
+`packages/sdk/src/internal/`, outside the public SDK graph and without a Kernel import. The core has
+no JCS or SDK dependency. The wrapper retains its byte stop, meter, Proxy/internal-slot refusals and
+R1–R4, described below. The internal `canonicalizeJsonText` adapter caps its input at 8 MiB before
+copying, checks decoded duplicates and sends its canonical output through strict core validation;
+future transports must cap accumulation/decompression themselves. Decoder metering remains L-14.
+
+This is the BINDING-01 candidate implementation, not independent acceptance or a hold release.
+[007](007-work-packets.md) owns that status. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
 reports delivery through the per-delivery Kernel-owned `DeliverySettlement` capability while carrying the per-attempt `SubmissionGrant`; the Kernel never observes a Driver-returned
 Promise. The settlement lifetime is one physical delivery; the submission lifetime is one Runtime attempt, as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) owns.
 
@@ -37,7 +41,7 @@ that bridge.
 
 ## Value refusal diagnostics
 
-`values.ts` preserves its exact accepted-value capture, canonical bytes, four limits, single
+`packages/sdk/src/internal/value-capture.ts` preserves its exact accepted-value capture, canonical bytes, four limits, single
 observations and byte-budget stopping rules. For each refused root it retains at most eight details
 with relative paths of at most 128 printable ASCII units (otherwise `<omitted>`) and messages of at
 most 1,024 printable ASCII units (otherwise `<message omitted>`). Paths are bounded before member
@@ -50,13 +54,12 @@ Diagnostic type labels use only null/typeof classification. They do not inspect 
 message, array shape or a thrown value's properties. This removes the diagnostic prototype-chain
 walk on every refused foreign object and structural-observation failure.
 
-`canonicalize`, `boundaryValueIssues`, creation/ingress and Outcome/control consumers preserve these
-counts. Creation/ingress render suffix multiplicity explicitly; Outcome/control rendering composes
+`canonicalize` and `boundaryValueIssues` in the internal wrapper preserve these counts. The byte core reports its first located byte-validation issue per root; envelope diagnostics keep their existing aggregation and authority order. Creation/ingress render suffix multiplicity explicitly; Outcome/control rendering composes
 the weighted roots into DEC-5's first eight details and exact remaining counts without expansion.
 No aggregate semantic size cap is introduced. This records the in-process choice at
 [values' diagnostic-storage marker](../../mental-model/concepts/values.md#fixed-semantic-limits).
 
-**Work meter (K1.1-correction-03).** V-D1 is a metered-work bound for this binding
+**SDK wrapper work meter (K1.1-correction-03).** V-D1 is a metered-work bound for capture
 ([decision-05](work/K1.2/decision-05.md); the meaning is stated once in
 [values](../../mental-model/concepts/values.md#fixed-semantic-limits)). Each `accept` call creates one
 capture state, so every root has its own meter. Units, each charged before its work except a listing,
@@ -84,7 +87,7 @@ costliest acceptance found is a root array of four mid arrays of 4,096 chains, e
 arrays around `0`, plus a partial mid array of 528 chains. It is 1,048,555 bytes and costs exactly
 3,094,930 units, 98.4% of B. The 50,798-unit gap is open; the exact maximum is a large integer
 optimization. `capture-work.test.ts` asserts this witness and the other at-limit families exactly.
-`encode` runs only on an accepted, Kernel-owned snapshot and is outside the meter. It adds the same
+`encode` runs only on an accepted, wrapper-owned snapshot and is outside the meter. It adds the same
 work to every acceptance and none to any refusal.
 
 A charge that passes B stops reading the root and records one root-located issue, which is not
@@ -110,13 +113,12 @@ future JavaScript. Verification declares the 38-shape small corpus and the full 
 condition D2 permits a declared verify subset if needed to keep the gate within about two hours,
 with the full C run recorded separately. One alignment is the exception: when the stop lands on a refused
 position's own diagnostic unit, that position was examined but the stop issue takes its place, so the
-diagnostic units exceed the counted occurrences by one (`capture-work.test.ts` pins it). `too_much_work` is an addition to the exported `ValueIssueCode`
-type, which `index.ts` re-exports as a type from the private `@arrokothi/kernel` package. Review 08's
+diagnostic units exceed the counted occurrences by one (`capture-work.test.ts` pins it). `too_much_work` remains an internal wrapper issue code; the core does not run that meter. Review 08's
 family (`K12C1-R8-VALUE-DEPTH-01`: 4,096 × 256 foreign objects at nesting depth) now stops at B + 1
 units, after 786,025 refused positions at depth 2 and 785,967 at depth 31 (owner design check Q1,
 under decision-05 item 2). Per refused position it charges the same units at every depth, because
-cycle detection uses a Kernel-created `Set` reached through load-time methods. That set never holds
-more than 32 entries. `captureWithWork` in `values.ts` returns the result with its per-kind counts.
+cycle detection uses a wrapper-created `Set` reached through load-time methods. That set never holds
+more than 32 entries. `captureWithWork` in the internal SDK capture module returns the result with its per-kind counts.
 Tests use it, and `index.ts` does not re-export it.
 
 **Proxy and internal-slot refusal.** Every Proxy, including revoked and callable ones, is refused at
@@ -135,10 +137,9 @@ built-in object whose content is kept in internal slots". A built-in with its ow
 prototype is still refused by the prototype check, unchanged. Arguments objects, module namespaces
 and raw JSON objects are refused even with their natural prototypes (design check Q4). This closes
 `SELF-K113-RAWJSON-01`: `JSON.rawJSON("1")` was accepted at base as `{"rawJSON":"1"}`. Detection
-never uses prototype identity, constructor names or `Symbol.toStringTag`. Identity text
-(`acceptIdentityText`) also tests for a Proxy first. A Proxy in an identity field is refused as
-"expected text that can name a request, received a Proxy" before `Array.isArray` could forward
-through its target chain. Every other label is unchanged.
+never uses prototype identity, constructor names or `Symbol.toStringTag`. Core identity text (`acceptIdentityText`) checks primitive type, well-formed UTF-16 and the string
+limit directly with captured intrinsics, without canonicalization. Its existing Proxy-first label
+is retained.
 
 **Declared limits.** The meter's per-unit constants rest on capture never running a trap of a
 value that is itself a Proxy and never invoking an accessor. Four residuals are outside them:
@@ -165,7 +166,7 @@ AsyncDisposableStack, Array, String and RegExp-string iterators, iterator helper
 objects, private-field platform classes, and Node's `KeyObject` and `CryptoKey`. This narrows the
 claim to detectable kinds. Request envelopes stay under the envelope rule, so an
 envelope accessor or Proxy can still run caller code in the Kernel between root captures.
-BINDING-01 owns that gap. Protection against hostile in-process code requires isolation or
+L-09 explicitly retains this behavior for core and wrapper; each core byte root is copied and validated as observed. Protection against hostile in-process code requires isolation or
 transport containment, not V-D1, and this binding provides neither CPU preemption nor physical
 containment. Decision-03/04 item 5's prohibition on Proxy refusal and decision-04 item 1's live-Proxy
 exclusion are superseded for capture by [DESIGN-AUDIT-01 decision-01](work/DESIGN-AUDIT-01/decision-01.md)
@@ -175,15 +176,18 @@ with zero trap calls.
 
 The byte stop and its exact charges, the four limits, exact accepted values and DEC-7 weights are
 unchanged. `capture-metering.test.ts` checks statically that capture observes caller values only
-through metered helpers, and that every other loop in `values.ts` carries its own cap. `capture-work.test.ts` compares wrapped engine operations with the units
+through metered helpers, and that every other loop in the SDK capture module carries its own cap. `capture-work.test.ts` compares wrapped engine operations with the units
 charged, and `capture-corpus.test.ts` runs the declared generated corpus. Timing is an observation
 only. The V-D1 claim, in this metered meaning with residuals R1–R4, and the classification claim for the
 detectable kinds are claimed again. The owner released the holds of
 [invalidation-02](work/K1.2/invalidation-02.md) and
 [DESIGN-AUDIT-01 invalidation-01](work/DESIGN-AUDIT-01/invalidation-01.md) on 2026-10-19
 ([hold release](work/K1.1-correction-03/hold-release-01.md)). The deliberate limits are listed in
-[known limitations](017-known-limitations.md). V-ENV ("ambient safety") stays held by
-[invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md) for BINDING-01.
+[known limitations](017-known-limitations.md). V-ENV stays held by [invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md) until owner release.
+BINDING-01's eligible core claim is limited to admission, parsed content and equality after trusted
+initialization: call-time binding replacement/shadowing cannot steer them. Wrapper stable-realm
+fidelity, pre-import poisoning and containment remain outside it. The 853 rule-1 held entries remain
+TOOLS-02 bookkeeping; no historical evidence is promoted by this relocation.
 
 Plain strings first receive a UTF-16 length precheck. More than twice the 65,536-scalar limit
 cannot fit even if every scalar uses a surrogate pair; refusing there avoids an engine flattening

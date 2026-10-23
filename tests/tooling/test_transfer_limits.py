@@ -334,15 +334,17 @@ class LimitTests(RepositoryFixture):
 class RepositoryLimitTests(RepositoryFixture):
     """The maintained manifest: owner choices 04, 05 and 11 pin their lists; owner choice 04's limit admits each
     extra through its only target record, design 06's two extras among them; owner choice 11 lists one member;
-    K1.1-correction-03 owner choices 01 and 02 pin their transferred origins and list further dispatch members."""
+    K1.1-correction-03 owner choices 01 and 02 and BINDING-01 design 01 pin later mechanical revalidation and unbound members."""
 
     def test_the_manifest_pins_its_lists_and_maps_every_extra(self):
         import json
         from test_target_tools import ROOT
         manifest = json.loads((ROOT / 'tests/fixtures/packet-tools/adoption.json').read_text())
         lists = {row['decision']: row for row in manifest['transfer_lists']}
-        self.assertEqual(sorted(lists), [LATER_DECISION, SECOND_DECISION, tool.LIMIT_DECISION,
-                                         'docs/development/work/TOOLS-01/owner-choice-05.md', tool.LISTED_DECISION])
+        binding_decision = 'docs/development/work/BINDING-01/design-01.md'
+        self.assertEqual(sorted(lists), sorted([LATER_DECISION, SECOND_DECISION, tool.LIMIT_DECISION,
+                                              'docs/development/work/TOOLS-01/owner-choice-05.md', tool.LISTED_DECISION,
+                                              binding_decision]))
         for decision, row in lists.items():
             listed = {item['origin'] for item in json.loads((ROOT / row['list']).read_text())}
             self.assertEqual(tool.digest((ROOT / row['list']).read_bytes()), row['sha256'])
@@ -355,11 +357,13 @@ class RepositoryLimitTests(RepositoryFixture):
             for extra in limit['extras']:
                 self.assertEqual([key for key, row in targets.items() if row.get('member') == extra['member']], [extra['target']])
         dispatch = {extra['member']: extra['target'] for extra in limits['artifact-73555fe668cc180905b1e49a']['extras']}
-        self.assertEqual({key: [targets[dispatch[key]]['declaration']['line'], targets[dispatch[key]]['declaration']['column']]
-                          for key in ('packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab',
-                                      'packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab')},
-                         {'packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab': [1535, 3],
-                          'packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab': [1604, 3]})
+        retained = 'packages/kernel/tests/dispatch.test.ts:1363:3@5a8d958ffdab'
+        self.assertEqual(targets[dispatch[retained]]['declaration'], {'line': 1462, 'column': 3})
+        # The removed wrapper-only assertion has no current target; its old binding is retained as history.
+        reopened = 'packages/kernel/tests/dispatch.test.ts:1426:3@5a8d958ffdab'
+        self.assertNotIn(reopened, dispatch)
+        attachment = json.loads((ROOT / 'docs/development/work/BINDING-01/design-01/reopened-bindings.json').read_text())
+        self.assertIn(reopened, json.dumps(attachment))
         pinned = {origin: limit['listed'] for origin, limit in limits.items() if 'listed' in limit}
         self.assertEqual(pinned, {'artifact-9fd619f5375d598ebb2b88aa': {
             'members': tool.LISTED_MEMBERS, 'sha256': tool.digest((ROOT / tool.LISTED_MEMBERS).read_bytes())}})
@@ -370,9 +374,17 @@ class RepositoryLimitTests(RepositoryFixture):
         # Owner choice 02 lists ten further refused members of the dispatch origin.
         second_list = SECOND_DECISION[:-len('.md')] + '/limited-members.json'
         second = {'decision': SECOND_DECISION, 'members': second_list, 'sha256': tool.digest((ROOT / second_list).read_bytes())}
-        self.assertEqual(later, {'artifact-73555fe668cc180905b1e49a': [entry, second], 'artifact-ea5444a6d42154e413fe0f2e': [entry]})
+        binding_list = binding_decision[:-len('.md')] + '/limited-members.json'
+        binding = {'decision': binding_decision, 'members': binding_list,
+                   'sha256': tool.digest((ROOT / binding_list).read_bytes())}
+        self.assertEqual(later, {'artifact-73555fe668cc180905b1e49a': [entry, second, binding],
+                                 'artifact-ea5444a6d42154e413fe0f2e': [entry, binding],
+                                 'artifact-9fd619f5375d598ebb2b88aa': [binding]})
         for path, expected in ((later_list, {'artifact-73555fe668cc180905b1e49a': 3, 'artifact-ea5444a6d42154e413fe0f2e': 21}),
-                               (second_list, {'artifact-73555fe668cc180905b1e49a': 10})):
+                               (second_list, {'artifact-73555fe668cc180905b1e49a': 10}),
+                               (binding_list, {'artifact-73555fe668cc180905b1e49a': 6,
+                                               'artifact-9fd619f5375d598ebb2b88aa': 13,
+                                               'artifact-ea5444a6d42154e413fe0f2e': 2})):
             counts = {}
             for item in json.loads((ROOT / path).read_text()):
                 counts[item['origin']] = counts.get(item['origin'], 0) + 1

@@ -1,3 +1,4 @@
+import { jsonBytes } from "./binding-facade.ts";
 /**
  * K12-R3-AUTH-02 - visibility alone cannot speak as the current Runtime attempt.
  *
@@ -20,11 +21,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  ExecutionCoordinator,
-  type ExecutionView,
-  type SubmissionGrant,
-} from "../src/index.ts";
+import { type ExecutionView, type SubmissionGrant } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import {
   accepted,
   caller,
@@ -421,9 +419,9 @@ describe("K12-R9 malformed coordinates crossed with authority failure and invali
     const { kernel, executionId, open } = openExecution("r9-case-b");
     const deep = deepProgress(40);
     const badContent = {
-      progress: deep,
+      progress: jsonBytes(deep),
       emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
-      next: { step: "fail", error: "\ud800" },
+      next: { step: "fail", error: jsonBytes("\ud800") },
     };
     const malformedClaims: [string, Record<string, unknown>][] = [
       ["missing epoch", (() => { const envelope: Record<string, unknown> = { writerEpoch: undefined }; return envelope; })()],
@@ -482,9 +480,9 @@ describe("K12-R9 entitled malformed and content-invalid attempts reach later val
     const deep = deepProgress(40);
     const envelope = {
       ...outcomeFor(executionId, open, {
-        progress: deep,
+        progress: jsonBytes(deep),
         emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
-        next: { step: "fail", error: "\ud800" },
+        next: { step: "fail", error: jsonBytes("\ud800") },
       }),
       writerEpoch: undefined,
     } as unknown as Parameters<typeof kernel.submitOutcome>[1];
@@ -512,7 +510,7 @@ describe("K12-R9 neighboring currency ordering: retired grant with stale exchang
     assert.equal(taken.writerEpoch, 2);
     const grant2 = submissionFor(driver, open.activationId);
     const staleBad = outcomeFor(executionId, open, {
-      progress: deepProgress(40),
+      progress: jsonBytes(deepProgress(40)),
       emissions: [{ emissionKey: "x", value: 1 }, { emissionKey: "x", value: 2 }],
     });
     // Retired grant with its own stale coordinates: stale, not unauthorized, no content leak.

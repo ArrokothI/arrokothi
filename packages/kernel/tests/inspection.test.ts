@@ -10,7 +10,9 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator, canonicalize, type BoundaryValue, type ExecutionView } from "../src/index.ts";
+import { type ExecutionView } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
+import { canonicalize, type BoundaryValue } from "../../sdk/src/internal/value-capture.ts";
 import {
   accepted,
   caller,

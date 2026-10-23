@@ -21,16 +21,9 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import {
-  BOUNDARY_LIMITS,
-  ExecutionCoordinator,
-  TERMINAL_STATES,
-  boundaryValueIssues,
-  isTerminal,
-  type ExecutionState,
-  type Receipt,
-  type RefusalRecord,
-} from "../src/index.ts";
+import { TERMINAL_STATES, isTerminal, type ExecutionState, type Receipt, type RefusalRecord } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
+import { BOUNDARY_LIMITS, boundaryValueIssues } from "../../sdk/src/internal/value-capture.ts";
 import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");

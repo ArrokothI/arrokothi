@@ -63,13 +63,19 @@ export interface Hooks {
   exitCallback(): void;
 }
 
-const AVAILABLE = { definitionRevisions: ["weekly-report@3"], runtimeContractRevisions: ["runtime-contract@1"], progressCodecs: ["inline-json@1"] };
-const MISSING_DEFINITION = { ...AVAILABLE, definitionRevisions: [] as string[] };
-const MISSING_CODEC = { ...AVAILABLE, progressCodecs: [] as string[] };
 const refused = (classification: string): Expect => ({ refused: classification });
 
 export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessModule, hooks: Hooks) {
   const { ExecutionCoordinator } = kernel;
+  // Fixtures are encoded before the swept call: fault injection measures the core only.
+  const bytes = (value: unknown): Uint8Array => value instanceof Uint8Array ? value : harness.jsonBytes(value);
+  const AVAILABLE = { definitionRevisions: bytes(["weekly-report@3"]), runtimeContractRevisions: bytes(["runtime-contract@1"]), progressCodecs: bytes(["inline-json@1"]) };
+  const MISSING_DEFINITION = { ...AVAILABLE, definitionRevisions: bytes([]) };
+  const MISSING_CODEC = { ...AVAILABLE, progressCodecs: bytes([]) };
+  const create = (): KernelModule.CreateExecutionRequest => {
+    const request = harness.createRequest();
+    return { ...request, authorityContext: bytes(request.authorityContext), initialInput: { ...request.initialInput, payload: bytes(request.initialInput.payload) } };
+  };
 
   const codeHold = (env: Env, available = MISSING_DEFINITION): void => {
     harness.accepted(env.kernel.recoverExecution(env.who, env.executionId, { activationId: env.open.activationId, available }));
@@ -77,7 +83,15 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
   const protocolHold = (env: Env): void => {
     harness.accepted(env.kernel.reportProtocolFailure(env.who, env.executionId, { activationId: env.open.activationId, writerEpoch: 1, diagnostic: "setup" }));
   };
-  const outcome = (env: Env, overrides: Record<string, unknown> = {}) => harness.outcomeFor(env.executionId, env.open, overrides);
+  const outcome = (env: Env, overrides: Record<string, unknown> = {}): KernelModule.OutcomeEnvelope => {
+    const value = harness.outcomeFor(env.executionId, env.open, overrides);
+    const { emissions, ...base } = value;
+    const next = value.next;
+    return { ...base, progress: bytes(value.progress),
+      ...(emissions === undefined ? {} : { emissions: emissions.map(item => ({ ...item, value: bytes(item.value) })) }),
+      next: next.step === "complete" ? { ...next, result: bytes(next.result) } : next.step === "fail" ? { ...next, error: bytes(next.error) } : next,
+    };
+  };
   const grant = (env: Env) => harness.submissionFor(env.driver, env.open.activationId);
   const answerOutcome = (env: Env, overrides: Record<string, unknown> = {}): void => {
     env.setupAnswer = harness.accepted(env.kernel.submitOutcome(env.who, outcome(env, overrides), grant(env)));
@@ -211,7 +225,7 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
     { name: "outcome: refused without the attempt's grant, identity unusable", control: "submitOutcome", expect: refused("unauthorized_submission"), exit: ["submitOutcome", `${UNUSABLE} the proposal presents no submission authority`], setup: nothing, call: submit({ activationId: 42 }, true) },
     { name: "outcome: refused over the Emission capacity", control: "submitOutcome", expect: refused("capacity_exhausted"), exit: ["submitOutcome", "`the Outcome for Activation ${diagnosticIdentity(activationId)} carries"], setup: nothing, emissionsPerOutcome: 1, call: submit({ emissions: [{ emissionKey: "a", value: 1 }, { emissionKey: "b", value: 2 }] }) },
     { name: "outcome: refused over the Emission capacity, identity unusable", control: "submitOutcome", expect: refused("capacity_exhausted"), exit: ["submitOutcome", `${UNUSABLE} the Outcome carries`], setup: nothing, emissionsPerOutcome: 1, call: submit({ activationId: 42, emissions: [{ emissionKey: "a", value: 1 }, { emissionKey: "b", value: 2 }] }) },
-    { name: "outcome: refused malformed content", control: "submitOutcome", expect: refused("malformed_envelope"), exit: ["submitOutcome", `${USABLE} refused whole`], setup: nothing, call: submit({ progress: Number.NaN }) },
+    { name: "outcome: refused malformed content", control: "submitOutcome", expect: refused("malformed_envelope"), exit: ["submitOutcome", `${USABLE} refused whole`], setup: nothing, call: submit({ progress: harness.rawBytes("1e400") }) },
     { name: "outcome: refused malformed content, identity unusable", control: "submitOutcome", expect: refused("malformed_envelope"), exit: ["submitOutcome", `${UNUSABLE} the Outcome is refused whole`], setup: nothing, call: submit({ activationId: 42 }) },
   ];
 
@@ -224,10 +238,10 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
     const driver = scenario.unsafeDriver === true ? (harness.unsafeDriver() as unknown as ReturnType<typeof harness.recordingDriver>) : harness.recordingDriver();
     const coordinator = new ExecutionCoordinator(scenario.emissionsPerOutcome === undefined ? { driver } : { driver, emissionsPerOutcome: scenario.emissionsPerOutcome });
     const who = harness.caller("fault", "tenant-a");
-    const { executionId } = harness.accepted(coordinator.createExecution(who, harness.createRequest()));
+    const { executionId } = harness.accepted(coordinator.createExecution(who, create()));
     const open = harness.accepted(coordinator.dispatch(who, executionId, { bound: 1 }));
     if (scenario.bare !== true) {
-      harness.accepted(coordinator.submitInput(who, { destination: executionId, requestKey: "outside-batch", kind: "update", payload: { newer: true } }));
+      harness.accepted(coordinator.submitInput(who, { destination: executionId, requestKey: "outside-batch", kind: "update", payload: bytes({ newer: true }) }));
     }
     const env: Env = { kernel: coordinator, driver, who, executionId, open, setupAnswer: null };
     scenario.setup(env);
@@ -256,12 +270,12 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
    */
   const observe = (env: Env, setupGrant: KernelModule.SubmissionGrant | undefined): State => {
     const view = harness.accepted(env.kernel.inspect(env.who, env.executionId));
-    const refusal = env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "probe-refusal", kind: 42 as never, payload: null });
+    const refusal = env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "probe-refusal", kind: 42 as never, payload: bytes(null) });
     if (refusal.ok) throw new Error("the refusal probe was accepted");
-    const acceptance = env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "probe-acceptance", kind: "probe", payload: null });
+    const acceptance = env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "probe-acceptance", kind: "probe", payload: bytes(null) });
     let grantAnswer = "no setup grant";
     if (setupGrant !== undefined) {
-      const answer = env.kernel.submitOutcome(env.who, harness.outcomeFor(env.executionId, env.open, { progress: { probe: true } }), setupGrant);
+      const answer = env.kernel.submitOutcome(env.who, outcome(env, { progress: { probe: true } }), setupGrant);
       grantAnswer = answer.ok ? `accepted at ${answer.value.receipt.position}` : answer.error.classification;
     }
     return {
@@ -295,7 +309,7 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
   const deliveryFailure = (): string => {
     const coordinator = new ExecutionCoordinator({ driver: harness.throwingDriver() });
     const who = harness.caller("fault", "tenant-a");
-    const { executionId } = harness.accepted(coordinator.createExecution(who, harness.createRequest()));
+    const { executionId } = harness.accepted(coordinator.createExecution(who, create()));
     harness.accepted(coordinator.dispatch(who, executionId, { bound: 1 }));
     const failure = harness.accepted(coordinator.inspect(who, executionId)).activation?.deliveries[0]?.failure;
     if (typeof failure !== "string") throw new Error("a throwing Driver left no failure reason");

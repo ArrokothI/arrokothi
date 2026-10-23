@@ -258,6 +258,7 @@ const PROBES: readonly { readonly name: string; readonly source: string; readonl
   { name: "built-in prototype members after load", source: "export const f = (s: string, xs: readonly number[], g: () => void): unknown => [s.toUpperCase(), xs.at(0), g.call(null)];", expect: [["builtin", "s.toUpperCase"], ["builtin", "xs.at"], ["builtin", "g.call"]] },
   { name: "lib globals read after load", source: "export const f = (x: unknown): unknown => [String(x), JSON.stringify(x), Object.keys({})];", expect: [["global", "String"], ["global", "JSON"], ["global", "Object"]] },
   { name: "implicit conversion of an object", source: "export const f = (e: E): string => `${e}` + (e as unknown as string);", expect: [["coercion", "e"]] },
+  { name: "bitwise conversion of an object", source: "export const f = (e: E): number => (e as any) & 255;", expect: [["coercion", "e as any"]] },
   { name: "object spread", source: "export const f = (e: E): unknown => ({ ...e });", expect: [["spread", "...e"]] },
   {
     name: "caller envelopes: a member read, an alias, a spread, a return and a hand-off to code that reads it",
@@ -280,6 +281,7 @@ const CLEAN_PROBE = [
   "export const f = (c: Clean, s: string): number => {",
   "  let total = 0;",
   "  for (let index = 0; index < c.items.length; index += 1) total += c.a;",
+  "  total = (total & 255) | (total << 1) | (total >> 1);",
   "  const text = `${s}:${total}`;",
   "  return text.length > 0 && c.a === 1 ? total : -total;",
   "};",

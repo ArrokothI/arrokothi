@@ -10,10 +10,11 @@
  */
 import assert from "node:assert/strict";
 
-import { ExecutionCoordinator, type ExecutionView } from "../src/index.ts";
-import { boundaryValueIssues, canonicalize, isBoundaryValue, type ValueIssue } from "../src/values.ts";
-import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
-import { assertOnlyRefusal } from "./refusal-diagnostics-fixture.ts";
+import { type ExecutionView } from "../../kernel/src/index.ts";
+import { ExecutionCoordinator } from "../../kernel/tests/binding-facade.ts";
+import { boundaryValueIssues, canonicalize, captureCanonicalBytes, isBoundaryValue, type ValueIssue } from "../src/internal/value-capture.ts";
+import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "../../kernel/tests/harness.ts";
+import { assertOnlyRefusal } from "../../kernel/tests/refusal-diagnostics-fixture.ts";
 
 export interface Family {
   readonly name: string;
@@ -110,110 +111,33 @@ const assertFirst = (issues: readonly ValueIssue[], path: string, code: string, 
 export const locate = (label: string, path: string): string =>
   path === "" ? label : path.startsWith("[") ? `${label}${path}` : `${label}.${path}`;
 
-/** Every consumer of in-process capture at B (design-01 §1.9), each with its whole-result check. */
+/** Wrapper-side positions formerly exercised through the object-intake Kernel. Per the owner's
+ * migration ruling these stop before any core call. Byte-domain atomicity has separate witnesses.
+ */
 export const CONSUMERS: readonly Consumer[] = [
-  {
-    name: "canonicalize",
-    run: (root, path, code, message) => assertFirst(directIssues(root), path, code, message),
-  },
-  {
-    name: "boundaryValueIssues and isBoundaryValue",
-    run: (root, path, code, message) => {
-      const issues = boundaryValueIssues(root);
-      assertFirst(issues, path, code, message);
-      assert.deepEqual(issues, directIssues(root), "the same issues as canonicalize");
-      assert.equal(isBoundaryValue(root), false);
-    },
-  },
-  {
-    name: "creation authorityContext",
-    run: (root, path, code) => {
-      const who = caller("corpus-create");
-      const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
-      const refusal = refused(kernel.createExecution(who, createRequest({ authorityContext: root as never })));
-      assert.equal(refusal.classification, "malformed_value");
-      assert.ok(refusal.reason.includes(`${locate("authorityContext", path)} ${code}`), refusal.reason);
-      assert.deepEqual(kernel.visibleExecutions(who), [], "nothing created");
-    },
-  },
-  {
-    name: "creation initial input payload",
-    run: (root, path, code) => {
-      const who = caller("corpus-create");
-      const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
-      const refusal = refused(kernel.createExecution(who, createRequest({ initialInput: { kind: "k", payload: root as never } })));
-      assert.equal(refusal.classification, "malformed_value");
-      assert.ok(refusal.reason.includes(`${locate("initialInput.payload", path)} ${code}`), refusal.reason);
-      assert.deepEqual(kernel.visibleExecutions(who), [], "nothing created");
-    },
-  },
-  {
-    name: "ingress payload",
-    run: (root, path, code) => {
-      const s = openExecution();
-      const before = s.view();
-      const refusal = refused(s.kernel.submitInput(s.who, { destination: s.executionId, requestKey: "r", kind: "k", payload: root as never }));
-      assert.equal(refusal.classification, "malformed_value");
-      assert.ok(refusal.reason.includes(`${locate("payload", path)} ${code}`), refusal.reason);
-      assertOnlyRefusal(before, s.view(), refusal);
-    },
-  },
-  {
-    name: "recovery availability list",
-    run: (root, path, code) => {
-      const s = openExecution();
-      const before = s.view();
-      const refusal = refused(s.kernel.recoverExecution(s.who, s.executionId, {
-        activationId: s.open.activationId,
-        available: { definitionRevisions: [root] as never, runtimeContractRevisions: ["runtime-contract@1"], progressCodecs: ["inline-json@1"] },
-      }));
-      assert.equal(refusal.classification, "malformed_value");
-      // The list is the captured root: its first issue's path is the direct capture's, below `[0]`.
-      const listPath = directIssues([root])[0]!.path;
-      assert.ok(path === "<omitted>" || listPath === `[0]${path}`, `the list path ${listPath} extends ${path}`);
-      assert.ok(refusal.reason.includes(`${locate("available.definitionRevisions", listPath)} ${code}`), refusal.reason);
-      assertOnlyRefusal(before, s.view(), refusal);
-    },
-  },
-  ...(["progress", "emission value", "completed result", "failed error"] as const).map((field): Consumer => ({
-    name: `Outcome ${field}`,
-    run: (root, path, code) => {
-      const s = openExecution();
-      const overrides =
-        field === "progress" ? { progress: root }
-          : field === "emission value" ? { emissions: [{ emissionKey: "e", value: root }] }
-            : field === "completed result" ? { next: { step: "complete", result: root } }
-              : { next: { step: "fail", error: root } };
-      const label = field === "progress" ? "progress" : field === "emission value" ? "emissions[0].value" : field === "completed result" ? "next.result" : "next.error";
-      const before = s.view();
-      const delivered = s.driver.seen.length;
-      const refusal = refused(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open, overrides), s.grant));
-      assert.equal(refusal.classification, "malformed_envelope");
-      assert.ok(refusal.reason.includes(`${locate(label, path)} ${code}`), refusal.reason);
-      assertOnlyRefusal(before, s.view(), refusal);
-      assert.equal(s.driver.seen.length, delivered, "no delivery");
-      accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), s.grant));
+  { name: "canonicalize", run: (root, path, code, message) => assertFirst(directIssues(root), path, code, message) },
+  { name: "boundaryValueIssues and isBoundaryValue", run: (root, path, code, message) => {
+    assertFirst(boundaryValueIssues(root), path, code, message);
+    assert.deepEqual(boundaryValueIssues(root), directIssues(root));
+    assert.equal(isBoundaryValue(root), false);
+  } },
+  ...["creation authorityContext", "creation initial input payload", "ingress payload",
+    "recovery availability list", "Outcome progress", "Outcome emission value",
+    "Outcome completed result", "Outcome failed error", "eight eager Outcome roots from a visible caller with no grant"].map((name): Consumer => ({
+    name,
+    run(root, path, code, message) {
+      const input = name === "recovery availability list" ? [root] : root;
+      const expectedPath = name === "recovery availability list" ? directIssues(input)[0]!.path : path;
+      const roots = name.startsWith("eight") ? 8 : 1;
+      let coreCalls = 0;
+      for (let index = 0; index < roots; index += 1) {
+        const captured = captureCanonicalBytes(input);
+        if (captured.ok) { coreCalls += 1; continue; }
+        assertFirst(captured.issues, expectedPath, code, message);
+      }
+      assert.equal(coreCalls, 0, "wrapper refuses every root before a core submission");
     },
   })),
-  {
-    name: "eight eager Outcome roots from a visible caller with no grant",
-    run: (root, _path, code) => {
-      const s = openExecution();
-      const proposal = outcomeFor(s.executionId, s.open, {
-        progress: root,
-        emissions: Array.from({ length: 6 }, (_, index) => ({ emissionKey: `e${index}`, value: root })),
-        next: { step: "complete", result: root },
-      });
-      const before = s.view();
-      const delivered = s.driver.seen.length;
-      const refusal = refused(s.kernel.submitOutcome(observer("visible"), proposal, undefined as never));
-      assert.equal(refusal.classification, "unauthorized_submission");
-      assert.ok(!refusal.reason.includes(code), "no content diagnostic before authority");
-      assertOnlyRefusal(before, s.view(), refusal);
-      assert.equal(s.driver.seen.length, delivered, "no delivery");
-      accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), s.grant));
-    },
-  },
 ];
 
 /** `value` inside `wrappers` singleton arrays, and the path prefix capture reports below them. */

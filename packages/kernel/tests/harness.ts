@@ -14,12 +14,12 @@ import assert from "node:assert/strict";
 import type {
   Activation,
   AuthenticatedCaller,
-  CreateExecutionRequest,
   DeliverySettlement,
   ExecutionDriver,
-  OutcomeEnvelope,
   SubmissionGrant,
 } from "../src/index.ts";
+import type { CreateExecutionRequest, OutcomeEnvelope } from "./binding-facade.ts";
+export * from "./binding-facade.ts";
 import { defineAt, readAt, restoreDescriptor } from "../src/own-array.ts";
 
 /**

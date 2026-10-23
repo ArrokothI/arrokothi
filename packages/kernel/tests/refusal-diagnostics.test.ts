@@ -1,14 +1,9 @@
+import { captureWrapperRoots, outcomeWrapperRoots } from "../../sdk/tests/wrapper-roots.ts";
 /** K1.2-correction-01 round 2: diagnostic rendering never changes opaque identity semantics. */
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import {
-  ExecutionCoordinator,
-  type Activation,
-  type CodeAvailability,
-  type ExecutionView,
-  type RefusalRecord,
-  type SubmissionGrant,
-} from "../src/index.ts";
+import { type Activation, type ExecutionView, type RefusalRecord, type SubmissionGrant } from "../src/index.ts";
+import { ExecutionCoordinator, type CodeAvailability } from "./binding-facade.ts";
 import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
 import { assertDiagnostic, assertOnlyRefusal, runBoundaryDiagnosticSchedule } from "./refusal-diagnostics-fixture.ts";
 
@@ -190,41 +185,38 @@ for (const [label, identity, retained] of [
 
 for (const [label, field] of [["long member", "m".repeat(4_096)], ["Unicode member", "field-\ud800"]] as const) {
   test(`root projection ${label}: every issue and root label survives without raw caller path`, () => {
-    const s = setup("n".repeat(4_096));
+
     const root = { [field]: undefined, short: undefined };
-    const proposal = outcomeFor(s.executionId, s.open, {
-      writerEpoch: undefined,
-      progress: root,
-      emissions: [{ emissionKey: "bad-root", value: root }],
-      next: { step: "complete", result: root },
-    });
-    const refusal = verifyRefusal(s, () => s.kernel.submitOutcome(s.who, proposal, submissionFor(s.driver, s.open.activationId)), "malformed_envelope", 4_096);
-    assert.ok(!refusal.reason.includes(field));
+    const capture = outcomeWrapperRoots({ progress: root, emissions: [{ value: root }], next: { step: "complete", result: root } });
+    assert.equal(capture.acceptedRoots, 0, "wrapper refusal; no core call");
+    const reason = capture.diagnostic;
+    assert.ok(!reason.includes(field));
     for (const rootName of ["progress", "emissions[0].value", "next.result"]) {
-      assert.ok(refusal.reason.includes(`${rootName}.<omitted>`), `${rootName} retained before omitted raw path`);
-      assert.ok(refusal.reason.includes(`${rootName}.short`), `${rootName}'s later issue not dropped`);
+      assert.ok(reason.includes(`${rootName}.<omitted>`));
+      assert.ok(reason.includes(`${rootName}.short`));
     }
-    assert.match(refusal.reason, /writerEpoch.*not_a_count/);
     const expectedCodes = label === "Unicode member" ? ["lone_surrogate", "undefined_member"] : ["undefined_member", "undefined_member"];
-    for (const code of new Set(expectedCodes)) assert.equal(refusal.reason.split(` ${code} (`).length - 1, expectedCodes.filter(c => c === code).length * 3);
-    accepted(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open), submissionFor(s.driver, s.open.activationId)));
-  });
+    for (const code of new Set(expectedCodes)) assert.equal(reason.split(` ${code} (`).length - 1, expectedCodes.filter(c => c === code).length * 3);
+
+});
 }
 
 for (const [label, name] of [["long", "constructor-".repeat(512)], ["Unicode", "constructor-\ud800"]] as const) {
   test(`constructor ${label}: all root messages projected before composition, recovery roots included`, () => {
-    const s = setup();
+
     const bad = Object.create({ constructor: { name } });
-    const proposal = outcomeFor(s.executionId, s.open, { progress: bad, emissions: [{ emissionKey: "e", value: bad }], next: { step: "fail", error: bad } });
-    const refusal = verifyRefusal(s, () => s.kernel.submitOutcome(s.who, proposal, submissionFor(s.driver, s.open.activationId)), "malformed_envelope", 4_096);
-    assert.ok(!refusal.reason.includes(name));
-    for (const root of ["progress", "emissions[0].value", "next.error"]) assert.ok(refusal.reason.includes(`${root} unsupported_form`));
-    assert.equal(refusal.reason.split(" unsupported_form (").length - 1, 3);
-    const recovery = verifyRefusal(s, () => s.kernel.recoverExecution(s.who, s.executionId, { activationId: s.open.activationId, available: { definitionRevisions: bad, runtimeContractRevisions: bad, progressCodecs: bad } }), "malformed_value", 4_096);
-    assert.ok(!recovery.reason.includes(name));
-    for (const root of ["available.definitionRevisions", "available.runtimeContractRevisions", "available.progressCodecs"]) assert.ok(recovery.reason.includes(`${root} unsupported_form`));
-    assert.equal(recovery.reason.split(" unsupported_form").length - 1, 3);
-  });
+    const capture = outcomeWrapperRoots({ progress: bad, emissions: [{ value: bad }], next: { step: "fail", error: bad } });
+    assert.equal(capture.acceptedRoots, 0);
+    assert.ok(!capture.diagnostic.includes(name));
+    for (const root of ["progress", "emissions[0].value", "next.error"]) assert.ok(capture.diagnostic.includes(`${root} unsupported_form`));
+    assert.equal(capture.diagnostic.split(" unsupported_form (").length - 1, 3);
+    const recovery = captureWrapperRoots(["definitionRevisions", "runtimeContractRevisions", "progressCodecs"].map(label => [`available.${label}`, bad]));
+    assert.equal(recovery.acceptedRoots, 0);
+    assert.ok(!recovery.diagnostic.includes(name));
+    for (const root of ["available.definitionRevisions", "available.runtimeContractRevisions", "available.progressCodecs"]) assert.ok(recovery.diagnostic.includes(`${root} unsupported_form`));
+    assert.equal(recovery.diagnostic.split(" unsupported_form").length - 1, 3);
+
+});
 }
 
 for (const [label, key] of [["128", "k".repeat(128)], ["129", "k".repeat(129)], ["Unicode", "clé"]] as const) {

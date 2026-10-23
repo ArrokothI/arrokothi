@@ -2,8 +2,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { ExecutionCoordinator, type SubmissionGrant } from "../src/index.ts";
-import { captureOutcome } from "../src/outcome.ts";
+import { type SubmissionGrant } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
+import { captureWrapperRoots, outcomeWrapperRoots } from "../../sdk/tests/wrapper-roots.ts";
+import { jsonBytes, rawBytes } from "./binding-facade.ts";
 import { explainDiagnosticIssues } from "../src/envelope.ts";
 import { accepted, caller, createRequest, observer, outcomeFor, recordingDriver, refused, submissionFor } from "./harness.ts";
 import { assertDiagnostic, assertOnlyRefusal } from "./refusal-diagnostics-fixture.ts";
@@ -52,58 +54,56 @@ for (const [label, keys] of [["long", ["a".repeat(129), "b".repeat(129)]], ["non
 for (const length of [128, 129]) {
   test(`DEC-5 value-relative path ${length} before adding root label`, () => {
     const s = setup(), key = "p".repeat(length);
-    const direct = explainDiagnosticIssues([{ root: "progress", path: key, code: "undefined_member", message: "bad" }], true);
-    assert.ok(direct.includes(length === 128 ? `progress.${key} undefined_member` : "progress.<omitted> undefined_member"));
+    const direct = explainDiagnosticIssues([{ root: "progress", path: key, code: "non_finite_number", message: "bad" }], true);
+    assert.ok(direct.includes(length === 128 ? `progress.${key} non_finite_number` : "progress.<omitted> non_finite_number"));
     const before = s.view();
-    const r = refused(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open, { progress: { [key]: undefined } }), s.grant));
+    const r = refused(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open, { progress: jsonBytes({ [key]: Infinity }) }), s.grant));
     assert.equal(r.classification, "malformed_envelope");
-    assert.ok(r.reason.includes(length === 128 ? `progress.${key} undefined_member` : "progress.<omitted> undefined_member"));
+    assert.ok(r.reason.includes(length === 128 ? `progress.${key} non_finite_number` : "progress.<omitted> non_finite_number"));
     if (length === 129) assert.ok(!r.reason.includes(key));
     assertOnlyRefusal(before, s.view(), r);
-    const control = refused(s.kernel.recoverExecution(s.who, s.executionId, { activationId: s.open.activationId, available: { ...available, definitionRevisions: { [key]: undefined } as never } }));
-    assert.ok(control.reason.includes(length === 128 ? `available.definitionRevisions.${key} undefined_member` : "available.definitionRevisions.<omitted> undefined_member"));
+    const control = refused(s.kernel.recoverExecution(s.who, s.executionId, { activationId: s.open.activationId, available: { ...available, definitionRevisions: jsonBytes({ [key]: Infinity }) } }));
+    assert.ok(control.reason.includes(length === 128 ? `available.definitionRevisions.${key} non_finite_number` : "available.definitionRevisions.<omitted> non_finite_number"));
     accepted(s.valid());
   });
 }
 for (const length of [1_024, 1_025]) {
   test(`DEC-5 renderer message ${length}; capture uses fixed type labels`, () => {
-    const s = setup();
+
     const prefix = "expected a plain object, received ";
     const name = "N".repeat(length - prefix.length - " instance".length);
     const direct = explainDiagnosticIssues([{ root: "progress", path: "", code: "unsupported_form", message: `${prefix}${name} instance` }], true);
     assert.ok(direct.includes(length === 1_024 ? `(${prefix}${name} instance)` : "(<message omitted>)"));
-    const before = s.view();
-    const r = refused(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, s.open, { progress: Object.create({ constructor: { name } }) }), s.grant));
-    assert.ok(r.reason.includes(`(${prefix}object)`));
-    assert.ok(!r.reason.includes(name));
-    assertOnlyRefusal(before, s.view(), r);
-    accepted(s.valid());
-  });
+    const capture = captureWrapperRoots([["progress", Object.create({ constructor: { name } })]]);
+    assert.equal(capture.acceptedRoots, 0);
+    assert.ok(capture.diagnostic.includes(`(${prefix}object)`));
+    assert.ok(!capture.diagnostic.includes(name));
+
+});
 }
 
 for (const step of ["complete", "fail"] as const) {
   test(`AGG-01 aggregate progress, two Emissions and ${step}: <=16,384 units, retained and answerable`, () => {
-    const s = setup();
+
     const root = Array(4_096).fill(Object.create({ constructor: { name: "N".repeat(980) } }));
-    // Each root is under its byte/entry/depth limits. The former detailed reason exceeded 16 MiB.
-    const proposal = outcomeFor(s.executionId, s.open, { progress: root, emissions: [{ emissionKey: "one", value: root }, { emissionKey: "two", value: root }], next: step === "complete" ? { step, result: root } : { step, error: root } });
-    const before = s.view(), deliveries = s.driver.seen.length;
-    const r = refused(s.kernel.submitOutcome(s.who, proposal, s.grant));
-    assert.equal(r.classification, "malformed_envelope");
-    assertDiagnostic(r.reason, 16_384);
-    assert.match(r.reason, /16376 additional issues: unsupported_form=16376$/);
-    assertOnlyRefusal(before, s.view(), r);
-    assert.equal(s.driver.seen.length, deliveries);
-    accepted(s.valid());
-  });
+    const capture = outcomeWrapperRoots({ progress: root, emissions: [{ value: root }, { value: root }], next: step === "complete" ? { step, result: root } : { step, error: root } });
+    assert.equal(capture.acceptedRoots, 0, "SDK refusal; no core call");
+    assertDiagnostic(capture.diagnostic, 16_384);
+    assert.match(capture.diagnostic, /16376 additional issues: unsupported_form=16376$/);
+
+});
 }
 test("AGG-01 all recovery roots and the two other malformed controls return and retain", () => {
   const s = setup(), root = Array(4_096).fill(undefined);
+  const wrapper = captureWrapperRoots(["definitionRevisions", "runtimeContractRevisions", "progressCodecs"].map(label => [`available.${label}`, root]));
+  assert.equal(wrapper.acceptedRoots, 0);
+  assertDiagnostic(wrapper.diagnostic, 16_384);
+  assert.match(wrapper.diagnostic, /12280 additional issues: undefined_member=12280$/);
   const before = s.view();
-  const r = refused(s.kernel.recoverExecution(s.who, s.executionId, { activationId: s.open.activationId, available: { definitionRevisions: root, runtimeContractRevisions: root, progressCodecs: root } }));
+  const bad = rawBytes("1e400");
+  const r = refused(s.kernel.recoverExecution(s.who, s.executionId, { activationId: s.open.activationId, available: { definitionRevisions: bad, runtimeContractRevisions: bad, progressCodecs: bad } }));
   assert.equal(r.classification, "malformed_value");
   assertDiagnostic(r.reason, 16_384);
-  assert.match(r.reason, /12280 additional issues: undefined_member=12280$/);
   assertOnlyRefusal(before, s.view(), r);
   for (const op of ["takeover", "protocol"]) {
     const beforeControl = s.view();
@@ -126,27 +126,31 @@ for (const count of [0, 8, 9]) {
   });
 }
 test("DEC-5 late codes and counts contribute to the same combined refusal in first occurrence order", () => {
-  const s = setup();
-  const before = s.view();
-  const proposal = outcomeFor(s.executionId, s.open, { activationId: undefined, progress: Array(10).fill(undefined), effects: [1], next: { step: "await", wait: {} }, extra: 1 } as never);
-  const r = refused(s.kernel.submitOutcome(s.who, proposal, s.grant));
-  assert.equal(r.classification, "malformed_envelope");
-  assert.match(r.reason, /activationId unsupported_form/);
-  assert.match(r.reason, /6 additional issues: undefined_member=3, effects_unsupported=1, wait_unsupported=1, unknown_field=1$/);
-  assertOnlyRefusal(before, s.view(), r);
-  accepted(s.valid());
+
+  const capture = captureWrapperRoots([["progress", Array(10).fill(undefined)]]);
+  assert.equal(capture.acceptedRoots, 0);
+  const reason = explainDiagnosticIssues([
+    { path: "activationId", code: "unsupported_form", message: "bad identity" },
+    ...capture.issues,
+    { path: "effects", code: "effects_unsupported", message: "unsupported" },
+    { path: "next", code: "wait_unsupported", message: "unsupported" },
+    { path: "extra", code: "unknown_field", message: "unknown" },
+  ], true);
+  assert.match(reason, /activationId unsupported_form/);
+  assert.match(reason, /6 additional issues: undefined_member=3, effects_unsupported=1, wait_unsupported=1, unknown_field=1$/);
+
 });
 test("aggregate content stays behind currency and authority; capture retains bounded weighted diagnostics", () => {
   const s = setup(), name = "N".repeat(2_000);
   const proposal = outcomeFor(s.executionId, s.open, { progress: Array(32).fill(Object.create({ constructor: { name } })) });
-  const capture = captureOutcome(proposal, 2);
+  const capture = outcomeWrapperRoots(proposal);
   assert.equal(capture.issues.length, 9);
   assert.equal(capture.issues[0]!.message, "expected a plain object, received object");
   assert.equal(capture.issues[8]!.occurrences, 24);
   assert.equal(capture.issues.reduce((sum, issue) => sum + (issue.occurrences ?? 1), 0), 32);
   for (const [overrides, grant, classification] of [[{}, undefined, "unauthorized_submission"], [{ writerEpoch: 2 }, s.grant, "stale_exchange"]] as const) {
     const before = s.view();
-    const r = refused(s.kernel.submitOutcome(observer("visible"), { ...proposal, ...overrides }, grant as SubmissionGrant));
+    const r = refused(s.kernel.submitOutcome(observer("visible"), { ...proposal, progress: rawBytes("1e400"), ...overrides }, grant as SubmissionGrant));
     assert.equal(r.classification, classification);
     assert.ok(!r.reason.includes("unsupported_form") && !r.reason.includes("additional issues"));
     assertOnlyRefusal(before, s.view(), r);
@@ -171,11 +175,10 @@ for (const cause of ["code", "protocol"] as const) {
   });
 }
 test("DEC-5 bound proof: fixed code vocabulary and maximum-size details plus all summary codes", () => {
-  const files = ["values.ts", "envelope.ts", "outcome.ts"];
-  const codes = new Set(files.flatMap(file => [...readFileSync(new URL(`../src/${file}`, import.meta.url), "utf8").matchAll(/code: "([a-z_]+)"/g)].map(m => m[1]!)));
-  // 18 since K1.1-correction-03 added `too_much_work` (owner design check, Q2). It and `too_many_bytes`
-  // are exclusive stops, so one root still reports at most eleven distinct value codes.
-  assert.equal(codes.size, 18);
+  const files = ["canonical-bytes.ts", "envelope.ts", "outcome.ts"];
+  const codes = new Set(files.flatMap(file => [...readFileSync(new URL(`../src/${file}`, import.meta.url), "utf8").matchAll(/(?:code: |issue\(|fail\(state, )"([a-z_0-9]+)"/g)].map(m => m[1]!)));
+  // Core parser emits one issue per root; wrapper weighted counts have their own maintained tests.
+  assert.ok(codes.has("invalid_utf8") && codes.has("invalid_json") && codes.has("duplicate_key"));
   assert.ok([...codes].every(c => c.length <= 32));
   const details = Array.from({ length: 8 }, () => ({ root: "r".repeat(63), path: "p".repeat(128), code: "c".repeat(32), message: "m".repeat(1_024) }));
   const rest = [...codes].map(code => ({ path: "ignored", code, message: "ignored" }));

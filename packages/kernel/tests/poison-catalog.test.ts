@@ -1,3 +1,4 @@
+import { rawBytes } from "./binding-facade.ts";
 /**
  * The DEC-8 poisoned-prototype sweep over a catalog of boundary calls (contract revision 9).
  *
@@ -14,6 +15,7 @@
  *   field that is not a list, an `available` that is not a record or holds a non-list, and lists whose
  *   `length` or elements cannot be observed.
  *
+ * SDK capture is a separately declared source zone; its findings retain wrapper attribution.
  * Every public boundary is called at least once, with accepted, idempotent and refused exits: the
  * constructor, the eight coordinator methods, the delivery-report capability, the unsupported
  * surface and the value functions. Each call is a poison window. The catalog runs four times —
@@ -26,21 +28,16 @@ import assert from "node:assert/strict";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
-import {
-  ExecutionCoordinator,
-  boundaryValueIssues,
-  canonicalize,
-  isBoundaryValue,
-  sameLogicalValue,
-  type DeliverySettlement,
-  type ExecutionDriver,
-} from "../src/index.ts";
+import { type DeliverySettlement, type ExecutionDriver } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
+import { boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue } from "../../sdk/src/internal/value-capture.ts";
 import { accepted, caller, createRequest, delayedDriver, observer, outcomeFor, recordingDriver, submissionFor, unsafeDriver } from "./harness.ts";
 import { createPoison, digest, type PoisonController, type PoisonMode } from "./sweep/poison.ts";
 import { DESCRIPTOR_FIELDS, zoneMemberNames } from "./sweep/zone-names.ts";
 
 const ZONE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../src");
-const NAMES = zoneMemberNames(ZONE_ROOT);
+const CAPTURE_ROOT = resolve(ZONE_ROOT, "../../sdk/src/internal");
+const NAMES = [...new Set([...zoneMemberNames(ZONE_ROOT), ...zoneMemberNames(CAPTURE_ROOT)])];
 const AVAILABLE = { definitionRevisions: ["weekly-report@3"], runtimeContractRevisions: ["runtime-contract@1"], progressCodecs: ["inline-json@1"] };
 const MISSING_DEFINITION = { ...AVAILABLE, definitionRevisions: [] as string[] };
 const MISSING_CODEC = { ...AVAILABLE, progressCodecs: [] as string[] };
@@ -129,7 +126,7 @@ function runCatalog(poison: PoisonController): Catalog {
   call("submitInput: accepted", (k) => k.submitInput(who, { destination: id, requestKey: "first", kind: "update", payload: { n: 1 } }));
   call("submitInput: exact replay", (k) => k.submitInput(who, { destination: id, requestKey: "first", kind: "update", payload: { n: 1 } }));
   call("submitInput: conflicting content", (k) => k.submitInput(who, { destination: id, requestKey: "first", kind: "update", payload: { n: 2 } }));
-  call("submitInput: malformed payload", (k) => k.submitInput(who, { destination: id, requestKey: "bad", kind: "update", payload: Number.NaN as never }));
+  call("submitInput: malformed payload", (k) => k.submitInput(who, { destination: id, requestKey: "bad", kind: "update", payload: rawBytes("1e400") as never }));
   call("submitInput: unknown destination", (k) => k.submitInput(who, { destination: "no-such-execution", requestKey: "x", kind: "update", payload: null }));
   call("submitInput: an unobservable destination", (k) =>
     k.submitInput(who, proxy({ destination: id, requestKey: "x", kind: "update", payload: null }, { getOwnPropertyDescriptor: () => { throw new Error("unobservable"); } })),
@@ -203,7 +200,7 @@ function runCatalog(poison: PoisonController): Catalog {
   const outcome = (overrides: Record<string, unknown> = {}) => outcomeFor(id, exchange, overrides);
   call("submitOutcome: a superseded writer epoch", (k) => k.submitOutcome(who, outcome({ writerEpoch: 1 }), grant));
   call("submitOutcome: no submission grant", (k) => k.submitOutcome(who, outcome(), { ...grant }));
-  call("submitOutcome: malformed progress", (k) => k.submitOutcome(who, outcome({ progress: Number.NaN }), grant));
+  call("submitOutcome: malformed progress", (k) => k.submitOutcome(who, outcome({ progress: rawBytes("1e400") }), grant));
   call("submitOutcome: an Effect field that is not a list", (k) => k.submitOutcome(who, outcome({ effects: 3 }), grant));
   call("submitOutcome: proposed Effects", (k) => k.submitOutcome(who, outcome({ effects: [{ kind: "send" }] }), grant));
   call("submitOutcome: a wait", (k) => k.submitOutcome(who, outcome({ next: { step: "await", wait: {} } }), grant));
@@ -288,7 +285,7 @@ describe("correction DEC-8: the catalog under poisoned prototypes behaves exactl
   const runs: { [mode in PoisonMode]?: { catalog: Catalog; poison: PoisonController } } = {};
   for (const mode of ["off", "count", "throw", "reenter"] as const) {
     test(`${mode}: no zone frame reaches a poisoned member; every window was live`, () => {
-      const poison = createPoison({ mode, names: NAMES, zoneRoot: ZONE_ROOT });
+      const poison = createPoison({ mode, names: NAMES, zoneRoot: ZONE_ROOT, captureRoot: CAPTURE_ROOT });
       const catalog = runCatalog(poison);
       runs[mode] = { catalog, poison };
       assert.deepEqual(poison.zoneFirings, [], "no Kernel read reached Object.prototype or Function.prototype");

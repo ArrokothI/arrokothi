@@ -16,7 +16,7 @@
 
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { ExecutionCoordinator } from "../src/index.ts";
+import { ExecutionCoordinator } from "./binding-facade.ts";
 import { accepted, caller, createRequest, outcomeFor, recordingDriver, submissionFor } from "./harness.ts";
 
 describe("review 11: an inherited resultingEpoch installed during observation is never read by inspection", () => {

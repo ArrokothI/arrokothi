@@ -280,3 +280,11 @@ export const mapOwn = <T, U>(source: readonly T[], project: (item: T) => U): U[]
   for (let index = 0; index < source.length; index += 1) appendOwn(out, project(readAt(source, index) as T));
   return out;
 };
+
+/** Integer-indexed storage on an owned Uint8Array has no inherited-property fallback.
+ * Only the internal UTF-8 encoder calls this, with an allocated buffer and an in-bounds offset.
+ * Unlike an Array, even an invalid typed-array index never consults an inherited numeric setter.
+ */
+export function writeByte(bytes: Uint8Array, index: number, value: number): void {
+  bytes[index] = value;
+}

@@ -179,8 +179,8 @@ const emit = (value) => { console.log(JSON.stringify(value)); };
 export function inWrappedChild<T>(body: string, options: { readonly timeout?: number; readonly before?: string } = {}): T {
   // The module URLs are resolved here, not in the module-level prelude text, so a test file that imports
   // this module keeps no intrinsic reference in its load-time code (the P1-H V-ENV detector reads it).
-  const urls = `const VALUES_URL = ${JSON.stringify(new URL("../src/values.ts", import.meta.url).href)};\n` +
-    `const KERNEL_URL = ${JSON.stringify(new URL("../src/index.ts", import.meta.url).href)};`;
+  const urls = `const VALUES_URL = ${JSON.stringify(new URL("../src/internal/value-capture.ts", import.meta.url).href)};\n` +
+    `const KERNEL_URL = ${JSON.stringify(new URL("../../kernel/tests/binding-facade.ts", import.meta.url).href)};`;
   const probe = `${options.before ?? ""}\n${urls}\n${PRELUDE}\n${body}`;
   const output = execFileSync(
     process.execPath,
