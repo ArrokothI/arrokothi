@@ -166,8 +166,11 @@ describe("K1.0 target Kernel landing zone", () => {
       "packages/kernel/src/lifecycle.ts",
       "packages/kernel/src/outcome.ts",
       "packages/kernel/src/own-array.ts",
+      "packages/kernel/src/plan.ts",
       "packages/kernel/src/refusal.ts",
       "packages/kernel/src/result.ts",
+      "packages/kernel/src/state-records.ts",
+      "packages/kernel/src/state.ts",
       "packages/kernel/src/unsupported.ts",
       "packages/kernel/src/value-types.ts",
       "packages/kernel/src/values.ts",
@@ -868,7 +871,7 @@ describe("K1.0 policy and inventory agree", () => {
     // ever considered, so it vanished: no duplicate, no unreadable row, and the correct row made
     // recomputation green. Both orders are exercised because the old code skipped it either way.
     const real = await realInventory();
-    const correct = "| `target-kernel` | 16 | nothing | nothing |";
+    const correct = targetKernelDependencyRow();
     const malformed = "| `target-kernel` | not-a-count | `@arrokothi/core` | nothing |";
 
     for (const [position, replacement] of [
@@ -889,7 +892,7 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("a dependency row with no recognisable key fails closed (K10-R4-01)", async () => {
     const real = await realInventory();
-    const correct = "| `target-kernel` | 16 | nothing | nothing |";
+    const correct = targetKernelDependencyRow();
     const { unreadable } = parseDependencyTable(mutate(real, [[correct, `| not-a-zone | 2 | nothing | nothing |\n${correct}`]]));
     assert.ok(
       unreadable.some((message) => /Dependency row has no recognisable key/.test(message)),
@@ -928,7 +931,7 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("duplicate cross-boundary dependency rows fail closed (K10-R3-01)", async () => {
     const real = await realInventory();
-    const anchor = "| `target-kernel` | 16 | nothing | nothing |";
+    const anchor = targetKernelDependencyRow();
     const stale = "| `target-kernel` | 999 | nothing | nothing |";
     const variants = [
       mutate(real, [[anchor, `${stale}\n${anchor}`]]),
@@ -1031,7 +1034,7 @@ describe("K1.0 policy and inventory agree", () => {
 
   test("contradictory dependency rows with omitted edge pipes fail closed in either position (K10-R5-01)", async () => {
     const real = await realInventory();
-    const correct = "| `target-kernel` | 16 | nothing | nothing |";
+    const correct = targetKernelDependencyRow();
     const badByEdge: Record<string, string> = {
       "omitted trailing pipe": "| `target-kernel` | 999 | `@arrokothi/core` | `canonicalize`",
       "omitted leading pipe": "`target-kernel` | 999 | `@arrokothi/core` | `canonicalize` |",
@@ -1209,7 +1212,7 @@ describe("K1.0 policy and inventory agree", () => {
       for (const position of ["before", "after"] as const) {
         test(`a Dependency body row beginning with the header label is accounted for, ${position} the correct row, with ${edge}`, async () => {
           const real = await realInventory();
-          const correct = "| `target-kernel` | 16 | nothing | nothing |";
+          const correct = targetKernelDependencyRow();
           const mutated =
             position === "before"
               ? mutate(real, [[correct, `${bad}\n${correct}`]])
@@ -2982,7 +2985,7 @@ describe("K1.0 policy and inventory agree", () => {
     // contradictory spellings that must be reported, and the permitted spellings beside them that
     // must still parse — so a decoder that is merely stricter about the four reported strings would
     // fail the first half, and one that is stricter about everything would fail the second.
-    const REAL_DEPENDENCY_ROW = "| `target-kernel` | 16 | nothing | nothing |";
+    const REAL_DEPENDENCY_ROW = targetKernelDependencyRow();
     const REAL_HOST_SDK_ROW =
       "| `host-sdk` | 6 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `canonicalize` |";
     const REAL_ZONE_ROW =
@@ -3360,7 +3363,7 @@ describe("K1.0 policy and inventory agree", () => {
     // the short-row and correct-body twins.
     const DEP_HEADER = "| Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |";
     const DEP_DELIM = "|---|---|---|---|";
-    const DEP_ROW = "| `target-kernel` | 16 | nothing | nothing |";
+    const DEP_ROW = targetKernelDependencyRow();
     const ZONES_HEADER = "| Zone id | Roots | Owner and status |";
     const ZONES_DELIM = "|---|---|---|";
     const ZONES_ROW =
@@ -3394,7 +3397,7 @@ describe("K1.0 policy and inventory agree", () => {
       const baseline = parseDependencyTable(real);
       const mutated = await depResult([
         [`${DEP_HEADER}\n${DEP_DELIM}`, `${DEP_HEADER} Extra claim |\n${DEP_DELIM}---|`],
-        [DEP_ROW, "| `target-kernel` | 16 | nothing | nothing | `evil-package` |"],
+        [DEP_ROW, `${targetKernelDependencyRow()} \`evil-package\` |`],
       ]);
       assert.ok(
         mutated.unreadable.some((message) =>
@@ -3537,7 +3540,7 @@ describe("K1.0 policy and inventory agree", () => {
       );
       assert.equal(
         renamedMiddle.rows.get("target-kernel")?.files,
-        16,
+        targetKernelFileCount(),
         "schema-correct bodies still decode when only the header is wrong",
       );
       const reordered = await depResult([
@@ -3581,7 +3584,7 @@ describe("K1.0 policy and inventory agree", () => {
       );
       assert.equal(
         narrowed.rows.get("target-kernel")?.files,
-        16,
+        targetKernelFileCount(),
         "a narrowed header must not turn a schema-correct body into excess",
       );
       const widenedHeaderOnly = await depResult([
@@ -3598,7 +3601,7 @@ describe("K1.0 policy and inventory agree", () => {
       );
       assert.equal(
         widenedHeaderOnly.rows.get("target-kernel")?.files,
-        16,
+        targetKernelFileCount(),
         "the relation survives a header-only widening; the header report carries the loudness",
       );
     });
@@ -4497,3 +4500,22 @@ describe("K1.0 policy and inventory agree", () => {
     assert.ok(inventory.includes("no approved portable leaf"), "the decision is recorded, not merely implied");
   });
 });
+
+/**
+ * The inventory's own `target-kernel` dependency row, read from the document rather than restated. The
+ * measured-tree test above pins its file count to the real zone, so the controls built on this row follow
+ * a Kernel module added or removed (COORD-REFACTOR-01) instead of each restating the count.
+ */
+function targetKernelDependencyRow(): string {
+  const { readFileSync } = process.getBuiltinModule("node:fs");
+  const rows = readFileSync(resolve(REPO_ROOT, INVENTORY), "utf8")
+    .split("\n")
+    .filter((line) => /^\| `target-kernel` \| [0-9]+ \| nothing \| nothing \|$/.test(line));
+  assert.equal(rows.length, 1, "the inventory has exactly one target-kernel dependency row");
+  return rows[0] as string;
+}
+
+/** The file count the inventory's `target-kernel` dependency row claims. */
+function targetKernelFileCount(): number {
+  return Number(targetKernelDependencyRow().split("|")[2]?.trim());
+}

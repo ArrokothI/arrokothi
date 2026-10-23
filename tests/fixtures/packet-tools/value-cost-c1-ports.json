@@ -1513,7 +1513,7 @@
     },
     "at_c": [
       {
-        "path": "packages/kernel/src/coordinator.ts",
+        "path": "packages/kernel/src/state.ts",
         "before": "    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);",
         "after": "    this.#byCreationRequestId.set(creationRequestIdKey(creationRequestId), record);"
       }
@@ -1535,7 +1535,7 @@
     },
     "at_c": [
       {
-        "path": "packages/kernel/src/coordinator.ts",
+        "path": "packages/kernel/src/state.ts",
         "before": "    mapSet(this.#executions, executionId, record);",
         "after": "    this.#executions.set(executionId, record);"
       }
@@ -1711,7 +1711,7 @@
     },
     "at_c": [
       {
-        "path": "packages/kernel/src/coordinator.ts",
+        "path": "packages/kernel/src/state.ts",
         "before": "    appendOwn(record.mailbox, entry);",
         "after": "    record.mailbox.push(entry);"
       }
@@ -1733,7 +1733,7 @@
     },
     "at_c": [
       {
-        "path": "packages/kernel/src/coordinator.ts",
+        "path": "packages/kernel/src/state.ts",
         "before": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    appendOwn(record.receipts, receipt);",
         "after": "    mapSet(record.byInputId, inputIdKey(inputId), entry);\n    record.receipts.push(receipt);"
       }
@@ -1777,7 +1777,7 @@
     },
     "at_c": [
       {
-        "path": "packages/kernel/src/coordinator.ts",
+        "path": "packages/kernel/src/state.ts",
         "before": "    payload: entry.payload.value,",
         "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,"
       }
@@ -1799,7 +1799,7 @@
     },
     "at_c": [
       {
-        "path": "packages/kernel/src/coordinator.ts",
+        "path": "packages/kernel/src/state.ts",
         "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload.value,",
         "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,"
       }
@@ -1865,7 +1865,7 @@
     },
     "at_c": [
       {
-        "path": "packages/kernel/src/coordinator.ts",
+        "path": "packages/kernel/src/state.ts",
         "before": "  return PrimordialObjectFreeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });",
         "after": "  return Object.freeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });"
       }

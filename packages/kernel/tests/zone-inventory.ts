@@ -39,10 +39,11 @@ export const ACCESS_INVENTORY: readonly InventoryEntry[] = [
   { file: "coordinator.ts", kind: "index", mode: "read", text: "controls[index]", count: 1, bounded: true, reason: "the trusted host's controlScopes list (DEC-8 host contract), read below its own length" },
   { file: "coordinator.ts", kind: "index", mode: "read", text: "scalars[scalarIndex]", count: 1, bounded: true, reason: KERNEL_LIST },
   { file: "coordinator.ts", kind: "spread", mode: "read", text: "...already.decision", count: 1, reason: "the frozen Kernel-built decision retained for replay" },
-  { file: "coordinator.ts", kind: "spread", mode: "read", text: "...base", count: 1, reason: "a view literal built immediately above" },
   { file: "coordinator.ts", kind: "spread", mode: "read", text: "...decision", count: 1, reason: "#accept's frozen Kernel-built decision" },
-  { file: "coordinator.ts", kind: "spread", mode: "read", text: "...entry.inputId", count: 1, reason: "the frozen Kernel copy of an accepted Input ID" },
   { file: "coordinator.ts", kind: "spread", mode: "read", text: "...exchange.activation", count: 1, reason: "the frozen Kernel-built Activation (takeover copies it with a new epoch)" },
+  // state.ts (COORD-REFACTOR-01: the view projections moved here with the records they read)
+  { file: "state.ts", kind: "spread", mode: "read", text: "...base", count: 1, reason: "a view literal built immediately above" },
+  { file: "state.ts", kind: "spread", mode: "read", text: "...entry.inputId", count: 1, reason: "the frozen Kernel copy of an accepted Input ID" },
   // envelope.ts
   { file: "envelope.ts", kind: "dynamic", mode: "read", text: "(holder as Record<string, unknown>)[key]", count: 1, getter: true, reason: "observeOwn: the single own observation, reached only after the holder's own descriptor was found" },
   { file: "envelope.ts", kind: "envelope", mode: "read", text: "(holder as Record<string, unknown>)[key]", count: 1, reason: "the same observation: the one member access the envelope rule permits on a caller-owned value" },

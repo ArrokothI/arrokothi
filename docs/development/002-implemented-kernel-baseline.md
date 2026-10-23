@@ -29,8 +29,7 @@ R1–R4, described below. The internal `canonicalizeJsonText` adapter caps its i
 copying, checks decoded duplicates and sends its canonical output through strict core validation;
 future transports must cap accumulation/decompression themselves. Decoder metering remains L-14.
 
-This is the BINDING-01 candidate implementation, not independent acceptance or a hold release.
-[007](007-work-packets.md) owns that status. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
+[007](007-work-packets.md) owns acceptance, integration and hold status. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
 reports delivery through the per-delivery Kernel-owned `DeliverySettlement` capability while carrying the per-attempt `SubmissionGrant`; the Kernel never observes a Driver-returned
 Promise. The settlement lifetime is one physical delivery; the submission lifetime is one Runtime attempt, as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) owns.
 
@@ -365,6 +364,26 @@ These are this in-process binding's choices where the architecture leaves the re
   projection, which is not retained state. A
   getter that reenters the Kernel is ordered before the decision's checks. Atomic within the process,
   not durable.
+- **Plans and one state owner** (COORD-REFACTOR-01; same owner): the coordinator never writes accepted
+  state. It reads Executions through read-only readers and hands each decision to `KernelState`
+  (`state.ts`) as one frozen, data-only plan of a closed union (creation, input, dispatch, delivery,
+  settlement, Outcome, takeover, control, refusal) that carries the decision's records and its answer.
+  `KernelState` holds the records in private fields, is the only module that builds or changes them,
+  and applies each plan in two phases: it prepares without changing anything, then commits the arm's
+  declared statements in the order the transactions above fix. Each plan names the Execution version it
+  was formed against, bound after the method's last caller, host or Driver callback, and the owner
+  refuses a plan whose Execution has changed since; Driver delivery runs after `apply`, and each Driver
+  report forms its own settlement plan. Behaviour without engine faults is unchanged. One bounded
+  exception ([owner choice 01](work/COORD-REFACTOR-01/owner-choice-01.md)): a decision or report whose
+  build faults commits nothing, so a faulting `dispatch` or `submitInput` consumes no acceptance position
+  or Activation ID, and a faulting `failed(reason)` or `delivered()` leaves its row pending for a later
+  report; `fault-paths.test.ts` pins each path. A fault in a commit's own publications leaves what it left
+  before: the Execution map is also the listing, so an Execution is listed exactly when it can be found
+  (`creation-faults.test.ts`). Structural evidence: the module rules in
+  `kernel-state-ownership.test.ts`, the planner, arm-commit and writer checks in `control-commits.test.ts`,
+  the plan and view witnesses in `state-plans.test.ts`, the pinned type diagnostics in
+  `state-types.test.ts`, and the registered bypass mutants (`state-owner.*`). Choosing the right plan
+  remains a semantic claim of the oracle and the tests (017 L-15).
 - **Recovery-control transaction** (same owner; [correction DEC-9](work/K1.2-correction-01/contract.md)):
   `recoverExecution`, `reportProtocolFailure` and `requestTakeover` observe the request, check
   accepted state, then build every record and the answer from Kernel data. The apply phase appends
@@ -388,9 +407,10 @@ These are this in-process binding's choices where the architecture leaves the re
   taken by a scenario. The scope is those scenarios and the operations the sweep intercepts; faults
   inside a safety callback and engine faults in allocation or property access stay outside the claim.
   `fault-oracle.test.ts` holds the sweep checker's negative controls, and a mutant of each of its
-  comparisons shows that comparison is needed. `control-commits.test.ts` is a static
-  regression guard for accidental reordering, with known gaps (a default parameter that supplies a
-  Kernel object, a local named `undefined`); it is not a proof.
+  comparisons shows that comparison is needed. Since COORD-REFACTOR-01 the swept commits are the end of
+  the owner's Outcome and takeover arms, and the sweep locates them there. `control-commits.test.ts` is a
+  static regression guard for accidental forms in the planners and the owner's arms, with known gaps (a
+  default parameter that supplies a Kernel object, a local named `undefined`); it is not a proof.
 - **Ambient reads** ([correction DEC-8](work/K1.2-correction-01/contract.md)): the zone reads no
   member its object may not own. Kernel records own every declared field; caller envelopes are read
   own-only; an optional member of a trusted host object (`controlScopes`, `mailboxCapacity`,

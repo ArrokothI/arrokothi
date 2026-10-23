@@ -318,6 +318,11 @@ naming an `OPEN(...)` marker claim that one exists.
   returned answer projection is built after mutation, and it is not retained state. The three
   recovery controls (hold declaration, protocol-failure report, takeover) use the same build-then-apply
   discipline, their answers included, recorded in the same BASELINE section (K1.2-correction-01 DEC-9).
+  Since COORD-REFACTOR-01 the binding makes that discipline structural: every state-changing decision,
+  refusals included, is one frozen data-only plan of a closed union, built before anything changes and
+  applied by the only module that can change an Execution record, against the Execution version it was
+  formed from; a decision whose build faults commits nothing (its owner choice 01). This remains the
+  binding's choice, not a protocol rule.
 - Checkpoint storage and pinning — WS §9 "Left open"; `concepts/state.md#checkpoint-and-locator`,
   `mechanisms/recovery.md#checkpoint-publication`. Upload tickets plus a grace period are one
   option, not a requirement, as `recovery.md` states.

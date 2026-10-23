@@ -8,8 +8,10 @@
  * Nothing here is Kernel semantics. It is a dependency policy over repository paths.
  */
 
+import { dirname, posix } from "node:path";
+import ts from "typescript";
 import type { ModuleGraph } from "./module-graph.ts";
-import { UNRESOLVABLE_MODULE_TARGET } from "./module-graph.ts";
+import { moduleDependenciesIn, UNRESOLVABLE_MODULE_TARGET } from "./module-graph.ts";
 
 /** One ownership zone: a set of repo-relative path prefixes with a single owner. */
 export interface Zone {
@@ -220,3 +222,161 @@ export const DEFERRED_EXTRACTIONS: readonly DeferredExtraction[] = [
   { id: "DX-11", currentPath: "packages/agents/strands/src/agent-executor.ts", disposition: "legacy-only", owner: "R1.1" },
   { id: "DX-12", currentPath: "packages/core/src/ports/controller.ts", disposition: "refused", owner: "K1.1" },
 ];
+
+// -- Inside the target zone: who may reach accepted state (COORD-REFACTOR-01) ------------------------
+
+/**
+ * One import rule between modules of the target zone.
+ *
+ * `importers`: only the `allowed` files may import `subject`, and at least one does. `imports`: `subject`
+ * imports none of `forbidden`. `edges: "all"` counts every dependency form, type-only imports included,
+ * because naming a type is already reaching it; `edges: "value"` counts only imports of runtime bindings,
+ * because the rule is about which code the subject can call. `module-graph.ts` keeps no value/type
+ * distinction, so `zoneImportEdges` reads it from the import declarations itself.
+ */
+export interface ZoneImportRule {
+  readonly id: string;
+  readonly subject: string;
+  readonly kind: "importers" | "imports";
+  readonly edges: "all" | "value";
+  readonly allowed?: readonly string[];
+  readonly forbidden?: readonly string[];
+  readonly reason: string;
+}
+
+const KERNEL_SRC = "packages/kernel/src";
+const zoneFile = (name: string): string => `${KERNEL_SRC}/${name}`;
+
+/**
+ * The state owner's boundary (design 01, CR1-2). `state-records.ts` holds the mutable record shapes and
+ * only the owner may name them; `state.ts` is the owner, and only the coordinator holds one; plans cannot
+ * name either, so no plan can carry a mutable record; and neither the owner nor the plans can call the
+ * modules that observe caller envelopes or hold the Driver.
+ */
+export const KERNEL_STATE_RULES: readonly ZoneImportRule[] = [
+  {
+    id: "R1",
+    subject: zoneFile("state-records.ts"),
+    kind: "importers",
+    edges: "all",
+    allowed: [zoneFile("state.ts")],
+    reason: "only the state owner may name the mutable records",
+  },
+  {
+    id: "R2",
+    subject: zoneFile("state.ts"),
+    kind: "importers",
+    edges: "all",
+    allowed: [zoneFile("coordinator.ts")],
+    reason: "only the coordinator holds the state owner",
+  },
+  {
+    id: "R3",
+    subject: zoneFile("plan.ts"),
+    kind: "imports",
+    edges: "all",
+    forbidden: [zoneFile("state.ts"), zoneFile("state-records.ts"), zoneFile("coordinator.ts")],
+    reason: "a plan cannot name the owner, its mutable records or the coordinator",
+  },
+  {
+    id: "R4",
+    subject: zoneFile("state.ts"),
+    kind: "imports",
+    edges: "value",
+    forbidden: [zoneFile("envelope.ts"), zoneFile("outcome.ts"), zoneFile("coordinator.ts")],
+    reason: "the owner cannot call caller observation, capture or the Driver",
+  },
+  {
+    id: "R4",
+    subject: zoneFile("state-records.ts"),
+    kind: "imports",
+    edges: "value",
+    forbidden: [zoneFile("envelope.ts"), zoneFile("outcome.ts"), zoneFile("coordinator.ts")],
+    reason: "the record shapes import no code",
+  },
+  {
+    id: "R4",
+    subject: zoneFile("plan.ts"),
+    kind: "imports",
+    edges: "value",
+    forbidden: [zoneFile("envelope.ts"), zoneFile("outcome.ts")],
+    reason: "the plan module cannot call caller observation or capture",
+  },
+];
+
+/** One import between two zone files, and whether it imports a runtime binding. */
+export interface ZoneEdge {
+  readonly from: string;
+  readonly to: string;
+  readonly value: boolean;
+}
+
+/** The relative specifiers in `text` that import or re-export at least one runtime binding. */
+const valueSpecifiers = (text: string): Set<string> => {
+  const source = ts.createSourceFile("source.ts", text, ts.ScriptTarget.Latest, true);
+  const out = new Set<string>();
+  const visit = (node: ts.Node): void => {
+    if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+      const clause = node.importClause;
+      const named = clause?.namedBindings;
+      const value =
+        clause === undefined ||
+        (!clause.isTypeOnly &&
+          (clause.name !== undefined ||
+            (named !== undefined && ts.isNamespaceImport(named)) ||
+            (named !== undefined && ts.isNamedImports(named) && named.elements.some((element) => !element.isTypeOnly))));
+      if (value) out.add(node.moduleSpecifier.text);
+    }
+    if (ts.isExportDeclaration(node) && node.moduleSpecifier !== undefined && ts.isStringLiteral(node.moduleSpecifier)) {
+      const clause = node.exportClause;
+      const value = !node.isTypeOnly && (clause === undefined || ts.isNamespaceExport(clause) || clause.elements.some((element) => !element.isTypeOnly));
+      if (value) out.add(node.moduleSpecifier.text);
+    }
+    if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+      const [argument] = node.arguments;
+      if (argument !== undefined && ts.isStringLiteralLike(argument)) out.add(argument.text);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  return out;
+};
+
+/** Every import between files of `sources` (repo-relative path → text) that a relative specifier names. */
+export function zoneImportEdges(sources: ReadonlyMap<string, string>): ZoneEdge[] {
+  const edges: ZoneEdge[] = [];
+  for (const [from, text] of sources) {
+    const values = valueSpecifiers(text);
+    for (const dependency of moduleDependenciesIn(text)) {
+      if (!dependency.specifier.startsWith(".")) continue;
+      const to = posix.normalize(posix.join(dirname(from), dependency.specifier));
+      if (!sources.has(to)) continue;
+      edges.push({ from, to, value: values.has(dependency.specifier) });
+    }
+  }
+  return edges;
+}
+
+/** Every broken rule, every rule that names a missing file, and every importer rule no edge matches. */
+export function zoneImportViolations(sources: ReadonlyMap<string, string>, rules: readonly ZoneImportRule[]): string[] {
+  const out: string[] = [];
+  const edges = zoneImportEdges(sources);
+  for (const rule of rules) {
+    for (const file of [rule.subject, ...(rule.allowed ?? []), ...(rule.forbidden ?? [])]) {
+      if (!sources.has(file)) out.push(`${rule.id}: names ${file}, which is not a zone source (a rule must match real files)`);
+    }
+    const counted = edges.filter((edge) => rule.edges === "all" || edge.value);
+    if (rule.kind === "importers") {
+      const importers = counted.filter((edge) => edge.to === rule.subject);
+      if (importers.length === 0) out.push(`${rule.id}: no file imports ${rule.subject}, so the rule matches nothing`);
+      for (const edge of importers) {
+        if (!(rule.allowed ?? []).includes(edge.from)) out.push(`${rule.id}: ${edge.from} imports ${rule.subject}; ${rule.reason}`);
+      }
+    } else {
+      for (const edge of counted) {
+        if (edge.from === rule.subject && (rule.forbidden ?? []).includes(edge.to)) out.push(`${rule.id}: ${rule.subject} imports ${edge.to}; ${rule.reason}`);
+      }
+    }
+  }
+  return out;
+}

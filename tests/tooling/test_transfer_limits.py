@@ -334,7 +334,8 @@ class LimitTests(RepositoryFixture):
 class RepositoryLimitTests(RepositoryFixture):
     """The maintained manifest: owner choices 04, 05 and 11 pin their lists; owner choice 04's limit admits each
     extra through its only target record, design 06's two extras among them; owner choice 11 lists one member;
-    K1.1-correction-03 owner choices 01 and 02 and BINDING-01 design 01 pin later mechanical revalidation and unbound members."""
+    K1.1-correction-03 owner choices 01 and 02, BINDING-01 design 01 and COORD-REFACTOR-01 design 01 pin later
+    mechanical revalidation and unbound members."""
 
     def test_the_manifest_pins_its_lists_and_maps_every_extra(self):
         import json
@@ -342,9 +343,10 @@ class RepositoryLimitTests(RepositoryFixture):
         manifest = json.loads((ROOT / 'tests/fixtures/packet-tools/adoption.json').read_text())
         lists = {row['decision']: row for row in manifest['transfer_lists']}
         binding_decision = 'docs/development/work/BINDING-01/design-01.md'
+        refactor_decision = 'docs/development/work/COORD-REFACTOR-01/design-01.md'
         self.assertEqual(sorted(lists), sorted([LATER_DECISION, SECOND_DECISION, tool.LIMIT_DECISION,
                                               'docs/development/work/TOOLS-01/owner-choice-05.md', tool.LISTED_DECISION,
-                                              binding_decision]))
+                                              binding_decision, refactor_decision]))
         for decision, row in lists.items():
             listed = {item['origin'] for item in json.loads((ROOT / row['list']).read_text())}
             self.assertEqual(tool.digest((ROOT / row['list']).read_bytes()), row['sha256'])

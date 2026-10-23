@@ -35,12 +35,13 @@ package roots and package subpaths.
 This table describes the current tree, not historical packet evidence. BINDING-01 adds the
 canonical-byte codec, value types and internal JSON transport adapter to the Kernel (16 files),
 and moves live-object capture plus its own-array helper to SDK internal code (6 files).
+COORD-REFACTOR-01 adds the plan union, the state owner and its record shapes (19 Kernel files).
 The core reaches no legacy, SDK or third-party module. The wrapper retains the unchanged
 `canonicalize@3.0.0` dependency; it imports no Kernel module and adds no public SDK export.
 
 | Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |
 |---|---|---|---|
-| `target-kernel` | 16 | nothing | nothing |
+| `target-kernel` | 19 | nothing | nothing |
 | `legacy-core` | 143 | — | nothing |
 | `runtime-integrations` | 16 | `@arrokothi/core`, `@arrokothi/core/execution`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `@langchain/core/documents`, `@langchain/textsplitters`, `@modelcontextprotocol/client`, `@modelcontextprotocol/server`, `@strands-agents/sdk` |
 | `host-sdk` | 6 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `canonicalize` |
