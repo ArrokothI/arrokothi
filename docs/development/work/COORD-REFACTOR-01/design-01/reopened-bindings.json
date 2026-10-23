@@ -1,0 +1,116 @@
+{
+  "reason": "COORD-REFACTOR-01 mechanical reopening under design 01 revision 1 (design check Q8: mechanical evidence relocation, no new credit). The held-witness bindings below name test spans the refactor changed (control-commits.test.ts ported; three oracle-test frames now name state.ts), so they no longer bind the source at C. They are retained as history, with no hold release or replacement credit; semantic revalidation belongs to TOOLS-02.",
+  "witnesses": [
+    {
+      "id": "witness.fault-oracle.200.3.e60e5e9ca3f4",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-0e16542de3087c0c508b3601"
+      ],
+      "members": [
+        "packages/kernel/tests/fault-oracle.test.ts:200:3@e60e5e9ca3f4"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's. Test: a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+    },
+    {
+      "id": "witness.fault-oracle.306.3.e60e5e9ca3f4",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-0e16542de3087c0c508b3601"
+      ],
+      "members": [
+        "packages/kernel/tests/fault-oracle.test.ts:306:3@e60e5e9ca3f4"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's. Test: the takeover window's receipt-only state, outside the clearing append"
+    },
+    {
+      "id": "witness.control-commits.81.3.1cc0368ebe2d",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ada9f66cd74e3bc95eef93d6"
+      ],
+      "members": [
+        "packages/kernel/tests/control-commits.test.ts:81:3@1cc0368ebe2d"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: every call resolves to zone code, a classified primordial or an inventoried foreign call"
+    },
+    {
+      "id": "witness.control-commits.93.5.1cc0368ebe2d",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ada9f66cd74e3bc95eef93d6"
+      ],
+      "members": [
+        "packages/kernel/tests/control-commits.test.ts:93:5@1cc0368ebe2d"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: `${name}: an apply suffix of prebuilt values, and no accepted-state mutation or foreign call before it`"
+    },
+    {
+      "id": "witness.control-commits.100.3.1cc0368ebe2d",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ada9f66cd74e3bc95eef93d6"
+      ],
+      "members": [
+        "packages/kernel/tests/control-commits.test.ts:100:3@1cc0368ebe2d"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the recognised apply suffixes are the ones the contract describes"
+    },
+    {
+      "id": "witness.control-commits.117.3.1cc0368ebe2d",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ada9f66cd74e3bc95eef93d6"
+      ],
+      "members": [
+        "packages/kernel/tests/control-commits.test.ts:117:3@1cc0368ebe2d"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: applyControlCommit appends its prebuilt record before its hold writes and does nothing else"
+    },
+    {
+      "id": "witness.control-commits.123.3.1cc0368ebe2d",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ada9f66cd74e3bc95eef93d6"
+      ],
+      "members": [
+        "packages/kernel/tests/control-commits.test.ts:123:3@1cc0368ebe2d"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: hold fields, recovery history, receipts and the acceptance index have fixed writers"
+    },
+    {
+      "id": "witness.control-commits.135.3.1cc0368ebe2d",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ada9f66cd74e3bc95eef93d6"
+      ],
+      "members": [
+        "packages/kernel/tests/control-commits.test.ts:135:3@1cc0368ebe2d"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: the refusal helpers change nothing on the path that continues past their exit test"
+    },
+    {
+      "id": "witness.control-commits.231.5.1cc0368ebe2d",
+      "kind": "held_witness",
+      "claim": "V-ENV",
+      "origins": [
+        "artifact-ada9f66cd74e3bc95eef93d6"
+      ],
+      "members": [
+        "packages/kernel/tests/control-commits.test.ts:231:5@1cc0368ebe2d"
+      ],
+      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: mutant.name"
+    }
+  ],
+  "reopened_origins": [
+    "artifact-0e16542de3087c0c508b3601"
+  ]
+}

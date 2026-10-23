@@ -70,3 +70,14 @@ The resume point for any session continuing this packet. Newest facts first with
 - Item 7 done: rewrite-index §4 transaction-mechanism entry records the binding's plan/owner choice (no `OPEN(`
   marker changes); BASELINE adds the "Plans and one state owner" bullet with the owner-choice-01 exception and
   updates the static-guard sentence; 017 adds L-15 (plan selection stays semantic). Builder docs pass.
+- Item 8: `verification.json` written from BINDING-01's (base B, administrative files, preserve list incl. the
+  Kernel `index.ts`, `packages/sdk`, brief/release at B and check/owner choice at `dde21bd8`); `coverage.json` gains
+  the `state-owner` family and category. Fresh-clone C1 value-cost run exposed one non-assertion failure: under
+  C-MAPSET-CREATION-KEY the owner's absence check threw on the executions map; a creation plan's basis is now the
+  creation-key index the planner read (`432d4c76`), and c1.creation is 14/14 killed.
+  Adoption regenerated in a fresh clone with a scratch driver (not payload): 966 register entries (186 landing-zone
+  keys shifted +3 by the file list carry their stored entries; 11 new control-commits and 4 new case keys are
+  owner-choice-08 rule-1 holds; 9 dropped), preserved table recomputed: 1,212 rows change only mechanical fields
+  (reads, read/production change lists, current positions, reasons) and 9 rows move held → refused (7
+  control-commits, 2 fault-oracle spans changed); no row gains `preserved`. Tool-tests 614 OK in a fresh clone;
+  refusal census 322/322; oracle census 29/29.

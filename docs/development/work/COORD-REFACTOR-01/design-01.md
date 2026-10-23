@@ -440,3 +440,11 @@ Updated test-file list:
 - `control-commits.test.ts` is **ported**: same obligations, new shapes, with the controls above added.
 - New: `fault-paths.test.ts` and `fault-paths-child.ts`.
 - Everything else is as listed above.
+
+**Build note: evidence at C (D01 Q8).** Moving code changes the adoption census and hold register, which are
+regenerated mechanically at C with no new credit. Nine held-witness bindings name test spans this packet changed:
+seven in the ported `control-commits.test.ts` and two oracle-test controls whose frames now name `state.ts`. They
+no longer bind the source at C. They are retired to [reopened-bindings.json](design-01/reopened-bindings.json),
+with no hold release or replacement credit. The one complete origin they closed, the fault-oracle suite, is reopened
+for revalidation and transferred to TOOLS-02 under this design, as pinned in
+[revalidation-origins.json](design-01/revalidation-origins.json).
