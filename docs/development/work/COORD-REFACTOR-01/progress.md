@@ -28,3 +28,16 @@ The resume point for any session continuing this packet. Newest facts first with
   fault-oracle locator ported (two files, both halves checked); fault sweep 66 scenarios / 57 exits / 0 violations;
   `fault-oracle.test.ts` + `fault-sweep.test.ts` 269/269. Next: zone-analysis getters, zone-inventory, ported
   control-commits, ownership rules, plan/reader witnesses, fault-path tests, registries, Layer 3.
+- Build checkpoint 2 (`30bc94b6`): zone-analysis models getters (D01-CHK-2); `control-commits.test.ts` ported
+  (planner hand-over/basis/refusal checks, per-arm commit table, per-field arm writers, 37 negative controls incl.
+  getter, basis and dropped-field mutants) 68/68; ambient-reads 47/47 unchanged; kernel suite 1,819/1,819.
+- Checkpoint 3 (WIP, this commit): `KERNEL_STATE_RULES` R1–R4 + `zoneImportViolations` in `boundary-policy.ts`;
+  `kernel-state-ownership.test.ts` 9/9; landing-zone file list +3; kernel-ownership.md count 16 → 19.
+  **Open:** the landing-zone doc-table negative controls (K10-R3/R4/R5/R6 fixtures) anchor on the literal
+  `| \`target-kernel\` | 16 |` row text in `kernel-landing-zone.test.ts`; update those anchors to 19 (or derive
+  them) and rerun. Then remaining build items, in order: `state-plans.test.ts` (plan witness per operation,
+  reader + inspection alias witnesses), `state-types.test.ts` (pinned TS codes, runtime brand), owner choice 01
+  fault-path tests (`fault-paths-child.ts`/`fault-paths.test.ts`), CR1-4 registry cases + `state-owner-probe.mjs`,
+  value-cost mutant path re-pointing + `value-cost-source-files.json` +3, Layer 3 (rewrite-index §4, BASELINE
+  incl. owner-choice exception, 017 limit), `verification.json`, adoption regeneration in a fresh clone, full
+  fresh-clone verify, one CI dispatch.
