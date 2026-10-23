@@ -273,5 +273,24 @@ class ReachValidityTests(unittest.TestCase):
         self.assertEqual(tool.name_pattern(['a.b', 'c (d)']), '^a\\.b c \\(d\\)$')
 
 
+class PinnedToolchainTests(unittest.TestCase):
+    def test_every_registry_copies_the_whole_pinned_subset(self):
+        """`pinned_toolchain()` runs inside mutant copies, which hold only their registry's declared files.
+        A registry that copies TypeScript, or whose cases run these tool tests, copies exactly the pinned subset."""
+        pin, = [row for row in json.loads((ROOT / 'tests/fixtures/packet-tools/mutations.json').read_text())['dependencies']
+                if row['path'] == 'node_modules/typescript']
+        checked = []
+        for path in sorted((ROOT / 'tests/fixtures/packet-tools').glob('*.json')):
+            registry = json.loads(path.read_text())
+            if not isinstance(registry, dict) or 'dependencies' not in registry or 'cases' not in registry:
+                continue
+            copied = [row for row in registry['dependencies'] if row['path'] == 'node_modules/typescript']
+            runs_tool_tests = any('tests/tooling/python-probe.py' in case['argv'] for case in registry['cases'])
+            if copied or runs_tool_tests:
+                self.assertEqual(copied, [pin], path.name)
+                checked.append(path.name)
+        self.assertEqual(checked, ['mutations.json', 'refusal-guards.json', 'value-cost.json'])
+
+
 if __name__ == '__main__':
     unittest.main()

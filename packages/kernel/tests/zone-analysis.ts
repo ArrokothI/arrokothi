@@ -129,10 +129,15 @@ const outermost = (node: ts.Node): ts.Node => {
   return current;
 };
 
-export type Fn = ts.FunctionDeclaration | ts.MethodDeclaration | ts.ConstructorDeclaration | ts.ArrowFunction | ts.FunctionExpression;
+/**
+ * A function body the analysis summarizes. Getters are functions too (COORD-REFACTOR-01, D01-CHK-2): a
+ * read of a getter-backed member runs the getter's body, so its effects and what it returns are the
+ * read's, and a getter that writes is a writer like any method.
+ */
+export type Fn = ts.FunctionDeclaration | ts.MethodDeclaration | ts.ConstructorDeclaration | ts.ArrowFunction | ts.FunctionExpression | ts.GetAccessorDeclaration;
 
 export const isFn = (node: ts.Node): node is Fn =>
-  ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node) || ts.isConstructorDeclaration(node) || ts.isArrowFunction(node) || ts.isFunctionExpression(node);
+  ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node) || ts.isConstructorDeclaration(node) || ts.isArrowFunction(node) || ts.isFunctionExpression(node) || ts.isGetAccessorDeclaration(node);
 
 const enclosingFn = (node: ts.Node): Fn | undefined => {
   for (let current = node.parent; current !== undefined; current = current.parent) if (isFn(current)) return current;
@@ -157,6 +162,7 @@ const isTypeLevel = (node: ts.Node): boolean =>
 export const ownerName = (node: ts.Node): string => {
   for (let current: ts.Node | undefined = node; current !== undefined; current = current.parent) {
     if ((ts.isMethodDeclaration(current) || ts.isFunctionDeclaration(current)) && current.name !== undefined) return current.name.getText();
+    if (ts.isGetAccessorDeclaration(current)) return `get ${current.name.getText()}`;
     if (ts.isConstructorDeclaration(current)) return "constructor";
     if (ts.isVariableDeclaration(current) && current.initializer !== undefined && isFn(current.initializer) && ts.isIdentifier(current.name)) return current.name.text;
   }
@@ -177,6 +183,9 @@ const PERMITTED_KINDS: ReadonlySet<ts.SyntaxKind> = new Set([
   K.ImportDeclaration, K.ImportClause, K.NamedImports, K.ImportSpecifier, K.ExportDeclaration, K.NamedExports, K.ExportSpecifier,
   K.VariableStatement, K.VariableDeclarationList, K.VariableDeclaration, K.FunctionDeclaration, K.ClassDeclaration, K.HeritageClause,
   K.Constructor, K.MethodDeclaration, K.PropertyDeclaration, K.Parameter,
+  // Read-only getters (COORD-REFACTOR-01): the effect analysis follows a getter-backed read into the
+  // getter's body. Setters stay outside the zone.
+  K.GetAccessor,
   K.Block, K.ExpressionStatement, K.IfStatement, K.ForStatement, K.WhileStatement, K.ReturnStatement, K.ThrowStatement,
   K.TryStatement, K.CatchClause, K.BreakStatement, K.ContinueStatement,
   K.Identifier, K.PrivateIdentifier, K.StringLiteral, K.NumericLiteral, K.NoSubstitutionTemplateLiteral,
@@ -609,6 +618,8 @@ export function resolveCallee(checker: ts.TypeChecker, call: ts.CallExpression |
     return { kind: "unknown", args: applied };
   }
   if (primordial !== undefined) return { kind: "primordial", name: primordial, receiver: undefined, args };
+  // Calling a getter-backed member calls what the getter returned, not the getter.
+  if (declaration !== undefined && ts.isGetAccessorDeclaration(declaration)) return { kind: "unknown", args };
   if (declaration !== undefined && isFn(declaration) && declaration.body !== undefined) {
     const receiver = ts.isPropertyAccessExpression(callee) ? callee.expression : undefined;
     return { kind: "zone", fn: declaration, receiver, args };
@@ -655,20 +666,24 @@ const passedTo = (
 
 /**
  * Where an object may come from, relative to the function evaluating an expression. `exact` names a
- * parameter's own object; `parameters` anything reachable from one. A function's receiver, captured
- * bindings and anything of unknown origin are always taken with everything reachable from them. An
- * empty provenance is a primitive or no object at all.
+ * parameter's own object; `parameters` anything reachable from one. Captured bindings are split the same
+ * way: `capturedExact` names a binding's own object, `captured` anything reachable from one, so a closure
+ * that appends to a list its enclosing function built is, at that function, a change to the fresh list
+ * and not to what the list holds (review 01, CR1-R1-CREATION-01). A function's receiver and anything of
+ * unknown origin are always taken with everything reachable from them. An empty provenance is a
+ * primitive or no object at all.
  */
 export interface Provenance {
   readonly fresh: boolean; // created during this call
   readonly exact: ReadonlySet<number>;
   readonly parameters: ReadonlySet<number>;
   readonly self: boolean; // the receiver of a method: for the coordinator, its accepted state
-  readonly captured: ReadonlySet<ts.Symbol>; // bindings of an enclosing function
+  readonly capturedExact: ReadonlySet<ts.Symbol>; // the own objects of bindings of an enclosing function
+  readonly captured: ReadonlySet<ts.Symbol>; // anything reachable from bindings of an enclosing function
   readonly other: boolean; // module or global state, or a value of unknown origin
 }
 
-const NONE: Provenance = { fresh: false, exact: new Set(), parameters: new Set(), self: false, captured: new Set(), other: false };
+const NONE: Provenance = { fresh: false, exact: new Set(), parameters: new Set(), self: false, capturedExact: new Set(), captured: new Set(), other: false };
 const FRESH: Provenance = { ...NONE, fresh: true };
 const OTHER: Provenance = { ...NONE, other: true };
 const SELF: Provenance = { ...NONE, self: true };
@@ -678,6 +693,7 @@ const join = (...parts: readonly Provenance[]): Provenance => ({
   exact: new Set(parts.flatMap((part) => [...part.exact])),
   parameters: new Set(parts.flatMap((part) => [...part.parameters])),
   self: parts.some((part) => part.self),
+  capturedExact: new Set(parts.flatMap((part) => [...part.capturedExact])),
   captured: new Set(parts.flatMap((part) => [...part.captured])),
   other: parts.some((part) => part.other),
 });
@@ -685,10 +701,10 @@ const withoutFresh = (value: Provenance): Provenance => ({ ...value, fresh: fals
 
 /** Whether a provenance can reach an object that existed before the call. */
 export const isPreExisting = (value: Provenance): boolean =>
-  value.exact.size > 0 || value.parameters.size > 0 || value.self || value.captured.size > 0 || value.other;
+  value.exact.size > 0 || value.parameters.size > 0 || value.self || value.capturedExact.size > 0 || value.captured.size > 0 || value.other;
 
 /** Whether a provenance can reach the coordinator's accepted state, or an object of unknown origin. */
-export const reachesAcceptedState = (value: Provenance): boolean => value.self || value.captured.size > 0 || value.other;
+export const reachesAcceptedState = (value: Provenance): boolean => value.self || value.capturedExact.size > 0 || value.captured.size > 0 || value.other;
 
 export interface Effects {
   /** Objects this function's own code (and its zone callees) may mutate. */
@@ -806,6 +822,7 @@ export interface EffectAnalysis {
 /** The name a function is declared under, if any: a declaration, a method, or a `const` holding it. */
 export const fnName = (fn: Fn): string | undefined => {
   if ((ts.isFunctionDeclaration(fn) || ts.isMethodDeclaration(fn)) && fn.name !== undefined) return fn.name.getText();
+  if (ts.isGetAccessorDeclaration(fn)) return `get ${fn.name.getText()}`;
   if (ts.isConstructorDeclaration(fn)) return "constructor";
   const parent = outermost(fn).parent;
   return ts.isVariableDeclaration(parent) && ts.isIdentifier(parent.name) ? parent.name.text : undefined;
@@ -912,6 +929,32 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
     return symbolCache.get(node);
   };
 
+  /** The zone getter a member read runs, if the member is getter-backed. */
+  const getterOf = (access: ts.PropertyAccessExpression | ts.ElementAccessExpression): ts.GetAccessorDeclaration | undefined => {
+    const name = ts.isPropertyAccessExpression(access) ? access.name : access.argumentExpression;
+    const declarations = symbolAt(name)?.declarations ?? [];
+    for (const declaration of declarations) {
+      if (ts.isGetAccessorDeclaration(declaration) && declaration.body !== undefined && effects.has(declaration)) return declaration;
+    }
+    return undefined;
+  };
+  /** Whether a member access is read (not only written to, deleted or called as a method). */
+  const isRead = (access: ts.Expression): boolean => {
+    const used = outermost(access);
+    const parent = used.parent;
+    if (ts.isBinaryExpression(parent) && parent.left === used && isAssignmentOperator(parent.operatorToken.kind)) return parent.operatorToken.kind !== K.EqualsToken;
+    if (ts.isDeleteExpression(parent)) return false;
+    if (ts.isCallExpression(parent) && parent.expression === used) return false;
+    return true;
+  };
+  /** A getter-backed read, as a call of the getter on its receiver. */
+  const getterCallee = (access: ts.PropertyAccessExpression | ts.ElementAccessExpression, getter: ts.GetAccessorDeclaration): Extract<Callee, { kind: "zone" }> => ({
+    kind: "zone",
+    fn: getter,
+    receiver: access.expression,
+    args: [],
+  });
+
   const rootIdentifierOf = (expression: ts.Expression): ts.Identifier | undefined => {
     let current = strip(expression);
     while (ts.isPropertyAccessExpression(current) || ts.isElementAccessExpression(current)) current = strip(current.expression);
@@ -992,7 +1035,7 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
   const bindingIdentity = (symbol: ts.Symbol, fn: Fn): Provenance => {
     const binding = bindingOf(symbol, fn);
     if (binding.kind === "parameter") return { ...NONE, exact: new Set([binding.index]) };
-    if (binding.kind === "captured") return { ...NONE, captured: new Set([symbol]) };
+    if (binding.kind === "captured") return { ...NONE, capturedExact: new Set([symbol]) };
     if (binding.kind === "other") return OTHER;
     const { declaration } = binding;
     return memo(`identity:${declaration.getSourceFile().fileName}:${declaration.pos}`, () =>
@@ -1031,7 +1074,15 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
       return symbol === undefined ? OTHER : bindingIdentity(symbol, fn);
     }
     if (target.kind === K.ThisKeyword) return SELF;
-    if (ts.isPropertyAccessExpression(target) || ts.isElementAccessExpression(target)) return reach(target.expression, fn);
+    if (ts.isPropertyAccessExpression(target) || ts.isElementAccessExpression(target)) {
+      const getter = getterOf(target);
+      if (getter !== undefined) {
+        const summary = effects.get(getter);
+        if (summary === undefined) return OTHER;
+        return summary.returnsFresh ? FRESH : mapInto(summary.returned, getterCallee(target, getter), target, fn);
+      }
+      return reach(target.expression, fn);
+    }
     if (ts.isObjectLiteralExpression(target) || ts.isArrayLiteralExpression(target) || isFn(target)) return FRESH;
     if (ts.isConditionalExpression(target)) return join(identity(target.whenTrue, fn), identity(target.whenFalse, fn));
     if (ts.isBinaryExpression(target)) {
@@ -1053,7 +1104,14 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
       return symbol === undefined ? OTHER : bindingReach(symbol, fn);
     }
     if (target.kind === K.ThisKeyword) return SELF;
-    if (ts.isPropertyAccessExpression(target) || ts.isElementAccessExpression(target)) return reach(target.expression, fn);
+    if (ts.isPropertyAccessExpression(target) || ts.isElementAccessExpression(target)) {
+      const getter = getterOf(target);
+      if (getter !== undefined) {
+        const summary = effects.get(getter);
+        return summary === undefined ? OTHER : mapInto(summary.returned, getterCallee(target, getter), target, fn);
+      }
+      return reach(target.expression, fn);
+    }
     if (ts.isObjectLiteralExpression(target)) {
       const parts: Provenance[] = [FRESH];
       for (const property of target.properties) {
@@ -1111,7 +1169,7 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
   };
 
   /** Re-expresses a callee's provenance (in terms of its parameters and receiver) at one call site. */
-  const mapInto = (summary: Provenance, callee: Extract<Callee, { kind: "zone" }>, call: ts.CallExpression | ts.NewExpression, fn: Fn): Provenance => {
+  const mapInto = (summary: Provenance, callee: Extract<Callee, { kind: "zone" }>, call: ts.Node, fn: Fn): Provenance => {
     const parts: Provenance[] = [];
     if (summary.fresh) parts.push(FRESH);
     for (const index of summary.exact) {
@@ -1123,6 +1181,7 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
       if (argument !== undefined) parts.push(reach(argument, fn));
     }
     if (summary.self) parts.push(ts.isNewExpression(call) ? FRESH : callee.receiver === undefined ? OTHER : reach(callee.receiver, fn));
+    for (const symbol of summary.capturedExact) parts.push(bindingIdentity(symbol, fn));
     for (const symbol of summary.captured) parts.push(bindingReach(symbol, fn));
     if (summary.other) parts.push(OTHER);
     return join(...parts);
@@ -1167,6 +1226,7 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
     // The callback's parameters receive values the callee chose: anything the call's arguments reach.
     if (summary.mutated.exact.size > 0 || summary.mutated.parameters.size > 0) parts.push(...resolve(call).args.map((argument) => reach(argument, fn)));
     if (summary.mutated.self) parts.push(SELF);
+    for (const symbol of summary.mutated.capturedExact) parts.push(bindingIdentity(symbol, fn));
     for (const symbol of summary.mutated.captured) parts.push(bindingReach(symbol, fn));
     if (summary.mutated.other) parts.push(OTHER);
     return { mutated: join(...parts), foreign: summary.foreign };
@@ -1236,11 +1296,19 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
     if (ts.isElementAccessExpression(node) && options.getterReads?.has(`${basename(node.getSourceFile().fileName)} ${spelling(node)}`) === true) {
       return { mutated: NONE, foreign: true };
     }
+    if ((ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) && isRead(node)) {
+      const getter = getterOf(node);
+      if (getter !== undefined) {
+        const summary = effects.get(getter);
+        if (summary === undefined) return { mutated: OTHER, foreign: true };
+        return { mutated: withoutFresh(mapInto(withoutFresh(summary.mutated), getterCallee(node, getter), node, fn)), foreign: summary.foreign };
+      }
+    }
     return { mutated: NONE, foreign: false };
   };
 
   const text = (value: Provenance): string =>
-    `${value.fresh}/${[...value.exact].sort().join(",")}/${[...value.parameters].sort().join(",")}/${value.self}/${value.captured.size}/${value.other}`;
+    `${value.fresh}/${[...value.exact].sort().join(",")}/${[...value.parameters].sort().join(",")}/${value.self}/${value.capturedExact.size}/${value.captured.size}/${value.other}`;
   const signature = (summary: Effects): string =>
     `${text(summary.mutated)}|${text(summary.returned)}|${summary.returnsFresh}|${summary.foreign}|${[...summary.callsParameters].sort().join(",")}`;
 
@@ -1291,93 +1359,41 @@ export function analyseEffects(zone: Zone, options: EffectOptions): EffectAnalys
   return { effects, unclassified: [...unclassified].sort(), nodeEffects, resolve };
 }
 
-// -- DEC-9: control commits ---------------------------------------------------------
-
-/**
- * One statement of a control method's apply suffix: the only place a control may change anything.
- * `values` are the prebuilt locals the statement commits or returns; `targets` are the locals whose
- * objects it changes.
- */
-interface SuffixStatement {
-  readonly rank: 0 | 1 | 2 | 3; // 0 append/commit, 1 plain write, 2 post-commit delivery, 3 return
-  readonly values: readonly ts.Identifier[];
-  readonly targets: readonly ts.Identifier[];
-}
-
-const rootIdentifier = (expression: ts.Expression): ts.Identifier | undefined => {
-  let current = expression;
-  while (ts.isPropertyAccessExpression(current) && !ts.isPrivateIdentifier(current.name)) current = current.expression;
-  return ts.isIdentifier(current) ? current : undefined;
-};
+// -- DEC-9: planners and the state owner's arms ------------------------------------------------
+//
+// COORD-REFACTOR-01 moved every write of accepted state into `KernelState` (`state.ts`). DEC-9's
+// guard follows the writes: a planner (a coordinator method that forms plans) may change nothing before
+// it hands its plan to the owner, binds the plan's basis after its last callback, and returns what it
+// built before; an owner arm prepares without changing anything and then commits exactly its declared
+// statements; and each record field has a fixed set of arms that may write it.
 
 const calleeText = (call: ts.CallExpression): string => call.expression.getText();
 
-const appendStatement = (statement: ts.Statement): SuffixStatement | undefined => {
-  if (!ts.isExpressionStatement(statement) || !ts.isCallExpression(statement.expression)) return undefined;
-  const call = statement.expression;
-  if (!["appendOwn", "appendAllOwn"].includes(calleeText(call)) || call.arguments.length !== 2) return undefined;
-  const [target, value] = call.arguments as unknown as [ts.Expression, ts.Expression];
-  const root = ts.isPropertyAccessExpression(target) ? rootIdentifier(target) : undefined;
-  if (root === undefined || !ts.isIdentifier(value)) return undefined;
-  return { rank: 0, values: [value], targets: [root] };
+/** The checker's name for an expression's type, or of its non-nullable part. */
+const typeNameOf = (checker: ts.TypeChecker, expression: ts.Expression): string | undefined => {
+  const type = checker.getNonNullableType(checker.getTypeAtLocation(expression));
+  return (type.aliasSymbol ?? type.getSymbol())?.getName();
 };
 
-/** Classifies one statement against the apply-suffix grammar, or `undefined` when it is not one. */
-const suffixStatement = (statement: ts.Statement): SuffixStatement | undefined => {
-  const append = appendStatement(statement);
-  if (append !== undefined) return append;
-  if (ts.isIfStatement(statement) && statement.elseStatement === undefined) {
-    // `if (<value> !== null) appendOwn(<target>, <value>);` — a conditional prebuilt record.
-    const condition = statement.expression;
-    const inner = ts.isBlock(statement.thenStatement) && statement.thenStatement.statements.length === 1 ? statement.thenStatement.statements[0]! : statement.thenStatement;
-    const guarded = appendStatement(inner);
-    if (
-      guarded !== undefined &&
-      ts.isBinaryExpression(condition) &&
-      condition.operatorToken.kind === K.ExclamationEqualsEqualsToken &&
-      ts.isIdentifier(condition.left) &&
-      condition.right.kind === K.NullKeyword &&
-      condition.left.text === guarded.values[0]!.text
-    ) {
-      return guarded;
-    }
-    return undefined;
-  }
-  if (!ts.isExpressionStatement(statement) && !ts.isReturnStatement(statement)) return undefined;
-  if (ts.isReturnStatement(statement)) {
-    return statement.expression !== undefined && ts.isIdentifier(statement.expression) ? { rank: 3, values: [statement.expression], targets: [] } : undefined;
-  }
-  const expression = statement.expression;
-  if (ts.isCallExpression(expression)) {
-    if (calleeText(expression) === "applyControlCommit" && expression.arguments.length === 3 && expression.arguments.every(ts.isIdentifier)) {
-      const [record, exchange, commit] = expression.arguments as unknown as [ts.Identifier, ts.Identifier, ts.Identifier];
-      return { rank: 0, values: [commit], targets: [record, exchange] };
-    }
-    if (calleeText(expression) === "this.#deliver" && expression.arguments.length === 1 && ts.isIdentifier(expression.arguments[0]!)) {
-      return { rank: 2, values: [], targets: [expression.arguments[0] as ts.Identifier] };
-    }
-    return undefined;
-  }
-  if (ts.isBinaryExpression(expression) && expression.operatorToken.kind === K.EqualsToken && ts.isPropertyAccessExpression(expression.left)) {
-    const left = expression.left;
-    if (ts.isPrivateIdentifier(left.name) || !ts.isIdentifier(left.expression)) return undefined;
-    const right = expression.right;
-    if (ts.isIdentifier(right)) return { rank: 1, values: [right], targets: [left.expression] };
-    if (right.kind === K.NullKeyword) return { rank: 1, values: [], targets: [left.expression] };
-    if (ts.isBinaryExpression(right) && right.operatorToken.kind === K.PlusToken && ts.isIdentifier(right.left) && ts.isNumericLiteral(right.right) && right.right.text === "1") {
-      return { rank: 1, values: [right.left], targets: [left.expression] };
-    }
-  }
-  return undefined;
+/** The owner's class and its readers: a member access on one of these reads accepted state. */
+export const STATE_TYPES: ReadonlySet<string> = new Set(["KernelState", "ExecutionReader", "ExchangeReader", "EntryReader"]);
+
+/** Whether `node` is a call of the owner's `apply`. */
+export const isApplyCall = (checker: ts.TypeChecker, node: ts.Node): node is ts.CallExpression =>
+  ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) && node.expression.name.text === "apply" && typeNameOf(checker, node.expression.expression) === "KernelState";
+
+/** Calls that hand a decision on to another planner, which applies it. */
+const DELEGATIONS: ReadonlySet<string> = new Set(["this.#accept", "this.#deliver"]);
+
+/** Whether `call` is `this.#refusal(...)` in exactly `return this.#refusal(...)` or `return err(this.#refusal(...))`. */
+const isRefusalExit = (call: ts.Node): boolean => {
+  if (!ts.isCallExpression(call) || calleeText(call) !== "this.#refusal") return false;
+  const parent = call.parent;
+  if (ts.isReturnStatement(parent)) return true;
+  return ts.isCallExpression(parent) && calleeText(parent) === "err" && parent.arguments.length === 1 && ts.isReturnStatement(parent.parent);
 };
 
-export interface ControlCheck {
-  readonly violations: readonly string[];
-  /** The statements recognised as the apply suffix, for reporting. */
-  readonly suffix: readonly string[];
-}
-
-/** The refusal helpers a control may call before its apply suffix, with the exit test each needs. */
+/** The refusal helpers a planner may call before handing its plan over, with the exit test each needs. */
 const REFUSAL_HELPERS: ReadonlyMap<string, "null" | "result"> = new Map([
   ["this.#requireControl", "null"],
   ["this.#openExchange", "result"],
@@ -1410,19 +1426,11 @@ export function findConstFunction(zone: Zone, name: string): Fn | undefined {
   return found;
 }
 
-/** Whether `call` is `this.#refusal(...)` in exactly `return this.#refusal(...)` or `return err(this.#refusal(...))`. */
-const isRefusalExit = (call: ts.Node): boolean => {
-  if (!ts.isCallExpression(call) || calleeText(call) !== "this.#refusal") return false;
-  const parent = call.parent;
-  if (ts.isReturnStatement(parent)) return true;
-  return ts.isCallExpression(parent) && calleeText(parent) === "err" && parent.arguments.length === 1 && ts.isReturnStatement(parent.parent);
-};
-
 /**
  * A refusal helper mutates only inside its refusal exits, so a path that continues past its exit test
  * changed nothing. Returns the violations; its non-exit returns must be `null` or `ok(...)`.
  */
-function refusalHelperViolations(analysis: EffectAnalysis, helper: Fn, shape: "null" | "result"): string[] {
+export function refusalHelperViolations(analysis: EffectAnalysis, helper: Fn, shape: "null" | "result"): string[] {
   const out: string[] = [];
   const name = fnName(helper) ?? "<helper>";
   ownNodes(helper, (node) => {
@@ -1466,140 +1474,444 @@ const exitsOnRefusal = (declaration: ts.VariableStatement, shape: "null" | "resu
 };
 
 /**
- * Correction DEC-9 for one control method. The body must end in an apply suffix: appends of prebuilt
- * locals (or `applyControlCommit`), then plain writes of prebuilt locals, then the post-commit
- * delivery, then `return` of a prebuilt local. Before the suffix, nothing may mutate an object that
- * existed before the call except a refusal exit, and every call that can run code outside the zone
- * must precede the first value the suffix commits or returns.
+ * Every `this.#refusal(...)` call that is not a refusal exit, and every refusal-helper call that is not a
+ * `const` followed by its exit test: a recorded refusal always ends the request.
  */
-export function checkControl(zone: Zone, analysis: EffectAnalysis, method: ts.MethodDeclaration): ControlCheck {
-  const name = method.name.getText();
-  const violations: string[] = [];
-  const body = method.body;
-  if (body === undefined) return { violations: [`${name} has no body`], suffix: [] };
-  const statements = body.statements;
-  const suffix: { statement: ts.Statement; shape: SuffixStatement }[] = [];
-  for (let index = statements.length - 1; index >= 0; index -= 1) {
-    const statement = statements[index]!;
-    const shape = suffixStatement(statement);
-    if (shape === undefined) break;
-    const later = suffix[0]?.shape.rank ?? 4;
-    if (shape.rank > later || (shape.rank === 3 && suffix.length > 0)) break;
-    suffix.unshift({ statement, shape });
+export function refusalsWithoutExit(zone: Zone): string[] {
+  const out: string[] = [];
+  for (const source of sourcesOf(zone)) {
+    const visit = (node: ts.Node): void => {
+      if (ts.isCallExpression(node) && calleeText(node) === "this.#refusal" && !isRefusalExit(node)) out.push(`${ownerName(node)}: a refusal recorded without exiting: ${spelling(node).slice(0, 80)}`);
+      if (ts.isCallExpression(node) && REFUSAL_HELPERS.has(calleeText(node))) {
+        const declaration = node.parent;
+        const statement = ts.isVariableDeclaration(declaration) && declaration.initializer === node ? declaration.parent.parent : undefined;
+        if (statement === undefined || !ts.isVariableStatement(statement) || !exitsOnRefusal(statement, REFUSAL_HELPERS.get(calleeText(node))!)) {
+          out.push(`${ownerName(node)}: ${calleeText(node)} is not followed by its exit test`);
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(source);
   }
-  if (suffix.length === 0 || suffix[suffix.length - 1]!.shape.rank !== 3) violations.push(`${name}: does not end by returning a prebuilt local`);
-  if (!suffix.some((entry) => entry.shape.rank <= 1)) violations.push(`${name}: no apply suffix of prebuilt appends and writes`);
-  const suffixStart = suffix[0]?.statement.getStart() ?? body.getEnd();
+  return out;
+}
 
-  // Every identifier the suffix touches is a local declared before it: nothing is built inside it.
-  const buildStarts: number[] = [];
-  const declaredBefore = (identifier: ts.Identifier, role: string): void => {
-    const symbol = zone.checker.getSymbolAtLocation(identifier);
-    const declaration = symbol?.valueDeclaration;
-    if (declaration === undefined || !ts.isVariableDeclaration(declaration) || enclosingFn(declaration) !== method || declaration.getStart() >= suffixStart) {
-      violations.push(`${name}: suffix ${role} ${identifier.text} is not a local built before the apply step`);
+/**
+ * Whether a mutation can reach accepted state or anything of unknown origin: the planner's own state,
+ * a module binding, or a binding captured from an enclosing function other than a list or record that
+ * function built itself.
+ */
+const reachesState = (checker: ts.TypeChecker, value: Provenance): boolean => {
+  if (value.self || value.other) return true;
+  for (const symbol of [...value.capturedExact, ...value.captured]) {
+    const declaration = symbol.valueDeclaration;
+    const fresh =
+      declaration !== undefined && ts.isVariableDeclaration(declaration) && (declaration.parent.flags & ts.NodeFlags.Const) !== 0 && declaration.initializer !== undefined &&
+      (ts.isArrayLiteralExpression(strip(declaration.initializer)) || ts.isObjectLiteralExpression(strip(declaration.initializer)));
+    if (!fresh) return true;
+  }
+  void checker;
+  return false;
+};
+
+/** Whether `node` lies inside a refusal exit (`return err(this.#refusal(…))`), which is its own plan. */
+const insideRefusalExit = (node: ts.Node, fn: Fn): boolean => {
+  for (let current: ts.Node | undefined = node; current !== undefined && current !== fn; current = current.parent) {
+    if (isRefusalExit(current)) return true;
+  }
+  return false;
+};
+
+/**
+ * How a planner ends. `suffix`: its plan handed over (`this.#state.apply(<prebuilt plan>)`), then
+ * optionally the post-commit delivery (`this.#deliver(...)`), then `return` of a prebuilt local, or the
+ * whole decision delegated to another planner (`return ok(this.#accept(...))`, `this.#deliver(...)`).
+ * `delivery`: the delivery plan handed over, after which the Driver may run. `final`: the body ends by
+ * handing its plan over.
+ */
+export type PlannerShape = "suffix" | "delivery" | "final";
+
+export interface PlannerCheck {
+  readonly violations: readonly string[];
+  /** The statements recognised as the hand-over and what follows it, for reporting. */
+  readonly suffix: readonly string[];
+}
+
+/**
+ * Correction DEC-9 for one planner, after COORD-REFACTOR-01.
+ *
+ * - **Before the hand-over** (the first statement that applies or delegates), no node may change an
+ *   object that existed before the call — accepted state, module bindings, anything a getter-backed
+ *   read changes — except a refusal exit or a refusal helper in call-then-exit form.
+ * - **The hand-over** has the planner's shape, and every value it hands over or returns is a local
+ *   built before it.
+ * - **The basis.** Every plan literal names its basis as the binding `basis` (or the literal `0` for a
+ *   creation plan, which the owner checks against an absent record). That binding is `const basis =
+ *   <reader>.version`, made as the first read of accepted state after the planner's last callback, with
+ *   no callback after it before the hand-over; or a parameter, which every caller passes its own binding as.
+ */
+export function checkPlanner(zone: Zone, analysis: EffectAnalysis, fn: Fn, shape: PlannerShape): PlannerCheck {
+  const { checker } = zone;
+  const name = fnName(fn) ?? "<planner>";
+  const violations: string[] = [];
+  const body = fn.body;
+  if (body === undefined || !ts.isBlock(body)) return { violations: [`${name} has no block body`], suffix: [] };
+  const statements = body.statements;
+  const appliesOrDelegates = (statement: ts.Statement): boolean => {
+    let found = false;
+    const visit = (node: ts.Node): void => {
+      if (isFn(node) && node !== fn) return;
+      if (isApplyCall(checker, node) || (ts.isCallExpression(node) && DELEGATIONS.has(calleeText(node)))) found = true;
+      if (!found) ts.forEachChild(node, visit);
+    };
+    visit(statement);
+    return found;
+  };
+  const handOver = statements.findIndex(appliesOrDelegates);
+  if (handOver < 0) return { violations: [`${name}: never hands a plan to the state owner`], suffix: [] };
+  const handOverStart = statements[handOver]!.getStart();
+  const tail = statements.slice(handOver);
+
+  // The hand-over and what follows it.
+  const prebuilt = (identifier: ts.Expression, role: string): void => {
+    const target = strip(identifier);
+    if (!ts.isIdentifier(target)) {
+      violations.push(`${name}: hand-over ${role} ${spelling(identifier).slice(0, 60)} is not a local`);
       return;
     }
-    if (role === "value") {
-      buildStarts.push(declaration.getStart());
-      ownNodes(method, (node) => {
-        if (ts.isBinaryExpression(node) && node.operatorToken.kind === K.EqualsToken && ts.isIdentifier(node.left) && zone.checker.getSymbolAtLocation(node.left) === symbol) buildStarts.push(node.getStart());
-      });
+    const declaration = zone.checker.getSymbolAtLocation(target)?.valueDeclaration;
+    if (declaration === undefined || !ts.isVariableDeclaration(declaration) || enclosingFn(declaration) !== fn || declaration.getStart() >= handOverStart) {
+      violations.push(`${name}: hand-over ${role} ${target.text} is not a local built before the hand-over`);
     }
   };
-  for (const { shape } of suffix) {
-    for (const value of shape.values) declaredBefore(value, "value");
-    for (const target of shape.targets) declaredBefore(target, "target");
+  const isFrozenLiteral = (expression: ts.Expression): boolean =>
+    ts.isCallExpression(expression) && calleeText(expression) === "PrimordialObjectFreeze" && expression.arguments.length === 1 && ts.isObjectLiteralExpression(expression.arguments[0]!);
+  if (shape === "suffix") {
+    let rank = 0; // 0 apply, 1 deliver, 2 return
+    for (const statement of tail) {
+      if (ts.isExpressionStatement(statement) && isApplyCall(checker, statement.expression) && rank === 0 && statement.expression.arguments.length === 1) {
+        prebuilt(statement.expression.arguments[0]!, "plan");
+        rank = 1;
+        continue;
+      }
+      if (ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) && calleeText(statement.expression) === "this.#deliver" && rank <= 1) {
+        rank = 2;
+        continue;
+      }
+      if (ts.isReturnStatement(statement) && statement.expression !== undefined && statement === tail[tail.length - 1]) {
+        const value = statement.expression;
+        const delegated = ts.isCallExpression(value) && calleeText(value) === "ok" && value.arguments.length === 1 && ts.isCallExpression(value.arguments[0]!) && calleeText(value.arguments[0] as ts.CallExpression) === "this.#accept";
+        if (!delegated) prebuilt(value, "answer");
+        if (delegated && rank !== 0) violations.push(`${name}: delegates after handing a plan over`);
+        rank = 3;
+        continue;
+      }
+      violations.push(`${name}: statement outside the hand-over → delivery → return suffix: ${spelling(statement).slice(0, 100)}`);
+    }
+    if (rank !== 3) violations.push(`${name}: does not end by returning a prebuilt local`);
+  } else {
+    const first = tail[0]!;
+    if (!(ts.isExpressionStatement(first) && isApplyCall(checker, first.expression) && first.expression.arguments.length === 1 && isFrozenLiteral(first.expression.arguments[0]!))) {
+      violations.push(`${name}: the hand-over is not one applied frozen plan literal: ${spelling(first).slice(0, 100)}`);
+    }
+    if (shape === "final" && tail.length !== 1) violations.push(`${name}: statements after the final hand-over`);
   }
-  const firstBuild = buildStarts.length === 0 ? suffixStart : Math.min(...buildStarts);
 
+  // Before the hand-over: refusal helpers in call-then-exit form, and no mutation of anything that
+  // existed before the call except inside refusal exits.
   const exits = new Set<ts.Node>();
-  ownNodes(method, (node) => {
-    if (!ts.isVariableStatement(node)) return;
+  ownNodes(fn, (node) => {
+    if (node.getStart() >= handOverStart || !ts.isVariableStatement(node)) return;
     const [declaration] = node.declarationList.declarations;
     const initializer = declaration?.initializer;
     if (initializer === undefined || !ts.isCallExpression(initializer)) return;
-    const shape = REFUSAL_HELPERS.get(calleeText(initializer));
-    if (shape === undefined) return;
+    const helperShape = REFUSAL_HELPERS.get(calleeText(initializer));
+    if (helperShape === undefined) return;
     const callee = analysis.resolve(initializer);
     if (callee.kind !== "zone") {
       violations.push(`${name}: refusal helper ${calleeText(initializer)} does not resolve`);
       return;
     }
-    for (const problem of refusalHelperViolations(analysis, callee.fn, shape)) violations.push(`${name}: ${problem}`);
-    if (!exitsOnRefusal(node, shape)) violations.push(`${name}: ${calleeText(initializer)} is not followed by its exit test`);
+    for (const problem of refusalHelperViolations(analysis, callee.fn, helperShape)) violations.push(`${name}: ${problem}`);
+    if (!exitsOnRefusal(node, helperShape)) violations.push(`${name}: ${calleeText(initializer)} is not followed by its exit test`);
     else exits.add(initializer);
   });
-
-  ownNodes(method, (node) => {
-    if (node.getStart() >= suffixStart) return;
-    const found = analysis.nodeEffects(node, method);
-    if (reachesAcceptedState(found.mutated) && !isRefusalExit(node) && !exits.has(node)) {
-      violations.push(`${name}: mutates before its apply step: ${spelling(node).slice(0, 100)}`);
+  const insideExit = (node: ts.Node): boolean => {
+    for (let current: ts.Node | undefined = node; current !== undefined && current !== fn; current = current.parent) {
+      if (isRefusalExit(current) || exits.has(current)) return true;
     }
-    if (found.foreign && node.getEnd() > firstBuild) violations.push(`${name}: runs code outside the zone after its decision is being built: ${spelling(node).slice(0, 100)}`);
+    return false;
+  };
+  // A call that runs caller, host or Driver code (an observation of a caller envelope) is not counted
+  // here: what that code does is the caller's; the Kernel's own writes inside it are to lists it built.
+  let lastForeign = fn.getStart();
+  ownNodes(fn, (node) => {
+    if (node.getStart() >= handOverStart) return;
+    const found = analysis.nodeEffects(node, fn);
+    if (!found.foreign && reachesState(checker, found.mutated) && !insideExit(node)) violations.push(`${name}: mutates before its hand-over: ${spelling(node).slice(0, 100)}`);
+    if (found.foreign) lastForeign = Math.max(lastForeign, node.getEnd());
   });
-  // The suffix itself: its calls are the appends, the commit helper and the delivery, nothing else.
-  for (const { statement } of suffix) {
-    const visit = (node: ts.Node): void => {
-      if (ts.isCallExpression(node) && !["appendOwn", "appendAllOwn", "applyControlCommit", "this.#deliver"].includes(calleeText(node))) {
-        violations.push(`${name}: the apply step calls ${calleeText(node)}`);
+
+  // The basis.
+  const plans: ts.ObjectLiteralExpression[] = [];
+  ownNodes(fn, (node) => {
+    if (!ts.isObjectLiteralExpression(node)) return;
+    const kind = node.properties.find((property) => ts.isPropertyAssignment(property) && property.name.getText() === "kind");
+    const basis = node.properties.find((property) => property.name?.getText() === "basis");
+    if (kind !== undefined && basis !== undefined) plans.push(node);
+  });
+  let binding: ts.VariableDeclaration | ts.ParameterDeclaration | undefined;
+  for (const plan of plans) {
+    const property = plan.properties.find((candidate) => candidate.name?.getText() === "basis")!;
+    const kind = (plan.properties.find((candidate) => candidate.name?.getText() === "kind") as ts.PropertyAssignment).initializer.getText();
+    const value = ts.isShorthandPropertyAssignment(property) ? property.name : ts.isPropertyAssignment(property) ? property.initializer : undefined;
+    if (value !== undefined && kind === '"creation"' && ts.isNumericLiteral(value) && value.text === "0") continue;
+    const declaration = value !== undefined && ts.isIdentifier(value) ? (ts.isShorthandPropertyAssignment(property) ? checker.getShorthandAssignmentValueSymbol(property) : checker.getSymbolAtLocation(value))?.valueDeclaration : undefined;
+    if (value === undefined || !ts.isIdentifier(value) || value.text !== "basis" || declaration === undefined || (!ts.isVariableDeclaration(declaration) && !ts.isParameter(declaration))) {
+      violations.push(`${name}: a plan's basis is not the planner's bound basis: ${spelling(property).slice(0, 80)}`);
+      continue;
+    }
+    binding = declaration;
+  }
+  if (binding !== undefined && ts.isVariableDeclaration(binding)) {
+    const initializer = binding.initializer;
+    const isVersionRead = initializer !== undefined && ts.isPropertyAccessExpression(initializer) && initializer.name.text === "version" && STATE_TYPES.has(typeNameOf(checker, initializer.expression) ?? "");
+    if (!isVersionRead || (binding.parent.flags & ts.NodeFlags.Const) === 0 || enclosingFn(binding) !== fn) violations.push(`${name}: the basis is not a const binding of a reader's version`);
+    const bound = binding.getStart();
+    if (bound < lastForeign) violations.push(`${name}: binds its basis before its last callback`);
+    ownNodes(fn, (node) => {
+      if (node.getStart() > lastForeign && node.getEnd() <= bound && (ts.isPropertyAccessExpression(node) || ts.isElementAccessExpression(node)) && STATE_TYPES.has(typeNameOf(checker, node.expression) ?? "")) {
+        if (initializer === undefined || !(node.getStart() >= initializer.getStart() && node.getEnd() <= initializer.getEnd())) {
+          violations.push(`${name}: reads accepted state after its last callback and before binding its basis: ${spelling(node).slice(0, 80)}`);
+        }
       }
-      if (ts.isObjectLiteralExpression(node) || ts.isArrayLiteralExpression(node) || ts.isTemplateExpression(node) || ts.isNewExpression(node) || isFn(node)) {
-        violations.push(`${name}: the apply step constructs ${spelling(node).slice(0, 60)}`);
+    });
+    ownNodes(fn, (node) => {
+      if (node.getStart() > bound && node.getStart() < handOverStart && analysis.nodeEffects(node, fn).foreign) {
+        violations.push(`${name}: runs code outside the zone after binding its basis: ${spelling(node).slice(0, 100)}`);
+      }
+    });
+  }
+  if (binding !== undefined && ts.isParameter(binding)) {
+    if (lastForeign > fn.getStart()) violations.push(`${name}: takes its basis as a parameter but runs code outside the zone before its hand-over`);
+  }
+  return { violations, suffix: tail.map((statement) => spelling(statement).slice(0, 100)) };
+}
+
+/** Every call site of `callee` passes, at `index`, a `basis` binding of its caller's own. */
+export function basisArgumentViolations(zone: Zone, callee: Fn, index: number): string[] {
+  const out: string[] = [];
+  const name = fnName(callee) ?? "<callee>";
+  let calls = 0;
+  for (const source of sourcesOf(zone)) {
+    const visit = (node: ts.Node): void => {
+      if (ts.isCallExpression(node)) {
+        const declaration = valueDeclaration(zone.checker, node.expression);
+        if (declaration === callee) {
+          calls += 1;
+          const argument = node.arguments[index];
+          const bound = argument !== undefined && ts.isIdentifier(argument) ? zone.checker.getSymbolAtLocation(argument)?.valueDeclaration : undefined;
+          if (argument === undefined || !ts.isIdentifier(argument) || argument.text !== "basis" || bound === undefined || !ts.isVariableDeclaration(bound) || enclosingFn(bound) !== enclosingFn(node)) {
+            out.push(`${ownerName(node)}: passes ${name} a basis that is not its own binding`);
+          }
+        }
       }
       ts.forEachChild(node, visit);
     };
-    visit(statement);
+    visit(source);
   }
-  return { violations, suffix: suffix.map(({ statement }) => spelling(statement).slice(0, 100)) };
+  if (calls === 0) out.push(`${name} is never called`);
+  return out;
+}
+
+/** The plan field (or literal) a committed value comes from, following `const` bindings in `fn`. */
+const commitSource = (checker: ts.TypeChecker, fn: Fn, plan: string, expression: ts.Expression, depth = 0): string => {
+  const target = strip(expression);
+  if (depth > 16) return "?";
+  if (target.kind === K.NullKeyword) return "null";
+  if (ts.isStringLiteral(target) || ts.isNumericLiteral(target)) return target.getText();
+  if (ts.isBinaryExpression(target) && target.operatorToken.kind === K.PlusToken && ts.isNumericLiteral(target.right)) return commitSource(checker, fn, plan, target.left, depth + 1);
+  if (ts.isPropertyAccessExpression(target)) {
+    if (ts.isIdentifier(target.expression) && target.expression.text === plan) return target.name.text;
+    return commitSource(checker, fn, plan, target.expression, depth + 1);
+  }
+  if (ts.isObjectLiteralExpression(target)) {
+    const parts = new Set<string>();
+    for (const property of target.properties) {
+      const value = ts.isPropertyAssignment(property) ? property.initializer : ts.isShorthandPropertyAssignment(property) ? property.name : undefined;
+      if (value !== undefined) parts.add(commitSource(checker, fn, plan, value, depth + 1));
+    }
+    return `{${[...parts].filter((part) => !part.startsWith('"') && part !== "null" && !/^[0-9]/.test(part) && part !== "[]").sort().join("+")}}`;
+  }
+  if (ts.isArrayLiteralExpression(target) || ts.isNewExpression(target)) return "[]";
+  if (ts.isCallExpression(target) && calleeText(target) === "PrimordialObjectFreeze" && target.arguments.length === 1) return commitSource(checker, fn, plan, target.arguments[0]!, depth + 1);
+  if (ts.isIdentifier(target)) {
+    if (target.text === plan) return "plan";
+    const declaration = (ts.isShorthandPropertyAssignment(target.parent) ? checker.getShorthandAssignmentValueSymbol(target.parent) : checker.getSymbolAtLocation(target))?.valueDeclaration;
+    if (declaration !== undefined && ts.isVariableDeclaration(declaration) && declaration.initializer !== undefined && enclosingFn(declaration) === fn) {
+      return commitSource(checker, fn, plan, declaration.initializer, depth + 1);
+    }
+    // A module-level constant (an import or a top-level `const`) is named as itself.
+    const first = checker.getSymbolAtLocation(target)?.declarations?.[0];
+    if (first !== undefined && (ts.isImportSpecifier(first) || (ts.isVariableDeclaration(first) && ts.isSourceFile(first.parent.parent.parent)))) return target.text;
+    return "state";
+  }
+  return "state";
+};
+
+/** The field a commit target names: `x.field`, or a private `this.#field`. */
+const targetField = (expression: ts.Expression): string | undefined => {
+  const target = strip(expression);
+  return ts.isPropertyAccessExpression(target) ? target.name.getText() : undefined;
+};
+
+export interface ArmCheck {
+  readonly violations: readonly string[];
+  /** The arm's commit statements, in order, as `<form> <field> ← <source>`. */
+  readonly commits: readonly string[];
 }
 
 /**
- * `applyControlCommit`: bindings of commit fields, then appends, then plain writes of commit fields to
- * the record or exchange, and nothing else; its derived effects stay on those two parameters.
+ * One owner arm (`#apply<Kind>`): a **prepare** phase of `const` bindings, `if (…) throw` guards and
+ * loops that only fill fresh local lists, none of which changes anything that existed before; then a
+ * **commit** phase of nothing but commit statements, which construct nothing:
+ *
+ * - `x.field = value;` (`write`), and its `if (value !== null)` form (`write?`);
+ * - `appendOwn(x.field, value);`, `appendAllOwn(x.field, value);` (`append`), and `if (value !== null)`;
+ * - `mapSet(x.field, key, value);` (`insert`);
+ * - `for (…) (readAt(list, index) as T).field = value;` (`each`).
+ *
+ * Each commit is reported as `<form> <field> ← <source>`, where the source is the plan field the value
+ * comes from (following `const` bindings and container literals), so the caller can pin each arm's exact
+ * commits.
  */
-export function checkApplyHelper(zone: Zone, analysis: EffectAnalysis, helper: Fn): string[] {
+export function checkArm(zone: Zone, analysis: EffectAnalysis, arm: ts.MethodDeclaration): ArmCheck {
+  const { checker } = zone;
+  const name = arm.name.getText();
   const violations: string[] = [];
-  const name = fnName(helper) ?? "<apply>";
-  const body = helper.body;
-  if (body === undefined || !ts.isBlock(body) || helper.parameters.length !== 3) return [`${name}: expected (record, exchange, commit) and a block body`];
-  const [record, exchange, commit] = helper.parameters.map((parameter) => parameter.name.getText()) as [string, string, string];
-  const bound = new Set<string>();
-  const isCommitField = (expression: ts.Expression): boolean =>
-    (ts.isPropertyAccessExpression(expression) && ts.isIdentifier(expression.expression) && expression.expression.text === commit) || (ts.isIdentifier(expression) && bound.has(expression.text));
-  let phase = 0; // 0 bindings, 1 appends, 2 writes
+  const commits: string[] = [];
+  const body = arm.body;
+  const plan = arm.parameters[0]?.name.getText();
+  if (body === undefined || plan === undefined) return { violations: [`${name}: expected (plan) and a block body`], commits };
+  const source = (expression: ts.Expression): string => commitSource(checker, arm, plan, expression);
+  const isFreshLocal = (expression: ts.Expression): boolean => {
+    const target = strip(expression);
+    const declaration = ts.isIdentifier(target) ? checker.getSymbolAtLocation(target)?.valueDeclaration : undefined;
+    return declaration !== undefined && ts.isVariableDeclaration(declaration) && enclosingFn(declaration) === arm && declaration.initializer !== undefined && ts.isArrayLiteralExpression(strip(declaration.initializer));
+  };
+  const isPrepare = (statement: ts.Statement): boolean => {
+    if (ts.isVariableStatement(statement)) return (statement.declarationList.flags & ts.NodeFlags.Const) !== 0;
+    if (ts.isIfStatement(statement) && statement.elseStatement === undefined) {
+      const then = ts.isBlock(statement.thenStatement) && statement.thenStatement.statements.length === 1 ? statement.thenStatement.statements[0]! : statement.thenStatement;
+      return ts.isThrowStatement(then);
+    }
+    if (ts.isForStatement(statement)) {
+      const inner = ts.isBlock(statement.statement) && statement.statement.statements.length === 1 ? statement.statement.statements[0]! : statement.statement;
+      return ts.isExpressionStatement(inner) && ts.isCallExpression(inner.expression) && calleeText(inner.expression) === "appendOwn" && isFreshLocal(inner.expression.arguments[0]!);
+    }
+    return false;
+  };
+  /** One commit statement's facts, or `undefined` when it is not one. */
+  const commitOf = (statement: ts.Statement): string[] | undefined => {
+    if (ts.isExpressionStatement(statement)) {
+      const expression = statement.expression;
+      if (ts.isBinaryExpression(expression) && expression.operatorToken.kind === K.EqualsToken) {
+        const field = targetField(expression.left);
+        return field === undefined ? undefined : [`write ${field} ← ${source(expression.right)}`];
+      }
+      if (ts.isCallExpression(expression)) {
+        const callee = calleeText(expression);
+        if ((callee === "appendOwn" || callee === "appendAllOwn") && expression.arguments.length === 2) {
+          const field = targetField(expression.arguments[0]!);
+          return field === undefined ? undefined : [`append ${field} ← ${source(expression.arguments[1]!)}`];
+        }
+        if (callee === "mapSet" && expression.arguments.length === 3) {
+          const field = targetField(expression.arguments[0]!);
+          return field === undefined ? undefined : [`insert ${field} ← ${source(expression.arguments[2]!)}`];
+        }
+      }
+      return undefined;
+    }
+    if (ts.isIfStatement(statement)) {
+      const condition = statement.expression;
+      if (statement.elseStatement === undefined && ts.isBinaryExpression(condition) && condition.operatorToken.kind === K.ExclamationEqualsEqualsToken && condition.right.kind === K.NullKeyword) {
+        const inner = commitOf(statement.thenStatement);
+        return inner?.map((fact) => fact.replace(/^(\w+) /, "$1? "));
+      }
+      return undefined;
+    }
+    if (ts.isForStatement(statement) && ts.isExpressionStatement(statement.statement)) {
+      const expression = statement.statement.expression;
+      if (ts.isBinaryExpression(expression) && expression.operatorToken.kind === K.EqualsToken) {
+        const target = strip(expression.left);
+        const read = ts.isPropertyAccessExpression(target) ? strip(target.expression) : undefined;
+        if (read !== undefined && ts.isCallExpression(read) && calleeText(read) === "readAt" && ts.isPropertyAccessExpression(target)) {
+          return [`each ${target.name.getText()} ← ${source(expression.right)}`];
+        }
+      }
+    }
+    return undefined;
+  };
+  let committing = false;
   for (const statement of body.statements) {
-    if (ts.isVariableStatement(statement) && phase === 0) {
-      const [declaration] = statement.declarationList.declarations;
-      if (declaration !== undefined && ts.isIdentifier(declaration.name) && declaration.initializer !== undefined && isCommitField(declaration.initializer) && (statement.declarationList.flags & ts.NodeFlags.Const) !== 0) {
-        bound.add(declaration.name.text);
-        continue;
+    if (!committing && isPrepare(statement)) {
+      const nodes: ts.Node[] = [];
+      allNodes(statement, (node) => void nodes.push(node));
+      for (const node of [statement, ...nodes]) {
+        if (isPreExisting(analysis.nodeEffects(node, arm).mutated)) violations.push(`${name}: mutates before its commit: ${spelling(node).slice(0, 100)}`);
       }
+      continue;
     }
-    const append = appendStatement(statement);
-    if (append !== undefined && phase <= 1) {
-      const call = (statement as ts.ExpressionStatement).expression as ts.CallExpression;
-      if ([record, exchange].includes(append.targets[0]!.text) && isCommitField(call.arguments[1]!)) {
-        phase = 1;
-        continue;
+    committing = true;
+    const facts = commitOf(statement);
+    if (facts === undefined) {
+      violations.push(`${name}: statement outside the prepare → commit grammar: ${spelling(statement).slice(0, 100)}`);
+      continue;
+    }
+    commits.push(...facts);
+    allNodes(statement, (node) => {
+      if (ts.isObjectLiteralExpression(node) || ts.isArrayLiteralExpression(node) || ts.isTemplateExpression(node) || ts.isNewExpression(node) || isFn(node)) {
+        violations.push(`${name}: the commit constructs ${spelling(node).slice(0, 60)}`);
       }
-    }
-    if (ts.isExpressionStatement(statement) && ts.isBinaryExpression(statement.expression) && statement.expression.operatorToken.kind === K.EqualsToken && phase >= 1) {
-      const { left, right } = statement.expression;
-      if (ts.isPropertyAccessExpression(left) && ts.isIdentifier(left.expression) && [record, exchange].includes(left.expression.text) && isCommitField(right)) {
-        phase = 2;
-        continue;
+      if (ts.isCallExpression(node) && !["appendOwn", "appendAllOwn", "mapSet", "readAt", "inputIdKey", "creationRequestIdKey"].includes(calleeText(node))) {
+        violations.push(`${name}: the commit calls ${calleeText(node)}`);
       }
-    }
-    violations.push(`${name}: statement outside bindings → appends → writes: ${spelling(statement).slice(0, 100)}`);
+    });
   }
-  if (phase !== 2) violations.push(`${name}: expected at least one append followed by the hold writes`);
-  const summary = analysis.effects.get(helper)?.mutated;
-  if (summary === undefined || summary.self || summary.other || analysis.effects.get(helper)!.foreign || summary.captured.size > 0 || [...summary.parameters, ...summary.exact].some((index) => index > 1)) {
-    violations.push(`${name}: derived effects reach beyond the record and exchange`);
+  if (!committing) violations.push(`${name}: commits nothing`);
+  return { violations, commits };
+}
+
+/**
+ * The functions declared in `file` that write or mutate one of `fields` in an object that existed before
+ * the call: `writeOwners` for one module, without the writes a function makes to lists it created itself.
+ */
+export function stateWriters(zone: Zone, analysis: EffectAnalysis, fields: ReadonlyMap<string, string | undefined>, file: string): Map<string, Set<string>> {
+  return writeOwners(zone, analysis, fields, (node, fn) => basename(fn.getSourceFile().fileName) === file && isPreExisting(analysis.nodeEffects(node, fn).mutated));
+}
+
+/**
+ * Every node in `file` that changes accepted state (or anything of unknown origin) other than by handing
+ * a plan to the owner: an `apply` call, a delegation to another planner, a refusal exit or refusal helper,
+ * or a report's `settle`. The constructor initializes the planner's own fields; a call that runs caller,
+ * host or Driver code is the caller's, as in `checkPlanner`.
+ */
+export function mutationsOutsideHandOver(zone: Zone, analysis: EffectAnalysis, file: string): string[] {
+  const out: string[] = [];
+  for (const fn of analysis.effects.keys()) {
+    if (basename(fn.getSourceFile().fileName) !== file || ts.isConstructorDeclaration(fn)) continue;
+    ownNodes(fn, (node) => {
+      const found = analysis.nodeEffects(node, fn);
+      if (found.foreign || !reachesState(zone.checker, found.mutated) || insideRefusalExit(node, fn)) return;
+      if (isApplyCall(zone.checker, node)) return;
+      if (ts.isCallExpression(node)) {
+        const callee = calleeText(node);
+        if (DELEGATIONS.has(callee) || callee === "this.#refusal" || REFUSAL_HELPERS.has(callee) || callee === "settle") return;
+      }
+      out.push(`${ownerName(node)}: changes accepted state outside a hand-over: ${spelling(node).slice(0, 100)}`);
+    });
   }
-  return violations;
+  return out;
 }
 
 /** Which arguments a call's own effects mutate (a zone callee's summary, or a primordial's entry). */
@@ -1637,10 +1949,18 @@ const throughAliases = (checker: ts.TypeChecker, expression: ts.Expression): ts.
  * naming it) or mutates a list held in one of them (by name after alias resolution, or by the list's
  * element type), keyed by field.
  */
-export function writeOwners(zone: Zone, analysis: EffectAnalysis, fields: ReadonlyMap<string, string | undefined>): Map<string, Set<string>> {
+export function writeOwners(
+  zone: Zone,
+  analysis: EffectAnalysis,
+  fields: ReadonlyMap<string, string | undefined>,
+  keep: (node: ts.Node, fn: Fn) => boolean = () => true,
+): Map<string, Set<string>> {
   const { checker } = zone;
   const owners = new Map<string, Set<string>>([...fields.keys()].map((field) => [field, new Set<string>()]));
-  const note = (field: string, node: ts.Node): void => void owners.get(field)?.add(ownerName(node));
+  let current: Fn | undefined;
+  const note = (field: string, node: ts.Node): void => {
+    if (current === undefined || keep(node, current)) owners.get(field)?.add(ownerName(node));
+  };
   const fieldOf = (target: ts.Expression): string | undefined => {
     const stripped = strip(target);
     if (ts.isPropertyAccessExpression(stripped) && fields.has(stripped.name.getText())) return stripped.name.getText();
@@ -1648,6 +1968,7 @@ export function writeOwners(zone: Zone, analysis: EffectAnalysis, fields: Readon
     return undefined;
   };
   for (const fn of analysis.effects.keys()) {
+    current = fn;
     ownNodes(fn, (node) => {
       if (ts.isBinaryExpression(node) && isAssignmentOperator(node.operatorToken.kind)) {
         const field = fieldOf(node.left);
@@ -1678,7 +1999,7 @@ export function writeOwners(zone: Zone, analysis: EffectAnalysis, fields: Readon
 /** Every function's summary as text, keyed by file and position: for comparing two analyses. */
 export function summaries(analysis: EffectAnalysis): Map<string, string> {
   const text = (value: Provenance): string =>
-    `${value.fresh ? "F" : ""}${[...value.exact].sort().map((index) => `x${index}`).join("")}${[...value.parameters].sort().map((index) => `p${index}`).join("")}${value.self ? "S" : ""}${[...value.captured].map((symbol) => `c:${symbol.getName()}`).sort().join("")}${value.other ? "O" : ""}`;
+    `${value.fresh ? "F" : ""}${[...value.exact].sort().map((index) => `x${index}`).join("")}${[...value.parameters].sort().map((index) => `p${index}`).join("")}${value.self ? "S" : ""}${[...value.capturedExact].map((symbol) => `e:${symbol.getName()}`).sort().join("")}${[...value.captured].map((symbol) => `c:${symbol.getName()}`).sort().join("")}${value.other ? "O" : ""}`;
   const out = new Map<string, string>();
   for (const [fn, summary] of analysis.effects) {
     out.set(`${basename(fn.getSourceFile().fileName)}:${fn.getStart()} ${fnName(fn) ?? "<anonymous>"}`, `mutated=${text(summary.mutated)} returned=${text(summary.returned)} fresh=${summary.returnsFresh} foreign=${summary.foreign} calls=${[...summary.callsParameters].sort().join(",")}`);

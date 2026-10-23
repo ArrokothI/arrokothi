@@ -77,6 +77,17 @@
   * runs and no caller-influenced read happens between the first mutation and the last. For entry,
   * update and declaration clear the apply step is one append followed by writes that call nothing, so
   * even an engine exception cannot separate a hold change from its history record.
+  *
+  * ## Plans and the state owner (COORD-REFACTOR-01)
+  *
+  * This class decides; it never writes accepted state. Every Execution record lives in `KernelState`
+  * (`state.ts`), which this class reads through read-only readers and changes only by handing it one
+  * plan (`plan.ts`) per decision: the decision's records and its answer, all built before `apply` runs.
+  * A refusal that names a visible Execution is a plan too. Each plan names the Execution version it was
+  * formed against, bound after the method's last caller, host or Driver callback, and the owner refuses a
+  * plan whose Execution has changed since. Driver delivery runs after `apply`; a Driver report forms and
+  * applies its own plan. The rules above about building before applying are therefore the owner's
+  * commit order, and a decision whose build faults commits nothing (owner choice 01).
   */
 
 import type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver, SubmissionGrant } from "./driver.ts";
@@ -117,27 +128,37 @@ import {
   type AuthenticatedCaller,
   type CreationRequestId,
   type InputId,
-  type Receipt,
-  type ReceiptBoundary,
 } from "./identity.ts";
-import type {
-  ActivationView,
-  DeliveryAttemptView,
-  EmissionView,
-  ExchangeView,
-  ExecutionView,
-  MailboxDisposition,
-  MailboxEntryView,
-  RecoveryHistoryRecord,
-  RecoveryHoldView,
-  TerminalResultView,
-} from "./inspection.ts";
+import type { EmissionView, ExecutionView, MailboxDisposition, RecoveryHistoryRecord, TerminalResultView } from "./inspection.ts";
 import { isTerminal, type ExecutionState } from "./lifecycle.ts";
-import { appendAllOwn, appendOwn, copyOwn, mapOwn, readAt } from "./own-array.ts";
+import { appendAllOwn, appendOwn, mapOwn, readAt } from "./own-array.ts";
+import {
+  holdsOf,
+  QUEUED,
+  type AcceptedOutcome,
+  type ControlPlan,
+  type CreationAccepted,
+  type CreationPlan,
+  type DispatchAccepted,
+  type DispatchPlan,
+  type EntryFacts,
+  type HoldState,
+  type InputAccepted,
+  type InputPlan,
+  type OutcomeAccepted,
+  type OutcomePlan,
+  type RecoveryDecision,
+  type RefusalPlan,
+  type ResolvedFacts,
+  type StoredHold,
+  type TakeoverAccepted,
+  type TakeoverPlan,
+} from "./plan.ts";
 import { UNKNOWN_DESTINATION_REASON, mintRefusal, type RefusalClassification, type RefusalRecord } from "./refusal.ts";
 import { err, ok, type Result } from "./result.ts";
+import { KernelState, type ExchangeReader, type ExecutionReader } from "./state.ts";
 import { refuseUnsupportedSurface } from "./unsupported.ts";
-import { acceptCanonicalBytes, type BoundaryValue, type CanonicalValue, type ValueIssue } from "./values.ts";
+import { acceptCanonicalBytes, type CanonicalValue, type ValueIssue } from "./values.ts";
 
 /**
  * Load-time references used on paths that run after caller-owned state has been observed.
@@ -196,21 +217,8 @@ import { acceptCanonicalBytes, type BoundaryValue, type CanonicalValue, type Val
 const PrimordialNumberIsInteger = Number.isInteger;
 const PrimordialObjectFreeze = Object.freeze;
 const PrimordialReflectApply = Reflect.apply;
-const PrimordialMap = Map;
-const PrimordialMapGet = Map.prototype.get;
-const PrimordialMapSet = Map.prototype.set;
-const PrimordialMapForEach = Map.prototype.forEach;
 /** `RangeError` for coordinator configuration misuse, from load time. */
 const PrimordialRangeError = RangeError;
-
-/** `Map.get` without consulting the (possibly replaced) live prototype method. */
-const mapGet = <K, V>(map: Map<K, V>, key: K): V | undefined =>
-  PrimordialReflectApply(PrimordialMapGet, map, [key]) as V | undefined;
-
-/** `Map.set` without consulting the (possibly replaced) live prototype method. */
-const mapSet = <K, V>(map: Map<K, V>, key: K, value: V): void => {
-  PrimordialReflectApply(PrimordialMapSet, map, [key, value]);
-};
 
 // -- Requests and accepted answers -------------------------------------------
 
@@ -249,15 +257,6 @@ export interface CreateExecutionRequest {
   readonly initialInput: InputContent;
 }
 
-export interface CreationAccepted {
-  readonly executionId: string;
-  readonly receipt: Receipt;
-  /** True when this call returned an already-accepted decision rather than committing a new one. */
-  readonly replayed: boolean;
-  /** The Event the initial input was accepted as, in the same atomic decision. */
-  readonly initialEventId: string;
-}
-
 /** One post-creation input request. */
 export interface SubmitInputRequest {
   readonly destination: string;
@@ -268,76 +267,13 @@ export interface SubmitInputRequest {
   readonly subscriptionClass?: string;
 }
 
-export interface InputAccepted {
-  readonly eventId: string;
-  readonly receipt: Receipt;
-  readonly replayed: boolean;
-  readonly acceptancePosition: number;
-  readonly disposition: MailboxDisposition;
-}
-
 export interface DispatchOptions {
   /** The implementation-owned batch bound. `B-1`: at least one. */
   readonly bound: number;
 }
 
-export interface DispatchAccepted {
-  readonly activationId: string;
-  readonly writerEpoch: number;
-  readonly baseProgressRevision: number;
-  readonly batch: readonly string[];
-  readonly receipt: Receipt;
-  /** True when this call re-sent an already-accepted dispatch intent rather than accepting a new one. */
-  readonly redelivered: boolean;
-}
-
-/**
- * The answer to an accepted Outcome, and to every exact replay of it.
- *
- * Everything but `replayed` is the retained decision: a replay returns the same receipt object and
- * the same lists, never a reconstruction (OA-2).
- */
-export interface OutcomeAccepted {
-  /** The Outcome-acceptance receipt: evidence that this proposal was accepted, and of nothing it asked for. */
-  readonly receipt: Receipt;
-  /** True when this call returned the already-accepted decision rather than committing a new one. */
-  readonly replayed: boolean;
-  readonly activationId: string;
-  /** The state the accepted Outcome's next step produced, which is not necessarily the current one. */
-  readonly nextState: ExecutionState;
-  /** The accepted progress revision this Outcome installed. */
-  readonly progressRevision: number;
-  /** The whole reserved batch, acknowledged by this decision. */
-  readonly acknowledged: readonly string[];
-  readonly emissionIds: readonly string[];
-  /** The terminal result's ID for an accepted `complete` or `fail`; otherwise `null`. */
-  readonly resultId: string | null;
-  /** Events this decision gave a `B-5` terminal disposition. */
-  readonly terminalDispositions: readonly string[];
-}
-
-/** An accepted takeover: the same exchange, now answerable only by the new attempt. */
-export interface TakeoverAccepted {
-  readonly activationId: string;
-  /** The epoch that was current and is now fenced. */
-  readonly supersededEpoch: number;
-  readonly writerEpoch: number;
-  readonly baseProgressRevision: number;
-  /** The same reserved batch; a takeover never re-selects. */
-  readonly batch: readonly string[];
-  /** The dispatch-intent receipt re-recording the exchange's current attempt (K1.2-DEC-6). */
-  readonly receipt: Receipt;
-}
-
-/** What a recovery request or a protocol-failure report left in place. */
-export interface RecoveryDecision {
-  readonly activationId: string;
-  readonly writerEpoch: number;
-  /** The holds on the exchange after this request; empty when it can continue. */
-  readonly recoveryHolds: readonly RecoveryHoldView[];
-  /** False when the request found nothing to change. */
-  readonly changed: boolean;
-}
+/** The accepted answers live with the plans that carry them (`plan.ts`); they are re-exported unchanged. */
+export type { CreationAccepted, DispatchAccepted, InputAccepted, OutcomeAccepted, RecoveryDecision, TakeoverAccepted } from "./plan.ts";
 
 export interface CoordinatorOptions {
   readonly driver: ExecutionDriver;
@@ -359,159 +295,8 @@ export interface CoordinatorOptions {
   readonly emissionsPerOutcome?: number;
 }
 
-// -- Internal records --------------------------------------------------------
-
-interface MailboxEntry {
-  readonly eventId: string;
-  readonly inputId: InputId;
-  /** The injective packing of this input's content parts; equal identity means equal content. */
-  readonly contentIdentity: string;
-  readonly kind: string;
-  readonly payload: CanonicalValue;
-  readonly subscriptionClass: string | null;
-  readonly acceptancePosition: number;
-  readonly receipt: Receipt;
-  disposition: MailboxDisposition;
-}
-
-interface DeliveryAttempt {
-  readonly attempt: number;
-  status: "pending" | "delivered" | "failed";
-  failure: string | null;
-  /**
-   * K1.2-DEC-16: what this delivery carried and to whom, fixed when it was sent.
-   *
-   * Ordinary redelivery preserves both; a takeover preserves the Activation ID and advances the
-   * epoch. Each row therefore identifies its exact Activation attempt, so inspection can attribute
-   * every retained delivery across takeovers without assuming the exchange's current epoch.
-   */
-  readonly activationId: string;
-  readonly writerEpoch: number;
-}
-
-/** A stored hold: the reason and causation. Permitted actions are computed at inspection, not stored. */
-interface StoredHold {
-  readonly cause: "pinned_code_unavailable" | "protocol_failure";
-  readonly reason: string;
-  readonly activationId: string;
-  readonly writerEpoch: number;
-}
-
-/** The unresolved exchange: its current attempt, its pinned batch, its delivery log and its holds. */
-interface ActivationRecord {
-  /** The current attempt's Activation. A takeover replaces it with the same exchange at the next epoch. */
-  activation: Activation;
-  /** The current attempt's dispatch-intent receipt. */
-  receipt: Receipt;
-  /**
-   * The current attempt's submission grant (K1.2-DEC-20). Minted per writer epoch, handed to the
-   * Driver with the Activation, and required back on `submitOutcome`. Redelivery preserves the
-   * attempt and therefore its grant; a takeover mints a fresh one and retires this. Compared by
-   * reference identity, never by fields, and never exposed through inspection.
-   */
-  submission: SubmissionGrant;
-  readonly batch: readonly string[];
-  /** Shared with the resolved-exchange record, so a late report still finds its original attempt. */
-  readonly deliveries: DeliveryAttempt[];
-  codeHold: StoredHold | null;
-  protocolFailureHold: StoredHold | null;
-}
-
-/** An exchange an accepted Outcome resolved. */
-interface ResolvedExchange {
-  readonly activationId: string;
-  readonly writerEpoch: number;
-  readonly baseProgressRevision: number;
-  readonly batch: readonly string[];
-  readonly dispatchReceipt: Receipt;
-  readonly outcomeReceipt: Receipt;
-  readonly deliveries: DeliveryAttempt[];
-}
-
-/** The retained decision an exact replay answers from (OA-2). */
-interface AcceptedOutcomeRecord {
-  /** Owned bytes/text/count for every accepted root, retained privately for future byte readers. */
-  readonly content: CapturedOutcome;
-  /** The captured content's identity; equality is an exact duplicate. */
-  readonly identity: string;
-  /** Frozen; everything a replay returns except the `replayed` flag. */
-  readonly decision: Omit<OutcomeAccepted, "replayed">;
-}
-
-interface ExecutionRecord {
-  readonly executionId: string;
-  readonly scope: string;
-  readonly creationRequestId: CreationRequestId;
-  readonly definitionRevision: string;
-  readonly runtimeContractRevision: string;
-  readonly progressCodec: string;
-  readonly authorityContext: CanonicalValue;
-  /** The injective packing of the complete creation content this key is bound to. */
-  readonly creationIdentity: string;
-  readonly creationReceipt: Receipt;
-  /** The Event the initial input was accepted as. Retained so a creation replay can name it. */
-  readonly initialEventId: string;
-  readonly mailbox: MailboxEntry[];
-  /**
-   * Post-creation ingress entries by Input ID, for replay/conflict lookup.
-   *
-   * The initial creation Event is deliberately absent: it was accepted by the creation boundary,
-   * not by ingress, and indexing it here would let creation consume a producer-constructible
-   * ingress identity (K11-R15-ID-01).
-   */
-  readonly byInputId: Map<string, MailboxEntry>;
-  readonly refusals: RefusalRecord[];
-  readonly receipts: Receipt[];
-  state: ExecutionState;
-  acceptedProgress: BoundaryValue | null;
-  progressRevision: number;
-  activation: ActivationRecord | null;
-  /** Accepted Outcomes by Activation ID: at most one per exchange, and the replay/conflict index. */
-  readonly acceptedOutcomes: Map<string, AcceptedOutcomeRecord>;
-  readonly exchanges: ResolvedExchange[];
-  readonly emissions: EmissionView[];
-  result: TerminalResultView | null;
-  /**
-   * This Execution's own acceptance index. Creation consumes 1; each later accepted
-   * input-ingress, dispatch-intent (including a takeover's) or Outcome-acceptance decision on
-   * this Execution consumes the next. Replay and redelivery consume none: they return an
-   * already-accepted decision. A recovery hold is not an acceptance and consumes none either.
-   * Because the index advances only for decisions on this Execution, gaps in it reveal
-   * only this Execution's own history — never activity elsewhere.
-   */
-  nextAcceptancePosition: number;
-  /**
-   * This Execution's own refusal index, sharing nothing with the acceptance index above.
-   * The first recorded refusal against this Execution is 1. Refusals that name no
-   * Execution never touch it (they carry position 0), so probing for hidden versus
-   * missing records advances no observable sequence at all.
-   */
-  nextRefusalPosition: number;
-  activationsMinted: number;
-  /**
-   * Accepted recovery/control decisions, oldest first (K1.2-DEC-18).
-   *
-   * `state.md` names recovery decisions as Execution History; `evidence.md` requires authenticated
-   * recorded commands. Each accepted decision that enters, updates, or ends a hold appends one frozen
-   * record here, on the owning Execution, so it survives the hold changing or disappearing, the
-   * exchange resolving, and the Execution ending. Idempotent duplicates append nothing.
-   */
-  readonly recoveryHistory: RecoveryHistoryRecord[];
-}
-
 const DEFAULT_MAILBOX_CAPACITY = 1_024;
 const DEFAULT_EMISSIONS_PER_OUTCOME = 256;
-
-/**
- * The one `queued` disposition object, frozen and shared.
- *
- * A disposition is retained accepted state that inspection and both ingress answers expose. Every
- * entry accepted in this packet is `queued` and carries no per-entry data, so one immutable value
- * serves them all and no exposed reference can be edited into a different disposition. K1.2 and K1.3
- * record their own dispositions by *replacing* an entry's disposition with a new frozen value, which
- * is why `MailboxEntry.disposition` stays a writable field while the object it names does not.
- */
-const QUEUED: MailboxDisposition = PrimordialObjectFreeze({ kind: "queued" });
 
 /** The protocol-failure diagnostic used when the report carried none a person could read. */
 const PROTOCOL_FAILURE_FALLBACK = "no readable diagnostic was supplied";
@@ -532,6 +317,29 @@ const PROTOCOL_FAILURE_FALLBACK = "no readable diagnostic was supplied";
 const DELIVERY_FAILURE_FALLBACK = "Driver delivery failed";
 
 const describeDeliveryFailure = (reason: unknown): string => boundDiagnostic(reason, DELIVERY_FAILURE_FALLBACK);
+
+/**
+ * Settles one delivery attempt from its first report: `delivered()`, `failed(reason)`, or a throwing
+ * `deliver`, which is an implicit failure report.
+ *
+ * The report is a plan of its own, formed and applied in one synchronous run. A row that is no longer
+ * pending has already been settled by an earlier report, which wins. Bounding the reason invokes nothing
+ * (KC1-ARCH-1), so no other report can interleave between the check and the commit. A report whose plan
+ * cannot be built changes nothing and leaves the row pending (owner choice 01).
+ */
+const settle = (
+  state: KernelState,
+  executionId: string,
+  activationId: string,
+  attempt: number,
+  status: "delivered" | "failed",
+  reason: unknown,
+): void => {
+  const basis = (state.find(executionId) as ExecutionReader).version;
+  if (state.deliveryStatus(executionId, activationId, attempt) !== "pending") return;
+  const failure = status === "failed" ? describeDeliveryFailure(reason) : null;
+  state.apply(PrimordialObjectFreeze({ kind: "settlement", executionId, basis, activationId, attempt, status, failure }));
+};
 
 /**
  * K1.2-DEC-14: whether the caller holds control power over `scope`.
@@ -559,32 +367,6 @@ const mayControlScope = (caller: AuthenticatedCaller, scope: string): boolean =>
 };
 
 /**
- * K1.2-DEC-17: the single normative owner of held-exchange permitted actions.
- *
- * Both the enforcement below (redeliver refused while any hold stands; takeover refused while a
- * code hold stands) and the inspection views (`holdsOf`) derive from this function, so they cannot
- * drift apart. The vocabulary names existing K1.2 operations only:
- * - `declare_code_availability`: `recoverExecution` with every pin covered;
- * - `request_takeover`: `requestTakeover` (only when no code hold stands);
- * - `submit_outcome`: a valid Outcome from the current attempt, which resolves the exchange and
- *   ends its holds (a hold never fences acceptance; only the epoch and terminal state do).
- */
-const DECLARE_CODE_AVAILABILITY = "declare_code_availability";
-const REQUEST_TAKEOVER = "request_takeover";
-const SUBMIT_OUTCOME = "submit_outcome";
-
-const permittedForHold = (cause: StoredHold["cause"], hasCodeHold: boolean): readonly string[] => {
-  if (cause === "pinned_code_unavailable") {
-    return PrimordialObjectFreeze([DECLARE_CODE_AVAILABILITY, SUBMIT_OUTCOME]);
-  }
-  // Protocol-failure hold: takeover permitted only when no code hold blocks it.
-  if (hasCodeHold) {
-    return PrimordialObjectFreeze([DECLARE_CODE_AVAILABILITY, SUBMIT_OUTCOME]);
-  }
-  return PrimordialObjectFreeze([REQUEST_TAKEOVER, SUBMIT_OUTCOME]);
-};
-
-/**
  * Reads back an exchange's code hold with the full union type.
  *
  * A hold check earlier in the same call narrows `exchange.codeHold` to null for the rest of that
@@ -592,7 +374,14 @@ const permittedForHold = (cause: StoredHold["cause"], hasCodeHold: boolean): rea
  * this helper restores the full `StoredHold | null` union so post-callback revalidation honors a
  * newly established hold (K1.2-DEC-19) instead of acting on the earlier observation.
  */
-const currentHoldOf = (exchange: ActivationRecord): StoredHold | null => exchange.codeHold;
+const currentHoldOf = (exchange: ExchangeReader): StoredHold | null => exchange.codeHold;
+
+/**
+ * Reads back an Execution's unresolved exchange with the full union type, for the same reason: an
+ * earlier check narrows `record.activation` to `null`, but the reader is live and `apply` has just
+ * installed the exchange that check found absent.
+ */
+const exchangeOf = (record: ExecutionReader): ExchangeReader | null => record.activation;
 
 /**
  * Mints one attempt-bound submission grant (K1.2-DEC-20).
@@ -651,38 +440,18 @@ const takeoverHistoryRecord = (
     resultingEpoch,
   });
 
-/** The two holds an unresolved exchange can carry, as stored or as a planned decision leaves them. */
-interface HoldState {
-  readonly codeHold: StoredHold | null;
-  readonly protocolFailureHold: StoredHold | null;
-}
-
 /**
- * One recovery-control decision, completely built before anything is mutated (amendment 02).
+ * One recovery-control decision's holds and history record, planned before anything changes
+ * (amendment 02).
  *
  * `recoverExecution` and `reportProtocolFailure` plan the exchange's holds after the decision and
  * the one history record that explains the change, from Kernel data only, and build their answer
- * from the plan. Only then does `applyControlCommit` change anything.
+ * from the plan. Only then does the state owner apply it, appending the record before writing the
+ * holds (`KernelState`'s control arm).
  */
 interface ControlCommit extends HoldState {
   readonly history: RecoveryHistoryRecord;
 }
-
-/**
- * Applies one prebuilt recovery-control decision.
- *
- * The append is the only step here that calls anything, so it runs first: if it throws, nothing has
- * changed. The two hold writes after it are plain writes to fields the exchange owns; they call
- * nothing and consult no prototype. No caller code can run anywhere in this function, and an engine
- * exception can only arise before the append completes, so no fault leaves a hold changed without its
- * history record or a record without its hold. The caller built its answer before calling this.
- */
-const applyControlCommit = (record: ExecutionRecord, exchange: ActivationRecord, commit: ControlCommit): void => {
-  const stored = commit.history;
-  appendOwn(record.recoveryHistory, stored);
-  exchange.codeHold = commit.codeHold;
-  exchange.protocolFailureHold = commit.protocolFailureHold;
-};
 
 // -- Accepting content -------------------------------------------------------
 
@@ -829,15 +598,15 @@ export class ExecutionCoordinator {
   readonly #driver: ExecutionDriver;
   readonly #mailboxCapacity: number;
   readonly #emissionsPerOutcome: number;
-  readonly #executions = new PrimordialMap<string, ExecutionRecord>();
-  readonly #byCreationRequestId = new PrimordialMap<string, ExecutionRecord>();
+  /** Every Execution record: read through readers, changed only by `apply` (COORD-REFACTOR-01). */
+  readonly #state = new KernelState();
   // K11-R12-ID-01: there is deliberately no coordinator-wide acceptance counter, execution
   // counter or event counter here. A single mutable sequence shared across Executions, callers
   // and boundaries turns one principal's own receipt into an oracle for decisions taken in
   // scopes it cannot observe: every accepted boundary and every refusal used to increment one
   // `#acceptancePosition`, and the resulting number was exposed as `Receipt.position` and
   // embedded in `Receipt.token`. Ordering therefore lives on the owning Execution record
-  // (`nextAcceptancePosition`/`nextRefusalPosition` below), Execution and Event identities are
+  // (`nextAcceptancePosition`/`nextRefusalPosition` in `state-records.ts`), Execution and Event identities are
   // pure functions of the request identity that named them, and receipt tokens name the owning
   // Execution plus its own acceptance index. Nothing one Execution's evidence exposes advances
   // when an unrelated Execution is accepted or refused.
@@ -922,13 +691,13 @@ export class ExecutionCoordinator {
     }
     const creationKeyText = creationKeyField.observed as string;
 
-    const creationRequestId: CreationRequestId = {
+    const creationRequestId: CreationRequestId = PrimordialObjectFreeze({
       producerNamespace: caller.namespace,
       scope,
       requestKey: creationKeyText,
-    };
-    const existing = mapGet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId));
-    if (existing !== undefined) {
+    });
+    const existing = this.#state.findCreation(creationRequestIdKey(creationRequestId));
+    if (existing !== null) {
       if (existing.creationIdentity === content.value.identity) {
         return ok({
           executionId: existing.executionId,
@@ -967,11 +736,11 @@ export class ExecutionCoordinator {
     // at 2.
     const executionId = `execution-${creationRequestIdKey(creationRequestId)}`;
     const receipt = mintReceipt("creation", 1, executionId);
-    const initialInputId: InputId = {
+    const initialInputId: InputId = PrimordialObjectFreeze({
       producerNamespace: caller.namespace,
       destination: executionId,
       requestKey: creationKeyText,
-    };
+    });
     const eventId = `event-creation-${creationRequestIdKey(creationRequestId)}`;
 
     // Accepted content is immutable, so what is retained is the sealed copy validation made, never
@@ -979,7 +748,7 @@ export class ExecutionCoordinator {
     // what the Kernel accepted, and an observer cannot edit it through an inspection view.
     const initial = content.value.initialInput;
 
-    const entry: MailboxEntry = {
+    const entry: EntryFacts = PrimordialObjectFreeze({
       eventId,
       inputId: initialInputId,
       contentIdentity: initial.identity,
@@ -990,50 +759,29 @@ export class ExecutionCoordinator {
       // The initial input is accepted by the creation boundary, in the same atomic decision, so it
       // carries that boundary's receipt rather than minting a second one for the same decision.
       receipt,
-      disposition: QUEUED,
-    };
+    });
 
-    // The commit below uses primordial collection operations only. Content observation above ran
-    // caller traps in this tick, which may have replaced `Map.prototype.set` (or any sibling)
-    // before these lines run: a live `.set` that silently drops the write would return an accepted
-    // Execution ID and receipt with no retained decision behind them (K11-R5-STATE-01). The
-    // initial Event is deliberately *not* indexed in `byInputId`: that map is the post-creation
-    // ingress replay/conflict domain (K11-R15-ID-01 above).
-    const byInputId = new PrimordialMap<string, MailboxEntry>();
-
-    const record: ExecutionRecord = {
+    // The whole decision is one plan; the state owner publishes the record under both keys with
+    // load-time primitives (K11-R5-STATE-01). The initial Event is deliberately *not* indexed in the
+    // post-creation ingress domain (K11-R15-ID-01 above). There is no record yet, so the basis is 0.
+    const answer = ok({ executionId, receipt, replayed: false, initialEventId: eventId });
+    const plan: CreationPlan = PrimordialObjectFreeze({
+      kind: "creation",
       executionId,
-      scope: content.value.scope,
+      basis: 0,
       creationRequestId,
+      scope: content.value.scope,
       definitionRevision: content.value.definitionRevision,
       runtimeContractRevision: content.value.runtimeContractRevision,
       progressCodec: content.value.progressCodec,
       authorityContext: content.value.authorityContext,
       creationIdentity: content.value.identity,
-      creationReceipt: receipt,
-      initialEventId: eventId,
-      mailbox: [entry],
-      byInputId,
-      refusals: [],
-      receipts: [receipt],
-      // No externally visible CREATED: the Execution is READY the moment creation is accepted.
-      state: "READY",
-      acceptedProgress: null,
-      progressRevision: 0,
-      activation: null,
-      acceptedOutcomes: new PrimordialMap<string, AcceptedOutcomeRecord>(),
-      exchanges: [],
-      emissions: [],
-      result: null,
-      nextAcceptancePosition: 2,
-      nextRefusalPosition: 1,
-      activationsMinted: 0,
-      recoveryHistory: [],
-    };
-
-    mapSet(this.#executions, executionId, record);
-    mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);
-    return ok({ executionId, receipt, replayed: false, initialEventId: eventId });
+      receipt,
+      initial: entry,
+      answer,
+    });
+    this.#state.apply(plan);
+    return answer;
   }
 
   /**
@@ -1071,6 +819,8 @@ export class ExecutionCoordinator {
     const requestKeyField = observeField(request, "requestKey", "requestKey", keyIssues);
     const keyOk = requestKeyField.ok && acceptIdentityText(requestKeyField.observed, "requestKey", keyIssues);
     const content = acceptInputContent(request, "");
+    // The last caller observation is above: the decision below is planned against this version.
+    const basis = record.version;
     if (!keyOk || !content.ok) {
       const issues: ValueIssue[] = [];
       appendIssues(issues, keyIssues);
@@ -1079,13 +829,13 @@ export class ExecutionCoordinator {
     }
     const requestKey = requestKeyField.observed as string;
 
-    const inputId: InputId = {
+    const inputId: InputId = PrimordialObjectFreeze({
       producerNamespace: caller.namespace,
       destination: record.executionId,
       requestKey,
-    };
-    const existing = mapGet(record.byInputId, inputIdKey(inputId));
-    if (existing !== undefined) {
+    });
+    const existing = record.inputEntry(inputIdKey(inputId));
+    if (existing !== null) {
       if (existing.contentIdentity === content.value.identity) {
         return ok({
           eventId: existing.eventId,
@@ -1117,8 +867,8 @@ export class ExecutionCoordinator {
     // Counted with an index loop: content observation above runs caller traps in the same tick,
     // which can replace `Array.prototype.filter` before this line runs.
     let unacknowledged = 0;
-    for (let index = 0; index < record.mailbox.length; index += 1) {
-      if ((readAt(record.mailbox, index) as MailboxEntry).disposition.kind === "queued") unacknowledged += 1;
+    for (let index = 0; index < record.mailboxLength; index += 1) {
+      if (record.entryAt(index).disposition.kind === "queued") unacknowledged += 1;
     }
     if (unacknowledged >= this.#mailboxCapacity) {
       return err(
@@ -1131,8 +881,11 @@ export class ExecutionCoordinator {
     }
 
     const eventId = `event-${inputIdKey(inputId)}`;
-    const receipt = this.#mint("input_ingress", record);
-    const entry: MailboxEntry = {
+    // The receipt's position is read here and consumed by the commit with the rest of the decision:
+    // a build that faults consumes no position (owner choice 01).
+    const position = record.nextAcceptancePosition;
+    const receipt = mintReceipt("input_ingress", position, record.executionId);
+    const entry: EntryFacts = PrimordialObjectFreeze({
       eventId,
       inputId,
       contentIdentity: content.value.identity,
@@ -1140,29 +893,24 @@ export class ExecutionCoordinator {
       payload: content.value.payload,
       subscriptionClass: content.value.subscriptionClass,
       // One accepted decision carries one acceptance number: the mailbox entry shares the
-      // receipt's position rather than consuming a second one (`#mint` above already advanced
-      // this Execution's index).
+      // receipt's position rather than consuming a second one.
       acceptancePosition: receipt.position,
       receipt,
-      disposition: QUEUED,
-    };
-    // `appendOwn`, not `.push` and not `mailbox[mailbox.length] = entry`: both are `[[Set]]` on a
-    // position the mailbox does not own yet, and the payload capture above ran caller traps in this
-    // tick that may have installed an inherited accessor at exactly that index name. A swallowed
-    // write would return an accepted Event ID and receipt with nothing behind them — the same
-    // acceptance-without-retention shape as the round-6 `Map.set` drop, reached without touching
-    // any method (K11-R6-STATE-02).
-    appendOwn(record.mailbox, entry);
-    mapSet(record.byInputId, inputIdKey(inputId), entry);
-    appendOwn(record.receipts, receipt);
-
-    return ok({
+    });
+    // The state owner installs the entry and the receipt as own data (`appendOwn`, never `.push` or
+    // an indexed write): payload capture above ran caller traps in this tick that may have installed
+    // an inherited accessor at exactly the next index name, and a swallowed write would return an
+    // accepted Event ID and receipt with nothing behind them (K11-R6-STATE-02).
+    const answer = ok({
       eventId,
       receipt,
       replayed: false,
       acceptancePosition: entry.acceptancePosition,
-      disposition: entry.disposition,
+      disposition: QUEUED,
     });
+    const plan: InputPlan = PrimordialObjectFreeze({ kind: "input", executionId: record.executionId, basis, entry, answer });
+    this.#state.apply(plan);
+    return answer;
   }
 
   /**
@@ -1200,6 +948,8 @@ export class ExecutionCoordinator {
       if (seen.threw) boundUninspectable = true;
       else boundObserved = seen.observed;
     }
+    // The last caller observation is above: the decision below is planned against this version.
+    const basis = record.version;
     if (!PrimordialNumberIsInteger(boundObserved) || (boundObserved as number) < 1) {
       // Only numbers are interpolated: anything else failing validation may be an object whose
       // `toString` trap throws, and the refusal reason must not invoke it.
@@ -1227,34 +977,31 @@ export class ExecutionCoordinator {
     }
 
     // The batch is the acceptance-order prefix of exactly the validated length: the same `bound`
-    // observation that passed validation selects, with no second read of the envelope. The prefix
-    // is built with an index loop rather than `filter`/`slice` so a getter side effect that
-    // replaced an `Array.prototype` method before selection runs cannot change which Events the
-    // validated bound names — and each selected entry is installed as the list's own data
-    // (`appendOwn`), not written with `selected[selected.length] = entry`.
+    // observation that passed validation selects, with no second read of the envelope. The state
+    // owner builds the prefix with an index loop rather than `filter`/`slice`, so a getter side
+    // effect that replaced an `Array.prototype` method before selection runs cannot change which
+    // Events the validated bound names, and installs each selected entry as the list's own data
+    // (`appendOwn`), never with `selected[selected.length] = entry`.
     //
     // K11-R6-STATE-02: that last part is the whole counterexample, and it needs no payload at all.
     // A `bound` getter that returns `1` and installs an inherited setter at `Array.prototype["0"]`
-    // leaves this loop's ordinary write with nowhere to land: the setter runs, no element is
-    // created, `selected.length` stays at zero, and the loop keeps re-selecting into the same
-    // swallowed position. The Kernel then accepts a dispatch intent whose reserved batch is empty
-    // while a queued Event was available under a validated bound of one. `appendOwn` is
-    // `[[DefineOwnProperty]]`, so the accessor is not on the path.
-    const selected: MailboxEntry[] = [];
-    for (let index = 0; index < record.mailbox.length && selected.length < bound; index += 1) {
-      const entry = readAt(record.mailbox, index) as MailboxEntry;
-      if (entry.disposition.kind === "queued") appendOwn(selected, entry);
-    }
-    record.activationsMinted += 1;
-    const activationId = `${record.executionId}/activation-${record.activationsMinted}`;
-    const receipt = this.#mint("dispatch_intent", record);
-
+    // leaves an ordinary write with nowhere to land: the setter runs, no element is created, and the
+    // Kernel accepts a dispatch intent whose reserved batch is empty while a queued Event was
+    // available under a validated bound of one. `appendOwn` is `[[DefineOwnProperty]]`, so the
+    // accessor is not on the path.
+    //
     // The intent is frozen through the load-time reference and its member arrays are built with
     // index loops: a capture-time (or bound-getter) side effect may have replaced live
     // `Object.freeze`/`Array.prototype.map` before these lines run, which would hand the Driver a
     // mutable exchange whose later mutation reappears on redelivery (K11-R5-STATE-01).
-    const carriedEvents: ActivationEvent[] = mapOwn(selected, toActivationEvent);
-    const batchIds: string[] = mapOwn(selected, (entry: MailboxEntry) => entry.eventId);
+    const carriedEvents: ActivationEvent[] = record.queuedEvents(bound);
+    const batchIds: string[] = mapOwn(carriedEvents, (event: ActivationEvent) => event.eventId);
+    // The Activation count and the receipt's position are read here and consumed by the commit:
+    // a build that faults consumes neither (owner choice 01).
+    const activationsMinted = record.activationsMinted + 1;
+    const activationId = `${record.executionId}/activation-${activationsMinted}`;
+    const position = record.nextAcceptancePosition;
+    const receipt = mintReceipt("dispatch_intent", position, record.executionId);
     const activation: Activation = PrimordialObjectFreeze({
       executionId: record.executionId,
       activationId,
@@ -1269,35 +1016,35 @@ export class ExecutionCoordinator {
       progressCodec: record.progressCodec,
       acceptedProgress: record.acceptedProgress,
       events: PrimordialObjectFreeze(carriedEvents),
-      executionView: record.authorityContext.value,
+      executionView: record.authorityContext,
     });
-
-    const intent: ActivationRecord = {
-      activation,
-      receipt,
-      // One submission grant for this exchange's first attempt (K1.2-DEC-20): handed to the Driver
-      // with the Activation and required back on `submitOutcome`. Redelivery reuses it; only a
-      // takeover replaces it.
-      submission: mintSubmission(record.executionId, activationId, 1),
-      batch: PrimordialObjectFreeze(batchIds),
-      deliveries: [],
-      codeHold: null,
-      protocolFailureHold: null,
-    };
-    record.activation = intent;
-    record.state = "RUNNING";
-    appendOwn(record.receipts, receipt);
-
-    this.#deliver(intent);
-
-    return ok({
+    // One submission grant for this exchange's first attempt (K1.2-DEC-20): handed to the Driver
+    // with the Activation and required back on `submitOutcome`. Redelivery reuses it; only a
+    // takeover replaces it.
+    const submission = mintSubmission(record.executionId, activationId, 1);
+    const batch = PrimordialObjectFreeze(batchIds);
+    const answer = ok({
       activationId,
       writerEpoch: activation.writerEpoch,
       baseProgressRevision: activation.baseProgressRevision,
-      batch: intent.batch,
+      batch,
       receipt,
       redelivered: false,
     });
+    const plan: DispatchPlan = PrimordialObjectFreeze({
+      kind: "dispatch",
+      executionId: record.executionId,
+      basis,
+      activationsMinted,
+      receipt,
+      activation,
+      submission,
+      batch,
+      answer,
+    });
+    this.#state.apply(plan);
+    this.#deliver(exchangeOf(record) as ExchangeReader);
+    return answer;
   }
 
   /**
@@ -1338,13 +1085,12 @@ export class ExecutionCoordinator {
       );
     }
 
-    // The answer describes the attempt this call resent. Read before the Driver runs: a Driver that
+    // The answer describes the attempt this call resent. Built before the Driver runs: a Driver that
     // reenters with a takeover replaces the exchange's current attempt, and reading it back
     // afterwards would report an attempt this call never delivered.
     const resent = intent.activation;
     const receipt = intent.receipt;
-    this.#deliver(intent);
-    return ok({
+    const answer = ok({
       activationId: resent.activationId,
       writerEpoch: resent.writerEpoch,
       baseProgressRevision: resent.baseProgressRevision,
@@ -1352,13 +1098,15 @@ export class ExecutionCoordinator {
       receipt,
       redelivered: true,
     });
+    this.#deliver(intent);
+    return answer;
   }
 
   /** A complete, freshly built snapshot. Reading acknowledges nothing and mutates nothing. */
   inspect(caller: AuthenticatedCaller, executionId: string): Result<ExecutionView, RefusalRecord> {
     const record = this.#visible(caller, executionId);
     if (record === null) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
-    return ok(viewOf(record));
+    return ok(record.inspection());
   }
 
   /**
@@ -1373,18 +1121,7 @@ export class ExecutionCoordinator {
    * reveal a hidden ID through its shape: the returned list contains exactly the visible IDs.
    */
   visibleExecutions(caller: AuthenticatedCaller): readonly string[] {
-    const visible: string[] = [];
-    // `Map.forEach` through the load-time reference: neither the `values()` iterator protocol
-    // (`Symbol.iterator`) nor `Array.prototype.push` is consulted, and each visible ID is installed
-    // as this list's own data, so persistent ambient pollution left behind by an earlier boundary
-    // observation cannot hide or duplicate listed IDs (K11-R6-STATE-02: this path takes no caller
-    // value of its own, so the pollution it has to survive is the residue of an earlier call).
-    PrimordialReflectApply(PrimordialMapForEach, this.#executions, [
-      (record: ExecutionRecord) => {
-        if (mayReachScope(caller, record.scope)) appendOwn(visible, record.executionId);
-      },
-    ]);
-    return visible;
+    return this.#state.visibleExecutionIds(caller);
   }
 
   // -- Outcome acceptance (K1.2) ---------------------------------------------
@@ -1445,14 +1182,16 @@ export class ExecutionCoordinator {
     // submission authority succeeds they neither decide the refusal nor are returned or retained
     // (K12-R13-DOC-01).
     const capture = captureOutcome(envelope as object, this.#emissionsPerOutcome);
+    // The last caller observation is above: the decision below is planned against this version.
+    const basis = record.version;
 
     // Canonical step 2 (execution-cycle.md#outcome-acceptance, DEC-3, decision-02): only a
     // well-formed Activation identity addresses an accepted Outcome. A missing, malformed or
     // unobservable identity matches none, so the proposal proceeds as fresh — never a replay
     // and never a `duplicate_conflict`. A well-formed identity keeps the existing behavior.
     if (identityUsable) {
-      const already = mapGet(record.acceptedOutcomes, activationId);
-      if (already !== undefined) {
+      const already = record.acceptedOutcome(activationId);
+      if (already !== null) {
         if (capture.outcome !== null && capture.outcome.identity === already.identity) {
           return ok({ ...already.decision, replayed: true });
         }
@@ -1628,7 +1367,7 @@ export class ExecutionCoordinator {
     // above, and any other obligation-bearing field is refused as unknown. Its second half - every
     // owned action and child has a known disposition - has nothing to find here: no obligation kind
     // exists before K2, so no record can be outstanding. K2.3 adds the check over real records.
-    return ok(this.#accept(record, intent, capture.outcome, caller));
+    return ok(this.#accept(record, intent, capture.outcome, caller, basis));
   }
 
   /**
@@ -1714,6 +1453,9 @@ export class ExecutionCoordinator {
         ),
       );
     }
+    // The safety callback is this method's last callback: the decision below, revalidation included,
+    // is planned against this version, and the owner refuses the plan if anything changes after it.
+    const basis = record.version;
 
     // -- K1.2-DEC-19 revalidation: the safety callback above can synchronously reenter this
     // coordinator and replace what was checked (nested takeover advancing the epoch, an Outcome
@@ -1729,8 +1471,11 @@ export class ExecutionCoordinator {
         ),
       );
     }
-    if (record.activation !== exchange) {
-      if (record.activation === null) {
+    // Readers are fresh windows, so the exchange is compared by its Activation ID: an exchange keeps
+    // its ID across takeovers, and a new exchange always has a new one.
+    const current = record.activation;
+    if (current === null || current.activation.activationId !== exchange.activation.activationId) {
+      if (current === null) {
         return err(
           this.#refusal(
             "no_unresolved_exchange",
@@ -1806,19 +1551,21 @@ export class ExecutionCoordinator {
       receipt,
     });
 
-    // -- The decision, applied: the prebuilt records are appended first, then plain writes of fields
-    // the Kernel's records own. Nothing below constructs a record, reads caller state or runs caller
-    // code; the Driver is handed the new attempt only after the whole decision is recorded.
-    appendOwn(record.receipts, receipt);
-    if (cleared !== null) appendOwn(record.recoveryHistory, cleared);
-    record.nextAcceptancePosition = position + 1;
-    exchange.submission = submission;
-    exchange.activation = activation;
-    exchange.receipt = receipt;
-    exchange.protocolFailureHold = null;
-
+    // -- The decision, applied by the state owner: the prebuilt records are appended first, then plain
+    // writes of fields the records own. The Driver is handed the new attempt only after the whole
+    // decision is recorded.
+    const plan: TakeoverPlan = PrimordialObjectFreeze({
+      kind: "takeover",
+      executionId: record.executionId,
+      basis,
+      receipt,
+      cleared,
+      activation,
+      submission,
+      answer,
+    });
+    this.#state.apply(plan);
     this.#deliver(exchange);
-
     return answer;
   }
 
@@ -1840,8 +1587,8 @@ export class ExecutionCoordinator {
    * K1.2-DEC-18: each accepted decision that enters, updates, or clears the code hold appends one
    * immutable record to the Execution's recovery history, which survives the hold clearing, the
    * exchange resolving, and the Execution ending. Idempotent duplicates append nothing. The hold,
-   * its record and the answer are built before anything changes, then applied together
-   * (`applyControlCommit`; amendment 02).
+   * its record and the answer are built before anything changes, then applied together by the
+   * state owner (amendment 02).
    */
   recoverExecution(caller: AuthenticatedCaller, executionId: string, request: RecoveryRequest): Result<RecoveryDecision, RefusalRecord> {
     const record = this.#visible(caller, executionId);
@@ -1851,6 +1598,8 @@ export class ExecutionCoordinator {
 
     const issues: LocatedIssue[] = [];
     const captured = captureRecovery(request, issues);
+    // The last caller observation is above: the decision below is planned against this version.
+    const basis = record.version;
     if (captured === null) {
       return err(this.#refusal("malformed_value", `recovery request is not acceptable: ${explainDiagnosticIssues(issues, false)}`, record));
     }
@@ -1868,7 +1617,7 @@ export class ExecutionCoordinator {
     if (!listed(captured.available.progressCodecs, pinned.progressCodec)) note("progress codec", pinned.progressCodec);
 
     // The whole decision - the holds after it, the history record explaining it, and the answer -
-    // is planned from Kernel data before anything changes (amendment 02); `applyControlCommit` then
+    // is planned from Kernel data before anything changes (amendment 02); the state owner then
     // applies it with one append and two plain writes. A request that changes nothing appends nothing.
     let commit: ControlCommit | null = null;
     if (missing === "") {
@@ -1906,7 +1655,16 @@ export class ExecutionCoordinator {
       return ok({ activationId: pinned.activationId, writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(exchange), changed: false });
     }
     const answer = ok({ activationId: pinned.activationId, writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(commit), changed: true });
-    applyControlCommit(record, exchange, commit);
+    const plan: ControlPlan = PrimordialObjectFreeze({
+      kind: "control",
+      executionId: record.executionId,
+      basis,
+      history: commit.history,
+      codeHold: commit.codeHold,
+      protocolFailureHold: commit.protocolFailureHold,
+      answer,
+    });
+    this.#state.apply(plan);
     return answer;
   }
 
@@ -1938,6 +1696,8 @@ export class ExecutionCoordinator {
     const named = captureAttempt(report, issues);
     const diagnosticSeen = observeOwn(report, "diagnostic");
     const diagnostic = diagnosticSeen.threw ? PROTOCOL_FAILURE_FALLBACK : boundDiagnostic(diagnosticSeen.observed, PROTOCOL_FAILURE_FALLBACK);
+    // The last caller observation is above: the decision below is planned against this version.
+    const basis = record.version;
     if (named === null) {
       return err(this.#refusal("malformed_value", `protocol-failure report is not acceptable: ${explainDiagnosticIssues(issues, false)}`, record));
     }
@@ -1971,7 +1731,16 @@ export class ExecutionCoordinator {
       history: holdHistoryRecord(named.activationId, currentEpoch, "protocol_failure", "entered", reason, caller.namespace, record.scope),
     };
     const answer = ok({ activationId: named.activationId, writerEpoch: currentEpoch, recoveryHolds: holdsOf(commit), changed: true });
-    applyControlCommit(record, exchange, commit);
+    const plan: ControlPlan = PrimordialObjectFreeze({
+      kind: "control",
+      executionId: record.executionId,
+      basis,
+      history: commit.history,
+      codeHold: commit.codeHold,
+      protocolFailureHold: commit.protocolFailureHold,
+      answer,
+    });
+    this.#state.apply(plan);
     return answer;
   }
 
@@ -1990,7 +1759,7 @@ export class ExecutionCoordinator {
    * A control acts only on the exchange it names (PLAN-01): a request decided against one exchange
    * must never land on the next one.
    */
-  #openExchange(record: ExecutionRecord, activationId: string, verb: string): Result<ActivationRecord, RefusalRecord> {
+  #openExchange(record: ExecutionReader, activationId: string, verb: string): Result<ExchangeReader, RefusalRecord> {
     if (isTerminal(record.state)) {
       return err(
         this.#refusal("terminal_destination", `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to ${verb}`, record),
@@ -2013,36 +1782,36 @@ export class ExecutionCoordinator {
   }
 
   /**
-   * Commits one validated Outcome as one decision (OA-4), and retains it for replay.
+   * Plans one validated Outcome as one decision (OA-4), retained for replay, and has the state owner
+   * apply it.
    *
    * K1.2-DEC-10: every caller-owned field was observed before this runs. The complete
    * construction inventory of this method is:
    *
-   * - pre-apply retained decision records, built first from Kernel data only: the receipt
-   *   (position read, not yet committed), the per-Emission records and IDs, the terminal result,
-   *   the acknowledgment/terminal dispositions, the acknowledged/ended ID lists, the resolved
-   *   exchange, the Outcome decision, any hold-ending history records, and the retained
-   *   `AcceptedOutcomeRecord` wrapper binding the captured identity to the decision;
-   * - transient planning allocations, not semantic records: the acknowledge/end entry lists, the
-   *   batch-membership closure, loop indices;
-   * - apply-phase retained insertions/mutations only: the acceptance-index advance, disposition
-   *   installs, progress/revision install, Emission/result/exchange/accepted-outcome/receipt/history
-   *   insertions, and the exchange resolution with the next state — every inserted record prebuilt;
-   * - post-apply answer projection only: `{ ...decision, replayed: false }`, a fresh object
-   *   spreading the retained decision for the caller, which is not retained state.
+   * - retained decision records, built first from Kernel data only: the receipt (position read,
+   *   not yet committed), the per-Emission records and IDs, the terminal result, the
+   *   acknowledgment/terminal dispositions, the acknowledged/ended ID lists, the resolved
+   *   exchange's facts, the Outcome decision, any hold-ending history records, and the retained
+   *   accepted-Outcome wrapper binding the captured identity to the decision;
+   * - transient planning allocations, not semantic records: the acknowledge/end position lists,
+   *   the batch-membership closure, loop indices;
+   * - the answer, `{ ...decision, replayed: false }`, a fresh object spreading the retained
+   *   decision for the caller, which is not retained state;
+   * - the plan holding all of the above.
    *
-   * The mutations run in one synchronous pass through load-time primitives. The Outcome-acceptance
-   * receipt's position is read while building and committed with the rest of the decision; no
-   * acceptance index advances before the records are complete. Nothing here reads the caller's
-   * envelope - `outcome` is the capture - and nothing here reads the Runtime's progress:
-   * acknowledgment is the whole reserved batch because acceptance says so (`B-3`), not because
-   * progress was parsed for what it handled (R5-j6-2).
+   * The owner's commit (`KernelState`'s Outcome arm) is the acceptance-index advance, disposition
+   * installs, progress/revision install, Emission/result/exchange/accepted-outcome/receipt/history
+   * insertions, and the exchange resolution with the next state, in one synchronous pass through
+   * load-time primitives, every inserted record prebuilt. No acceptance index advances before the
+   * records are complete. Nothing here reads the caller's envelope - `outcome` is the capture - and
+   * nothing here reads the Runtime's progress: acknowledgment is the whole reserved batch because
+   * acceptance says so (`B-3`), not because progress was parsed for what it handled (R5-j6-2).
    *
    * K1.2-DEC-18: when the resolved exchange carried holds, each hold contributes one
    * `ended_by_outcome` record built with the other decision records before any mutation, so the
    * history still explains the hold after it disappears.
    */
-  #accept(record: ExecutionRecord, intent: ActivationRecord, outcome: CapturedOutcome, caller: AuthenticatedCaller): OutcomeAccepted {
+  #accept(record: ExecutionReader, intent: ExchangeReader, outcome: CapturedOutcome, caller: AuthenticatedCaller, basis: number): OutcomeAccepted {
     const activationId = intent.activation.activationId;
     const acceptancePosition = record.nextAcceptancePosition;
     const receipt = mintReceipt("outcome_acceptance", acceptancePosition, record.executionId);
@@ -2077,24 +1846,25 @@ export class ExecutionCoordinator {
     // Which entries this decision disposes, planned before any is changed. The reserved batch is
     // acknowledged whole; at a terminal step, every Event still unacknowledged after that receives a
     // terminal disposition in the same decision (`B-5`) - never an acknowledgment, never a deletion.
+    const batch = intent.batch;
     const inBatch = (eventId: string): boolean => {
-      for (let index = 0; index < intent.batch.length; index += 1) {
-        if ((readAt(intent.batch, index) as string) === eventId) return true;
+      for (let index = 0; index < batch.length; index += 1) {
+        if ((readAt(batch, index) as string) === eventId) return true;
       }
       return false;
     };
-    const toAcknowledge: MailboxEntry[] = [];
-    const toEnd: MailboxEntry[] = [];
+    const acknowledgeAt: number[] = [];
+    const endAt: number[] = [];
     const acknowledgedIds: string[] = [];
     const endedIds: string[] = [];
-    for (let index = 0; index < record.mailbox.length; index += 1) {
-      const entry = readAt(record.mailbox, index) as MailboxEntry;
+    for (let index = 0; index < record.mailboxLength; index += 1) {
+      const entry = record.entryAt(index);
       if (entry.disposition.kind !== "queued") continue;
       if (inBatch(entry.eventId)) {
-        appendOwn(toAcknowledge, entry);
+        appendOwn(acknowledgeAt, index);
         appendOwn(acknowledgedIds, entry.eventId);
       } else if (nextState !== "READY") {
-        appendOwn(toEnd, entry);
+        appendOwn(endAt, index);
         appendOwn(endedIds, entry.eventId);
       }
     }
@@ -2104,15 +1874,13 @@ export class ExecutionCoordinator {
       reason: `Execution ended as ${nextState} before this Event was acknowledged`,
     });
 
-    const resolved: ResolvedExchange = PrimordialObjectFreeze({
+    const resolved: ResolvedFacts = PrimordialObjectFreeze({
       activationId,
       writerEpoch: intent.activation.writerEpoch,
       baseProgressRevision: intent.activation.baseProgressRevision,
-      batch: intent.batch,
+      batch,
       dispatchReceipt: intent.receipt,
       outcomeReceipt: receipt,
-      // The same list the capabilities write into, so a late report settles its original record.
-      deliveries: intent.deliveries,
     });
     const decision: Omit<OutcomeAccepted, "replayed"> = PrimordialObjectFreeze({
       receipt,
@@ -2126,7 +1894,7 @@ export class ExecutionCoordinator {
     });
 
     // The hold-ending history records are decision records too (K1.2-DEC-18): frozen here from
-    // pre-mutation state alongside everything else, so the apply phase below only appends prebuilt
+    // pre-mutation state alongside everything else, so the owner's commit only appends prebuilt
     // records and constructs nothing after mutation has started.
     const historyToAppend: RecoveryHistoryRecord[] = [];
     if (intent.codeHold !== null) {
@@ -2162,40 +1930,30 @@ export class ExecutionCoordinator {
 
     // The replay index entry is itself a retained decision record (OA-2: the exact replay answers
     // from it; K1.2-DEC-12 retains accepted-Outcome records): frozen here with the other decision
-    // records, so the apply phase below only inserts the prebuilt wrapper.
-    const stored: AcceptedOutcomeRecord = PrimordialObjectFreeze({ identity: outcome.identity, decision, content: outcome });
+    // records, so the owner only inserts the prebuilt wrapper.
+    const stored: AcceptedOutcome = PrimordialObjectFreeze({ identity: outcome.identity, decision, content: outcome });
 
-    // -- The decision, applied. Nothing below can refuse, and nothing below reads caller state.
-    // The acceptance index advances here, with the rest of the commit, not before building: a
-    // failure while building would otherwise leave a consumed position with no decision behind it.
-    record.nextAcceptancePosition = acceptancePosition + 1;
-    for (let index = 0; index < toAcknowledge.length; index += 1) (readAt(toAcknowledge, index) as MailboxEntry).disposition = acknowledgment;
-    for (let index = 0; index < toEnd.length; index += 1) (readAt(toEnd, index) as MailboxEntry).disposition = ending;
-    record.acceptedProgress = outcome.progress.value;
-    record.progressRevision = progressRevision;
-    appendAllOwn(record.emissions, emissionRecords);
-    if (result !== null) record.result = result;
-    appendOwn(record.exchanges, resolved);
-    mapSet(record.acceptedOutcomes, activationId, stored);
-    appendOwn(record.receipts, receipt);
-    appendAllOwn(record.recoveryHistory, historyToAppend);
-    record.activation = null;
-    record.state = nextState;
-
-    return { ...decision, replayed: false };
-  }
-
-  /**
-   * Mints the receipt for one accepted decision on the given Execution.
-   *
-   * The position consumed is that Execution's own acceptance index, never a shared
-   * coordinator sequence (K11-R12-ID-01). Replay and redelivery do not call this: they
-   * return the already-minted receipt unchanged.
-   */
-  #mint(boundary: ReceiptBoundary, record: ExecutionRecord): Receipt {
-    const position = record.nextAcceptancePosition;
-    record.nextAcceptancePosition += 1;
-    return mintReceipt(boundary, position, record.executionId);
+    const answer = { ...decision, replayed: false };
+    const plan: OutcomePlan = PrimordialObjectFreeze({
+      kind: "outcome",
+      executionId: record.executionId,
+      basis,
+      receipt,
+      acknowledgeAt: PrimordialObjectFreeze(acknowledgeAt),
+      endAt: PrimordialObjectFreeze(endAt),
+      acknowledgment,
+      ending,
+      progressRevision,
+      emissions: PrimordialObjectFreeze(emissionRecords),
+      result,
+      resolved,
+      stored,
+      history: PrimordialObjectFreeze(historyToAppend),
+      nextState,
+      answer,
+    });
+    this.#state.apply(plan);
+    return answer;
   }
 
   /**
@@ -2216,11 +1974,11 @@ export class ExecutionCoordinator {
    * This normalizes application-level lookup work. It does not claim cryptographic constant-time
    * string or hash-table behavior, which JavaScript does not provide; see `identity.ts`.
    */
-  #visible(caller: AuthenticatedCaller, executionId: string): ExecutionRecord | null {
-    const record = mapGet(this.#executions, executionId);
-    const targetScope = record !== undefined ? record.scope : MISSING_SCOPE_SENTINEL;
+  #visible(caller: AuthenticatedCaller, executionId: string): ExecutionReader | null {
+    const record = this.#state.find(executionId);
+    const targetScope = record !== null ? record.scope : MISSING_SCOPE_SENTINEL;
     if (!mayReachScope(caller, targetScope)) return null;
-    return record ?? null;
+    return record;
   }
 
   /**
@@ -2234,7 +1992,7 @@ export class ExecutionCoordinator {
    * submission: visibility plus the separate current-attempt `SubmissionGrant` can authorize a
    * valid Outcome whose acceptance resolves the exchange and ends its holds (K1.2-DEC-20).
    */
-  #requireControl(caller: AuthenticatedCaller, record: ExecutionRecord): RefusalRecord | null {
+  #requireControl(caller: AuthenticatedCaller, record: ExecutionReader): RefusalRecord | null {
     if (mayControlScope(caller, record.scope)) return null;
     return this.#refusal(
       "unauthorized_control",
@@ -2249,19 +2007,22 @@ export class ExecutionCoordinator {
    * The caller's copy and the Execution's retained copy are deliberately the same object: a refusal
    * is retained evidence, and `mintRefusal` freezes it, so sharing the reference is safe and keeps
    * "what was returned" and "what was recorded" the same fact rather than two that could drift.
+   * A refusal naming an Execution is a plan like any other decision, and the caller exits with it.
    */
-  #refusal(classification: RefusalClassification, reason: string, record: ExecutionRecord | null): RefusalRecord {
+  #refusal(classification: RefusalClassification, reason: string, record: ExecutionReader | null): RefusalRecord {
     // K11-R12-ID-01: a refusal advances only the owning Execution's own refusal index, and a
     // refusal that names no Execution advances nothing at all — it carries position 0. Either
     // way no caller-visible sequence moves for activity outside the caller's visible domain.
     if (record === null) return mintRefusal(classification, reason, 0, null);
     // Built, then appended, then the index advanced (SELF-R8-REFUSAL-01, found by the fault sweep):
     // advancing first let an exception while minting or appending consume a position with no
-    // retained refusal behind it, so the next refusal skipped one.
+    // retained refusal behind it, so the next refusal skipped one. The owner's refusal arm keeps
+    // that order.
+    const basis = record.version;
     const position = record.nextRefusalPosition;
     const refusal = mintRefusal(classification, reason, position, record.executionId);
-    appendOwn(record.refusals, refusal);
-    record.nextRefusalPosition = position + 1;
+    const plan: RefusalPlan = PrimordialObjectFreeze({ kind: "refusal", executionId: record.executionId, basis, refusal });
+    this.#state.apply(plan);
     return refusal;
   }
 
@@ -2279,28 +2040,24 @@ export class ExecutionCoordinator {
    * changes accepted state: the intent stands, the Execution stays `RUNNING`, and the same
    * exchange can be redelivered with a new capability for the new attempt (KC1-ARCH-1).
    */
-  #deliver(intent: ActivationRecord): void {
-    const attempt: DeliveryAttempt = {
-      attempt: intent.deliveries.length + 1,
-      status: "pending",
-      failure: null,
-      activationId: intent.activation.activationId,
-      writerEpoch: intent.activation.writerEpoch,
-    };
-    appendOwn(intent.deliveries, attempt);
-    // Claimed before any reason is inspected: the first report wins, including reentrant
-    // reports issued while a diagnostic is being bounded. Each closure captures only its
-    // own attempt object, so a late report can settle only its original retained record —
-    // never a newer attempt, the current exchange, or logical state.
+  #deliver(intent: ExchangeReader): void {
+    // Reader reads only before the attempt is recorded: none calls anything a fault can interrupt.
+    const basis = intent.execution.version;
+    const executionId = intent.activation.executionId;
+    const activationId = intent.activation.activationId;
+    const writerEpoch = intent.activation.writerEpoch;
+    const attempt = intent.deliveryCount + 1;
+    this.#state.apply(PrimordialObjectFreeze({ kind: "delivery", executionId, basis, activationId, writerEpoch, attempt }));
+    const state = this.#state;
+    // The first report wins, including reentrant reports issued during delivery. Each method names
+    // only its own attempt, so a late report can settle only its original retained row — never a
+    // newer attempt, the current exchange, or logical state.
     const settlement: DeliverySettlement = PrimordialObjectFreeze({
       delivered(): void {
-        if (attempt.status !== "pending") return;
-        attempt.status = "delivered";
+        settle(state, executionId, activationId, attempt, "delivered", null);
       },
       failed(reason: unknown): void {
-        if (attempt.status !== "pending") return;
-        attempt.status = "failed";
-        attempt.failure = describeDeliveryFailure(reason);
+        settle(state, executionId, activationId, attempt, "failed", reason);
       },
     });
     try {
@@ -2310,162 +2067,7 @@ export class ExecutionCoordinator {
       // it here passes the reference, never caller-owned content.
       this.#driver.deliver(intent.activation, settlement, intent.submission);
     } catch (error) {
-      if (attempt.status !== "pending") return;
-      attempt.status = "failed";
-      attempt.failure = describeDeliveryFailure(error);
+      settle(state, executionId, activationId, attempt, "failed", error);
     }
   }
-}
-
-// -- View construction -------------------------------------------------------
-
-/**
- * One carried Event, frozen.
- *
- * The Activation is immutable, and the same object is handed to the Driver again on every ordinary
- * redelivery. Freezing each member as well as the array means a Driver cannot edit the exchange it
- * was given and have the edit reappear under the same Activation ID. The payload is already a sealed
- * copy from acceptance.
- */
-const toActivationEvent = (entry: MailboxEntry): ActivationEvent => {
-  const base = {
-    eventId: entry.eventId,
-    destination: entry.inputId.destination,
-    kind: entry.kind,
-    payload: entry.payload.value,
-    sourceCategory: "application_input",
-    acceptancePosition: entry.acceptancePosition,
-  } as const;
-  return PrimordialObjectFreeze(entry.subscriptionClass === null ? base : { ...base, subscriptionClass: entry.subscriptionClass });
-};
-
-const toDeliveryView = (attempt: DeliveryAttempt): DeliveryAttemptView => ({
-  attempt: attempt.attempt,
-  status: attempt.status,
-  failure: attempt.failure,
-  activationId: attempt.activationId,
-  writerEpoch: attempt.writerEpoch,
-});
-
-/**
- * The holds on one unresolved exchange, code first, as own data with computed permitted actions.
- *
- * Takes the stored exchange for inspection and the idempotent answers, and a planned control
- * decision for the answer that decision will return, which is built before it is applied.
- */
-const holdsOf = (intent: HoldState): RecoveryHoldView[] => {
-  const holds: RecoveryHoldView[] = [];
-  const hasCodeHold = intent.codeHold !== null;
-  if (intent.codeHold !== null) {
-    const stored = intent.codeHold;
-    appendOwn(
-      holds,
-      PrimordialObjectFreeze({
-        cause: stored.cause,
-        reason: stored.reason,
-        activationId: stored.activationId,
-        writerEpoch: stored.writerEpoch,
-        permittedNextActions: permittedForHold(stored.cause, hasCodeHold),
-      }),
-    );
-  }
-  if (intent.protocolFailureHold !== null) {
-    const stored = intent.protocolFailureHold;
-    appendOwn(
-      holds,
-      PrimordialObjectFreeze({
-        cause: stored.cause,
-        reason: stored.reason,
-        activationId: stored.activationId,
-        writerEpoch: stored.writerEpoch,
-        permittedNextActions: permittedForHold(stored.cause, hasCodeHold),
-      }),
-    );
-  }
-  return holds;
-};
-
-const toExchangeView = (exchange: ResolvedExchange): ExchangeView => ({
-  activationId: exchange.activationId,
-  writerEpoch: exchange.writerEpoch,
-  baseProgressRevision: exchange.baseProgressRevision,
-  batch: copyOwn(exchange.batch),
-  dispatchReceipt: exchange.dispatchReceipt,
-  outcomeReceipt: exchange.outcomeReceipt,
-  deliveries: mapOwn(exchange.deliveries, toDeliveryView),
-});
-
-const toActivationView = (intent: ActivationRecord): ActivationView => ({
-  activationId: intent.activation.activationId,
-  writerEpoch: intent.activation.writerEpoch,
-  baseProgressRevision: intent.activation.baseProgressRevision,
-  batch: copyOwn(intent.batch),
-  receipt: intent.receipt,
-  deliveries: mapOwn(intent.deliveries, toDeliveryView),
-});
-
-const toMailboxView = (entry: MailboxEntry, isReserved: (eventId: string) => boolean): MailboxEntryView => ({
-  eventId: entry.eventId,
-  inputId: { ...entry.inputId },
-  kind: entry.kind,
-  payload: entry.payload.value,
-  subscriptionClass: entry.subscriptionClass,
-  sourceCategory: "application_input",
-  acceptancePosition: entry.acceptancePosition,
-  disposition: entry.disposition,
-  reserved: isReserved(entry.eventId),
-  receipt: entry.receipt,
-});
-
-function viewOf(record: ExecutionRecord): ExecutionView {
-  // Membership over the reserved batch without constructing a `Set` (global `Set` and
-  // `Set.prototype.has` are both caller-mutable) and without any prototype method: batches are
-  // small and bounded by the mailbox capacity, so a linear scan is exact and dependency-free.
-  const batch = record.activation === null ? null : record.activation.batch;
-  const isReserved = (eventId: string): boolean => {
-    if (batch === null) return false;
-    for (let index = 0; index < batch.length; index += 1) {
-      if ((readAt(batch, index) as string) === eventId) return true;
-    }
-    return false;
-  };
-  // Every list this view is assembled from is built as own data. A view is the Kernel's own answer
-  // about retained truth, so a fresh projection must not be droppable or substitutable through
-  // ambient pollution an earlier boundary observation left installed (K11-R6-STATE-02).
-  const mailbox: MailboxEntryView[] = [];
-  const queued: string[] = [];
-  const acknowledged: string[] = [];
-  const terminalDispositions: string[] = [];
-  for (let index = 0; index < record.mailbox.length; index += 1) {
-    const entry = readAt(record.mailbox, index) as MailboxEntry;
-    appendOwn(mailbox, toMailboxView(entry, isReserved));
-    if (entry.disposition.kind === "queued") appendOwn(queued, entry.eventId);
-    else if (entry.disposition.kind === "acknowledged") appendOwn(acknowledged, entry.eventId);
-    else if (entry.disposition.kind === "terminal") appendOwn(terminalDispositions, entry.eventId);
-  }
-  return {
-    executionId: record.executionId,
-    state: record.state,
-    scope: record.scope,
-    creationKey: record.creationRequestId.requestKey,
-    definitionRevision: record.definitionRevision,
-    runtimeContractRevision: record.runtimeContractRevision,
-    progressCodec: record.progressCodec,
-    acceptedProgress: record.acceptedProgress,
-    progressRevision: record.progressRevision,
-    authorityContext: record.authorityContext.value,
-    activation: record.activation === null ? null : toActivationView(record.activation),
-    recoveryHolds: record.activation === null ? [] : holdsOf(record.activation),
-    recoveryHistory: copyOwn(record.recoveryHistory),
-    exchanges: mapOwn(record.exchanges, toExchangeView),
-    // The retained records are frozen at acceptance; the list around them is a fresh copy.
-    emissions: copyOwn(record.emissions),
-    result: record.result,
-    mailbox,
-    queued,
-    acknowledged,
-    terminalDispositions,
-    refusals: copyOwn(record.refusals),
-    receipts: copyOwn(record.receipts),
-  };
 }

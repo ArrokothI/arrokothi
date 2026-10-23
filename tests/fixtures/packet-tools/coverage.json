@@ -7,7 +7,8 @@
     "held-realm-witness",
     "work-charge",
     "tool-result",
-    "held-capture"
+    "held-capture",
+    "state-owner-bypass"
   ],
   "families": [
     {
@@ -1255,6 +1256,57 @@
             "prototype": "unchanged",
             "stage": "capture",
             "environment": "ordinary"
+          }
+        }
+      ]
+    },
+    {
+      "id": "state-owner",
+      "domains": {
+        "bypass": [
+          "write-outside-apply",
+          "dropped-coupled-field",
+          "callback-inside-apply",
+          "view-aliases-state"
+        ],
+        "environment": [
+          "ordinary"
+        ],
+        "stage": [
+          "state-owner"
+        ]
+      },
+      "cases": [
+        {
+          "case": "state-owner.write-outside-apply",
+          "values": {
+            "bypass": "write-outside-apply",
+            "environment": "ordinary",
+            "stage": "state-owner"
+          }
+        },
+        {
+          "case": "state-owner.dropped-coupled-field",
+          "values": {
+            "bypass": "dropped-coupled-field",
+            "environment": "ordinary",
+            "stage": "state-owner"
+          }
+        },
+        {
+          "case": "state-owner.callback-inside-apply",
+          "values": {
+            "bypass": "callback-inside-apply",
+            "environment": "ordinary",
+            "stage": "state-owner"
+          }
+        },
+        {
+          "case": "state-owner.view-aliases-state",
+          "values": {
+            "bypass": "view-aliases-state",
+            "environment": "ordinary",
+            "stage": "state-owner"
           }
         }
       ]
