@@ -4,8 +4,8 @@
  * `fault-child.ts` runs each scenario's target call once with no fault (the *reference*), then once
  * per intercepted operation `k` with an exception thrown at that operation. This module decides
  * whether each run left a decision the contract permits, and whether the scenarios take each exit of
- * the swept methods it finds in the source. It imports no Kernel code: it reads `coordinator.ts` as
- * text and compares observations, so `fault-oracle.test.ts` can hand it altered observations as
+ * the swept methods it finds in the source. It imports no Kernel code: it reads `coordinator.ts` and
+ * the state owner `state.ts` as text and compares observations, so `fault-oracle.test.ts` can hand it altered observations as
  * negative controls, and `oracle-mutants-09.mjs` can disable each of its comparisons (`CHECKS`) in turn.
  *
  * ## What a run is judged on (`Observation`)
@@ -37,8 +37,8 @@
  *
  * Three exceptions are admitted, only in the scenarios whose uninjected call accepts
  * (`CHECKS.acceptingExit`), and each only for a fault the checker *locates* inside the declared phase:
- * one of the fault's own stack frames is at a statement this module finds in `coordinator.ts`
- * (`sourceModel`). The name of the intercepted method plays no part.
+ * one of the fault's own stack frames is at a statement this module finds in `coordinator.ts` or
+ * `state.ts` (`sourceModel`). The name of the intercepted method plays no part.
  *
  * - **Takeover delivery** (`CHECKS.deliveredAt`): the fault is inside `#deliver`, which
  *   `requestTakeover` calls after its commit. The expected state is the reference state with the new
@@ -50,10 +50,15 @@
  * - **Takeover apply window** (`CHECKS.takeoverWindowAt`): the fault is at the clearing record's append,
  *   the second of the takeover's two appends. Expected: that fault, and `B` plus exactly the receipt.
  * - **Outcome apply window** (`CHECKS.outcomeStepAt`, `CHECKS.outcomePrefix`): the fault is at one of
- *   `#accept`'s apply statements. Expected: that fault, and a state that is a prefix of the declared
+ *   the Outcome commit's statements. Expected: that fault, and a state that is a prefix of the declared
  *   apply sequence `OUTCOME_APPLY` ending inside that statement. The sweep checks that the sequence
  *   matches the source (`CHECKS.applySequence`) and, from the reference decision, that applying it
  *   whole reproduces the reference state (`CHECKS.applyModel`).
+ *
+ * Since COORD-REFACTOR-01 the two commits are applied by the state owner: the Outcome commit is the end
+ * of `KernelState`'s `#applyOutcome` and the takeover's appends and writes are the end of
+ * `#applyTakeover`, while `#accept` and `requestTakeover` end by handing the plan over and, for the
+ * takeover, delivering. The sequences are checked in both halves, statement by statement.
  *
  * With no fault (`k = N + 1`), the run must reproduce the reference answer or refusal and the
  * reference state, and no fault may fire (`CHECKS.quietRepeat`).
@@ -88,6 +93,7 @@
  */
 
 import { readFileSync } from "node:fs";
+import { basename, dirname, resolve } from "node:path";
 import { isDeepStrictEqual } from "node:util";
 import ts from "typescript";
 import type { ExecutionView, RefusalRecord } from "../../src/index.ts";
@@ -171,7 +177,7 @@ export type Verdict =
 
 // -- The source model ---------------------------------------------------------------------------
 
-/** `#accept`'s apply phase, statement by statement, in order (DEC-10; BASELINE's Outcome-acceptance transaction). */
+/** The Outcome commit, statement by statement, in order (DEC-10; BASELINE's Outcome-acceptance transaction): the end of `state.ts`'s `#applyOutcome`. */
 export const OUTCOME_APPLY = [
   ["index", "record.nextAcceptancePosition = acceptancePosition + 1;"],
   ["acknowledge", "for (let index = 0; index < toAcknowledge.length; index += 1) (readAt(toAcknowledge, index) as MailboxEntry).disposition = acknowledgment;"],
@@ -189,7 +195,11 @@ export const OUTCOME_APPLY = [
 ] as const;
 export type OutcomeStep = (typeof OUTCOME_APPLY)[number][0];
 
-/** `requestTakeover`'s apply phase and delivery, in order (DEC-9). */
+/**
+ * The takeover's apply phase and delivery, in order (DEC-9). The first seven statements end `state.ts`'s
+ * `#applyTakeover`; the last two end `requestTakeover`, right after it hands the plan over
+ * (`TAKEOVER_HANDOVER`).
+ */
 export const TAKEOVER_APPLY = [
   "appendOwn(record.receipts, receipt);",
   "if (cleared !== null) appendOwn(record.recoveryHistory, cleared);",
@@ -202,15 +212,20 @@ export const TAKEOVER_APPLY = [
   "return answer;",
 ] as const;
 
+/** The statements that hand a decision to the state owner, each followed by the rest of its method. */
+export const TAKEOVER_HANDOVER = "this.#state.apply(plan);";
+export const OUTCOME_HANDOVER = ["this.#state.apply(plan);", "return answer;"] as const;
+
 /** `#deliver`'s three statements that can fail, and the delivery row each failure leaves. */
 export const DELIVERY_SITES = [
-  ["absent", "appendOwn(intent.deliveries, attempt);"],
+  ["absent", "this.#state.apply(PrimordialObjectFreeze({ kind: \"delivery\","],
   ["pending", "const settlement: DeliverySettlement = PrimordialObjectFreeze({"],
   ["failed", "this.#driver.deliver(intent.activation, settlement, intent.submission);"],
 ] as const;
 export type DeliverySite = (typeof DELIVERY_SITES)[number][0];
 
-type Lines = readonly [number, number];
+/** A statement's first and last line, and the zone file (relative to `packages/kernel/src/`) holding it. */
+type Lines = readonly [number, number] & { readonly file: string };
 
 export interface Exit {
   /** `<control> [<helper>] L<line>`. */
@@ -236,23 +251,30 @@ export interface SourceModel {
 const collapse = (text: string): string => text.replace(/\s+/g, " ").trim();
 
 export function sourceModel(coordinatorPath: string): SourceModel {
-  const text = readFileSync(coordinatorPath, "utf8");
-  const source = ts.createSourceFile(coordinatorPath, text, ts.ScriptTarget.Latest, true);
   const problems: string[] = [];
-  const lineOf = (position: number): number => source.getLineAndCharacterOfPosition(position).line + 1;
-  const linesOf = (node: ts.Node): Lines => [lineOf(node.getStart(source)), lineOf(node.getEnd())];
-
-  let coordinator: ts.ClassDeclaration | undefined;
-  for (const statement of source.statements) {
-    if (ts.isClassDeclaration(statement) && statement.name?.text === "ExecutionCoordinator") coordinator = statement;
-  }
-  const methods = new Map<string, ts.MethodDeclaration>();
-  for (const member of coordinator?.members ?? []) {
-    if (ts.isMethodDeclaration(member) && (ts.isIdentifier(member.name) || ts.isPrivateIdentifier(member.name))) methods.set(member.name.text, member);
-  }
-  const method = (name: string): ts.MethodDeclaration | undefined => {
-    const found = methods.get(name);
-    if (found === undefined) problems.push(`coordinator.ts has no method ${name}`);
+  // The state owner sits beside the coordinator; both are read as text, never imported.
+  const parse = (path: string, className: string): { source: ts.SourceFile; file: string; methods: Map<string, ts.MethodDeclaration> } => {
+    const source = ts.createSourceFile(path, readFileSync(path, "utf8"), ts.ScriptTarget.Latest, true);
+    let found: ts.ClassDeclaration | undefined;
+    for (const statement of source.statements) {
+      if (ts.isClassDeclaration(statement) && statement.name?.text === className) found = statement;
+    }
+    const methods = new Map<string, ts.MethodDeclaration>();
+    for (const member of found?.members ?? []) {
+      if (ts.isMethodDeclaration(member) && (ts.isIdentifier(member.name) || ts.isPrivateIdentifier(member.name))) methods.set(member.name.text, member);
+    }
+    return { source, file: basename(path), methods };
+  };
+  const coordinator = parse(coordinatorPath, "ExecutionCoordinator");
+  const owner = parse(resolve(dirname(coordinatorPath), "state.ts"), "KernelState");
+  type Parsed = typeof coordinator;
+  const lineOf = (parsed: Parsed, position: number): number => parsed.source.getLineAndCharacterOfPosition(position).line + 1;
+  const linesOf = (parsed: Parsed, node: ts.Node): Lines =>
+    Object.assign([lineOf(parsed, node.getStart(parsed.source)), lineOf(parsed, node.getEnd())] as const, { file: parsed.file });
+  const source = coordinator.source;
+  const method = (name: string, parsed: Parsed = coordinator): ts.MethodDeclaration | undefined => {
+    const found = parsed.methods.get(name);
+    if (found === undefined) problems.push(`${parsed.file} has no method ${name}`);
     return found;
   };
 
@@ -269,22 +291,24 @@ export function sourceModel(coordinatorPath: string): SourceModel {
     if (node.body !== undefined) ts.forEachChild(node.body, visit);
     return found;
   };
-  const anchored = (name: string, anchor: string): Lines | null => {
-    const node = method(name);
+  const anchored = (name: string, anchor: string, parsed: Parsed = coordinator): Lines | null => {
+    const node = method(name, parsed);
     if (node === undefined) return null;
-    const matches = statementsOf(node).filter((statement) => collapse(statement.getText(source)).startsWith(collapse(anchor)));
+    const matches = statementsOf(node).filter((statement) => collapse(statement.getText(parsed.source)).startsWith(collapse(anchor)));
     if (matches.length !== 1) {
       problems.push(`${name}: ${matches.length} statements start with "${anchor}"`);
       return null;
     }
-    return linesOf(matches[0] as ts.Statement);
+    return linesOf(parsed, matches[0] as ts.Statement);
   };
-  // A declared sequence must be consecutive top-level statements of the method's body, in order.
-  const sequence = (name: string, anchors: readonly string[], then: string | null): void => {
-    const node = method(name);
+  // A declared sequence must be consecutive top-level statements of the method's body, in order. When
+  // `then` is `END`, the sequence must also end the body.
+  const END = "<end of body>";
+  const sequence = (name: string, anchors: readonly string[], then: string | null, parsed: Parsed = coordinator): void => {
+    const node = method(name, parsed);
     if (node?.body === undefined) return;
     const body = node.body.statements;
-    const start = body.findIndex((statement) => collapse(statement.getText(source)).startsWith(collapse(anchors[0] as string)));
+    const start = body.findIndex((statement) => collapse(statement.getText(parsed.source)).startsWith(collapse(anchors[0] as string)));
     if (start === -1) {
       problems.push(`${name}: the declared sequence's first statement "${anchors[0]}" is missing`);
       return;
@@ -292,18 +316,24 @@ export function sourceModel(coordinatorPath: string): SourceModel {
     const expected = then === null ? anchors : [...anchors, then];
     for (let index = 0; index < expected.length; index += 1) {
       const statement = body[start + index];
-      const actual = statement === undefined ? "<end of body>" : collapse(statement.getText(source));
-      if (!actual.startsWith(collapse(expected[index] as string))) {
-        problems.push(`${name}: statement ${index + 1} of the declared sequence is "${actual.slice(0, 100)}", not "${expected[index]}"`);
+      const actual = statement === undefined ? END : collapse(statement.getText(parsed.source));
+      const wanted = expected[index] as string;
+      if (wanted === END ? statement !== undefined : !actual.startsWith(collapse(wanted))) {
+        problems.push(`${name}: statement ${index + 1} of the declared sequence is "${actual.slice(0, 100)}", not "${wanted}"`);
         return;
       }
     }
   };
 
-  sequence("#accept", OUTCOME_APPLY.map(([, anchor]) => anchor), "return { ...decision, replayed: false };");
-  sequence("requestTakeover", TAKEOVER_APPLY, null);
-  const outcomeApply = OUTCOME_APPLY.map(([step, anchor]) => ({ step, lines: anchored("#accept", anchor) }));
-  const takeoverClearingAppend = anchored("requestTakeover", TAKEOVER_APPLY[1]);
+  // The Outcome commit ends the owner's Outcome arm; `#accept` ends by handing its plan over.
+  sequence("#applyOutcome", OUTCOME_APPLY.map(([, anchor]) => anchor), END, owner);
+  sequence("#accept", OUTCOME_HANDOVER, END);
+  // The takeover's appends and writes end the owner's takeover arm; `requestTakeover` ends by handing
+  // its plan over, delivering and returning.
+  sequence("#applyTakeover", TAKEOVER_APPLY.slice(0, 7), END, owner);
+  sequence("requestTakeover", [TAKEOVER_HANDOVER, ...TAKEOVER_APPLY.slice(7)], END);
+  const outcomeApply = OUTCOME_APPLY.map(([step, anchor]) => ({ step, lines: anchored("#applyOutcome", anchor, owner) }));
+  const takeoverClearingAppend = anchored("#applyTakeover", TAKEOVER_APPLY[1], owner);
   const takeoverDeliverCall = anchored("requestTakeover", TAKEOVER_APPLY[7]);
   const deliverySites = DELIVERY_SITES.map(([site, anchor]) => ({ site, lines: anchored("#deliver", anchor) }));
 
@@ -333,7 +363,7 @@ export function sourceModel(coordinatorPath: string): SourceModel {
     if (node === undefined) continue;
     const body = node.getText(source);
     const add = (name: string, statement: ts.ReturnStatement, exitText: string): void => {
-      const line = lineOf(statement.getStart(source));
+      const line = lineOf(coordinator, statement.getStart(source));
       exits.push({ id: `${control}${name === control ? "" : ` ${name}`} L${line}`, method: name, via: control, text: exitText, offset: statement.getStart(source), line });
     };
     for (const { statement, text: exitText } of returnsOf(node)) add(control, statement, exitText);
@@ -352,7 +382,7 @@ export function sourceModel(coordinatorPath: string): SourceModel {
 // -- Helpers ------------------------------------------------------------------------------------
 
 const inLines = (frame: Frame, lines: Lines | null): boolean =>
-  lines !== null && frame.file === "coordinator.ts" && frame.line >= lines[0] && frame.line <= lines[1];
+  lines !== null && frame.file === lines.file && frame.line >= lines[0] && frame.line <= lines[1];
 
 const threw = (operation: number): Returned => ({ kind: "threw", operation });
 
@@ -728,13 +758,13 @@ export function checkContext(context: Context, model: SourceModel): string[] {
       } else if (!CHECKS.outcomeAnswer(context, decision)) violations.push(`the ${which} Outcome answer disagrees with the state it left`);
     }
     if (context.control === "submitOutcome") {
-      if (!CHECKS.applySequence(model)) violations.push(`the declared apply sequences do not match coordinator.ts: ${model.problems.join("; ")}`);
+      if (!CHECKS.applySequence(model)) violations.push(`the declared apply sequences do not match the source: ${model.problems.join("; ")}`);
       const whole = outcomeLadder(context).at(-1)?.states.at(-1) ?? context.s0;
       if (!CHECKS.applyModel(context, whole)) {
         violations.push(`the declared Outcome apply sequence does not reproduce the uninjected decision: ${differing(context.reference, { returned: context.reference.returned, state: whole })}`);
       }
     }
-    if (context.control === "requestTakeover" && !CHECKS.applySequence(model)) violations.push(`the declared apply sequences do not match coordinator.ts: ${model.problems.join("; ")}`);
+    if (context.control === "requestTakeover" && !CHECKS.applySequence(model)) violations.push(`the declared apply sequences do not match the source: ${model.problems.join("; ")}`);
   }
   return violations;
 }

@@ -23,3 +23,8 @@ The resume point for any session continuing this packet. Newest facts first with
   `state.ts`), `state.ts` (`KernelState`: `#private` records, `apply(plan)`, live read-only readers),
   `coordinator.ts` (planner/shell). Basis = per-Execution version checked by `apply`. Retire
   `control-commits.test.ts` with mapping; port ambient-reads/zone-inventory/zone-analysis and the fault-oracle locator.
+- Build checkpoint 1: `plan.ts`, `state-records.ts`, `state.ts` added; `coordinator.ts` is planner/shell. Typecheck
+  clean; kernel suite 1,717/1,792 with only the source-located guards failing (ambient-reads, control-commits);
+  fault-oracle locator ported (two files, both halves checked); fault sweep 66 scenarios / 57 exits / 0 violations;
+  `fault-oracle.test.ts` + `fault-sweep.test.ts` 269/269. Next: zone-analysis getters, zone-inventory, ported
+  control-commits, ownership rules, plan/reader witnesses, fault-path tests, registries, Layer 3.

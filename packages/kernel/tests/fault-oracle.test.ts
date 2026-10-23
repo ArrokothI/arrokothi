@@ -211,7 +211,7 @@ describe("review 12's three altered observations (K12C1-R12-ORACLE-01)", () => {
       k,
       fired: true,
       counted: k,
-      fault: { operation: k, label: "Object.defineProperty", stack: [{ file: "coordinator.ts", line: lineOf(receipts), fn: "#accept" }] },
+      fault: { operation: k, label: "Object.defineProperty", stack: [{ file: receipts?.file ?? "", line: lineOf(receipts), fn: "#applyOutcome" }] },
       callbackRan: false,
       observation: { returned: { kind: "threw", operation: k }, state: { ...context.s0, view: { ...context.s0.view, progressRevision: 123456 } } },
     };
@@ -307,7 +307,7 @@ describe("every located exception needs its location", () => {
     rejected(
       takeover(),
       withStack(exampleOf(TAKEOVER, "threw inside the declared takeover apply window: receipt appended, clearing record not"), (stack) =>
-        stack.map((frame) => (frame.file === "coordinator.ts" && frame.line === lineOf(MODEL.takeoverClearingAppend) ? { ...frame, line: lineOf(MODEL.takeoverDeliverCall) } : frame)),
+        stack.map((frame) => (frame.file === MODEL.takeoverClearingAppend?.file && frame.line === lineOf(MODEL.takeoverClearingAppend) ? { ...frame, line: lineOf(MODEL.takeoverDeliverCall) } : frame)),
       ),
       "receipt only, outside the window",
     ));
@@ -316,7 +316,7 @@ describe("every located exception needs its location", () => {
   const outcome = (): Context => contextOf(OUTCOME);
   const inWindow = (): Attempt => exampleOf(OUTCOME, "threw inside the declared Outcome apply window: a permitted prefix");
   const steps = MODEL.outcomeApply.filter((entry) => entry.lines !== null);
-  const stepLine = (frame: Frame) => steps.find((entry) => entry.lines !== null && frame.file === "coordinator.ts" && frame.line >= entry.lines[0] && frame.line <= entry.lines[1]);
+  const stepLine = (frame: Frame) => steps.find((entry) => entry.lines !== null && frame.file === entry.lines.file && frame.line >= entry.lines[0] && frame.line <= entry.lines[1]);
   test("an Outcome prefix, outside the apply window", () =>
     rejected(outcome(), withStack(inWindow(), (stack) => stack.map((frame) => (stepLine(frame) !== undefined ? { ...frame, line: lineOf(MODEL.outcomeApply[0]?.lines) - 1 } : frame))), "prefix, outside the window"));
   test("an Outcome prefix, at another apply statement", () => {
