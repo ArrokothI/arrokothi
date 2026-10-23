@@ -46,3 +46,9 @@ The resume point for any session continuing this packet. Newest facts first with
 - Item 1 done: the landing-zone dependency-table controls derive the `target-kernel` row and its file count from
   the inventory (`targetKernelDependencyRow`, `targetKernelFileCount`, appended at the file's end so no pinned
   line moves) instead of restating `16`. Architecture conformance 367/367.
+- Item 2 done: `state-plans.test.ts` 10/10 — plan witness (kinds per operation, frozen data-only plans, data-only
+  answer returned as-is, first plan meets the pre-operation state) for creation, input, dispatch/delivery/settlement
+  (incl. late report after resolution and a throwing Driver), redelivery, Outcome, takeover, recovery and protocol
+  failure, with their refusals; reader witness with a recipe per member (unclassified member fails); inspection
+  freshness witness; runtime brand. Spot check: a live `recoveryHistory` in `viewOf` and a live-mailbox getter are
+  both killed.
