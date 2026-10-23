@@ -335,8 +335,7 @@ const settle = (
   status: "delivered" | "failed",
   reason: unknown,
 ): void => {
-  const execution = state.find(executionId) as ExecutionReader;
-  const basis = execution.version;
+  const basis = (state.find(executionId) as ExecutionReader).version;
   if (state.deliveryStatus(executionId, activationId, attempt) !== "pending") return;
   const failure = status === "failed" ? describeDeliveryFailure(reason) : null;
   state.apply(PrimordialObjectFreeze({ kind: "settlement", executionId, basis, activationId, attempt, status, failure }));
@@ -2053,12 +2052,11 @@ export class ExecutionCoordinator {
    */
   #deliver(intent: ExchangeReader): void {
     // Reader reads only before the attempt is recorded: none calls anything a fault can interrupt.
-    const execution = intent.execution;
-    const executionId = execution.executionId;
+    const basis = intent.execution.version;
+    const executionId = intent.activation.executionId;
     const activationId = intent.activation.activationId;
     const writerEpoch = intent.activation.writerEpoch;
     const attempt = intent.deliveryCount + 1;
-    const basis = execution.version;
     this.#state.apply(PrimordialObjectFreeze({ kind: "delivery", executionId, basis, activationId, writerEpoch, attempt }));
     const state = this.#state;
     // The first report wins, including reentrant reports issued during delivery. Each method names
