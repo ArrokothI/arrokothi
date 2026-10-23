@@ -29,8 +29,7 @@ R1–R4, described below. The internal `canonicalizeJsonText` adapter caps its i
 copying, checks decoded duplicates and sends its canonical output through strict core validation;
 future transports must cap accumulation/decompression themselves. Decoder metering remains L-14.
 
-This is the BINDING-01 candidate implementation, not independent acceptance or a hold release.
-[007](007-work-packets.md) owns that status. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
+[007](007-work-packets.md) owns acceptance, integration and hold status. `ExecutionDriver.deliver(activation, settlement, submission)` returns only `undefined` and
 reports delivery through the per-delivery Kernel-owned `DeliverySettlement` capability while carrying the per-attempt `SubmissionGrant`; the Kernel never observes a Driver-returned
 Promise. The settlement lifetime is one physical delivery; the submission lifetime is one Runtime attempt, as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) owns.
 

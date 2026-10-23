@@ -2,7 +2,9 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- Phase: IN_PROGRESS, building. [Design check](design-01-check.md) (GPT-6, of `b0a1e491`): APPROVED WITH REQUIRED CHANGES
+- Phase: ACCEPTED ([review 02](review-02.md) of H `23c8919f`); [cleanup 01](cleanup-01.md) complete; integration pending the
+  owner's merge. C `9f1412d1b3f6f41120609a4886a51b4c32c69880`; CI `39996755805` `checks_passed` 18/18.
+- Earlier phase: IN_PROGRESS, building. [Design check](design-01-check.md) (GPT-6, of `b0a1e491`): APPROVED WITH REQUIRED CHANGES
   D01-CHK-1..4. [Owner choice 01](owner-choice-01.md) answers D01-CHK-1 (three engine-fault paths become atomic; one
   fault-injection test each; BASELINE states the exception). Both merged fast-forward at `dde21bd8`. Design 01 revision 1
   folds in D01-CHK-2..4 (getters modelled in zone-analysis; control-commits ported with phase/exit/basis guards;
