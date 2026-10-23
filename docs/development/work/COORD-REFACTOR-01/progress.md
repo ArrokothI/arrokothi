@@ -95,3 +95,8 @@ The resume point for any session continuing this packet. Newest facts first with
   (`lib.decorators.d.ts` missing). Fix: `refusal-guards.json` copies the pinned subset, and a tool test requires
   every registry that copies TypeScript or runs the tool tests to copy exactly that subset (it fails on the old
   registry).
+- Item 9: C `71e2ddfe3fb246bdc7c0a3c74d6178598e1dc846`. Fresh clone (`git clone --no-local`, `npm ci`, nothing
+  untracked before or after; Mac arm64, Node v26.10.0), 07:43–09:27Z: tool-tests 615 OK; `mutations.json` 119/119,
+  `value-cost.json` 238/238 and `refusal-guards.json` 322/322 killed (`selected_cases_passed`); full verify
+  `checks_passed` (repository tests 4,405, archive 4, example 18; adoption `revalidation_complete`; sweeps,
+  censuses, typecheck and builder docs finished).
