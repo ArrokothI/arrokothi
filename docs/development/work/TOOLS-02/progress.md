@@ -2,7 +2,8 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS, range 1 build (T2-1, T2-2) under design 02 with D02-CHK-01's completion.
+- **Phase:** IN_PROGRESS. Range 1 (T2-1, T2-2) is at H1 with [implementation 01](implementation-01.md), waiting for its
+  narrow review (Codex GPT-6) and early integration. CI run 40064371529 at C2 passed (owner report, 2026-10-24).
 - **Range 1 candidate:** C2 `a6ce515018c2bd59a930b20c762a339089bb0973`, pushed. Packet verify CI run
   [40064371529](https://github.com/ArrokothI/arrokothi/actions/runs/40064371529), dispatched 2026-10-24; not polled.
   - Fresh clone at C2, before dispatch: regenerate `table_current` (no member changed; 255 s); tool tests 639 OK
@@ -14,8 +15,8 @@ The resume point for any session continuing this packet. Newest facts first with
     registry before any registry runs, and gives the three mutants unique replacements. C1 was never pushed or
     dispatched.
   - At C1, in a fresh clone: tool tests 638 OK (687 s); `value-cost.json` passed (1,324 s).
-  - Next: if CI run 40064371529 passes, H1 with `implementation-01.md` (008, range 1 only), push, stop for the
-    range-1 review. If it fails, fix the mechanism and make a new C.
+  - Next: the range-1 review of H1. After range 1 integrates, ranges 2–4 in design 01 §9's order; range 3 builds
+    under design 03 with its §6 addendum.
 - **Design 03 (T2-4 only), on branch `claude/tools-02-design-03`** (its files are not on this branch yet):
   - `owner-choice-02.md` records the owner's words ("plan A: a refined finishable claim") and the
     effect;
