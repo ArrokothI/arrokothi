@@ -7,6 +7,9 @@
   - [design 01](design-01.md) §4.1, for the measured register.
 - **Replaces:** design 01 §4.2–§4.3 and design 02 §4. Every other part of designs 01 and 02 stands.
 - **Next:** a short design check before range 3; no range-3 code before it.
+- **Addendum:** §6 answers [design check 03](design-check-03.md) (`d0b18b0d`): D03-CHK-01 and its §5
+  recommendation. Under 006 it is a routine correction inside an approved design, so it needs no new design
+  check; the range-3 review checks it.
 
 ## 1. Mechanism
 
@@ -104,3 +107,65 @@ count and suite credit are unchanged. Each new `require` gets a registered refus
 
 Is §1's `limit` (reading-only) worth keeping in TOOLS-02 when no entry uses it, or should range 3 omit the class
 until a packet first needs it? I recommend keeping it: it costs one check and documents the only route to L-01.
+
+## 6. Addendum after design check 03
+
+### 6.1 D03-CHK-01: the unread cascade through C2-LIMIT
+
+`limited_origins` is the fifth consumer of the cascade. Both of its V-ENV routes bind to the released claim
+instead of the owner choice 08 hold:
+
+- **Listed members.** `rule_1_held` becomes `released_venv_unread`. A listed member counts when:
+  - its status is `unread`;
+  - its register entry is classified `unread` with claim V-ENV;
+  - that entry's `decision` is the V-ENV claim's fixed release record, BINDING-01
+    [hold release 01](../BINDING-01/hold-release-01.md);
+  - the claims table marks V-ENV `released`.
+- **Extra targets.** The guard requires the same entry: classification `unread`, claim V-ENV and the release
+  record as its decision. The target's refusal must be exactly `[P1H_TARGET_REFUSAL.format('unread')]`.
+
+Everything else in `limited_origins` stays as it is:
+- the pinned-list and digest checks, and the origin checks;
+- the one-target mapping;
+- the literal-title requirement;
+- the exact P1-H-only refusal;
+- the set equality `unbound == listed | extras`.
+
+An unread member counts only when it is listed. So the 32 listed members and 21 extra-target routes that
+design check 03 counted keep their identities and counts, and no other unread member becomes an exception.
+Every one of them stays uncredited: `unread` members earn nothing, and their targets stay refused by P1-H.
+
+The old form, `held` with `VENV_RECORD`, no longer counts on either route. Check 1 already refuses it in
+`corpus`, so no owner choice 08 hold becomes active again.
+
+**Controls.** GPT-6's two probes become maintained tests in `test_transfer_limits.py`, and range 3's
+self-check repeats the figures on the real manifest.
+
+| Control | Expected |
+|---|---|
+| A listed member `unread` under V-ENV with the release record | accepted; `{'listed': 1, 'extras': ['m.extra']}` |
+| An extra target at an `unread` V-ENV leaf, refused by P1-H `unread` only | accepted; same result |
+| Either route with another claim (Proxy) or with another release record (K1.1-correction-03's, or `VENV_RECORD`) | refused |
+| Either route in the old form (`held`, `VENV_RECORD`) | refused |
+| An extra with no target, or with two targets | refused |
+| An extra whose target also has a P1-T refusal, or has a template title | refused |
+| Real manifest at range 3's C | 32 listed members and 21 extras in the same four origins; zero credit |
+
+The existing tests that accept the old form (`test_a_listed_member_held_by_rule_1_stays_in_the_limit` and the
+extra-target baseline) change to the released form; the old form moves into the refused rows.
+
+### 6.2 Design check 03 §5: no executable `limit` class
+
+Range 3 builds no `limit` class. This addendum replaces the `limit` row in §1's class table, corpus check 3,
+and the `limit` control in §4:
+- an entry classified `limit` is refused as an unknown class;
+- §4's `limit` control changes to: "An entry classified `limit` → refused".
+
+The rule is recorded only. A later packet that classifies an entry as a semantic limit must:
+- record a per-entry reading;
+- map it to a current 017 limit;
+- design the member and witness cascade for that class (`preserved_table`, `witness_records`,
+  `origin_closure`) together with its controls.
+
+L-01 and the owner's permission to classify an entry after reading it are unchanged. `not_held` through a
+reading stays as §1 states it.
