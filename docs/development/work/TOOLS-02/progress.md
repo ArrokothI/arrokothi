@@ -16,7 +16,17 @@ The resume point for any session continuing this packet. Newest facts first with
     - regeneration: 7 `mcp-boundaries` members go from preserved to refused (preserved 30 → 23, refused 228 → 235);
       418 rows gain fixture reasons; no other status change.
   - The draft `implementation-02.md` waits in the session scratchpad for H.
-  - Next: fresh-clone checks at C3, push, one CI dispatch, then H with implementation-02, push, stop for review 02.
+  - First fresh-clone run at C3 (2026-10-24), on a heavily loaded machine (load average up to 41 on 8 cores, with
+    macOS services `BTLEServer`, `ANECompilerService` and `mediaanalysisd` busy):
+    - passed: regenerate `table_current`; tool tests 651; `mutations.json` 130 killed;
+    - failed: `value-cost.json` (3 `bookkeeping-trace` mutants hit ETIMEDOUT, 017 L-16) and the full verify
+      (adoption: 158 `value-capture.test.ts` rows differ, the whole file refused);
+    - the same clone's census matched the table in two of three runs. The traced file passes alone (84/84 in 4 s)
+      and in 12 parallel copies. A full `npm test` there hit `spawnSync ETIMEDOUT` in `capture-stop.test.ts:177`
+      (4,397 of 4,412 ran). Cause: 60 s child-process limits under load, which predate the correction.
+  - Owner decision: wait for a quieter machine, then rerun `value-cost.json` and the full verify locally before
+    dispatching. A background job waits until the 1- and 5-minute load averages stay below 4, then runs both.
+  - Next: when the quiet rerun passes, push, one CI dispatch, then H with implementation-02, push, stop for review 02.
 - **Earlier range 1 candidate (reviewed in review 01):** C2 `a6ce515018c2bd59a930b20c762a339089bb0973`, pushed. Packet verify CI run
   [40064371529](https://github.com/ArrokothI/arrokothi/actions/runs/40064371529), dispatched 2026-10-24; not polled.
   - Fresh clone at C2, before dispatch: regenerate `table_current` (no member changed; 255 s); tool tests 639 OK
