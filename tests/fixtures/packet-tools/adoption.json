@@ -2296,7 +2296,7 @@
     },
     {
       "id": "artifact-a1391856426919155dd8d776",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source tests/conformance/architecture/mcp-boundaries.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -7501,7 +7501,7 @@
     },
     {
       "id": "artifact-accb88d01d3c1bd7a07f7a37",
-      "state": "complete",
+      "state": "pending_revalidation",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source tests/conformance/architecture/mcp-boundaries.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -39815,6 +39815,11 @@
       "decision": "docs/development/work/COORD-REFACTOR-01/design-01.md",
       "list": "docs/development/work/COORD-REFACTOR-01/design-01/revalidation-origins.json",
       "sha256": "f5f5a2d8b481fb0f5a7db6546878878f67d1a5f517c729252bbaa6d1afd40790"
+    },
+    {
+      "decision": "docs/development/work/TOOLS-02/owner-choice-03.md",
+      "list": "docs/development/work/TOOLS-02/owner-choice-03/transferred-origins.json",
+      "sha256": "065f38e70ca5c6c328dbc6147f9330828f8c4bd089fddb4d29f5e51c75d682df"
     }
   ],
   "transferred": [
@@ -40448,6 +40453,14 @@
     {
       "origin": "artifact-0e16542de3087c0c508b3601",
       "decision": "docs/development/work/COORD-REFACTOR-01/design-01.md"
+    },
+    {
+      "origin": "artifact-a1391856426919155dd8d776",
+      "decision": "docs/development/work/TOOLS-02/owner-choice-03.md"
+    },
+    {
+      "origin": "artifact-accb88d01d3c1bd7a07f7a37",
+      "decision": "docs/development/work/TOOLS-02/owner-choice-03.md"
     }
   ]
 }

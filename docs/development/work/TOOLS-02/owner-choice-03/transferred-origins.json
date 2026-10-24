@@ -1,0 +1,36 @@
+[
+ {
+  "origin": "artifact-a1391856426919155dd8d776",
+  "path": "tests/conformance/architecture/mcp-boundaries.test.ts",
+  "line": 1,
+  "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+  "legacy_status": "suite",
+  "cause": "7 of its members were preserved and are refused at C3 after TOOLS-02 design 04 (review 01, T2-R1-READ-01): their recursive listings of tests observe changed tests/fixtures entries. A complete origin needs a linked target for each refused member, and none exists; its 3 held members keep their linked witnesses.",
+  "changed_members": [
+   "tests/conformance/architecture/mcp-boundaries.test.ts:158:3@e80fbfba8f14",
+   "tests/conformance/architecture/mcp-boundaries.test.ts:173:3@e80fbfba8f14",
+   "tests/conformance/architecture/mcp-boundaries.test.ts:193:3@e80fbfba8f14",
+   "tests/conformance/architecture/mcp-boundaries.test.ts:216:3@e80fbfba8f14",
+   "tests/conformance/architecture/mcp-boundaries.test.ts:255:3@e80fbfba8f14",
+   "tests/conformance/architecture/mcp-boundaries.test.ts:272:3@e80fbfba8f14",
+   "tests/conformance/architecture/mcp-boundaries.test.ts:87:3@e80fbfba8f14"
+  ]
+ },
+ {
+  "origin": "artifact-accb88d01d3c1bd7a07f7a37",
+  "path": "tests/conformance/architecture/mcp-boundaries.test.ts",
+  "line": 1,
+  "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "legacy_status": "suite",
+  "cause": "7 of its members were preserved and are refused at C3 after TOOLS-02 design 04 (review 01, T2-R1-READ-01): their recursive listings of tests observe changed tests/fixtures entries. A complete origin needs a linked target for each refused member, and none exists; its 3 held members keep their linked witnesses.",
+  "changed_members": [
+   "tests/conformance/architecture/mcp-boundaries.test.ts:158:3@e80fbfba8f14",
+   "tests/conformance/architecture/mcp-boundaries.test.ts:173:3@e80fbfba8f14",
+   "tests/conformance/architecture/mcp-boundaries.test.ts:193:3@e80fbfba8f14",
+   "tests/conformance/architecture/mcp-boundaries.test.ts:216:3@e80fbfba8f14",
+   "tests/conformance/architecture/mcp-boundaries.test.ts:255:3@e80fbfba8f14",
+   "tests/conformance/architecture/mcp-boundaries.test.ts:272:3@e80fbfba8f14",
+   "tests/conformance/architecture/mcp-boundaries.test.ts:87:3@e80fbfba8f14"
+  ]
+ }
+]
