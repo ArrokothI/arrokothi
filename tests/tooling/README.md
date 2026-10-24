@@ -470,7 +470,10 @@ Fixtures emit one JSON observation with case, assertion, boolean reached/passed 
 an ordered list of named failures. Passing exit is 0; assertion failure uses failure_exit.
 Setup errors must escape the observation adapter. The Node test reporter accepts assertion
 failures only. The Python adapter accepts unittest assertion failures only; errors, skips and
-wrong test counts invalidate the run. A malformed-input test can assert that a tool boundary
+wrong test counts invalidate the run. It traces reach at the mutant's `before` when that still
+occurs once in the mutated file, else at its `after`, which must then occur exactly once; an empty or
+repeated replacement has no anchor, and `test_target_tools.ProbeAnchorTests` refuses one before any
+registry runs. A malformed-input test can assert that a tool boundary
 returns its declared CheckError rather than an accidental IndexError/KeyError; that is a named
 boundary assertion, not a harness crash promoted to a kill.
 

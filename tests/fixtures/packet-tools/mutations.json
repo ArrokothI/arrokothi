@@ -5695,10 +5695,10 @@
         {
           "path": "scripts/packet_tools.py",
           "before": "        if root is None and kind == 'listing' and relative in listed:\n            root = relative\n",
-          "after": "",
+          "after": "        pass  # tools02-mutant:walk-root-named\n",
           "operator": "weaken-read-form",
           "name": "result.read-form.walk-root-named",
-          "id": "mutation-6ae0a930b7db69853d4a5f6dc3e552e026f54d85382646b16b0b841844349c27"
+          "id": "mutation-149bee84fc3dfdf11c77005027ed56f71784a4746c8fb07ad998772b507a4241"
         }
       ]
     },
@@ -5791,10 +5791,10 @@
         {
           "path": "scripts/packet_tools.py",
           "before": "            fixtures.append(row)\n",
-          "after": "            pass\n",
+          "after": "            pass  # tools02-mutant:fixtures-dropped\n",
           "operator": "weaken-read-form",
           "name": "result.read-form.fixtures-dropped",
-          "id": "mutation-967b71c4fbe4c7b48b47de6f761a9067e49aec41273c927b3707ae1ec19e7636"
+          "id": "mutation-7ed49cafe49ba43671be1e410b3682daf7be50222f6708f71c30290bd2d4df90"
         }
       ]
     },
@@ -5823,10 +5823,10 @@
         {
           "path": "scripts/packet_tools.py",
           "before": "if kind == 'listing' or (kind == 'exists' and directory):",
-          "after": "if kind == 'listing':",
+          "after": "if kind == 'listing':  # tools02-mutant:directory",
           "operator": "weaken-read-form",
           "name": "result.fixture-read.directory",
-          "id": "mutation-4eb720807e4360014a55b907aa7759db203483f137e0cec06e9d480ab306dcb5"
+          "id": "mutation-e4f043a20d3f0cc6c936a31549d40987d4e6dc77ac2d69ac9b5a3795bcb69b22"
         }
       ]
     }
