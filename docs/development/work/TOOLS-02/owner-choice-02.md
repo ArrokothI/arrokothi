@@ -4,12 +4,17 @@
 finding D02-CHK-05 on T2-4. Recorded on 2026-10-23 by the implementer's Claude Code desktop session
 (`claude-opus-5-5`), from the owner's message in this conversation. It is not a review, an acceptance or a release.
 
-**The owner's words.** The message that forwarded this decision asked for the owner's words to be recorded
-verbatim, but its quotation slot read `"<owner's words>"`, an unfilled placeholder. So no separate owner
-statement is on record. When the owner supplies those words, a later commit adds them here verbatim, without
-changing the effect below.
+**The owner's words**, verbatim, from a later message in the same conversation:
 
-The same message states the effect, verbatim:
+```text
+my word is taking plan A: a refined finishable claim.
+```
+
+This chooses 006's stop-and-redesign option of a refined finishable claim for T2-4, instead of another
+classifier redesign. The message that forwarded the decision had left its quotation slot as the placeholder
+`"<owner's words>"`; the words above fill it.
+
+The forwarding message states the effect, verbatim:
 
 ```text
 Effect: T2-4 is refined. The claims table marks V-ENV (core), V-D1, Proxy and
