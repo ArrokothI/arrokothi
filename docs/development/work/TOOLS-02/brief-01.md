@@ -98,3 +98,13 @@ This brief therefore separates what to build right now from what a declared boun
 blocking, and T2-5 is settled by the declared triage with a sampled audit. Owner choices 04–06 are amended
 for the retired class only. **Release 01 (2026-10-23):** released. Roles follow COORD-REFACTOR-01's pattern (fresh Opus implements;
 GPT-6 checks and reviews); see [release 01](release-01.md).
+
+**Owner choice 01 (2026-10-23)**, after [design check 01](design-check-01.md): see
+[owner choice 01](owner-choice-01.md). In T2-1, "A real change to a path a member depends on still invalidates
+it" becomes: "A real change to a named read, or to any fixture read, still changes the member's record.
+Enumerated non-fixture reads are recorded by walk root, because their content cannot change a member's status
+and every member is rerun fresh at C." The same record makes four further rulings:
+- `recorded_limit` is the fourth retired class;
+- 017 gets L-16;
+- range 1 (T2-1 and T2-2) gets its own narrow review;
+- range 1 lands on main before the rest of TOOLS-02.
