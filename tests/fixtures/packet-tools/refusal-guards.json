@@ -9346,6 +9346,209 @@
           "id": "mutation-8357738618ec89007b8c1c913bafeb22d523a33caef54e49dde18e1ee3fcce7b"
         }
       ]
+    },
+    {
+      "id": "guard.corpus_format_2.e365aa81301938f1",
+      "assertion": "test_pristine_routes.PristineRoutes.test_corpus_census_route_refuses",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: corpus_format_2",
+      "input": {
+        "test": "test_pristine_routes.PristineRoutes.test_corpus_census_route_refuses"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.corpus_format_2.e365aa81301938f1"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(pristine(git, rev), 'corpus' + UNCLEAN)",
+          "after": "pass  # tools01-ablate:e365aa81301938f1",
+          "operator": "remove-refusal-check",
+          "name": "guard.corpus_format_2.e365aa81301938f1",
+          "id": "mutation-249446ff7aaa8417b0009a1c9114045b4714150a090e2295af7b769e2d7bbcd3"
+        }
+      ]
+    },
+    {
+      "id": "guard.regenerate.bce5caf510fe2167",
+      "assertion": "test_pristine_routes.PristineRoutes.test_regenerate_refuses",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: regenerate",
+      "input": {
+        "test": "test_pristine_routes.PristineRoutes.test_regenerate_refuses"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.regenerate.bce5caf510fe2167"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(pristine(git, rev), 'regenerate' + UNCLEAN)",
+          "after": "pass  # tools01-ablate:bce5caf510fe2167",
+          "operator": "remove-refusal-check",
+          "name": "guard.regenerate.bce5caf510fe2167",
+          "id": "mutation-11374c0f275d12fcb440bf161ef0757a2495a3ee82cdd3022159da3af72b3267"
+        }
+      ]
+    },
+    {
+      "id": "guard.regenerate.7892cb11fb2a3955",
+      "assertion": "test_pristine_routes.PristineRoutes.test_regenerate_writes_only_a_canonical_manifest",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: regenerate",
+      "input": {
+        "test": "test_pristine_routes.PristineRoutes.test_regenerate_writes_only_a_canonical_manifest"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.regenerate.7892cb11fb2a3955"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(manifest_text(spec).encode() == git.blob(rev, spec_path),\n            'regenerate writes only a manifest already in its canonical form')",
+          "after": "pass  # tools01-ablate:7892cb11fb2a3955",
+          "operator": "remove-refusal-check",
+          "name": "guard.regenerate.7892cb11fb2a3955",
+          "id": "mutation-91731061082ef5fbfdca0d565c66efe6adef3bd16ce7244cc04199dd362ad7b3"
+        }
+      ]
+    },
+    {
+      "id": "guard.preserved_census.836a975caeca3a9c",
+      "assertion": "test_pristine_routes.PristineRoutes.test_preserved_census_refuses",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: preserved_census",
+      "input": {
+        "test": "test_pristine_routes.PristineRoutes.test_preserved_census_refuses"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.preserved_census.836a975caeca3a9c"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(pristine(git, rev), 'preserved_census' + UNCLEAN)",
+          "after": "pass  # tools01-ablate:836a975caeca3a9c",
+          "operator": "remove-refusal-check",
+          "name": "guard.preserved_census.836a975caeca3a9c",
+          "id": "mutation-6a52682e14b8b2b22660b8d09c1e4915a965a4428eef4e01083a8321367fd6ca"
+        }
+      ]
+    },
+    {
+      "id": "guard.main.23d00492152db9d8",
+      "assertion": "test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: main",
+      "input": {
+        "test": "test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.main.23d00492152db9d8"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(pristine(git, git.commit(args.revision)), args.operation + UNCLEAN)",
+          "after": "pass  # tools01-ablate:23d00492152db9d8",
+          "operator": "remove-refusal-check",
+          "name": "guard.main.23d00492152db9d8",
+          "id": "mutation-ed443b0f905e4cc2a449f353e19c4e9712941ac6f7eec954a4863186fb27df43"
+        }
+      ]
+    },
+    {
+      "id": "guard.main.adf967046d412ee3",
+      "assertion": "test_pristine_routes.PristineRoutes.test_requalification_refuses",
+      "category": "tool-refusal",
+      "source": "tests/tooling/requalify-value-cost.py: main",
+      "input": {
+        "test": "test_pristine_routes.PristineRoutes.test_requalification_refuses"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.main.adf967046d412ee3"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/requalify-value-cost.py",
+          "before": "require(tool.pristine(git, git.run('rev-parse', 'HEAD').decode().strip()), 'requalify-value-cost' + tool.UNCLEAN)",
+          "after": "pass  # tools01-ablate:adf967046d412ee3",
+          "operator": "remove-refusal-check",
+          "name": "guard.main.adf967046d412ee3",
+          "id": "mutation-63b5b2b504f05a9a8deac1b6940ff75fcf6d3ea8b7400fc93542d5d3221ffae2"
+        }
+      ]
+    },
+    {
+      "id": "guard.main.ed6dfae6572cdb8e",
+      "assertion": "test_pristine_routes.PristineRoutes.test_loss_ledger_refuses",
+      "category": "tool-refusal",
+      "source": "tests/tooling/value-cost-loss-ledger.py: main",
+      "input": {
+        "test": "test_pristine_routes.PristineRoutes.test_loss_ledger_refuses"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.main.ed6dfae6572cdb8e"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "tests/tooling/value-cost-loss-ledger.py",
+          "before": "require(tool.pristine(git,git.run('rev-parse','HEAD').decode().strip()),'value-cost-loss-ledger'+tool.UNCLEAN)",
+          "after": "pass  # tools01-ablate:ed6dfae6572cdb8e",
+          "operator": "remove-refusal-check",
+          "name": "guard.main.ed6dfae6572cdb8e",
+          "id": "mutation-5b437055517ae3592160e308ce6191c4658e1914ac374de2bdd1c4a83ab072fc"
+        }
+      ]
     }
   ],
   "determinism_sample": [

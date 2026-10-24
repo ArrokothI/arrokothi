@@ -25,6 +25,7 @@ ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('packet_tools', ROOT / 'scripts/packet_tools.py')
 tool = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(tool)
+require = tool.require
 B = 'b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b'
 PROBE = ['tests/tooling/value-cost-probe.mjs', 'tests/tooling/value-cost-witness.mjs',
          'tests/tooling/value-cost-reporter.mjs', 'tests/tooling/value-cost-source-policy.mjs']
@@ -151,6 +152,9 @@ def main():
     parser.add_argument('--isolation-file',type=Path)
     parser.add_argument('--plan-only',action='store_true',help='Write exact plans and applicability; no execution credit')
     args = parser.parse_args()
+    # TOOLS-02 T2-2: it reads registry and ledger files from the working tree, so only a pristine checkout.
+    git = tool.Git(ROOT)
+    require(tool.pristine(git, git.run('rev-parse', 'HEAD').decode().strip()), 'requalify-value-cost' + tool.UNCLEAN)
     revision = subprocess.check_output(['git', 'rev-parse', args.revision], cwd=ROOT, text=True).strip()
     if args.side == 'b' and revision != B:
         raise RuntimeError('B is fixed')

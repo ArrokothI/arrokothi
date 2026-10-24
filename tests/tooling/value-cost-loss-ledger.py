@@ -7,6 +7,7 @@ is not a closed replacement: the ledger retains the obligation and the isolated 
 """
 import argparse
 import gzip
+import importlib.util
 import json
 import hashlib
 import re
@@ -16,6 +17,9 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[2]
 PACKET=ROOT/'docs/development/work/K1.1-correction-03'
+_spec=importlib.util.spec_from_file_location('packet_tools',ROOT/'scripts/packet_tools.py')
+tool=importlib.util.module_from_spec(_spec);_spec.loader.exec_module(tool)
+require=tool.require
 
 
 def load(path):
@@ -141,6 +145,9 @@ def main():
     parser.add_argument('--b',required=True,type=Path);parser.add_argument('--c',required=True,type=Path)
     parser.add_argument('--c-registry',type=Path,help='same-C registry observations, including maintained meter witnesses')
     parser.add_argument('--output',required=True,type=Path);args=parser.parse_args()
+    # TOOLS-02 T2-2: it reads K1.1-correction-03 records from the working tree, so only a pristine checkout.
+    git=tool.Git(ROOT)
+    require(tool.pristine(git,git.run('rev-parse','HEAD').decode().strip()),'value-cost-loss-ledger'+tool.UNCLEAN)
     b,c=load(args.b),load(args.c)
     bm,cm=[json.loads((path/'metadata.json').read_text()) for path in (args.b,args.c)]
     if bm['tooling']!=cm['tooling']:raise RuntimeError('B/C qualification tooling differs')

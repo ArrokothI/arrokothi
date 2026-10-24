@@ -5637,6 +5637,198 @@
           "id": "mutation-f67b00dd32addda253ab3b74f8734619413d9a089071b21b4e8be64376e9fdd2"
         }
       ]
+    },
+    {
+      "id": "result.read-form.named-only",
+      "assertion": "test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 §1, D02-CHK-01): unrelated additions under a walk become named reads",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-form.named-only",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "root = next((directory for directory in ancestors if directory in listed), None)",
+          "after": "root = None",
+          "operator": "weaken-read-form",
+          "name": "result.read-form.named-only",
+          "id": "mutation-0256baf0f5aa75af1fcb0fdb58c749d5ef501183132a90ff842eb7bdcf8c65a1"
+        }
+      ]
+    },
+    {
+      "id": "result.read-form.walk-root-named",
+      "assertion": "test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 §1, D02-CHK-01): a non-fixture walk-root listing records its entries (D02-CHK-01)",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-form.walk-root-named",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "        if root is None and kind == 'listing' and relative in listed:\n            root = relative\n",
+          "after": "",
+          "operator": "weaken-read-form",
+          "name": "result.read-form.walk-root-named",
+          "id": "mutation-6ae0a930b7db69853d4a5f6dc3e552e026f54d85382646b16b0b841844349c27"
+        }
+      ]
+    },
+    {
+      "id": "result.read-form.named-dropped",
+      "assertion": "test_read_form.ReadFormTests.test_every_edit_of_a_named_read_changes_the_form",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 §1, D02-CHK-01): a named read is recorded by path only",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_every_edit_of_a_named_read_changes_the_form"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-form.named-dropped",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "            named.append(row)\n",
+          "after": "            walks.add(relative)\n",
+          "operator": "weaken-read-form",
+          "name": "result.read-form.named-dropped",
+          "id": "mutation-b7deadb844ca92d99d777397af7f82c4727e62137280bd4e877d5d1219e8cf08"
+        }
+      ]
+    },
+    {
+      "id": "result.read-form.identity-free",
+      "assertion": "test_read_form.ReadFormTests.test_every_entry_change_of_a_fixture_walk_root_listing_changes_the_form",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 §1, D02-CHK-01): reads lose their identity at C, so a second edit is invisible",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_every_entry_change_of_a_fixture_walk_root_listing_changes_the_form"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-form.identity-free",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "row = [relative, kind, read_identity(git, rev, relative, kind)]",
+          "after": "row = [relative, kind]",
+          "operator": "weaken-read-form",
+          "name": "result.read-form.identity-free",
+          "id": "mutation-5e04a3a5ec214671163a10a0d02cf31903d0efac809fe46daabf6b76cd0ea920"
+        }
+      ]
+    },
+    {
+      "id": "result.read-form.fixtures-dropped",
+      "assertion": "test_read_form.ReadFormTests.test_every_edit_of_an_enumerated_fixture_changes_the_form",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 §1, D02-CHK-01): an enumerated fixture read loses its identity",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_every_edit_of_an_enumerated_fixture_changes_the_form"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-form.fixtures-dropped",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "            fixtures.append(row)\n",
+          "after": "            pass\n",
+          "operator": "weaken-read-form",
+          "name": "result.read-form.fixtures-dropped",
+          "id": "mutation-967b71c4fbe4c7b48b47de6f761a9067e49aec41273c927b3707ae1ec19e7636"
+        }
+      ]
+    },
+    {
+      "id": "result.fixture-read.directory",
+      "assertion": "test_read_form.ReadFormTests.test_a_directory_existence_read_follows_the_listing_rule",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 §1, D02-CHK-01): a directory existence read takes the file rule again (D01-CHK-02)",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_a_directory_existence_read_follows_the_listing_rule"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.fixture-read.directory",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "if kind == 'listing' or (kind == 'exists' and directory):",
+          "after": "if kind == 'listing':",
+          "operator": "weaken-read-form",
+          "name": "result.fixture-read.directory",
+          "id": "mutation-4eb720807e4360014a55b907aa7759db203483f137e0cec06e9d480ab306dcb5"
+        }
+      ]
     }
   ],
   "source_trees": [
@@ -5670,7 +5862,8 @@
     "tests/tooling/test_venv_detector.py",
     "tests/tooling/source-facts.mjs",
     "packages/kernel/tests/binding-facade.ts",
-    "packages/sdk/tests/wrapper-roots.ts"
+    "packages/sdk/tests/wrapper-roots.ts",
+    "tests/tooling/test_read_form.py"
   ],
   "dependencies": [
     {

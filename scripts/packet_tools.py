@@ -91,6 +91,11 @@ CONTEXT_TOKEN = re.compile(r'[^\s`\x27"<>()[\]{},;]+')
 CONTEXT_LOCAL = re.compile(r'[\w.@/-]+', re.ASCII)
 CONTEXT_GITHUB = re.compile(r'https://github\.com/ArrokothI/arrokothi/blob/([0-9a-f]{7,40})/([\w.@/-]+)', re.ASCII)
 SEALED_PREFIXES = ('docs/',)
+# TOOLS-02 T2-2 (design 02 §2.1): operations whose output is fixture data; each refuses an unclean checkout at
+# dispatch. `verify` keeps its own clean_payload; `candidate` and `gate` print no fixture data.
+GUARDED_OPERATIONS = ('inventory', 'mutations', 'cases', 'corpus', 'coverage', 'regenerate')
+UNCLEAN = (': the checkout must be pristine at the revision (HEAD there, no changes, and no untracked, ignored or '
+           'git-invisible entries); run in a fresh clone or the Packet verify workflow')
 # P1-X area gate (gate-design-01): the maintained manifest the gate reads, and its lexical names.
 ADOPTION_MANIFEST = 'tests/fixtures/packet-tools/adoption.json'
 OPEN_STATES = ('pending', 'pending_revalidation')
@@ -716,6 +721,8 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register):
 
 
 def corpus_format_2(git, rev, spec, intake, toolchain=None):
+    # TOOLS-02 T2-2: suite targets and the census run in the working tree, so only a pristine checkout at C.
+    require(pristine(git, rev), 'corpus' + UNCLEAN)
     origins = {row['id']: row for row in intake['origins']}
     require(all(table in spec for table in FORMAT_2_TABLES), 'format 2 needs every adoption table')
     rows = unique_records(spec['origins'], 'origins')
@@ -845,6 +852,52 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
                        'reads outside fs, by native code or in processes that drop NODE_OPTIONS are unseen',
                        'The hold register covers leaf registrations in preserved and target files and every '
                        'registry case']}
+
+
+def manifest_text(spec):
+    """Canonical adoption-manifest text: two-space JSON, ASCII escapes, one line per preserved member."""
+    rows = ',\n'.join('    ' + json.dumps(row, ensure_ascii=True) for row in spec['preserved'])
+    text = json.dumps(dict(spec, preserved='\x00preserved'), indent=2, ensure_ascii=True)
+    return text.replace(json.dumps('\x00preserved'), '[\n' + rows + '\n  ]' if rows else '[]', 1) + '\n'
+
+
+def regenerate(git, revision, spec_path, write=False, toolchain=None):
+    """TOOLS-02 T2-2 (design 01 §2.2, design 02 §2): the one supported writer of the adoption manifest's derived
+    preserved table. It refuses an unclean checkout, recomputes the census at C exactly as `corpus` does, and,
+    with `write`, replaces only that table in the working-tree manifest. Classifications, register entries,
+    targets, origins and every other field stay byte-identical; `corpus` then revalidates the committed result."""
+    rev = git.commit(revision)
+    require(pristine(git, rev), 'regenerate' + UNCLEAN)
+    spec = git.document(rev, spec_path, versions=(2,))
+    require(manifest_text(spec).encode() == git.blob(rev, spec_path),
+            'regenerate writes only a manifest already in its canonical form')
+    intake = inventory(git, rev, spec['inventory'])
+    claims = holds_table(git, rev, spec['holds'])
+    registry, _ = scheduled_registry(git, rev, spec)
+    targets = unique_records(spec['suite_targets'], 'suite targets')
+    tested = test_file_origins(intake)
+    moves = moves_table(git, rev, spec['moves'])
+    scope = sorted({moves.get(row['path'], row['path']) for row in tested if blob_id(git, rev, moves.get(row['path'], row['path']))} |
+                   {target['file'] for target in targets.values() if isinstance(target.get('file'), str) and
+                    blob_id(git, rev, target['file'])})
+    with contextlib.ExitStack() as stack:
+        context = target_context(git, rev, spec, stack, toolchain) if targets or tested else None
+        environment = child_environment(environment_declaration(None))[0] if context is None else context['environment']
+        register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain,
+                                 registry['cases'], spec['registry'])
+        evaluations, _ = preserved_census(git, rev, spec, intake, context, register) if tested else ([], None)
+    table = preserved_table(evaluations)
+    stored = {row.get('member'): row for row in spec['preserved'] if isinstance(row, dict)}
+    census = {row['member']: row for row in table}
+    if write and spec['preserved'] != table:
+        (git.repo / path_name(spec_path)).write_text(manifest_text(dict(spec, preserved=table)))
+    return {'operation': 'regenerate', 'revision': rev, 'specification': spec_path,
+            'result': 'table_current' if spec['preserved'] == table else 'table_written' if write else 'table_differs',
+            'members': len(table), 'changed': sorted(key for key in census if key in stored and stored[key] != census[key]),
+            'added': sorted(set(census) - set(stored)), 'removed': sorted(set(stored) - set(census)),
+            'by_status': {'stored': dict(Counter(row.get('status') for row in stored.values())),
+                          'census': dict(Counter(row['status'] for row in table))},
+            'limits': ['Writes only the preserved table; register, targets and every other field are reported by corpus']}
 
 
 def coverage_manifest(spec, registry):
@@ -2034,15 +2087,73 @@ def read_kind(operation):
     return READ_KIND.get(operation.removeprefix('promises.').removesuffix('.native').removesuffix('Sync'))
 
 
-def fixture_read(path, kind):
+def fixture_read(path, kind, directory=False):
     """A changed fixture refuses the file: a non-module file under a test directory, or a listing of a
-    `fixtures` directory under one (design 05 §2.3 rule 5)."""
+    `fixtures` directory under one (design 05 §2.3 rule 5). An existence read of a directory follows the
+    listing rule (TOOLS-02 design 02 §1.2), so discovering an unrelated test directory reads no fixture."""
     parts = PurePosixPath(path).parts
     if 'tests' not in parts:
         return False
-    if kind == 'listing':
+    if kind == 'listing' or (kind == 'exists' and directory):
         return 'fixtures' in parts[parts.index('tests'):]
     return not path.endswith(SOURCE_SUFFIXES)
+
+
+def is_directory(git, rev, path):
+    entry = git.tree(rev).get(path)
+    return entry is not None and entry[0] == '040000'
+
+
+def listed_directories(root, reads):
+    """The repository directories a traced run listed, the root included as `.`, outside node_modules."""
+    listed = set()
+    for row in reads:
+        if read_kind(row.get('operation') or '') != 'listing' or not isinstance(row.get('path'), str):
+            continue
+        absolute = Path(os.path.realpath(row['path']))
+        if absolute.is_relative_to(root):
+            relative = absolute.relative_to(root).as_posix()
+            if 'node_modules' not in PurePosixPath(relative).parts:
+                listed.add(relative)
+    return listed
+
+
+def read_identity(git, rev, relative, kind):
+    """A read's identity at a revision: blob ID, entry names, or existence."""
+    if kind == 'bytes':
+        return blob_id(git, rev, relative)
+    if kind == 'listing':
+        return listing(git, rev, relative)
+    return blob_id(git, rev, relative) is not None
+
+
+def read_form(git, rev, listed, compared):
+    """TOOLS-02 T2-1 (owner choice 01; design 02 §1.1, D02-CHK-01). Each compared (path, kind) read is in
+    exactly one class: a listing with no listed proper ancestor is a walk-root listing; a read beneath a listed
+    directory is enumerated under its outermost listed ancestor; every other read is named. One path can
+    still appear in several classes through different kinds (`tests` existence is named, its listing a walk
+    root). The record keeps the identity at C of every named read and of every fixture read in the other two
+    classes; non-fixture walk-root listings and enumerated reads are recorded only by their walk root, because
+    their content cannot change a member's status and every member is rerun fresh at C. `checked` holds the
+    reads compared with each pin: the named reads and every fixture read. Fixture membership here uses the
+    directory kind at C, so a path absent at C takes the file rule: a superset of `changed_reads`'s fixtures."""
+    named, fixtures, walks, checked = [], [], set(), []
+    for relative, kind in compared:
+        ancestors = [str(parent) for parent in reversed(PurePosixPath(relative).parents)]
+        root = next((directory for directory in ancestors if directory in listed), None)
+        if root is None and kind == 'listing' and relative in listed:
+            root = relative
+        row = [relative, kind, read_identity(git, rev, relative, kind)]
+        if root is None:
+            named.append(row)
+            checked.append((relative, kind))
+            continue
+        walks.add(root)
+        if fixture_read(relative, kind, is_directory(git, rev, relative)):
+            fixtures.append(row)
+            checked.append((relative, kind))
+    record = {'named': named, 'fixtures': fixtures, 'walks': sorted(walks)}
+    return {'digest': digest(json.dumps(record).encode()), 'walks': sorted(walks), 'checked': checked}
 
 
 def compared_reads(root, reads, aside):
@@ -2072,7 +2183,9 @@ def changed_reads(git, pin, rev, compared):
         else:
             same = (blob_id(git, pin, relative) is None) == (blob_id(git, rev, relative) is None)
         if not same:
-            changed.append({'path': relative, 'kind': kind, 'fixture': fixture_read(relative, kind)})
+            directory = is_directory(git, rev, relative) or (blob_id(git, rev, relative) is None and
+                                                             is_directory(git, pin, relative))
+            changed.append({'path': relative, 'kind': kind, 'fixture': fixture_read(relative, kind, directory)})
     return changed
 
 
@@ -2483,7 +2596,8 @@ def origin_census(git, rev, origin, path, leaves, run, closures, prefixes, revie
         entry = register.get(f'{path}:{current[0]}:{current[1]}') if current is not None else None
         evaluations.append(dict(row, reasons=reasons, current=None if current is None else list(current),
                                 helper_closure='unchanged' if not changed else {'reviewed': sorted(reviewed)},
-                                reads=run['reads_digest'], register=None if entry is None else entry['classification'],
+                                reads=run['reads_digest'], walks=run['walks'],
+                                register=None if entry is None else entry['classification'],
                                 production_changed=[module for module in closures['production']
                                                     if blob_id(git, pin, module) != blob_id(git, rev, module)],
                                 repository_read_changed=[entry['path'] for entry in changed_reads_now if not entry['fixture']]))
@@ -2491,7 +2605,9 @@ def origin_census(git, rev, origin, path, leaves, run, closures, prefixes, revie
 
 
 def preserved_census(git, rev, spec, intake, context, register):
-    """P1-P for every member of every whole-file test origin, fresh at C (design 05 §2.3, D05-CHK-07, -11)."""
+    """P1-P for every member of every whole-file test origin, fresh at C (design 05 §2.3, D05-CHK-07, -11).
+    It runs tests in the working tree, so it refuses any checkout but a pristine one at `rev` (TOOLS-02 T2-2)."""
+    require(pristine(git, rev), 'preserved_census' + UNCLEAN)
     origins = {row['id']: row for row in intake['origins']}
     moves = moves_table(git, rev, spec['moves'])
     all_earlier = not floor_order_model(git, rev, spec['floor'])
@@ -2551,13 +2667,14 @@ def preserved_census(git, rev, spec, intake, context, register):
                                   for pair in tree['files'][path]['pairs'] if pair['leaf'])
                 compared = compared_reads(root, traced['reads'], {path, *closures_now[path]['test_side'],
                                                                   *closures_now[path]['production']})
-                traces[path] = {'compared': compared, 'digest': digest(json.dumps(compared).encode()),
+                form = read_form(git, rev, listed_directories(root, traced['reads']), compared)
+                traces[path] = {'compared': form['checked'], 'digest': form['digest'], 'walks': form['walks'],
                                 'refused': None if traced['verdicts'] == expected and traced['child_preloads'] >= 1 else
                                 'the traced run differs from the catalog run, or did not load the trace'}
             run['refused'] = traces[path]['refused']
         if run['refused'] is None:
             now, then = closures_now[path], closures_then[pin][pin_path]
-            run.update(pairs=tree['files'][path]['pairs'], compared=traces[path]['compared'],
+            run.update(pairs=tree['files'][path]['pairs'], compared=traces[path]['compared'], walks=traces[path]['walks'],
                        reads_digest=traces[path]['digest'], whole=(pin, pin_path, path) not in prefixes,
                        changed_helpers=sorted(set(now['test_side']) ^ set(then['test_side']) |
                                               {module for module in now['test_side']
@@ -2587,7 +2704,8 @@ def preserved_table(evaluations):
         if 'scope' in first:
             reviewed = sorted({review for row in rows if isinstance(row['helper_closure'], dict)
                                for review in row['helper_closure']['reviewed']})
-            record.update(scope=first['scope'], current=first['current'], reads=first['reads'], register=register,
+            record.update(scope=first['scope'], current=first['current'], reads=first['reads'], walks=first['walks'],
+                          register=register,
                           helper_closure={'reviewed': reviewed} if reviewed else 'unchanged',
                           production_changed=sorted({module for row in rows for module in row['production_changed']}),
                           repository_read_changed=sorted({path for row in rows for path in row['repository_read_changed']}))
@@ -2618,6 +2736,7 @@ def census_figures(evaluations, table, all_earlier):
                                                                           for reason in row['reasons'])]),
         'identical_read_labelled': distinct([row for row in whole if row['repository_read_changed']]),
         'members': len(table), 'by_status': dict(Counter(row['status'] for row in table)),
+        'walk_members': sum(bool(row.get('walks')) for row in table),
         'preserved_whole_file': sum(row['scope'] == 'whole_file' for row in preserved),
         'preserved_prefix_inert': sum(row['scope'] == 'span' for row in preserved),
         'preserved_helper_reviewed': sum(isinstance(row['helper_closure'], dict) for row in preserved),
@@ -3348,6 +3467,13 @@ def untracked_entries(git, rev):
     return sorted(extra)
 
 
+def pristine(git, rev):
+    """TOOLS-02 T2-2 (design 02 §2.2): TOOLS-02A's clean checkout as a predicate for the guarded routes. HEAD
+    is `rev`, nothing is modified, and no entry is untracked at `rev`, ignored and git-invisible ones included."""
+    return (git.run('rev-parse', 'HEAD').decode().strip() == rev and
+            not git.run('status', '--porcelain', '--untracked-files=all').strip() and not untracked_entries(git, rev))
+
+
 def clean_payload(git, rev):
     require(git.run('rev-parse', 'HEAD').decode().strip() == rev, 'HEAD must be payload C')
     require(not git.run('status', '--porcelain', '--untracked-files=all').strip(), 'payload checkout must be clean')
@@ -3435,13 +3561,17 @@ def main():
     c.add_argument('--payload', required=True)
     c.add_argument('--head', required=True)
     c.add_argument('--spec', required=True)
-    for name in ('inventory', 'mutations', 'cases', 'corpus', 'verify', 'coverage', 'gate'):
+    for name in ('inventory', 'mutations', 'cases', 'corpus', 'verify', 'coverage', 'gate', 'regenerate'):
         child = sub.add_parser(name)
         child.add_argument('--revision', required=True)
         child.add_argument('--spec', required=True)
+        if name == 'regenerate':
+            child.add_argument('--write', action='store_true', help='Replace the derived preserved table in the checkout')
     args = p.parse_args()
     try:
         git = Git(args.repo)
+        if args.operation in GUARDED_OPERATIONS:
+            require(pristine(git, git.commit(args.revision)), args.operation + UNCLEAN)
         if args.operation == 'candidate':
             result = candidate(git, args.payload, args.head, args.spec)
         elif args.operation == 'inventory':
@@ -3454,6 +3584,8 @@ def main():
             result = verify(git, args.revision, args.spec)
         elif args.operation == 'gate':
             result = area_gate(git, args.revision, args.spec)
+        elif args.operation == 'regenerate':
+            result = regenerate(git, args.revision, args.spec, write=args.write)
         else:
             result = mutations(git, args.revision, args.spec, cases_only=args.operation == 'cases')
         print(json.dumps(result, indent=2))

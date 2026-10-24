@@ -10,12 +10,37 @@ never acceptance, owner decisions or released claims.
 npm run test:packet-tools
 npm run verify:packet -- inventory --revision <full-C-SHA> --spec tests/fixtures/packet-tools/inventory.json
 npm run verify:packet -- corpus --revision <full-C-SHA> --spec tests/fixtures/packet-tools/adoption.json
+npm run verify:packet -- regenerate --revision <full-C-SHA> --spec tests/fixtures/packet-tools/adoption.json --write
 npm run verify:packet -- coverage --revision <full-C-SHA> --spec tests/fixtures/packet-tools/coverage.json
 npm run verify:packet -- mutations --revision <full-C-SHA> --spec tests/fixtures/packet-tools/mutations.json
 npm run verify:packet -- mutations --revision <full-C-SHA> --spec tests/fixtures/packet-tools/refusal-guards.json
 npm run verify:packet -- verify --revision <full-C-SHA> --spec docs/development/work/TOOLS-01/checks.json
 npm run verify:packet -- candidate --payload <full-C-SHA> --head <full-H-SHA> --spec docs/development/work/TOOLS-01/verification.json
 ```
+
+**Clean checkout (TOOLS-02 T2-2, design 02 §2).** Every operation whose output is fixture data refuses
+unless the checkout is pristine at the revision:
+- what pristine means:
+  - HEAD is the revision;
+  - nothing is modified;
+  - no entry is untracked, ignored or invisible to Git, other than `node_modules` and `.DS_Store`;
+- where the check sits:
+  - at the CLI dispatch, for `inventory`, `mutations`, `cases`, `corpus`, `coverage` and `regenerate`;
+  - inside the corpus census route and `preserved_census`;
+  - in `requalify-value-cost.py` and `value-cost-loss-ledger.py`;
+  - `verify` keeps its own check before and after every step;
+- exempt: `candidate` and `gate`, which print no fixture data.
+
+Run them in a fresh clone or in the Packet verify workflow.
+
+`regenerate --revision <C> --spec tests/fixtures/packet-tools/adoption.json --write` is the one
+supported writer of the manifest's derived preserved table. It recomputes the census as `corpus` does,
+replaces only that table in the working-tree file and reports what changed. Commit the file, then run
+`corpus`.
+
+`test_writer_census.py` classes every file under `scripts/` and `tests/tooling/` that calls a declared
+write API. Fixture writers must hold a guarded route. Writes outside that vocabulary are not detected,
+such as shell redirection or subprocess output.
 
 `candidate` reads its specification at C and checks B→C→H, the exact C..H file set,
 preserved paths and accessible evidence digests. An administrative allowlist cannot establish
@@ -216,11 +241,28 @@ requires them to equal the recomputation exactly. A stale record fails; it never
   unreferenced by live prefix code (design 05 §2.3 rule 4). Refused members record each blocking kind
   once per side, with its first line and how many more share it.
 - **Reads.** One traced run per file, through `NODE_OPTIONS=--import=tests/tooling/read-trace.mjs`,
-  must give the catalog run's leaf verdicts. Reads inside the repository, outside `node_modules` and
-  outside the static import closure are compared at the pin and at C (bytes, listing or existence). A
-  changed fixture (a non-module file under a test directory, or a listing of a `fixtures` directory
-  under one) refuses the file. Any other changed read is labelled `repository_read_changed`. The
-  record keeps a digest of the compared reads.
+  must give the catalog run's leaf verdicts. The comparison covers reads inside the repository, outside
+  `node_modules` and outside the static import closure.
+  - **Classes** (TOOLS-02 T2-1, owner choice 01, design 02 §1). Each `(path, kind)` read is in exactly
+    one class:
+    - a listing with no listed proper ancestor is a *walk-root listing*;
+    - a read beneath a directory the same run lists is *enumerated* under its outermost listed
+      ancestor;
+    - every other read is *named*.
+
+    A path can appear in more than one class through different kinds. For example, the existence read
+    of `tests` is named, while its listing is a walk root.
+  - **Fixture reads:** a non-module file under a test directory, or a listing or directory existence
+    read beneath a `fixtures` directory under one.
+  - **What the record keeps:**
+    - `walks`, the sorted walk roots;
+    - `reads`, a digest of every named read and every fixture read with its identity at C (blob ID,
+      entry names or existence) plus the walk roots.
+
+    Non-fixture walk-root listings and enumerated reads are recorded only by their walk root. Every
+    edit of a named or fixture read changes the record; an unrelated new file under a walk does not.
+  - **Pin comparison.** Named reads and fixture reads are compared at the pin and at C. A changed
+    fixture refuses the file; any other changed named read is labelled `repository_read_changed`.
 - **Helper closure.** Every test-side module the file imports statically, transitively, must be
   byte-identical, or covered by a counted `helper_reviews` record. A record is bound to its origin,
   its module and both blob IDs, covers the whole module, and applies only to literal titles. Changed

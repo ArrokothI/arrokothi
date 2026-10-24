@@ -1006,7 +1006,13 @@
           "venv-load",
           "venv-hooks",
           "venv-unresolved",
-          "venv-case"
+          "venv-case",
+          "read-form-named-only",
+          "read-form-walk-root-named",
+          "read-form-named-dropped",
+          "read-form-identity-free",
+          "read-form-fixtures-dropped",
+          "fixture-read-directory"
         ],
         "environment": [
           "POSIX-Python"
@@ -1124,6 +1130,54 @@
           "case": "result.venv-case",
           "values": {
             "failure": "venv-case",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.named-only",
+          "values": {
+            "failure": "read-form-named-only",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.walk-root-named",
+          "values": {
+            "failure": "read-form-walk-root-named",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.named-dropped",
+          "values": {
+            "failure": "read-form-named-dropped",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.identity-free",
+          "values": {
+            "failure": "read-form-identity-free",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.fixtures-dropped",
+          "values": {
+            "failure": "read-form-fixtures-dropped",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.fixture-read.directory",
+          "values": {
+            "failure": "fixture-read-directory",
             "environment": "POSIX-Python",
             "stage": "result-classification"
           }
