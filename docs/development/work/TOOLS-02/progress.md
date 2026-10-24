@@ -8,10 +8,16 @@ The resume point for any session continuing this packet. Newest facts first with
     and `listing()` returns immediate children only. T2-2 passed. The implementer reproduced the probe at C.
   - Nearby forms found by the implementer: `glob` rows record the pattern as a path (always absent), and sync,
     callback and promise recursive `readdir` record only the root. Only `tests/fixtures` is a fixtures directory.
-  - [Design 04](design-04.md) answers brief 02's four questions: `tree` and `pattern` read kinds, recursive
-    expansion at C (record) and at pin ∪ C (comparison), refusal of glob and cp, and typed listing entries. Under 006
-    it is a routine correction (no new design check unless the owner asks). Next: the build, a new C/H, CI, review 02.
-- **Range 1 candidate:** C2 `a6ce515018c2bd59a930b20c762a339089bb0973`, pushed. Packet verify CI run
+  - [Design 04](design-04.md) answers brief 02's four questions. The owner directed the build without a design check.
+  - **C3** `df80badc6502aa9da6315367032fb211a1bf0232` (local until its fresh-clone checks pass):
+    - tracer flags and `tree`/`pattern` read kinds, typed listings, and review 01's probe as
+      `RecursiveListingCensusTests`, with 5 new killed mutants;
+    - tool tests 651 OK on the working tree (717 s);
+    - regeneration: 7 `mcp-boundaries` members go from preserved to refused (preserved 30 → 23, refused 228 → 235);
+      418 rows gain fixture reasons; no other status change.
+  - The draft `implementation-02.md` waits in the session scratchpad for H.
+  - Next: fresh-clone checks at C3, push, one CI dispatch, then H with implementation-02, push, stop for review 02.
+- **Earlier range 1 candidate (reviewed in review 01):** C2 `a6ce515018c2bd59a930b20c762a339089bb0973`, pushed. Packet verify CI run
   [40064371529](https://github.com/ArrokothI/arrokothi/actions/runs/40064371529), dispatched 2026-10-24; not polled.
   - Fresh clone at C2, before dispatch: regenerate `table_current` (no member changed; 255 s); tool tests 639 OK
     (602 s); `mutations.json` 125 killed (596 s); `value-cost.json` 238 killed (1,044 s); full verify, all 18 checks
