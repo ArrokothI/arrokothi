@@ -1012,7 +1012,12 @@
           "read-form-named-dropped",
           "read-form-identity-free",
           "read-form-fixtures-dropped",
-          "fixture-read-directory"
+          "fixture-read-directory",
+          "read-form-recursion-ignored",
+          "read-form-tree-unexpanded",
+          "read-form-pin-unexpanded",
+          "read-form-pattern-accepted",
+          "read-form-types-dropped"
         ],
         "environment": [
           "POSIX-Python"
@@ -1178,6 +1183,46 @@
           "case": "result.fixture-read.directory",
           "values": {
             "failure": "fixture-read-directory",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.recursion-ignored",
+          "values": {
+            "failure": "read-form-recursion-ignored",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.tree-unexpanded",
+          "values": {
+            "failure": "read-form-tree-unexpanded",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.pin-unexpanded",
+          "values": {
+            "failure": "read-form-pin-unexpanded",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.pattern-accepted",
+          "values": {
+            "failure": "read-form-pattern-accepted",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.types-dropped",
+          "values": {
+            "failure": "read-form-types-dropped",
             "environment": "POSIX-Python",
             "stage": "result-classification"
           }

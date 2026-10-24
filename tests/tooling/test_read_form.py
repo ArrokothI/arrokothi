@@ -3,10 +3,14 @@
 `ReadFormTests` checks the partition and identity rules on hand-built traces; the registered partition
 variants in mutations.json each fail one of them. `ReadFormCensusTests` runs real traced censuses of a
 fixture repository through a sequence of commits: unrelated additions keep the stored table valid, and
-every edit of a named or fixture read, the first and the second, changes it."""
+every edit of a named or fixture read, the first and the second, changes it. `RecursiveListingCensusTests`
+(review 01's T2-R1-READ-01, design 04) runs recursive, globbing, copying and typed listers in their own repository."""
 import contextlib
 import gzip
 import json
+import os
+import subprocess
+import tempfile
 import unittest
 
 from test_packet_tools import RepositoryFixture, classified, tool
@@ -95,6 +99,93 @@ class ReadFormTests(unittest.TestCase):
             digests.append(self.form(FIXTURE_ROOT, FIXTURE_LISTED, self.change('tests/fixtures/' + name, 'x\n'))['digest'])
         self.assertEqual(len(set(digests)), 3)
 
+    def test_a_recursive_listing_is_a_tree_read(self):
+        for row, kind in (({'operation': 'readdirSync', 'recursive': True}, 'tree'),
+                          ({'operation': 'promises.readdir', 'recursive': True}, 'tree'),
+                          ({'operation': 'opendirSync', 'recursive': True}, 'tree'),
+                          ({'operation': 'readdir'}, 'listing'), ({'operation': 'statSync', 'recursive': True}, 'exists'),
+                          ({'operation': 'globSync'}, 'pattern'), ({'operation': 'promises.glob'}, 'pattern'),
+                          ({'operation': 'cpSync'}, 'pattern'), ({'operation': 'promises.cp'}, 'pattern')):
+            with self.subTest(row=row):
+                self.assertEqual(tool.read_kind(row), kind)
+
+    def test_the_trace_marks_each_recursive_form_and_records_glob_and_cp(self):
+        """Every listing form of design 04 §2 under the real preload, with Node's own option handling."""
+        script = """import fs from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+const done = () => {};
+fs.readdirSync('f', { recursive: true });
+fs.readdirSync('f', 'utf8');
+fs.readdirSync('f', { withFileTypes: true });
+await new Promise((resolve) => fs.readdir('f', () => resolve()));
+await new Promise((resolve) => fs.readdir('f', { recursive: true }, () => resolve()));
+await fs.promises.readdir('f', { recursive: true, withFileTypes: true });
+fs.opendirSync('f', { recursive: true }).closeSync();
+fs.globSync('f/**/*.json');
+const target = fs.mkdtempSync(join(tmpdir(), 'trace-cp-'));
+fs.cpSync('f', target, { recursive: true });
+fs.rmSync(target, { recursive: true, force: true });
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            os.makedirs(os.path.join(directory, 'f', 'nested'))
+            with open(os.path.join(directory, 'f', 'nested', 'a.json'), 'w') as handle:
+                handle.write('{}\n')
+            with open(os.path.join(directory, 'forms.mjs'), 'w') as handle:
+                handle.write(script)
+            trace = os.path.join(directory, 'trace.jsonl')
+            subprocess.run(['node', 'forms.mjs'], cwd=directory, check=True, capture_output=True,
+                           env=dict(os.environ, NODE_OPTIONS='--import=' + str(ROOT / tool.READ_TRACE),
+                                    ARROKOTHI_READ_TRACE=trace))
+            with open(trace) as handle:
+                rows = [json.loads(line) for line in handle]
+        observed = [(row['operation'], tool.read_kind(row)) for row in rows if row['operation'] != 'preload']
+        for expected in (('readdirSync', 'tree'), ('readdirSync', 'listing'), ('readdir', 'listing'), ('readdir', 'tree'),
+                         ('promises.readdir', 'tree'), ('opendirSync', 'tree'), ('globSync', 'pattern'), ('cpSync', 'pattern')):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, observed)
+        recursive = [row for row in rows if row['operation'] == 'readdirSync' and row.get('recursive')]
+        self.assertEqual(len(recursive), 1)  # the encoding and withFileTypes calls are not recursive
+
+    def test_every_nested_change_under_a_recursive_fixture_listing_changes_the_form(self):
+        compared, listed = [('tests/fixtures', 'tree')], {'tests/fixtures'}
+        digests = [self.form(compared, listed, self.change('tests/fixtures/nested/seed.json', '{}\n'))['digest']]
+        for name in ('nested/one.json', 'nested/deeper/two.json'):
+            digests.append(self.form(compared, listed, self.change('tests/fixtures/' + name, '{}\n'))['digest'])
+        self.assertEqual(len(set(digests)), 3)
+        self.assertEqual(self.form(compared, listed)['checked'], [('tests/fixtures', 'tree')])
+
+    def test_a_recursive_tests_listing_records_only_its_fixture_subtree(self):
+        compared, listed = [('tests', 'tree')], {'tests'}
+        before = self.form(compared, listed)['digest']
+        self.repo.write('tests/scan/zz-unrelated.test.mjs', 'export {};\n')
+        self.repo.write('tests/brand-new/unrelated.test.mjs', 'export {};\n')
+        self.assertEqual(self.form(compared, listed, self.repo.commit('additions'))['digest'], before)
+        self.assertNotEqual(self.form(compared, listed, self.change('tests/fixtures/nested/one.json', '{}\n'))['digest'], before)
+
+    def test_a_fixture_subtree_present_only_at_the_pin_still_changes(self):
+        self.repo.git('rm', '-rq', 'tests/fixtures')
+        rev = self.repo.commit('remove the fixtures')
+        changed = tool.changed_reads(self.repo.reader, self.rev, rev, [('tests', 'tree')])
+        self.assertEqual(changed, [{'path': 'tests/fixtures', 'kind': 'listing', 'fixture': True}])
+        self.assertEqual(tool.changed_reads(self.repo.reader, self.rev, rev, [('tests/scan', 'tree')]), [])
+
+    def test_pattern_reads_refuse_their_file(self):
+        reason = tool.pattern_refusal([('tests/fixtures/**/*.json', 'pattern'), ('config/scan.json', 'bytes')])
+        self.assertIsInstance(reason, str)
+        self.assertRegex(reason, 'pattern or copy whose dependency identity is not represented: tests/fixtures/\\*\\*/\\*.json$')
+        self.assertIsNone(tool.pattern_refusal([('config/scan.json', 'bytes'), ('tests', 'tree')]))
+
+    def test_a_same_name_type_change_changes_a_fixture_listing(self):
+        compared, listed = [('tests/fixtures/kind', 'listing')], {'tests/fixtures/kind'}
+        pin = self.change('tests/fixtures/kind/entry', 'file\n')
+        before = self.form(compared, listed, pin)['digest']
+        (self.repo.root / 'tests/fixtures/kind/entry').unlink()
+        rev = self.change('tests/fixtures/kind/entry/inner.txt', 'now a directory\n')
+        self.assertNotEqual(self.form(compared, listed, rev)['digest'], before)
+        self.assertEqual(tool.changed_reads(self.repo.reader, pin, rev, compared),
+                         [{'path': 'tests/fixtures/kind', 'kind': 'listing', 'fixture': True}])
+
 
 SCANNER = """import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -127,14 +218,61 @@ TOOLING = ['tests/tooling/catalog-reporter.mjs', 'tests/tooling/source-facts.mjs
            'tests/tooling/reach-coverage.mjs']
 MEMBERS = {'tests/scan/scanner.test.mjs': SCANNER, 'tests/lister/lister.test.mjs': LISTER,
            'tests/named/named.test.mjs': NAMED}
-SCRIPT = 'node --test tests/scan/*.test.mjs tests/lister/*.test.mjs tests/named/*.test.mjs'
+# Review 01's T2-R1-READ-01 and design 04 §2: recursive, globbing, copying and typed listers of the fixtures.
+RECURSIVE_LISTER = """import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readdirSync } from 'node:fs';
+test('recursive', () => {
+  assert.ok(readdirSync(new URL('../fixtures/', import.meta.url), { recursive: true }).length > 0);
+});
+"""
+RECURSIVE_SCANNER = """import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readdir } from 'node:fs/promises';
+test('recursive tests', async () => {
+  assert.ok((await readdir(new URL('../', import.meta.url), { recursive: true })).length > 0);
+});
+"""
+GLOBBER = """import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { globSync } from 'node:fs';
+test('glob', () => { assert.ok(globSync('tests/fixtures/**/*.json').length > 0); });
+"""
+COPIER = """import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { cpSync, mkdtempSync, readdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+test('copy', () => {
+  const target = mkdtempSync(join(tmpdir(), 'copy-'));
+  try {
+    cpSync(new URL('../fixtures/nested/', import.meta.url), target, { recursive: true });
+    assert.ok(readdirSync(target).length > 0);
+  } finally {
+    rmSync(target, { recursive: true, force: true });
+  }
+});
+"""
+TYPED = """import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readdirSync } from 'node:fs';
+test('typed', () => {
+  assert.ok(readdirSync(new URL('../fixtures/kind/', import.meta.url), { withFileTypes: true }).length > 0);
+});
+"""
 
 
-class ReadFormCensusTests(unittest.TestCase):
-    """One fixture repository; each test appends commits and compares a stored table with a fresh census."""
+class CensusRepository(unittest.TestCase):
+    """One fixture repository per subclass; each test appends commits and compares a stored table with a fresh
+    census. A subclass names its members, the other files at the pin, and its test script's globs."""
+    members = MEMBERS
+    seed = {'config/scan.json': '{"v": 1}\n', 'tests/fixtures/scan.input.txt': 'one\n',
+            'tests/fixtures/named.txt': 'named\n', 'tests/scan/sample.scan.mjs': 'export const v = 1;\n'}
+    globs = ['tests/scan/*.test.mjs', 'tests/lister/*.test.mjs', 'tests/named/*.test.mjs']
 
     @classmethod
     def setUpClass(cls):
+        script = 'node --test ' + ' '.join(cls.globs)
         cls.toolchain = pinned_toolchain()
         cls.repo = RepositoryFixture(methodName='setUp')
         cls.repo.setUp()
@@ -142,20 +280,18 @@ class ReadFormCensusTests(unittest.TestCase):
         repo = cls.repo
         for path in TOOLING:
             repo.write(path, (ROOT / path).read_text())
-        for path, text in {**MEMBERS, 'config/scan.json': '{"v": 1}\n', 'tests/fixtures/scan.input.txt': 'one\n',
-                           'tests/fixtures/named.txt': 'named\n', 'tests/scan/sample.scan.mjs': 'export const v = 1;\n'}.items():
+        for path, text in {**cls.members, **cls.seed}.items():
             repo.write(path, text)
-        repo.document('package.json', {'type': 'module', 'scripts': {'test': SCRIPT}})
+        repo.document('package.json', {'type': 'module', 'scripts': {'test': script}})
         pin = repo.commit('pin')
         rows = [{'revision': pin, 'path': path, 'line': 1, 'kind': 'test file', 'sha256': tool.digest(text.encode()),
-                 'disposition': 'extract'} for path, text in sorted(MEMBERS.items())]
+                 'disposition': 'extract'} for path, text in sorted(cls.members.items())]
         repo.document('origins.json', rows)
         repo.document('registry.json', {'version': 1, 'cases': [{'id': 'case'}]})
         repo.document('verify.json', {'version': 1, 'limits': ['Fixture evidence only'],
             'environment': {'pass': ['PATH', 'HOME', 'TMPDIR'], 'set': {'LANG': 'C.UTF-8'}},
-            'checks': [{'id': 'repository-tests', 'catalog': {'script': 'test', 'script_text': SCRIPT, 'flags': ['--test'],
-                                                             'globs': ['tests/scan/*.test.mjs', 'tests/lister/*.test.mjs',
-                                                                       'tests/named/*.test.mjs']},
+            'checks': [{'id': 'repository-tests', 'catalog': {'script': 'test', 'script_text': script, 'flags': ['--test'],
+                                                             'globs': cls.globs},
                         'timeout_seconds': 120, 'output_limit_bytes': 1048576},
                        {'id': 'mutants', 'operation': 'mutations', 'spec': 'registry.json', 'expected': 'selected_cases_passed'}]})
         catalog = repo.commit('catalog')
@@ -184,9 +320,9 @@ class ReadFormCensusTests(unittest.TestCase):
         environment = tool.child_environment(tool.environment_declaration(None))[0]
         claims = tool.holds_table(repo.reader, rev, tables['holds'])
         recipes = tool.register_recipes(claims, tables['holds']['register'])
-        matches = tool.register_matches(repo.reader, rev, sorted(MEMBERS), recipes, environment, cls.toolchain)
+        matches = tool.register_matches(repo.reader, rev, sorted(cls.members), recipes, environment, cls.toolchain)
         cls.spec['holds']['register']['entries'] = [classified(row) for row in matches]
-        cls.table = cls.regenerate_table()
+        cls.table = cls.initial = cls.regenerate_table()
 
     @classmethod
     def commit(cls, message):
@@ -208,8 +344,12 @@ class ReadFormCensusTests(unittest.TestCase):
         return json.loads((cls.repo.root / 'corpus.json').read_text())['preserved']
 
     def step(self, changes):
+        """Write each change (None deletes the path), commit, and regenerate against the stored table."""
         for path, text in changes.items():
-            self.repo.write(path, text)
+            if text is None:
+                self.repo.git('rm', '-rq', path)
+            else:
+                self.repo.write(path, text)
         self.commit('step')
         rev = self.commit_manifest(self.table)
         return tool.regenerate(self.repo.reader, rev, 'corpus.json', toolchain=self.toolchain)
@@ -220,6 +360,19 @@ class ReadFormCensusTests(unittest.TestCase):
     def advance(self):
         type(self).table = type(self).regenerate_table()
 
+    def row(self, member_file):
+        return next(row for row in self.table if row['file'] == member_file)
+
+    def assert_stale(self, result, member_file):
+        self.assertEqual(result['result'], 'table_differs')
+        self.assertIn(member_file, self.changed_files(result))
+        rev = self.commit_manifest(self.table)
+        with self.assertRaisesRegex(tool.CheckError, 'preserved table differs from the census at C'):
+            tool.corpus(self.repo.reader, rev, 'corpus.json', toolchain=self.toolchain)
+        self.advance()
+
+
+class ReadFormCensusTests(CensusRepository):
     def test_a_stored_table_validates_in_corpus_and_survives_unrelated_tests(self):
         rev = self.commit_manifest(self.table)
         self.assertEqual(tool.corpus(self.repo.reader, rev, 'corpus.json', toolchain=self.toolchain)['result'],
@@ -258,6 +411,58 @@ class ReadFormCensusTests(unittest.TestCase):
 
     def test_an_enumerated_source_edit_leaves_the_table_valid(self):
         self.assertEqual(self.step({'tests/scan/sample.scan.mjs': 'export const v = 2;\n'})['result'], 'table_current')
+
+
+
+class RecursiveListingCensusTests(CensusRepository):
+    """Review 01's probe as a maintained acceptance control, with design 04 §2's nearby forms."""
+    members = {'tests/rlister/rlister.test.mjs': RECURSIVE_LISTER, 'tests/rscan/rscan.test.mjs': RECURSIVE_SCANNER,
+               'tests/glob/glob.test.mjs': GLOBBER, 'tests/copy/copy.test.mjs': COPIER, 'tests/typed/typed.test.mjs': TYPED}
+    seed = {'tests/fixtures/nested/seed.json': '{}\n', 'tests/fixtures/kind/entry': 'file\n'}
+    globs = ['tests/rlister/*.test.mjs', 'tests/rscan/*.test.mjs', 'tests/glob/*.test.mjs', 'tests/copy/*.test.mjs',
+             'tests/typed/*.test.mjs']
+
+    def test_listers_start_preserved_and_glob_and_copy_members_are_refused(self):
+        initial = {row['file']: row for row in self.initial}
+        for member in ('tests/rlister/rlister.test.mjs', 'tests/rscan/rscan.test.mjs', 'tests/typed/typed.test.mjs'):
+            with self.subTest(member=member):
+                self.assertEqual(initial[member]['status'], 'preserved')
+        for member in ('tests/glob/glob.test.mjs', 'tests/copy/copy.test.mjs'):
+            with self.subTest(member=member):
+                self.assertEqual(initial[member]['status'], 'refused')
+                self.assertTrue(any('pattern or copy whose dependency identity is not represented' in reason
+                                    for reason in initial[member]['reasons']), initial[member]['reasons'])
+
+    def test_each_nested_fixture_change_under_a_recursive_listing_changes_the_table(self):
+        for name, directory in (('nested/one.json', 'tests/fixtures/nested'),
+                                ('nested/deeper/two.json', 'tests/fixtures/nested/deeper')):
+            with self.subTest(name=name):
+                self.assert_stale(self.step({'tests/fixtures/' + name: '{}\n'}), 'tests/rlister/rlister.test.mjs')
+                for member in ('tests/rlister/rlister.test.mjs', 'tests/rscan/rscan.test.mjs'):
+                    row = self.row(member)
+                    self.assertEqual(row['status'], 'refused')
+                    self.assertTrue(any(reason.startswith('changed test fixture read: ') and directory in reason
+                                        for reason in row['reasons']), row['reasons'])
+        # The immediate-child positive control of review 01's probe.
+        self.assert_stale(self.step({'tests/fixtures/direct.json': '{}\n'}), 'tests/rlister/rlister.test.mjs')
+
+    def test_deleting_a_fixture_subtree_changes_the_table(self):
+        self.step({'tests/fixtures/gone/a.json': '{}\n'})
+        self.advance()
+        self.assert_stale(self.step({'tests/fixtures/gone': None}), 'tests/rscan/rscan.test.mjs')
+
+    def test_a_same_name_type_change_under_a_fixture_listing_changes_the_table(self):
+        self.assert_stale(self.step({'tests/fixtures/kind/entry': None,
+                                     'tests/fixtures/kind/entry/inner.txt': 'now a directory\n'}),
+                          'tests/typed/typed.test.mjs')
+
+    def test_unrelated_additions_leave_recursive_listings_valid(self):
+        for path in ('tests/rscan/zz-unrelated.test.mjs', 'tests/brand-new/unrelated.test.mjs'):
+            with self.subTest(path=path):
+                self.assertEqual(self.step({path: UNRELATED})['result'], 'table_current')
+                rev = self.commit_manifest(self.table)
+                self.assertEqual(tool.corpus(self.repo.reader, rev, 'corpus.json', toolchain=self.toolchain)['result'],
+                                 'revalidation_complete')
 
 
 if __name__ == '__main__':

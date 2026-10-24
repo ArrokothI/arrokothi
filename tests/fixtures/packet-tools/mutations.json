@@ -5829,6 +5829,166 @@
           "id": "mutation-e4f043a20d3f0cc6c936a31549d40987d4e6dc77ac2d69ac9b5a3795bcb69b22"
         }
       ]
+    },
+    {
+      "id": "result.read-form.recursion-ignored",
+      "assertion": "test_read_form.ReadFormTests.test_a_recursive_listing_is_a_tree_read",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 §4): a recursive listing is read as its root only (T2-R1-READ-01)",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_a_recursive_listing_is_a_tree_read"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-form.recursion-ignored",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "if kind == 'listing' and row.get('recursive') is True:",
+          "after": "if False:  # tools02-mutant:recursion-ignored",
+          "operator": "weaken-read-form",
+          "name": "result.read-form.recursion-ignored",
+          "id": "mutation-3ae3a45535e3207c0c756ee05e1348be90248672defa87ffffdf894b5c975ef0"
+        }
+      ]
+    },
+    {
+      "id": "result.read-form.tree-unexpanded",
+      "assertion": "test_read_form.ReadFormTests.test_every_nested_change_under_a_recursive_fixture_listing_changes_the_form",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 §4): a tree read records none of its implied listings (T2-R1-READ-01)",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_every_nested_change_under_a_recursive_fixture_listing_changes_the_form"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-form.tree-unexpanded",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "                reads.setdefault((directory, 'listing'), True)\n",
+          "after": "                pass  # tools02-mutant:tree-unexpanded\n",
+          "operator": "weaken-read-form",
+          "name": "result.read-form.tree-unexpanded",
+          "id": "mutation-bff7613c46ace56c13e124d7bac3c8460ffb989b7cc0f638f34da01a61778961"
+        }
+      ]
+    },
+    {
+      "id": "result.read-form.pin-unexpanded",
+      "assertion": "test_read_form.ReadFormTests.test_a_fixture_subtree_present_only_at_the_pin_still_changes",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 §4): a tree read expands over C's directories only, so a fixture subtree present only at the pin is missed",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_a_fixture_subtree_present_only_at_the_pin_still_changes"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-form.pin-unexpanded",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "tree_listings(git, (pin, rev), relative)",
+          "after": "tree_listings(git, (rev, rev), relative)",
+          "operator": "weaken-read-form",
+          "name": "result.read-form.pin-unexpanded",
+          "id": "mutation-7e523d7dba6fa06d0be2ebd0f522df7520b3326884d462e8c053fc73723751db"
+        }
+      ]
+    },
+    {
+      "id": "result.read-form.pattern-accepted",
+      "assertion": "test_read_form.ReadFormTests.test_pattern_reads_refuse_their_file",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 §4): a glob or cp read is accepted without a represented identity",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_pattern_reads_refuse_their_file"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-form.pattern-accepted",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "    if patterns:\n",
+          "after": "    if False:  # tools02-mutant:pattern-accepted\n",
+          "operator": "weaken-read-form",
+          "name": "result.read-form.pattern-accepted",
+          "id": "mutation-4c8006dfd03643e98ae548b5cfeaac20bbfd5c242d9c74212323b1f5b12bb040"
+        }
+      ]
+    },
+    {
+      "id": "result.read-form.types-dropped",
+      "assertion": "test_read_form.ReadFormTests.test_a_same_name_type_change_changes_a_fixture_listing",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 §4): listing identities lose their entry types, so a same-name file/directory change is missed",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_a_same_name_type_change_changes_a_fixture_listing"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-form.types-dropped",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "[name[len(prefix):], ENTRY_TYPES.get(mode, 'file')]",
+          "after": "[name[len(prefix):], 'file']",
+          "operator": "weaken-read-form",
+          "name": "result.read-form.types-dropped",
+          "id": "mutation-40d26c7b37c4a0f96ab7eac1a2a8b5ffac4fd9beb9bc5b3e669c454d1ad1322f"
+        }
+      ]
     }
   ],
   "source_trees": [

@@ -43,9 +43,11 @@ CATALOG_REPORTER = 'tests/tooling/catalog-reporter.mjs'
 SOURCE_FACTS = 'tests/tooling/source-facts.mjs'
 REACH_COVERAGE = 'tests/tooling/reach-coverage.mjs'
 # Design 05 §2.3 rule 5: the reads-phase preload, and how each fs operation is compared at pin and C.
+# TOOLS-02 design 04 §1: a recursive listing is a `tree` read; glob and cp reads are `pattern` reads, which
+# have no represented dependency identity and refuse their file.
 READ_TRACE = 'tests/tooling/read-trace.mjs'
 READ_KIND = {'readFile': 'bytes', 'open': 'bytes', 'createReadStream': 'bytes', 'openAsBlob': 'bytes',
-             'readdir': 'listing', 'opendir': 'listing', 'glob': 'listing',
+             'readdir': 'listing', 'opendir': 'listing', 'glob': 'pattern', 'cp': 'pattern',
              'stat': 'exists', 'lstat': 'exists', 'statfs': 'exists', 'exists': 'exists', 'access': 'exists',
              'realpath': 'exists', 'readlink': 'exists'}
 NODE_BUILTINS = {'assert', 'async_hooks', 'buffer', 'child_process', 'crypto', 'events', 'fs', 'http', 'https', 'module',
@@ -1982,14 +1984,26 @@ def blob_id(git, rev, path):
     return None if entry is None else entry[1]
 
 
+ENTRY_TYPES = {'040000': 'directory', '120000': 'symlink', '160000': 'submodule'}
+
+
 def listing(git, rev, path):
-    """Entry names of a directory at a revision; None when the path is absent or not a directory."""
+    """`[name, type]` entries of a directory at a revision, as `withFileTypes` observes them (TOOLS-02 design 04 §1);
+    None when the path is absent or not a directory."""
     entry = git.tree(rev).get(path) if path else ('040000', None)
     if entry is None or entry[0] != '040000':
         return None
     prefix = path + '/' if path else ''
-    return sorted(name[len(prefix):] for name in git.tree(rev)
+    return sorted([name[len(prefix):], ENTRY_TYPES.get(mode, 'file')] for name, (mode, _) in git.tree(rev).items()
                   if name.startswith(prefix) and '/' not in name[len(prefix):])
+
+
+def tree_listings(git, revs, directory):
+    """A recursive listing's implied immediate listings: the directory and every subtree beneath it at any of `revs`
+    (TOOLS-02 design 04 §1). Symlinked directories are not descended, as in Node's recursive listing."""
+    prefix = '' if directory == '.' else directory + '/'
+    return sorted({directory} | {name for rev in revs for name, (mode, _) in git.tree(rev).items()
+                                 if mode == '040000' and name.startswith(prefix)})
 
 
 def workspace_packages(git, rev):
@@ -2083,8 +2097,22 @@ def traced_reads(git, flags, file, environment):
             'reads': [row for row in reads if row.get('operation') != 'preload']}
 
 
-def read_kind(operation):
-    return READ_KIND.get(operation.removeprefix('promises.').removesuffix('.native').removesuffix('Sync'))
+def read_kind(row):
+    """A traced row's kind: READ_KIND by operation, except that a listing marked `recursive` is a `tree` read."""
+    kind = READ_KIND.get((row.get('operation') or '').removeprefix('promises.').removesuffix('.native').removesuffix('Sync'))
+    if kind == 'listing' and row.get('recursive') is True:
+        return 'tree'
+    return kind
+
+
+def pattern_refusal(compared):
+    """TOOLS-02 design 04 §1: a traced glob or cp inside the repository has no represented dependency identity,
+    so its file is refused, never preserved."""
+    patterns = sorted(relative for relative, kind in compared if kind == 'pattern')
+    if patterns:
+        return ('the traced run read through a pattern or copy whose dependency identity is not represented: ' +
+                ', '.join(patterns))
+    return None
 
 
 def fixture_read(path, kind, directory=False):
@@ -2108,7 +2136,7 @@ def listed_directories(root, reads):
     """The repository directories a traced run listed, the root included as `.`, outside node_modules."""
     listed = set()
     for row in reads:
-        if read_kind(row.get('operation') or '') != 'listing' or not isinstance(row.get('path'), str):
+        if read_kind(row) not in ('listing', 'tree') or not isinstance(row.get('path'), str):
             continue
         absolute = Path(os.path.realpath(row['path']))
         if absolute.is_relative_to(root):
@@ -2119,7 +2147,7 @@ def listed_directories(root, reads):
 
 
 def read_identity(git, rev, relative, kind):
-    """A read's identity at a revision: blob ID, entry names, or existence."""
+    """A read's identity at a revision: blob ID, typed entries, or existence."""
     if kind == 'bytes':
         return blob_id(git, rev, relative)
     if kind == 'listing':
@@ -2136,9 +2164,17 @@ def read_form(git, rev, listed, compared):
     classes; non-fixture walk-root listings and enumerated reads are recorded only by their walk root, because
     their content cannot change a member's status and every member is rerun fresh at C. `checked` holds the
     reads compared with each pin: the named reads and every fixture read. Fixture membership here uses the
-    directory kind at C, so a path absent at C takes the file rule: a superset of `changed_reads`'s fixtures."""
+    directory kind at C, so a path absent at C takes the file rule: a superset of `changed_reads`'s fixtures.
+    A `tree` read stands for its implied listings at C, classified like any listing; `checked` keeps the tree read
+    itself, which `changed_reads` expands over the pin too (design 04 §1). `pattern` reads refuse the file instead."""
     named, fixtures, walks, checked = [], [], set(), []
+    reads = {(relative, kind): False for relative, kind in compared if kind not in ('tree', 'pattern')}
     for relative, kind in compared:
+        if kind == 'tree':
+            checked.append((relative, kind))
+            for directory in tree_listings(git, (rev,), relative):
+                reads.setdefault((directory, 'listing'), True)
+    for (relative, kind), implied in sorted(reads.items()):
         ancestors = [str(parent) for parent in reversed(PurePosixPath(relative).parents)]
         root = next((directory for directory in ancestors if directory in listed), None)
         if root is None and kind == 'listing' and relative in listed:
@@ -2151,31 +2187,45 @@ def read_form(git, rev, listed, compared):
         walks.add(root)
         if fixture_read(relative, kind, is_directory(git, rev, relative)):
             fixtures.append(row)
-            checked.append((relative, kind))
+            if not implied:
+                checked.append((relative, kind))
     record = {'named': named, 'fixtures': fixtures, 'walks': sorted(walks)}
-    return {'digest': digest(json.dumps(record).encode()), 'walks': sorted(walks), 'checked': checked}
+    return {'digest': digest(json.dumps(record).encode()), 'walks': sorted(walks), 'checked': sorted(checked)}
 
 
 def compared_reads(root, reads, aside):
     """Traced reads inside the repository, outside node_modules and the static import closure."""
     compared = set()
     for row in reads:
-        kind = read_kind(row.get('operation') or '')
+        kind = read_kind(row)
         if kind is None or not isinstance(row.get('path'), str):
             continue
         absolute = Path(os.path.realpath(row['path']))
         if not absolute.is_relative_to(root):
             continue
         relative = absolute.relative_to(root).as_posix()
-        if relative != '.' and 'node_modules' not in PurePosixPath(relative).parts and relative not in aside:
+        if ((relative != '.' or kind == 'tree') and 'node_modules' not in PurePosixPath(relative).parts and
+                relative not in aside):
             compared.add((relative, kind))
     return sorted(compared)
 
 
 def changed_reads(git, pin, rev, compared):
-    """Each remaining read compared at the pin and at C: bytes, directory entries or existence."""
-    changed = []
+    """Each remaining read compared at the pin and at C: bytes, directory entries or existence. A `tree` read
+    compares its implied fixture listings over the directories of both revisions, so a fixture subtree present only
+    at the pin still counts (TOOLS-02 design 04 §1); its other implied listings are recorded by its root only."""
+    changed, seen = [], set()
     for relative, kind in compared:
+        if kind == 'tree':
+            for directory in tree_listings(git, (pin, rev), relative):
+                if (fixture_read(directory, 'listing') and (directory, 'listing') not in seen and
+                        listing(git, pin, directory) != listing(git, rev, directory)):
+                    seen.add((directory, 'listing'))
+                    changed.append({'path': directory, 'kind': 'listing', 'fixture': True})
+            continue
+        if (relative, kind) in seen:
+            continue
+        seen.add((relative, kind))
         if kind == 'bytes':
             same = blob_id(git, pin, relative) == blob_id(git, rev, relative)
         elif kind == 'listing':
@@ -2669,7 +2719,8 @@ def preserved_census(git, rev, spec, intake, context, register):
                                                                   *closures_now[path]['production']})
                 form = read_form(git, rev, listed_directories(root, traced['reads']), compared)
                 traces[path] = {'compared': form['checked'], 'digest': form['digest'], 'walks': form['walks'],
-                                'refused': None if traced['verdicts'] == expected and traced['child_preloads'] >= 1 else
+                                'refused': pattern_refusal(compared) if traced['verdicts'] == expected and
+                                traced['child_preloads'] >= 1 else
                                 'the traced run differs from the catalog run, or did not load the trace'}
             run['refused'] = traces[path]['refused']
         if run['refused'] is None:

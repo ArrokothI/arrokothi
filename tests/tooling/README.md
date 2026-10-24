@@ -252,17 +252,25 @@ requires them to equal the recomputation exactly. A stale record fails; it never
 
     A path can appear in more than one class through different kinds. For example, the existence read
     of `tests` is named, while its listing is a walk root.
+  - **Listing modes** (design 04, review 01's T2-R1-READ-01). The trace marks a `readdir` or `opendir`
+    call whose options set `recursive` (sync, callback and promise forms). Such a *tree* read stands for
+    the immediate listing of its directory and of every subtree beneath it (symlinks are not descended),
+    each classed like any listing. A `glob` or `cp` read inside the repository has no represented
+    dependency identity, so it refuses the file. Listing identities are `[name, type]` entries, as
+    `withFileTypes` returns them.
   - **Fixture reads:** a non-module file under a test directory, or a listing or directory existence
     read beneath a `fixtures` directory under one.
   - **What the record keeps:**
     - `walks`, the sorted walk roots;
     - `reads`, a digest of every named read and every fixture read with its identity at C (blob ID,
-      entry names or existence) plus the walk roots.
+      typed entries or existence) plus the walk roots. A tree read's implied listings enter at C.
 
     Non-fixture walk-root listings and enumerated reads are recorded only by their walk root. Every
     edit of a named or fixture read changes the record; an unrelated new file under a walk does not.
-  - **Pin comparison.** Named reads and fixture reads are compared at the pin and at C. A changed
-    fixture refuses the file; any other changed named read is labelled `repository_read_changed`.
+  - **Pin comparison.** Named reads and fixture reads are compared at the pin and at C. A tree read
+    compares its implied fixture listings over both revisions' directories, so a fixture subtree present
+    only at the pin counts. A changed fixture refuses the file; any other changed named read is labelled
+    `repository_read_changed`.
 - **Helper closure.** Every test-side module the file imports statically, transitively, must be
   byte-identical, or covered by a counted `helper_reviews` record. A record is bound to its origin,
   its module and both blob IDs, covers the whole module, and applies only to literal titles. Changed

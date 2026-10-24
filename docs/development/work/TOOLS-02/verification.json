@@ -4,7 +4,7 @@
   "require_direct_parent": false,
   "administrative_files": [
     "docs/development/007-work-packets.md",
-    "docs/development/work/TOOLS-02/implementation-01.md",
+    "docs/development/work/TOOLS-02/implementation-02.md",
     "docs/development/work/TOOLS-02/progress.md"
   ],
   "preserve": [
@@ -131,6 +131,22 @@
     {
       "revision": "6e96639a8c497642bcc7dd44265dd42f5d72f840",
       "path": "docs/development/work/TOOLS-02/design-check-02.md"
+    },
+    {
+      "revision": "f2184fc60e0b766b36877784b56e66af5a9cfbb5",
+      "path": "docs/development/work/TOOLS-02/implementation-01.md"
+    },
+    {
+      "revision": "e93e012363b4174401caf91c4374a66441a1809a",
+      "path": "docs/development/work/TOOLS-02/review-01.md"
+    },
+    {
+      "revision": "e93e012363b4174401caf91c4374a66441a1809a",
+      "path": "docs/development/work/TOOLS-02/review-01"
+    },
+    {
+      "revision": "bcdfd0c4a5a826a21e2d6795012960838786dd6b",
+      "path": "docs/development/work/TOOLS-02/design-04.md"
     }
   ],
   "evidence": [],
@@ -592,7 +608,7 @@
     }
   ],
   "limits": [
-    "TOOLS-02 range 1 (T2-1 and T2-2; owner choice 01 item 2): evidence tooling only. No product file changes; packages/ and examples/ are preserved at B.",
+    "TOOLS-02 range 1 (T2-1 and T2-2; owner choice 01 item 2), corrected under review 01 brief 02 and design 04 (T2-R1-READ-01: recursive listings, glob and cp reads, typed listing entries): evidence tooling only. No product file changes; packages/ and examples/ are preserved at B.",
     "The preserved table is regenerated mechanically by the new regenerate operation in a fresh clone. Read digests take the walk form of owner choice 01 and design 02 section 1. Design 02 section 1.3 self-check at C: by_status is unchanged (held 1013, refused 228, preserved 30, superseded 1) and no non-fixture reason changes; 21 members (ambient-reads, control-commits) drop directory-existence fixture reasons outside fixtures directories and stay held. No new credit.",
     "Fresh-clone local composed verification runs before the one CI dispatch; the CI run is the handoff evidence.",
     "No prior results reused; acceptance is not evaluated."

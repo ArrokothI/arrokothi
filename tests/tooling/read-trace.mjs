@@ -1,6 +1,7 @@
 // TOOLS-01 read trace (design 05 §2.3 rule 5). Loaded only through
 // NODE_OPTIONS=--import=<absolute path> for the reads phase, never in a verdict run.
 // It records the path argument of fs read, list, stat and existence calls; it changes no result.
+// A listing called with a truthy `recursive` option is marked `recursive` (TOOLS-02 design 04 §1).
 // Limits: processes that drop NODE_OPTIONS, reads outside fs and reads by native code are unseen.
 import fs from 'node:fs';
 import { syncBuiltinESMExports } from 'node:module';
@@ -23,14 +24,18 @@ function pathText(target) {
   return null;
 }
 
-function record(operation, target) {
+const LISTING = /(?:^|\.)(?:readdir|opendir)(?:Sync)?(?:\.native)?$/;
+
+function record(operation, target, options) {
   if (busy) return; // appendFileSync may call wrapped functions internally
   busy = true;
   try {
     const text = pathText(target);
     const row = { pid: process.pid, operation,
       path: text === null ? null : resolve(cwd(), text),
-      ...(text === null ? { argument: typeof target === 'number' ? 'fd' : typeof target } : {}) };
+      ...(text === null ? { argument: typeof target === 'number' ? 'fd' : typeof target } : {}),
+      ...(LISTING.test(operation) && options !== null && typeof options === 'object' && options.recursive
+        ? { recursive: true } : {}) };
     append(destination, JSON.stringify(row) + '\n');
   } finally {
     busy = false;
@@ -41,7 +46,7 @@ function wrap(owner, name, operation) {
   const original = owner[name];
   if (typeof original !== 'function') return;
   const wrapper = function (...args) {
-    record(operation, args[0]);
+    record(operation, args[0], args[1]);
     return Reflect.apply(original, this, args);
   };
   for (const key of Reflect.ownKeys(original)) {
@@ -54,7 +59,7 @@ function wrap(owner, name, operation) {
 }
 
 const operations = ['readFile', 'readdir', 'opendir', 'stat', 'lstat', 'statfs', 'exists', 'access',
-  'open', 'realpath', 'readlink', 'glob', 'openAsBlob', 'createReadStream'];
+  'open', 'realpath', 'readlink', 'glob', 'openAsBlob', 'createReadStream', 'cp'];
 for (const name of operations) {
   wrap(fs, name, name);
   wrap(fs, name + 'Sync', name + 'Sync');
