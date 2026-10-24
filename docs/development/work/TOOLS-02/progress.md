@@ -26,7 +26,12 @@ The resume point for any session continuing this packet. Newest facts first with
       (4,397 of 4,412 ran). Cause: 60 s child-process limits under load, which predate the correction.
   - Owner decision: wait for a quieter machine, then rerun `value-cost.json` and the full verify locally before
     dispatching. A background job waits until the 1- and 5-minute load averages stay below 4, then runs both.
-  - Next: when the quiet rerun passes, push, one CI dispatch, then H with implementation-02, push, stop for review 02.
+  - Quiet rerun at C3 (load about 4): `value-cost.json` 238 killed; the full verify's census matched, but its adoption
+    step refused two complete `mcp-boundaries` origins whose seven formerly preserved members are now refused with no
+    linked target. [Owner choice 03](owner-choice-03.md) reopens both as `pending_revalidation`, transferred to range 4.
+  - **C4** `5ab098bd893e3d39f58851276926abea81e5a5d8`: owner choice 03 applied in the manifest; transfer tests 52 OK.
+    Its fresh-clone sequence (quiet gate, regenerate, corpus, tool tests, both registries, full verify) is running.
+  - Next: when C4's checks pass, push, one CI dispatch, then H with implementation-02, push, stop for review 02.
 - **Earlier range 1 candidate (reviewed in review 01):** C2 `a6ce515018c2bd59a930b20c762a339089bb0973`, pushed. Packet verify CI run
   [40064371529](https://github.com/ArrokothI/arrokothi/actions/runs/40064371529), dispatched 2026-10-24; not polled.
   - Fresh clone at C2, before dispatch: regenerate `table_current` (no member changed; 255 s); tool tests 639 OK
