@@ -3,16 +3,19 @@
 The resume point for any session continuing this packet. Newest facts first within each list.
 
 - **Phase:** IN_PROGRESS, range 1 build (T2-1, T2-2) under design 02 with D02-CHK-01's completion.
-- **Range 1 candidate:** C2 `a6ce515018c2bd59a930b20c762a339089bb0973` (local until its fresh-clone checks pass).
+- **Range 1 candidate:** C2 `a6ce515018c2bd59a930b20c762a339089bb0973`, pushed. Packet verify CI run
+  [40064371529](https://github.com/ArrokothI/arrokothi/actions/runs/40064371529), dispatched 2026-10-24; not polled.
+  - Fresh clone at C2, before dispatch: regenerate `table_current` (no member changed; 255 s); tool tests 639 OK
+    (602 s); `mutations.json` 125 killed (596 s); `value-cost.json` 238 killed (1,044 s); full verify, all 18 checks
+    passed (3,628 s).
   - C1 `c8074099` failed its fresh-clone mutations registry: three new read-form mutants returned `setup_error`,
     because `python-probe.py` found no unique reach anchor (an empty or repeated replacement). C2 adds
     `test_target_tools.ProbeAnchorTests`, which applies the probe's anchor rule to every python-probe mutant in every
     registry before any registry runs, and gives the three mutants unique replacements. C1 was never pushed or
     dispatched.
   - At C1, in a fresh clone: tool tests 638 OK (687 s); `value-cost.json` passed (1,324 s).
-  - Next: fresh-clone checks at C2 (regenerate check, tool tests, both registries, full verify), push, one CI dispatch,
-    record the run ID here. If CI passes: H1 with `implementation-01.md` (008, range 1 only), push, stop for the
-    range-1 review.
+  - Next: if CI run 40064371529 passes, H1 with `implementation-01.md` (008, range 1 only), push, stop for the
+    range-1 review. If it fails, fix the mechanism and make a new C.
 - **Design 03 (T2-4 only), on branch `claude/tools-02-design-03`** (its files are not on this branch yet):
   - `owner-choice-02.md` records the owner's words ("plan A: a refined finishable claim") and the
     effect;
