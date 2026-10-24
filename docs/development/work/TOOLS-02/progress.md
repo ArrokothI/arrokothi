@@ -2,8 +2,13 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS. Range 1 (T2-1, T2-2) is at H1 with [implementation 01](implementation-01.md), waiting for its
-  narrow review (Codex GPT-6) and early integration. CI run 40064371529 at C2 passed (owner report, 2026-10-24).
+- **Phase:** IN_PROGRESS, range 1 correction under [brief 02](review-01/brief-02.md).
+  - [Review 01](review-01.md) (GPT-6, 2026-10-24) of H1 `f2184fc6`: CHANGES REQUIRED. T2-R1-READ-01: a
+    `{ recursive: true }` listing of `tests/fixtures` keeps a stale identity, because the trace drops listing options
+    and `listing()` returns immediate children only. T2-2 passed. The implementer reproduced the probe at C.
+  - Nearby forms found by the implementer: `glob` rows record the pattern as a path (always absent), and sync,
+    callback and promise recursive `readdir` record only the root. Only `tests/fixtures` is a fixtures directory.
+  - Next: design 04 answers brief 02's four questions, then the correction build, a new C/H, CI and review 02.
 - **Range 1 candidate:** C2 `a6ce515018c2bd59a930b20c762a339089bb0973`, pushed. Packet verify CI run
   [40064371529](https://github.com/ArrokothI/arrokothi/actions/runs/40064371529), dispatched 2026-10-24; not polled.
   - Fresh clone at C2, before dispatch: regenerate `table_current` (no member changed; 255 s); tool tests 639 OK

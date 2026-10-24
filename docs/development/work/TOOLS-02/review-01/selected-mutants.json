@@ -1,0 +1,447 @@
+[
+  {
+    "operation": "mutations",
+    "revision": "a6ce515018c2bd59a930b20c762a339089bb0973",
+    "registry": "tests/fixtures/packet-tools/mutations.json",
+    "result": "selected_cases_passed",
+    "counts": {
+      "killed": 6
+    },
+    "cases": [
+      {
+        "case": "result.read-form.named-only",
+        "content_key": "case-1d8b678abefcd9954b04c0a748df28583a57f7cf24e33bb13a862f2af7a75114",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"result.read-form.named-only\", \"assertion\": \"test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-0256baf0f5aa75af1fcb0fdb58c749d5ef501183132a90ff842eb7bdcf8c65a1",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"result.read-form.named-only\", \"assertion\": \"test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged\", \"passed\": false, \"reached\": true, \"failures\": [\"test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged",
+            "content_key": "mutation-0256baf0f5aa75af1fcb0fdb58c749d5ef501183132a90ff842eb7bdcf8c65a1"
+          }
+        ]
+      },
+      {
+        "case": "result.read-form.walk-root-named",
+        "content_key": "case-feb9d2710b2d951027969700eca0029962dcec047f295b441de0ac09f9717b08",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"result.read-form.walk-root-named\", \"assertion\": \"test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-149bee84fc3dfdf11c77005027ed56f71784a4746c8fb07ad998772b507a4241",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"result.read-form.walk-root-named\", \"assertion\": \"test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged\", \"passed\": false, \"reached\": true, \"failures\": [\"test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged",
+            "content_key": "mutation-149bee84fc3dfdf11c77005027ed56f71784a4746c8fb07ad998772b507a4241"
+          }
+        ]
+      },
+      {
+        "case": "result.read-form.named-dropped",
+        "content_key": "case-d8c59f23d27c813a103cb25f3b3ca1eb1daa6d823e2e8299c8c4d037c374b1cc",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"result.read-form.named-dropped\", \"assertion\": \"test_read_form.ReadFormTests.test_every_edit_of_a_named_read_changes_the_form\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-b7deadb844ca92d99d777397af7f82c4727e62137280bd4e877d5d1219e8cf08",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"result.read-form.named-dropped\", \"assertion\": \"test_read_form.ReadFormTests.test_every_edit_of_a_named_read_changes_the_form\", \"passed\": false, \"reached\": true, \"failures\": [\"test_read_form.ReadFormTests.test_every_edit_of_a_named_read_changes_the_form\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_read_form.ReadFormTests.test_every_edit_of_a_named_read_changes_the_form",
+            "content_key": "mutation-b7deadb844ca92d99d777397af7f82c4727e62137280bd4e877d5d1219e8cf08"
+          }
+        ]
+      },
+      {
+        "case": "result.read-form.identity-free",
+        "content_key": "case-489827d109d5d16e4e6a0534184f347762ee555a15d289bd311e9acd60975e4a",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"result.read-form.identity-free\", \"assertion\": \"test_read_form.ReadFormTests.test_every_entry_change_of_a_fixture_walk_root_listing_changes_the_form\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-5e04a3a5ec214671163a10a0d02cf31903d0efac809fe46daabf6b76cd0ea920",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"result.read-form.identity-free\", \"assertion\": \"test_read_form.ReadFormTests.test_every_entry_change_of_a_fixture_walk_root_listing_changes_the_form\", \"passed\": false, \"reached\": true, \"failures\": [\"test_read_form.ReadFormTests.test_every_entry_change_of_a_fixture_walk_root_listing_changes_the_form\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_read_form.ReadFormTests.test_every_entry_change_of_a_fixture_walk_root_listing_changes_the_form",
+            "content_key": "mutation-5e04a3a5ec214671163a10a0d02cf31903d0efac809fe46daabf6b76cd0ea920"
+          }
+        ]
+      },
+      {
+        "case": "result.read-form.fixtures-dropped",
+        "content_key": "case-47c31275c7700e8b3a6c40ffd430c4221125cfdb471a97aadc18abab4a144efe",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"result.read-form.fixtures-dropped\", \"assertion\": \"test_read_form.ReadFormTests.test_every_edit_of_an_enumerated_fixture_changes_the_form\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-7ed49cafe49ba43671be1e410b3682daf7be50222f6708f71c30290bd2d4df90",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"result.read-form.fixtures-dropped\", \"assertion\": \"test_read_form.ReadFormTests.test_every_edit_of_an_enumerated_fixture_changes_the_form\", \"passed\": false, \"reached\": true, \"failures\": [\"test_read_form.ReadFormTests.test_every_edit_of_an_enumerated_fixture_changes_the_form\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_read_form.ReadFormTests.test_every_edit_of_an_enumerated_fixture_changes_the_form",
+            "content_key": "mutation-7ed49cafe49ba43671be1e410b3682daf7be50222f6708f71c30290bd2d4df90"
+          }
+        ]
+      },
+      {
+        "case": "result.fixture-read.directory",
+        "content_key": "case-560e0a40e6af439621199190fee5c891ba12b601334bf0eeecc921b7de888957",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"result.fixture-read.directory\", \"assertion\": \"test_read_form.ReadFormTests.test_a_directory_existence_read_follows_the_listing_rule\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-e4f043a20d3f0cc6c936a31549d40987d4e6dc77ac2d69ac9b5a3795bcb69b22",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"result.fixture-read.directory\", \"assertion\": \"test_read_form.ReadFormTests.test_a_directory_existence_read_follows_the_listing_rule\", \"passed\": false, \"reached\": true, \"failures\": [\"test_read_form.ReadFormTests.test_a_directory_existence_read_follows_the_listing_rule\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_read_form.ReadFormTests.test_a_directory_existence_read_follows_the_listing_rule",
+            "content_key": "mutation-e4f043a20d3f0cc6c936a31549d40987d4e6dc77ac2d69ac9b5a3795bcb69b22"
+          }
+        ]
+      }
+    ],
+    "determinism_sample": [],
+    "environment": {
+      "passed": [
+        "PATH",
+        "HOME",
+        "TMPDIR"
+      ],
+      "unset_in_parent": [],
+      "set": {
+        "LANG": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "inputs": [],
+      "absent": [],
+      "inherited_values_recorded": false
+    },
+    "acceptance": "not evaluated",
+    "witnesses": [],
+    "limits": [
+      "Only the listed cases and mutations were executed",
+      "Structured witnesses rely on reviewed independent fixtures; no universal causal proof",
+      "Trusted repository commands run without containment; temporary copies protect source files"
+    ]
+  },
+  {
+    "operation": "mutations",
+    "revision": "a6ce515018c2bd59a930b20c762a339089bb0973",
+    "registry": "tests/fixtures/packet-tools/refusal-guards.json",
+    "result": "selected_cases_passed",
+    "counts": {
+      "killed": 7
+    },
+    "cases": [
+      {
+        "case": "guard.corpus_format_2.e365aa81301938f1",
+        "content_key": "case-e5fc6d8b75e3d6da6a5f919453a4b7b6333521e533d62b2dcc427e85d8e923e6",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"guard.corpus_format_2.e365aa81301938f1\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_corpus_census_route_refuses\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-249446ff7aaa8417b0009a1c9114045b4714150a090e2295af7b769e2d7bbcd3",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"guard.corpus_format_2.e365aa81301938f1\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_corpus_census_route_refuses\", \"passed\": false, \"reached\": true, \"failures\": [\"test_pristine_routes.PristineRoutes.test_corpus_census_route_refuses (kind='untracked')\", \"test_pristine_routes.PristineRoutes.test_corpus_census_route_refuses (kind='ignored')\", \"test_pristine_routes.PristineRoutes.test_corpus_census_route_refuses (kind='invisible')\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_pristine_routes.PristineRoutes.test_corpus_census_route_refuses (kind='untracked')",
+            "content_key": "mutation-249446ff7aaa8417b0009a1c9114045b4714150a090e2295af7b769e2d7bbcd3"
+          }
+        ]
+      },
+      {
+        "case": "guard.regenerate.bce5caf510fe2167",
+        "content_key": "case-716a5dd859d9f6c5eb5fddec5306ca92f2e58c42974a7a361cc9e32252707b45",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"guard.regenerate.bce5caf510fe2167\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_regenerate_refuses\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-11374c0f275d12fcb440bf161ef0757a2495a3ee82cdd3022159da3af72b3267",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"guard.regenerate.bce5caf510fe2167\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_regenerate_refuses\", \"passed\": false, \"reached\": true, \"failures\": [\"test_pristine_routes.PristineRoutes.test_regenerate_refuses (kind='untracked')\", \"test_pristine_routes.PristineRoutes.test_regenerate_refuses (kind='ignored')\", \"test_pristine_routes.PristineRoutes.test_regenerate_refuses (kind='invisible')\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_pristine_routes.PristineRoutes.test_regenerate_refuses (kind='untracked')",
+            "content_key": "mutation-11374c0f275d12fcb440bf161ef0757a2495a3ee82cdd3022159da3af72b3267"
+          }
+        ]
+      },
+      {
+        "case": "guard.regenerate.7892cb11fb2a3955",
+        "content_key": "case-f7f7bff50c4b39777f823727923fff8313e902bd1da6ba2353f55f91fad3859d",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"guard.regenerate.7892cb11fb2a3955\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_regenerate_writes_only_a_canonical_manifest\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-91731061082ef5fbfdca0d565c66efe6adef3bd16ce7244cc04199dd362ad7b3",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"guard.regenerate.7892cb11fb2a3955\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_regenerate_writes_only_a_canonical_manifest\", \"passed\": false, \"reached\": true, \"failures\": [\"test_pristine_routes.PristineRoutes.test_regenerate_writes_only_a_canonical_manifest\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_pristine_routes.PristineRoutes.test_regenerate_writes_only_a_canonical_manifest",
+            "content_key": "mutation-91731061082ef5fbfdca0d565c66efe6adef3bd16ce7244cc04199dd362ad7b3"
+          }
+        ]
+      },
+      {
+        "case": "guard.preserved_census.836a975caeca3a9c",
+        "content_key": "case-c9c3f947766b6cbf6a0dc693b17742a9ce930179852fa6490deccb841436e4be",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"guard.preserved_census.836a975caeca3a9c\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_preserved_census_refuses\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-6a52682e14b8b2b22660b8d09c1e4915a965a4428eef4e01083a8321367fd6ca",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"guard.preserved_census.836a975caeca3a9c\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_preserved_census_refuses\", \"passed\": false, \"reached\": true, \"failures\": [\"test_pristine_routes.PristineRoutes.test_preserved_census_refuses (kind='untracked')\", \"test_pristine_routes.PristineRoutes.test_preserved_census_refuses (kind='ignored')\", \"test_pristine_routes.PristineRoutes.test_preserved_census_refuses (kind='invisible')\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_pristine_routes.PristineRoutes.test_preserved_census_refuses (kind='untracked')",
+            "content_key": "mutation-6a52682e14b8b2b22660b8d09c1e4915a965a4428eef4e01083a8321367fd6ca"
+          }
+        ]
+      },
+      {
+        "case": "guard.main.23d00492152db9d8",
+        "content_key": "case-60276d931e180c310f011964b11503a14cbae008b6610da7d94f4d2506730d33",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"guard.main.23d00492152db9d8\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-ed443b0f905e4cc2a449f353e19c4e9712941ac6f7eec954a4863186fb27df43",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"guard.main.23d00492152db9d8\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation\", \"passed\": false, \"reached\": true, \"failures\": [\"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='untracked', operation='inventory')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='untracked', operation='mutations')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='untracked', operation='cases')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='untracked', operation='corpus')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='untracked', operation='coverage')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='ignored', operation='inventory')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='ignored', operation='mutations')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='ignored', operation='cases')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='ignored', operation='corpus')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='ignored', operation='coverage')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='invisible', operation='inventory')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='invisible', operation='mutations')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='invisible', operation='cases')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='invisible', operation='corpus')\", \"test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='invisible', operation='coverage')\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation (kind='untracked', operation='inventory')",
+            "content_key": "mutation-ed443b0f905e4cc2a449f353e19c4e9712941ac6f7eec954a4863186fb27df43"
+          }
+        ]
+      },
+      {
+        "case": "guard.main.adf967046d412ee3",
+        "content_key": "case-2ce5e8d6805216f003fa180cc967df377dec40069614e8b2afac5aeac8e3b954",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"guard.main.adf967046d412ee3\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_requalification_refuses\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-63b5b2b504f05a9a8deac1b6940ff75fcf6d3ea8b7400fc93542d5d3221ffae2",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"guard.main.adf967046d412ee3\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_requalification_refuses\", \"passed\": false, \"reached\": true, \"failures\": [\"test_pristine_routes.PristineRoutes.test_requalification_refuses (kind='untracked')\", \"test_pristine_routes.PristineRoutes.test_requalification_refuses (kind='ignored')\", \"test_pristine_routes.PristineRoutes.test_requalification_refuses (kind='invisible')\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_pristine_routes.PristineRoutes.test_requalification_refuses (kind='untracked')",
+            "content_key": "mutation-63b5b2b504f05a9a8deac1b6940ff75fcf6d3ea8b7400fc93542d5d3221ffae2"
+          }
+        ]
+      },
+      {
+        "case": "guard.main.ed6dfae6572cdb8e",
+        "content_key": "case-f74bc51a89dbf3684a85d01ede0fcadfdc6a6f5dea7ae2b285347520fd6fd071",
+        "claim": {
+          "kind": "test_assertion",
+          "semantic_credit": "not evaluated"
+        },
+        "kind": "probe",
+        "control": "passed",
+        "baseline": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\": \"guard.main.ed6dfae6572cdb8e\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_loss_ledger_refuses\", \"passed\": true, \"reached\": true, \"failures\": [], \"tests\": 1}\n"
+        },
+        "mutations": [
+          {
+            "mutation": "mutation-5b437055517ae3592160e308ce6191c4658e1914ac374de2bdd1c4a83ab072fc",
+            "status": "killed",
+            "run": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\": \"guard.main.ed6dfae6572cdb8e\", \"assertion\": \"test_pristine_routes.PristineRoutes.test_loss_ledger_refuses\", \"passed\": false, \"reached\": true, \"failures\": [\"test_pristine_routes.PristineRoutes.test_loss_ledger_refuses (kind='untracked')\", \"test_pristine_routes.PristineRoutes.test_loss_ledger_refuses (kind='ignored')\", \"test_pristine_routes.PristineRoutes.test_loss_ledger_refuses (kind='invisible')\"], \"tests\": 1}\n"
+            },
+            "invalid": false,
+            "killed_by": "test_pristine_routes.PristineRoutes.test_loss_ledger_refuses (kind='untracked')",
+            "content_key": "mutation-5b437055517ae3592160e308ce6191c4658e1914ac374de2bdd1c4a83ab072fc"
+          }
+        ]
+      }
+    ],
+    "determinism_sample": [],
+    "environment": {
+      "passed": [
+        "PATH",
+        "HOME",
+        "TMPDIR"
+      ],
+      "unset_in_parent": [],
+      "set": {
+        "LANG": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "inputs": [],
+      "absent": [],
+      "inherited_values_recorded": false
+    },
+    "acceptance": "not evaluated",
+    "witnesses": [],
+    "limits": [
+      "Only the listed cases and mutations were executed",
+      "Structured witnesses rely on reviewed independent fixtures; no universal causal proof",
+      "Trusted repository commands run without containment; temporary copies protect source files"
+    ]
+  }
+]
