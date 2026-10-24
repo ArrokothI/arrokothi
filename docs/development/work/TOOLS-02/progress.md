@@ -8,7 +8,9 @@ The resume point for any session continuing this packet. Newest facts first with
     and `listing()` returns immediate children only. T2-2 passed. The implementer reproduced the probe at C.
   - Nearby forms found by the implementer: `glob` rows record the pattern as a path (always absent), and sync,
     callback and promise recursive `readdir` record only the root. Only `tests/fixtures` is a fixtures directory.
-  - Next: design 04 answers brief 02's four questions, then the correction build, a new C/H, CI and review 02.
+  - [Design 04](design-04.md) answers brief 02's four questions: `tree` and `pattern` read kinds, recursive
+    expansion at C (record) and at pin ∪ C (comparison), refusal of glob and cp, and typed listing entries. Under 006
+    it is a routine correction (no new design check unless the owner asks). Next: the build, a new C/H, CI, review 02.
 - **Range 1 candidate:** C2 `a6ce515018c2bd59a930b20c762a339089bb0973`, pushed. Packet verify CI run
   [40064371529](https://github.com/ArrokothI/arrokothi/actions/runs/40064371529), dispatched 2026-10-24; not polled.
   - Fresh clone at C2, before dispatch: regenerate `table_current` (no member changed; 255 s); tool tests 639 OK
