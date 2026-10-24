@@ -2,7 +2,8 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS, range 1 correction under [brief 02](review-01/brief-02.md).
+- **Phase:** IN_PROGRESS. Range 1 round 2 is at H with [implementation 02](implementation-02.md) over C4, waiting for review 02
+  (Codex GPT-6). CI run 40132829525 at C4 passed (owner report, 2026-10-24).
   - [Review 01](review-01.md) (GPT-6, 2026-10-24) of H1 `f2184fc6`: CHANGES REQUIRED. T2-R1-READ-01: a
     `{ recursive: true }` listing of `tests/fixtures` keeps a stale identity, because the trace drops listing options
     and `listing()` returns immediate children only. T2-2 passed. The implementer reproduced the probe at C.
@@ -35,7 +36,7 @@ The resume point for any session continuing this packet. Newest facts first with
       (254 s); `corpus` `revalidation_complete`, 123 transferred origins (285 s); tool tests 651 OK (677 s);
       `mutations.json` 130 killed (674 s); `value-cost.json` 238 killed (1,063 s); full verify, all 18 checks passed
       (3,901 s).
-  - Next: if CI run 40132829525 passes, H with implementation-02, push, stop for review 02.
+  - Next: review 02 of H. After range 1 integrates, ranges 2–4 in design 01 §9's order; range 3 under design 03 §6.
 - **Earlier range 1 candidate (reviewed in review 01):** C2 `a6ce515018c2bd59a930b20c762a339089bb0973`, pushed. Packet verify CI run
   [40064371529](https://github.com/ArrokothI/arrokothi/actions/runs/40064371529), dispatched 2026-10-24; not polled.
   - Fresh clone at C2, before dispatch: regenerate `table_current` (no member changed; 255 s); tool tests 639 OK
