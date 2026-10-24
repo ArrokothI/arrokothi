@@ -2,8 +2,28 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS, design. [Design 02](design-02.md) is a delta on design 01 and awaits design check 02;
-  no code before it.
+- **Phase:** IN_PROGRESS, range 1 build (T2-1, T2-2) under design 02 with D02-CHK-01's completion.
+- **Range 1 candidate:** C2 `a6ce515018c2bd59a930b20c762a339089bb0973` (local until its fresh-clone checks pass).
+  - C1 `c8074099` failed its fresh-clone mutations registry: three new read-form mutants returned `setup_error`,
+    because `python-probe.py` found no unique reach anchor (an empty or repeated replacement). C2 adds
+    `test_target_tools.ProbeAnchorTests`, which applies the probe's anchor rule to every python-probe mutant in every
+    registry before any registry runs, and gives the three mutants unique replacements. C1 was never pushed or
+    dispatched.
+  - At C1, in a fresh clone: tool tests 638 OK (687 s); `value-cost.json` passed (1,324 s).
+  - Next: fresh-clone checks at C2 (regenerate check, tool tests, both registries, full verify), push, one CI dispatch,
+    record the run ID here. If CI passes: H1 with `implementation-01.md` (008, range 1 only), push, stop for the
+    range-1 review.
+- **Design 03 (T2-4 only), on branch `claude/tools-02-design-03`** (its files are not on this branch yet):
+  - `owner-choice-02.md` records the owner's words ("plan A: a refined finishable claim") and the
+    effect;
+  - `design-03.md`, checked by GPT-6's `design-check-03.md` (`d0b18b0d`, committed
+    unchanged): APPROVED WITH REQUIRED CHANGES (D03-CHK-01);
+  - design 03 §6 (`c71818c8`) answers D03-CHK-01 (C2-LIMIT binds to the released V-ENV claim) and adopts the check's
+    §5 answer (no executable `limit` class). Under 006 this is a routine correction, with no further design check;
+    the range-3 review checks it.
+  - Range 3 waits for range 1's integration.
+- **Design check 02:** GPT-6 [design check 02](design-check-02.md) (`6e96639a`) closed D01-CHK-02, -03, -04 and -06.
+  D02-CHK-01 (completed in range 1) and D02-CHK-05 (settled by owner choice 02) remained.
 - **Design check 01:** Codex GPT-6 [design check 01](design-check-01.md) (`9ca58fbe`, fast-forwarded onto this branch)
   returned REDESIGN, with findings D01-CHK-01 to D01-CHK-06.
 - **Owner choice 01:** [owner choice 01](owner-choice-01.md) settles D01-CHK-01 by amending T2-1 (option A) and adopts
@@ -13,10 +33,8 @@ The resume point for any session continuing this packet. Newest facts first with
   - Identity-at-C record form; directory existence reads follow the listing rule.
   - Guards at the CLI dispatch and inside the census routes; a bounded-vocabulary writer census.
   - Invocation-bound witness; checked source set for trees without `packages/`.
-  - `unread` class; an executed per-leaf environment observation, with a core-initialization check.
+  - `unread` class (design 03 replaces design 02 §4's environment observation).
   - Frozen population; reviewer-chosen seed; re-audit rule; rate bound for small populations.
-- **Next, after design check 02:** build range 1 alone. End it at a self-contained C1 with its own `verification.json`,
-  then fresh-clone checks, one CI dispatch, H1 with `implementation-01.md` for range 1, and a narrow review.
 - **Earlier phase:** [design 01](design-01.md) pushed at `1aec8b62`.
 - **Branch:** `claude/tools-02`, from B `b5daf35aeee37305c1ee41bb626c97d26db94ab2` (main after PR #58, which merged
   [release 01](release-01.md) and [brief 01](brief-01.md), scope B).
