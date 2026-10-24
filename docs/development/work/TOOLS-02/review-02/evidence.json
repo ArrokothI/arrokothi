@@ -1,0 +1,93 @@
+{
+  "review": "TOOLS-02 range 1 review 02",
+  "date": "2026-10-24",
+  "timezone": "America/New_York",
+  "base": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+  "payload": "5ab098bd893e3d39f58851276926abea81e5a5d8",
+  "candidate": "7791cda6b0b28324e608ca5483e97059b7398b55",
+  "ci": {
+    "run": 40132829525,
+    "job": 120988019356,
+    "artifact": 12577512202,
+    "url": "https://github.com/ArrokothI/arrokothi/actions/runs/40132829525",
+    "result": "checks_passed",
+    "checks": 18,
+    "zip_entries": {
+      "run.txt": {
+        "sha256": "1138a22fe33e622dca680171939e5cf94d67b3f346f46404bbbf7bef5c66b7bb",
+        "bytes": 291
+      },
+      "summary.json": {
+        "sha256": "60049bdda4f3b6cba6226b5ba8b0eb901b9df8c70ebb76bb7e6dc1a1448c8031",
+        "bytes": 2457
+      },
+      "verify.json": {
+        "sha256": "3e92b6481687e8dabb5ae66af17081ae58e4903ba4fe565bfee5c9ddbc98aed3",
+        "bytes": 12609399
+      },
+      "verify.stderr.log": {
+        "sha256": "53c85c8e9ab0803e3be815334f2a43183ae007d18606d0de5b7c42b4fe28c706",
+        "bytes": 19537
+      }
+    },
+    "hosted_expires_at": "2027-01-22T21:07:33Z",
+    "retention": "Repository review evidence; subsequent retirement under docs/development/archive.md"
+  },
+  "local": {
+    "system": "macOS arm64",
+    "node": "v26.10.0",
+    "python": "3.14.6",
+    "checkout": "fresh git clone --no-local at payload C",
+    "dependencies": "Copied workspace node_modules; maintained pinned-toolchain checks applied, not a new npm ci",
+    "commands": [
+      {
+        "command": "PYTHONPATH=tests/tooling python3 -B -m unittest test_read_form test_pristine_routes test_writer_census test_target_tools.ProbeAnchorTests",
+        "exit": 0,
+        "tests": 36,
+        "seconds": 159.005,
+        "log": "targeted-tests.log"
+      },
+      {
+        "command": "python3 -B tests/tooling/check-refusal-registry.py",
+        "exit": 0,
+        "checks": 329,
+        "registered": 329
+      },
+      {
+        "command": "python3 -B <review-02>/probe-range1.py <clean-C-checkout>",
+        "exit": 0,
+        "output": "probe-range1.json",
+        "meaning": "Counterexamples and positive controls reproduced; not an acceptance pass"
+      }
+    ],
+    "node_path_used": "/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin",
+    "synthetic_revisions": "Temporary fixture commits recreated by probe; commit IDs can vary per run.",
+    "clean_after_checks": true
+  },
+  "files": {
+    "brief-03.md": {
+      "sha256": "d4558eb02905729961d00f4688002f7615d15dd4170ada3f9d748fb810eda89b",
+      "bytes": 4793
+    },
+    "candidate.json": {
+      "sha256": "2aa456ef27e31419805ed92d5fca9859ddcdf12abe857bf5e490e812d6f58068",
+      "bytes": 755
+    },
+    "packet-verify-40132829525.zip": {
+      "sha256": "8a13330ca745b03eabcf7aadb683e6f002550d836ced26119dac85157ee5481f",
+      "bytes": 1990922
+    },
+    "probe-range1.json": {
+      "sha256": "214ed04890eae66bc7cd40426749bbad2982edea4c02380af1f9c83e809c0240",
+      "bytes": 2843
+    },
+    "probe-range1.py": {
+      "sha256": "b4b177f24c191986bc76bc492d659a914428397dcf87dec99adffa80fddbe84c",
+      "bytes": 5881
+    },
+    "targeted-tests.log": {
+      "sha256": "1dd4f264a9126ac291910ebadf03e6f57079f94dddfcc6a6675c17d871180245",
+      "bytes": 137
+    }
+  }
+}

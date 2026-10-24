@@ -2,8 +2,19 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS. Range 1 round 2 is at H with [implementation 02](implementation-02.md) over C4, waiting for review 02
-  (Codex GPT-6). CI run 40132829525 at C4 passed (owner report, 2026-10-24).
+- **Phase:** IN_PROGRESS. **006 stop-and-redesign: waiting for the owner's choice; no patch round before it.**
+  - [Review 02](review-02.md) (GPT-6, 2026-10-24) of H `7791cda6` over C4: CHANGES REQUIRED.
+    - T2-R2-READ-01: Node 26.10's recursive `readdir` (sync and promise) descends symlinked directories, and
+      `tree_listings` follows only git subtrees. Design 04's claim that Node does not descend them was untested
+      and wrong; recursive `opendir` does not descend them.
+    - T2-R2-PATTERN-01: `globSync([...])` is traced as `{path: null, argument: 'object'}`, and `compared_reads` drops it
+      before `pattern_refusal`.
+    - The implementer confirmed both directly. T2-2 passed again. The repository's only symlinks are four under
+      `.claude/skills`.
+    - Root cause (review 02): calls are compressed to a path and a kind before checking that the representation covers
+      the call, so unrepresentable shapes are dropped rather than refused.
+  - Earlier: range 1 round 2 at H `7791cda6` with [implementation 02](implementation-02.md) over C4; CI run
+    40132829525 passed.
   - [Review 01](review-01.md) (GPT-6, 2026-10-24) of H1 `f2184fc6`: CHANGES REQUIRED. T2-R1-READ-01: a
     `{ recursive: true }` listing of `tests/fixtures` keeps a stale identity, because the trace drops listing options
     and `listing()` returns immediate children only. T2-2 passed. The implementer reproduced the probe at C.
