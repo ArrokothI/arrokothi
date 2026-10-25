@@ -325,7 +325,7 @@
         "tests": "^Ran (\\d+) tests in "
       },
       "minimum_counts": {
-        "tests": 651
+        "tests": 664
       }
     },
     {
@@ -641,7 +641,7 @@
   ],
   "limits": [
     "TOOLS-02 range 1 (T2-1 and T2-2; owner choice 01 item 2), corrected under review 01 brief 02 and design 04 (T2-R1-READ-01: recursive listings, typed listing entries), then under owner choice 04 refined claim and design 05 with design check 05 (review 02 T2-R2-READ-01 and T2-R2-PATTERN-01: every traced row admitted by an explicit matrix with refusal by default; path walk before normalization; recursive listings crossing a symlink and reads through one, at C or the pin, refuse; file existence identity is Git mode and blob ID): evidence tooling only. No product file changes; packages/ and examples/ are preserved at B.",
-    "The preserved table is regenerated mechanically by the new regenerate operation in a fresh clone. Read digests take the walk form of owner choice 01 and design 02 section 1. Design 02 section 1.3 self-check at C: by_status is unchanged (held 1013, refused 228, preserved 30, superseded 1) and no non-fixture reason changes; 21 members (ambient-reads, control-commits) drop directory-existence fixture reasons outside fixtures directories and stay held. No new credit. Design 04 correction self-check at C: held 1013 and superseded 1 unchanged; refused 228 -> 235 and preserved 30 -> 23, all seven changes in mcp-boundaries.test.ts, whose recursive listings of tests observe changed tests/fixtures entries (T2-R1-READ-01 in the real table); 418 rows gain fixture reasons, no non-fixture reason changes. Owner choice 03 reopens the two complete mcp-boundaries origins that held those seven members as pending_revalidation and transfers them to TOOLS-02 range 4 with a pinned list. No new credit.",
+    "The preserved table is regenerated mechanically by the new regenerate operation in a fresh clone. Read digests take the walk form of owner choice 01 and design 02 section 1. Design 02 section 1.3 self-check at C: by_status is unchanged (held 1013, refused 228, preserved 30, superseded 1) and no non-fixture reason changes; 21 members (ambient-reads, control-commits) drop directory-existence fixture reasons outside fixtures directories and stay held. No new credit. Design 04 correction self-check at C: held 1013 and superseded 1 unchanged; refused 228 -> 235 and preserved 30 -> 23, all seven changes in mcp-boundaries.test.ts, whose recursive listings of tests observe changed tests/fixtures entries (T2-R1-READ-01 in the real table); 418 rows gain fixture reasons, no non-fixture reason changes. Owner choice 03 reopens the two complete mcp-boundaries origins that held those seven members as pending_revalidation and transfers them to TOOLS-02 range 4 with a pinned list. Design 05 self-check at C: no status or reason changes (held 1013, refused 235, preserved 23, superseded 1); 485 read digests change with the file existence identity. No new credit.",
     "Fresh-clone local composed verification runs before the one CI dispatch; the CI run is the handoff evidence.",
     "No prior results reused; acceptance is not evaluated."
   ]
