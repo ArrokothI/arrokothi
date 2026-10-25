@@ -124,10 +124,9 @@ marker in place). Remove the "refused until K1.3" prose in BASELINE and the code
 - **Forbidden shortcuts:** reading `Date`, `performance` or timers inside the Kernel; deciding a race by
   submission time or physical stop; a pending/applied marker that defers the cancellation fence; deleting
   or silently dropping an unacknowledged Event.
-- **TOOLS-02 coordination:** the build starts from main after TOOLS-02 range 1 (T2-1, T2-2) is
-  integrated. Regenerate `tests/fixtures/packet-tools/adoption.json` only with range 1's `regenerate`
-  operation in a fresh clone; never hand-edit census rows. The design note and design check may proceed
-  before then.
+- **TOOLS-02 coordination:** the owner releases K1.3 after TOOLS-02 range 1 (T2-1, T2-2) is integrated,
+  so all K1.3 work starts from that main. Regenerate `tests/fixtures/packet-tools/adoption.json` only with
+  range 1's `regenerate` operation in a fresh clone; never hand-edit census rows.
 - **Roles (owner pattern):** a fresh Claude Opus session implements; Codex GPT-6 sessions do the design
   check and the review; a fresh Opus session does the Prompt C cleanup.
 - **Lifecycle:** design note, then design check (required: Kernel semantics change), then build. Packet
@@ -157,3 +156,19 @@ marker in place). Remove the "refused until K1.3" prose in BASELINE and the code
    and wait deadlines) and K1.3b (cancellation and the Execution deadline).
 3. **Adversary.** Run Prompt E against the design note before the build? Recommended for K13-6 and K13-9.
 4. **Roles.** As above, unless the owner changes them.
+
+**Owner answers (2026-10-25), verbatim:** "K1.3 decision 1: A (optional creation-request field, in
+canonical content, immutable). Decision 2: one packet, two ranges. Decision 3: run Prompt E. Release after
+TOOLS-02 range 1 lands." Their effects on this brief:
+- **Decision 1.** The Execution deadline is an optional creation-request field. It is part of creation's
+  canonical content: an exact retry replays, and a changed or added deadline conflicts. It cannot change
+  after creation. K13-7 tests that a deadline set at creation expires through the cancellation path, and
+  the build updates [creation](../../../../mental-model/mechanisms/creation.md) with the field. Suspect
+  design 3 is settled.
+- **Decision 2.** One packet. Range 1 covers waits and wait deadlines (K13-1 to K13-5, and K13-8). Range 2
+  covers cancellation and the Execution deadline (K13-6, K13-7), and K13-9 over the whole. One independent
+  review at the end. Question 7 is settled.
+- **Decision 3.** A Prompt E adversary attacks the design note before the build, focused on K13-6 and
+  K13-9. The design check reads the attack record.
+- **Release.** Not yet released. The owner releases K1.3 after TOOLS-02 range 1 is integrated; the
+  release record then names the base.
