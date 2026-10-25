@@ -1,0 +1,135 @@
+{
+  "real_tracer_options": {
+    "Object.prototype": [
+      "createReadStream",
+      "lstatSync",
+      "openAsBlob",
+      "opendirSync",
+      "promises.lstat",
+      "promises.opendir",
+      "promises.readFile",
+      "promises.readdir",
+      "promises.realpath",
+      "promises.stat",
+      "promises.statfs",
+      "readFile",
+      "readFileSync",
+      "readdir",
+      "readdirSync",
+      "realpathSync",
+      "realpathSync.native",
+      "statSync",
+      "statfsSync"
+    ],
+    "null": [
+      "createReadStream",
+      "lstatSync",
+      "openAsBlob",
+      "opendirSync",
+      "promises.lstat",
+      "promises.opendir",
+      "promises.readFile",
+      "promises.readdir",
+      "promises.realpath",
+      "promises.stat",
+      "promises.statfs",
+      "readFile",
+      "readFileSync",
+      "readdir",
+      "readdirSync",
+      "realpathSync",
+      "realpathSync.native",
+      "statSync",
+      "statfsSync"
+    ],
+    "other": [
+      "createReadStream",
+      "lstatSync",
+      "openAsBlob",
+      "opendirSync",
+      "promises.lstat",
+      "promises.opendir",
+      "promises.readFile",
+      "promises.readdir",
+      "promises.realpath",
+      "promises.stat",
+      "promises.statfs",
+      "readFile",
+      "readFileSync",
+      "readdir",
+      "readdirSync",
+      "realpathSync",
+      "realpathSync.native",
+      "statSync",
+      "statfsSync"
+    ]
+  },
+  "option_guard_before_scope": {
+    "operations": [
+      "readFile",
+      "createReadStream",
+      "openAsBlob",
+      "readdir",
+      "opendir",
+      "stat",
+      "lstat",
+      "statfs",
+      "realpath",
+      "readlink"
+    ],
+    "checks": 40
+  },
+  "path_checks": [
+    {
+      "path": "tests/fixtures/INPUT.txt",
+      "exists_on_host": true,
+      "outcome": [
+        "refused",
+        "the traced run read a path whose spelling is not a tracked entry at C: tests/fixtures/INPUT.txt"
+      ]
+    },
+    {
+      "path": "tests/FIXTURES/input.txt",
+      "exists_on_host": true,
+      "outcome": [
+        "refused",
+        "the traced run read a path whose spelling is not a tracked entry at C: tests/FIXTURES"
+      ]
+    },
+    {
+      "path": "tests/fixtures/LINK",
+      "exists_on_host": true,
+      "outcome": [
+        "refused",
+        "the traced run read a path whose spelling is not a tracked entry at C: tests/fixtures/LINK"
+      ]
+    },
+    {
+      "path": "tests/fixtures/cafe\u0301.txt",
+      "exists_on_host": true,
+      "outcome": [
+        "refused",
+        "the traced run read a path whose spelling is not a tracked entry at C: tests/fixtures/cafe\u0301.txt"
+      ]
+    }
+  ],
+  "positive_path_rows": 8,
+  "trace_rows": 92,
+  "accommodation": {
+    "positive": {
+      "result": "facts_verified",
+      "whitespace_exceptions": [
+        "sealed-notes.md"
+      ]
+    },
+    "other-whitespace": {
+      "result": "refused",
+      "error": "git diff: ",
+      "diff_check": "other.md:2: new blank line at EOF.\n"
+    },
+    "changed-sealed": {
+      "result": "refused",
+      "error": "preserved path changed: sealed-notes.md"
+    }
+  }
+}

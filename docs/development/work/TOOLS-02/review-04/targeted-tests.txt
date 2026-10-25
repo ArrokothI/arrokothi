@@ -1,0 +1,84 @@
+test_a_direct_fixture_listing_changes_with_each_entry_change (test_read_form.ReadFormCensusTests.test_a_direct_fixture_listing_changes_with_each_entry_change) ... ok
+test_a_stored_table_validates_in_corpus_and_survives_unrelated_tests (test_read_form.ReadFormCensusTests.test_a_stored_table_validates_in_corpus_and_survives_unrelated_tests) ... ok
+test_an_enumerated_source_edit_leaves_the_table_valid (test_read_form.ReadFormCensusTests.test_an_enumerated_source_edit_leaves_the_table_valid) ... ok
+test_every_edit_of_a_named_read_or_a_fixture_changes_the_table (test_read_form.ReadFormCensusTests.test_every_edit_of_a_named_read_or_a_fixture_changes_the_table) ... ok
+test_a_directory_existence_read_follows_the_listing_rule (test_read_form.ReadFormTests.test_a_directory_existence_read_follows_the_listing_rule) ... ok
+test_a_fixture_subtree_present_only_at_the_pin_still_changes (test_read_form.ReadFormTests.test_a_fixture_subtree_present_only_at_the_pin_still_changes) ... ok
+test_a_read_through_a_symlink_at_the_pin_refuses_its_origin (test_read_form.ReadFormTests.test_a_read_through_a_symlink_at_the_pin_refuses_its_origin) ... ok
+test_a_recursive_listing_is_a_tree_read (test_read_form.ReadFormTests.test_a_recursive_listing_is_a_tree_read) ... ok
+test_a_recursive_listing_that_crossed_a_symlink_at_the_pin_refuses_its_origin (test_read_form.ReadFormTests.test_a_recursive_listing_that_crossed_a_symlink_at_the_pin_refuses_its_origin) ... ok
+test_a_recursive_listing_that_crosses_a_symlink_refuses (test_read_form.ReadFormTests.test_a_recursive_listing_that_crosses_a_symlink_refuses) ... ok
+test_a_recursive_tests_listing_records_only_its_fixture_subtree (test_read_form.ReadFormTests.test_a_recursive_tests_listing_records_only_its_fixture_subtree) ... ok
+test_a_same_name_type_change_changes_a_fixture_listing (test_read_form.ReadFormTests.test_a_same_name_type_change_changes_a_fixture_listing) ... ok
+test_a_stat_read_of_a_file_carries_its_content_and_mode (test_read_form.ReadFormTests.test_a_stat_read_of_a_file_carries_its_content_and_mode) ... ok
+test_a_walk_records_named_reads_and_fixtures_and_only_the_root_of_the_rest (test_read_form.ReadFormTests.test_a_walk_records_named_reads_and_fixtures_and_only_the_root_of_the_rest) ... ok
+test_admission_refuses_every_row_the_matrix_does_not_name (test_read_form.ReadFormTests.test_admission_refuses_every_row_the_matrix_does_not_name) ... ok
+test_an_enumerated_non_fixture_edit_is_recorded_by_its_walk_root_only (test_read_form.ReadFormTests.test_an_enumerated_non_fixture_edit_is_recorded_by_its_walk_root_only) ... ok
+test_every_edit_of_a_named_read_changes_the_form (test_read_form.ReadFormTests.test_every_edit_of_a_named_read_changes_the_form) ... ok
+test_every_edit_of_an_enumerated_fixture_changes_the_form (test_read_form.ReadFormTests.test_every_edit_of_an_enumerated_fixture_changes_the_form) ... ok
+test_every_entry_change_of_a_fixture_walk_root_listing_changes_the_form (test_read_form.ReadFormTests.test_every_entry_change_of_a_fixture_walk_root_listing_changes_the_form) ... ok
+test_every_nested_change_under_a_recursive_fixture_listing_changes_the_form (test_read_form.ReadFormTests.test_every_nested_change_under_a_recursive_fixture_listing_changes_the_form) ... ok
+test_one_path_can_be_named_and_a_walk_root_through_different_kinds (test_read_form.ReadFormTests.test_one_path_can_be_named_and_a_walk_root_through_different_kinds) ... ok
+test_pattern_reads_refuse_their_file (test_read_form.ReadFormTests.test_pattern_reads_refuse_their_file) ... ok
+test_real_trace_rows_are_admitted_or_refused (test_read_form.ReadFormTests.test_real_trace_rows_are_admitted_or_refused)
+The real preload through admission (design 05 §7.4): an inherited descriptor, a decoy-path stream with an ... ok
+test_rule_o_refuses_an_options_object_with_another_prototype (test_read_form.ReadFormTests.test_rule_o_refuses_an_options_object_with_another_prototype)
+Design 05 §8.2: only an ordinary or null prototype is admitted, for every operation that takes options. ... ok
+test_rule_p_refuses_a_spelling_that_is_not_a_tracked_entry (test_read_form.ReadFormTests.test_rule_p_refuses_a_spelling_that_is_not_a_tracked_entry)
+Design 05 §8.1. Host-independent: an untracked file and an untracked directory stand for the entries a ... ok
+test_the_trace_marks_each_recursive_form_and_records_glob_and_cp (test_read_form.ReadFormTests.test_the_trace_marks_each_recursive_form_and_records_glob_and_cp)
+Every listing form of design 04 §2 under the real preload, with Node's own option handling. ... ok
+test_the_walk_refuses_a_tracked_symlink_before_normalizing (test_read_form.ReadFormTests.test_the_walk_refuses_a_tracked_symlink_before_normalizing) ... ok
+test_unrelated_additions_leave_the_walk_form_unchanged (test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged) ... ok
+test_a_pin_side_link_replaced_by_an_equal_blob_file_stays_refused (test_read_form.ReadMatrixCensusTests.test_a_pin_side_link_replaced_by_an_equal_blob_file_stays_refused) ... ok
+test_a_plain_recursive_listing_keeps_its_positive_control (test_read_form.ReadMatrixCensusTests.test_a_plain_recursive_listing_keeps_its_positive_control) ... ok
+test_a_stat_only_fixture_change_refuses_its_member (test_read_form.ReadMatrixCensusTests.test_a_stat_only_fixture_change_refuses_its_member) ... ok
+test_an_array_glob_member_stays_refused_through_type_changes (test_read_form.ReadMatrixCensusTests.test_an_array_glob_member_stays_refused_through_type_changes) ... ok
+test_crossing_alias_glob_descriptor_and_option_members_are_refused (test_read_form.ReadMatrixCensusTests.test_crossing_alias_glob_descriptor_and_option_members_are_refused) ... ok
+test_each_target_edit_behind_a_symlink_leaves_the_member_refused (test_read_form.ReadMatrixCensusTests.test_each_target_edit_behind_a_symlink_leaves_the_member_refused) ... ok
+test_exact_and_variant_spellings_through_two_edits (test_read_form.ReadMatrixCensusTests.test_exact_and_variant_spellings_through_two_edits)
+Review 03's path probe: the alternate-case reader is never preserved; the exact reader keeps credit until an ... ok
+test_rule_o_and_own_property_options_through_the_census (test_read_form.ReadMatrixCensusTests.test_rule_o_and_own_property_options_through_the_census) ... ok
+test_a_same_name_type_change_under_a_fixture_listing_changes_the_table (test_read_form.RecursiveListingCensusTests.test_a_same_name_type_change_under_a_fixture_listing_changes_the_table) ... ok
+test_deleting_a_fixture_subtree_changes_the_table (test_read_form.RecursiveListingCensusTests.test_deleting_a_fixture_subtree_changes_the_table) ... ok
+test_each_nested_fixture_change_under_a_recursive_listing_changes_the_table (test_read_form.RecursiveListingCensusTests.test_each_nested_fixture_change_under_a_recursive_listing_changes_the_table) ... ok
+test_listers_start_preserved_and_glob_and_copy_members_are_refused (test_read_form.RecursiveListingCensusTests.test_listers_start_preserved_and_glob_and_copy_members_are_refused) ... ok
+test_unrelated_additions_leave_recursive_listings_valid (test_read_form.RecursiveListingCensusTests.test_unrelated_additions_leave_recursive_listings_valid) ... ok
+test_corpus_census_route_refuses (test_pristine_routes.PristineRoutes.test_corpus_census_route_refuses) ... ok
+test_dispatch_leaves_candidate_and_gate_unguarded (test_pristine_routes.PristineRoutes.test_dispatch_leaves_candidate_and_gate_unguarded) ... ok
+test_dispatch_refuses_every_guarded_operation (test_pristine_routes.PristineRoutes.test_dispatch_refuses_every_guarded_operation) ... ok
+test_loss_ledger_refuses (test_pristine_routes.PristineRoutes.test_loss_ledger_refuses) ... ok
+test_preserved_census_refuses (test_pristine_routes.PristineRoutes.test_preserved_census_refuses) ... ok
+test_regenerate_refuses (test_pristine_routes.PristineRoutes.test_regenerate_refuses) ... ok
+test_regenerate_writes_only_a_canonical_manifest (test_pristine_routes.PristineRoutes.test_regenerate_writes_only_a_canonical_manifest) ... ok
+test_requalification_refuses (test_pristine_routes.PristineRoutes.test_requalification_refuses) ... ok
+test_every_fixture_writer_holds_a_guarded_route (test_writer_census.WriterCensusTests.test_every_fixture_writer_holds_a_guarded_route) ... ok
+test_every_vocabulary_writer_is_classed (test_writer_census.WriterCensusTests.test_every_vocabulary_writer_is_classed) ... ok
+test_the_vocabulary_recognises_each_declared_form (test_writer_census.WriterCensusTests.test_the_vocabulary_recognises_each_declared_form) ... ok
+test_every_python_probe_mutant_has_a_reach_anchor (test_target_tools.ProbeAnchorTests.test_every_python_probe_mutant_has_a_reach_anchor)
+python-probe.py traces reach at its mutant's anchor in the mutated source. A replacement that is empty ... ok
+test_a_recorded_whitespace_exception_exempts_only_its_path (test_packet_tools.CandidateTests.test_a_recorded_whitespace_exception_exempts_only_its_path) ... ok
+test_a_trailing_blank_line_fails_without_a_recorded_exception (test_packet_tools.CandidateTests.test_a_trailing_blank_line_fails_without_a_recorded_exception) ... ok
+test_a_whitespace_exception_must_be_preserved_with_a_reason (test_packet_tools.CandidateTests.test_a_whitespace_exception_must_be_preserved_with_a_reason)
+TOOLS-02 design 05 §8.3 (T2-R3-ADMIN-01): an exemption names a path the preserve list freezes at the same ... ok
+test_accessible_matching_evidence (test_packet_tools.CandidateTests.test_accessible_matching_evidence) ... ok
+test_blob_is_not_commit (test_packet_tools.CandidateTests.test_blob_is_not_commit) ... ok
+test_duplicate_allowlist (test_packet_tools.CandidateTests.test_duplicate_allowlist) ... ok
+test_exact_candidate (test_packet_tools.CandidateTests.test_exact_candidate) ... ok
+test_executable_cannot_be_declared_output (test_packet_tools.CandidateTests.test_executable_cannot_be_declared_output) ... ok
+test_extra_file (test_packet_tools.CandidateTests.test_extra_file) ... ok
+test_historical_evidence_preserved (test_packet_tools.CandidateTests.test_historical_evidence_preserved) ... ok
+test_missing_evidence (test_packet_tools.CandidateTests.test_missing_evidence) ... ok
+test_missing_preservation_source_is_not_empty_success (test_packet_tools.CandidateTests.test_missing_preservation_source_is_not_empty_success) ... ok
+test_moving_ref_is_not_identity (test_packet_tools.CandidateTests.test_moving_ref_is_not_identity) ... ok
+test_non_direct_wrapper (test_packet_tools.CandidateTests.test_non_direct_wrapper) ... ok
+test_nonexistent_commit (test_packet_tools.CandidateTests.test_nonexistent_commit) ... ok
+test_payload_cannot_certify_itself (test_packet_tools.CandidateTests.test_payload_cannot_certify_itself) ... ok
+test_reverse_ancestry (test_packet_tools.CandidateTests.test_reverse_ancestry) ... ok
+test_spec_loaded_from_c_not_checkout (test_packet_tools.CandidateTests.test_spec_loaded_from_c_not_checkout) ... ok
+test_wrong_evidence_digest (test_packet_tools.CandidateTests.test_wrong_evidence_digest) ... ok
+
+----------------------------------------------------------------------
+Ran 72 tests in 333.432s
+
+OK

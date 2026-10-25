@@ -1,0 +1,145 @@
+{
+  "candidate": "5d0f1cc49eb9cb534ad2818a8f8d38253438418d",
+  "node": "v26.10.0",
+  "python": "3.14.6",
+  "options": {
+    "initial": {
+      "tests/stream/inherited.test.mjs": {
+        "status": "refused",
+        "reasons": [
+          "an options object with another prototype: createReadStream"
+        ]
+      },
+      "tests/stream/own.test.mjs": {
+        "status": "refused",
+        "reasons": [
+          "an option the read matrix does not name: createReadStream fd"
+        ]
+      }
+    },
+    "steps": [
+      {
+        "revision": "be537baa740642378be856e7cd40503560e9fdf8",
+        "pristine": true,
+        "regenerate": "table_current",
+        "changed": [],
+        "corpus": "revalidation_complete",
+        "observed_content": "ACTUAL 2 longer\n"
+      },
+      {
+        "revision": "aab5895101c67739514fa3dc4f7d93fab4e04f31",
+        "pristine": true,
+        "regenerate": "table_current",
+        "changed": [],
+        "corpus": "revalidation_complete",
+        "observed_content": "ACTUAL 3 longer still\n"
+      }
+    ],
+    "relevant_rows": [
+      {
+        "pid": 11012,
+        "operation": "createReadStream",
+        "path": "/private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/packet-tools-test-bm3f5we_/tests/fixtures/decoy.txt",
+        "argument": "path",
+        "text": "tests/fixtures/decoy.txt",
+        "cwd": "/private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/packet-tools-test-bm3f5we_",
+        "second": "options",
+        "keys": [],
+        "prototype": "other"
+      }
+    ],
+    "child_preloads": 2,
+    "admissions": [
+      [
+        "refused",
+        "an options object with another prototype: createReadStream"
+      ]
+    ],
+    "positive_control": {
+      "revision": "38880ad788164ddde9efd143926409198af3a3f0",
+      "pristine": true,
+      "regenerate": "table_current",
+      "changed": [],
+      "corpus": "revalidation_complete"
+    }
+  },
+  "direct_options": {
+    "initial": {
+      "tests/stream/inherited.test.mjs": {
+        "status": "refused",
+        "reasons": [
+          "an options object with another prototype: createReadStream"
+        ]
+      }
+    },
+    "steps": [],
+    "relevant_rows": [
+      {
+        "pid": 11666,
+        "operation": "createReadStream",
+        "path": "/private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/packet-tools-test-lz3gz6rg/tests/fixtures/decoy.txt",
+        "argument": "path",
+        "text": "tests/fixtures/decoy.txt",
+        "cwd": "/private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/packet-tools-test-lz3gz6rg",
+        "second": "options",
+        "keys": [],
+        "prototype": "other"
+      }
+    ],
+    "child_preloads": 1,
+    "admissions": [
+      [
+        "refused",
+        "an options object with another prototype: createReadStream"
+      ]
+    ],
+    "positive_control": null
+  },
+  "case_paths": {
+    "initial": {
+      "tests/read/case.test.mjs": {
+        "status": "refused",
+        "reasons": [
+          "the traced run read a path whose spelling is not a tracked entry at C: tests/fixtures/INPUT.txt"
+        ]
+      }
+    },
+    "steps": [
+      {
+        "revision": "9dcbeaebf043c1841438edfb539693968c05a9fe",
+        "pristine": true,
+        "regenerate": "table_current",
+        "changed": [],
+        "corpus": "revalidation_complete",
+        "observed_content": "ACTUAL 2 longer\n"
+      },
+      {
+        "revision": "37054c493017562f6f0079f626b13ccc15ebc119",
+        "pristine": true,
+        "regenerate": "table_current",
+        "changed": [],
+        "corpus": "revalidation_complete",
+        "observed_content": "ACTUAL 3 longer still\n"
+      }
+    ],
+    "relevant_rows": [
+      {
+        "pid": 12355,
+        "operation": "readFileSync",
+        "path": "/private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/packet-tools-test-8wy0s1uc/tests/fixtures/INPUT.txt",
+        "argument": "path",
+        "text": "tests/fixtures/INPUT.txt",
+        "cwd": "/private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/packet-tools-test-8wy0s1uc",
+        "second": "string"
+      }
+    ],
+    "child_preloads": 1,
+    "admissions": [
+      [
+        "refused",
+        "the traced run read a path whose spelling is not a tracked entry at C: tests/fixtures/INPUT.txt"
+      ]
+    ],
+    "positive_control": null
+  }
+}

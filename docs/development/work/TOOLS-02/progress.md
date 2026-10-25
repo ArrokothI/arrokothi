@@ -2,8 +2,10 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS. Range 1 round 4 is at H with [implementation 04](implementation-04.md) over C6, waiting for the
-  bounded review 04 (Codex GPT-6). CI run 40181329943 at C6 passed (owner report, 2026-10-25).
+- **Phase:** IN_PROGRESS. **Range 1 (T2-1, T2-2) ACCEPTED** by GPT-6's [review 04](review-04.md) at exact H
+  `34ab91a5de23beb4997cdd2ae209a3b67aac50a0` (C6 `5d0f1cc49eb9cb534ad2818a8f8d38253438418d`, CI run 40181329943); no new
+  findings. Next: range 1's owner cleanup and integration on main (owner choice 01), then ranges 2–4 in design 01 §9's
+  order, with range 3 under design 03 §6 (branch `claude/tools-02-design-03`).
 - Range 1 round 4 under [owner choice 05](owner-choice-05.md): cooperative threat model, rules P
   and O, 017 L-18, and a bounded review 04 with no new design check. [Design 05](design-05.md) §8 states the rules.
   - [Review 03](review-03.md) (GPT-6, 2026-10-25) of H `23d65ac3` over C5: CHANGES REQUIRED, stop-and-redesign.
@@ -18,7 +20,6 @@ The resume point for any session continuing this packet. Newest facts first with
   - Fresh clone at C6 before dispatch (quiet gate): regenerate `table_current` (245 s); `corpus` `revalidation_complete`
     (282 s); tool tests 671 OK (792 s); `mutations.json` 140 killed (598 s); `value-cost.json` 238 killed (1,019 s);
     full verify, all 18 checks passed (3,929 s).
-  - Next: review 04 of H. After range 1 integrates, ranges 2–4 in design 01 §9's order; range 3 under design 03 §6.
 - Earlier: range 1 round 3 at H `23d65ac3` with [implementation 03](implementation-03.md) over C5; CI run
   40162436361 passed.
 - [Owner choice 04](owner-choice-04.md) picks 006's refined finishable claim: an explicit

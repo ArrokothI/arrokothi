@@ -1,0 +1,128 @@
+{
+  "base": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+  "payload": "5d0f1cc49eb9cb534ad2818a8f8d38253438418d",
+  "head": "34ab91a5de23beb4997cdd2ae209a3b67aac50a0",
+  "previous_payload": "311c30a35a4ca13ca6497bef316aab81a3de3a8e",
+  "ancestry": [
+    true,
+    true
+  ],
+  "preserve_count": 47,
+  "preserve_valid": true,
+  "policy_unchanged": true,
+  "manifest_changed_keys": [
+    "origins",
+    "preserved",
+    "transfer_lists",
+    "transferred"
+  ],
+  "same_member_ids": true,
+  "member_count": 1272,
+  "base_status": {
+    "held": 1013,
+    "refused": 228,
+    "superseded": 1,
+    "preserved": 30
+  },
+  "candidate_status": {
+    "held": 1013,
+    "refused": 235,
+    "superseded": 1,
+    "preserved": 23
+  },
+  "status_changes": [
+    {
+      "member": "tests/conformance/architecture/mcp-boundaries.test.ts:87:3@e80fbfba8f14",
+      "before": "preserved",
+      "after": "refused"
+    },
+    {
+      "member": "tests/conformance/architecture/mcp-boundaries.test.ts:158:3@e80fbfba8f14",
+      "before": "preserved",
+      "after": "refused"
+    },
+    {
+      "member": "tests/conformance/architecture/mcp-boundaries.test.ts:173:3@e80fbfba8f14",
+      "before": "preserved",
+      "after": "refused"
+    },
+    {
+      "member": "tests/conformance/architecture/mcp-boundaries.test.ts:193:3@e80fbfba8f14",
+      "before": "preserved",
+      "after": "refused"
+    },
+    {
+      "member": "tests/conformance/architecture/mcp-boundaries.test.ts:216:3@e80fbfba8f14",
+      "before": "preserved",
+      "after": "refused"
+    },
+    {
+      "member": "tests/conformance/architecture/mcp-boundaries.test.ts:255:3@e80fbfba8f14",
+      "before": "preserved",
+      "after": "refused"
+    },
+    {
+      "member": "tests/conformance/architecture/mcp-boundaries.test.ts:272:3@e80fbfba8f14",
+      "before": "preserved",
+      "after": "refused"
+    }
+  ],
+  "origin_changes": [
+    {
+      "id": "artifact-a1391856426919155dd8d776",
+      "changed_keys": [
+        "state"
+      ]
+    },
+    {
+      "id": "artifact-accb88d01d3c1bd7a07f7a37",
+      "changed_keys": [
+        "state"
+      ]
+    }
+  ],
+  "table_byte_identical_to_previous_C": true,
+  "registries": {
+    "mutations.json": {
+      "added": [
+        "result.fixture-read.directory",
+        "result.read-form.fixtures-dropped",
+        "result.read-form.identity-free",
+        "result.read-form.named-dropped",
+        "result.read-form.named-only",
+        "result.read-form.pattern-accepted",
+        "result.read-form.pin-unexpanded",
+        "result.read-form.recursion-ignored",
+        "result.read-form.tree-unexpanded",
+        "result.read-form.types-dropped",
+        "result.read-form.walk-root-named",
+        "result.read-matrix.alias",
+        "result.read-matrix.crossing",
+        "result.read-matrix.default-outside",
+        "result.read-matrix.exists-mode-only",
+        "result.read-matrix.normalized",
+        "result.read-matrix.option-guard",
+        "result.read-matrix.pin-ancestor",
+        "result.read-matrix.pin-crossing",
+        "result.read-matrix.rule-o",
+        "result.read-matrix.rule-p"
+      ],
+      "removed": [],
+      "modified": []
+    },
+    "refusal-guards.json": {
+      "added": [
+        "guard.candidate.b18bb9556e89e1e2",
+        "guard.corpus_format_2.e365aa81301938f1",
+        "guard.main.23d00492152db9d8",
+        "guard.main.adf967046d412ee3",
+        "guard.main.ed6dfae6572cdb8e",
+        "guard.preserved_census.836a975caeca3a9c",
+        "guard.regenerate.7892cb11fb2a3955",
+        "guard.regenerate.bce5caf510fe2167"
+      ],
+      "removed": [],
+      "modified": []
+    }
+  }
+}
