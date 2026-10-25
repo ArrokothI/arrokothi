@@ -49,6 +49,9 @@
  *     answer is returned.
  * - **Takeover apply window** (`CHECKS.takeoverWindowAt`): the fault is at the clearing record's append,
  *   the second of the takeover's two appends. Expected: that fault, and `B` plus exactly the receipt.
+ * - **Losing-proposal apply window** (`CHECKS.losingWindowAt`; K1.3, CX-6): the fault is at the index
+ *   insert, the last of the losing-proposal commit's two faultable statements. Expected: that fault, and
+ *   `B` plus exactly the refusal, with no losing-proposal record: the unindexed form.
  * - **Outcome apply window** (`CHECKS.outcomeStepAt`, `CHECKS.outcomePrefix`): the fault is at one of
  *   the Outcome commit's statements. Expected: that fault, and a state that is a prefix of the declared
  *   apply sequence `OUTCOME_APPLY` ending inside that statement. The sweep checks that the sequence
@@ -169,6 +172,11 @@ export interface Context {
   readonly unnamedRefusal: RefusalRecord;
   /** The failure reason the Kernel records when a Driver throws a non-string, from a clean call. */
   readonly deliveryFailure: string;
+  /**
+   * K1.3, CX-6: the coordinates of a well-formed proposal that loses to an accepted cancellation. Its
+   * refusal is recorded with one losing-proposal record carrying these coordinates and that refusal.
+   */
+  readonly losing: { readonly activationId: string; readonly writerEpoch: number; readonly baseProgressRevision: number } | null;
 }
 
 export type Verdict =
@@ -218,6 +226,13 @@ export const TAKEOVER_APPLY = [
   "return answer;",
 ] as const;
 
+/** K1.3: the losing-proposal commit, in order: the end of `state.ts`'s `#applyLosingOutcome`. */
+export const LOSING_APPLY = [
+  "appendOwn(record.refusals, refusal);",
+  "record.nextRefusalPosition = position + 1;",
+  "mapSet(record.losingIndex, key, losing);",
+] as const;
+
 /** The statements that hand a decision to the state owner, each followed by the rest of its method. */
 export const TAKEOVER_HANDOVER = "this.#state.apply(plan);";
 export const OUTCOME_HANDOVER = ["this.#state.apply(plan);", "return answer;"] as const;
@@ -248,6 +263,8 @@ export interface SourceModel {
   readonly outcomeApply: readonly { readonly step: OutcomeStep; readonly lines: Lines | null }[];
   readonly takeoverClearingAppend: Lines | null;
   readonly takeoverDeliverCall: Lines | null;
+  /** K1.3: the losing-proposal commit's index insert. */
+  readonly losingIndexInsert: Lines | null;
   readonly deliverySites: readonly { readonly site: DeliverySite; readonly lines: Lines | null }[];
   readonly exits: readonly Exit[];
   /** Mismatches between the declared sequences and the source. */
@@ -338,6 +355,9 @@ export function sourceModel(coordinatorPath: string): SourceModel {
   // its plan over, delivering and returning.
   sequence("#applyTakeover", TAKEOVER_APPLY.slice(0, 7), END, owner);
   sequence("requestTakeover", [TAKEOVER_HANDOVER, ...TAKEOVER_APPLY.slice(7)], END);
+  // The losing-proposal commit ends the owner's losing-outcome arm.
+  sequence("#applyLosingOutcome", LOSING_APPLY, END, owner);
+  const losingIndexInsert = anchored("#applyLosingOutcome", LOSING_APPLY[2], owner);
   const outcomeApply = OUTCOME_APPLY.map(([step, anchor]) => ({ step, lines: anchored("#applyOutcome", anchor, owner) }));
   const takeoverClearingAppend = anchored("#applyTakeover", TAKEOVER_APPLY[1], owner);
   const takeoverDeliverCall = anchored("requestTakeover", TAKEOVER_APPLY[7]);
@@ -382,7 +402,7 @@ export function sourceModel(coordinatorPath: string): SourceModel {
       }
     }
   }
-  return { outcomeApply, takeoverClearingAppend, takeoverDeliverCall, deliverySites, exits, problems };
+  return { outcomeApply, takeoverClearingAppend, takeoverDeliverCall, losingIndexInsert, deliverySites, exits, problems };
 }
 
 // -- Helpers ------------------------------------------------------------------------------------
@@ -394,8 +414,12 @@ const threw = (operation: number): Returned => ({ kind: "threw", operation });
 
 const withView = (state: State, patch: Partial<ExecutionView>): State => ({ ...state, view: { ...state.view, ...patch } });
 
-const withRefusal = (base: State, refusal: RefusalRecord): State => ({
-  view: { ...base.view, refusals: [...base.view.refusals, refusal] },
+const withRefusal = (base: State, refusal: RefusalRecord, losing: Context["losing"]): State => ({
+  view: {
+    ...base.view,
+    refusals: [...base.view.refusals, refusal],
+    ...(losing === null ? {} : { losingOutcomes: [...base.view.losingOutcomes, { ...losing, refusal }] }),
+  },
   nextRefusal: base.nextRefusal + 1,
   nextAcceptance: base.nextAcceptance,
   setupGrant: base.setupGrant,
@@ -446,6 +470,8 @@ export const CHECKS = {
   },
   takeoverWindowAt: (model: SourceModel, fault: Fault | null): boolean =>
     fault !== null && fault.stack.some((frame) => inLines(frame, model.takeoverClearingAppend)),
+  losingWindowAt: (model: SourceModel, fault: Fault | null): boolean =>
+    fault !== null && fault.stack.some((frame) => inLines(frame, model.losingIndexInsert)),
   outcomeStepAt: (model: SourceModel, fault: Fault | null, step: OutcomeStep): boolean => {
     const lines = model.outcomeApply.find((entry) => entry.step === step)?.lines ?? null;
     return fault !== null && fault.stack.some((frame) => inLines(frame, lines));
@@ -466,7 +492,7 @@ export const CHECKS = {
     if (returned.kind !== "err") return false;
     const base = context.callback?.state ?? context.s0;
     return CHECKS.refusalPosition(returned.refusal, base) && CHECKS.refusalExecution(returned.refusal, context.executionId) &&
-      decided({ returned, state: withRefusal(base, returned.refusal) }, context.reference);
+      decided({ returned, state: withRefusal(base, returned.refusal, context.losing) }, context.reference);
   },
   referenceUnnamed: (context: Context): boolean => decided({ returned: { kind: "err", refusal: context.unnamedRefusal }, state: context.s0 }, context.reference),
   referenceUnchanged: (context: Context): boolean => isDeepStrictEqual(context.reference.state, context.s0),
@@ -734,6 +760,10 @@ export function classify(context: Context, model: SourceModel, attempt: Attempt,
         return pass("threw inside the declared takeover apply window: receipt appended, clearing record not");
       }
     }
+    const losingRefusal = context.reference.returned.kind === "err" ? context.reference.returned.refusal : null;
+    if (context.losing !== null && losingRefusal !== null && CHECKS.losingWindowAt(model, attempt.fault) && decided({ returned: threw(attempt.k), state: withRefusal(base, losingRefusal, null) }, observed)) {
+      return pass("threw inside the declared losing-proposal apply window: refusal recorded, index entry not");
+    }
     if (CHECKS.acceptingExit(context, "submitOutcome") && CHECKS.applySequence(model)) {
       for (const { step, states } of ladder) {
         if (!CHECKS.outcomeStepAt(model, attempt.fault, step)) continue;
@@ -753,9 +783,15 @@ export function classify(context: Context, model: SourceModel, attempt: Attempt,
         ? pass("refused without naming the Execution: nothing recorded")
         : fail("refused without naming the Execution and left a state other than the no-call state", differing(unnamed, observed));
     }
-    const recorded: Observation = { returned, state: withRefusal(base, refusal) };
+    const recorded: Observation = { returned, state: withRefusal(base, refusal, context.losing) };
     if (CHECKS.refusalPosition(refusal, base) && CHECKS.refusalExecution(refusal, context.executionId) && decided(recorded, observed)) {
       return pass(afterCallback ? "refused after the safety callback: its decision and exactly one refusal" : "refused: exactly one refusal recorded");
+    }
+    // K1.3, CX-6: a contained fault that made the losing proposal's identity or content unreadable leaves
+    // no canonical proposal to index, so the same refusal is recorded without a losing-proposal record.
+    const unindexed: Observation | null = context.losing === null ? null : { returned, state: withRefusal(base, refusal, null) };
+    if (unindexed !== null && refusal.classification === "cancellation_terminal_conflict" && CHECKS.refusalPosition(refusal, base) && CHECKS.refusalExecution(refusal, context.executionId) && decided(unindexed, observed)) {
+      return pass("refused: exactly one refusal recorded, unindexed after a contained fault");
     }
     return fail(
       "refused and left a state other than the no-call state plus that refusal",

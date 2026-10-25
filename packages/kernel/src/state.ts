@@ -39,12 +39,15 @@ import type { Activation, ActivationEvent, SubmissionGrant } from "./driver.ts";
 import { creationRequestIdKey, inputIdKey, mayReachScope, type AuthenticatedCaller, type InputId, type Receipt } from "./identity.ts";
 import type {
   ActivationView,
+  CancellationView,
   DeliveryAttemptView,
+  LosingOutcomeView,
   ExchangeView,
   ExecutionView,
   MailboxDisposition,
   MailboxEntryView,
   ReadinessView,
+  TerminalResultView,
 } from "./inspection.ts";
 import { isTerminal, type ExecutionState } from "./lifecycle.ts";
 import { appendAllOwn, appendOwn, copyOwn, mapOwn, readAt } from "./own-array.ts";
@@ -52,6 +55,7 @@ import {
   holdsOf,
   QUEUED,
   type AcceptedOutcome,
+  type CancellationPlan,
   type ControlPlan,
   type CreationPlan,
   type DeliveryPlan,
@@ -59,6 +63,7 @@ import {
   type ExpiryPlan,
   type InputPlan,
   type LiveWait,
+  type LosingOutcomePlan,
   type OutcomeAccepted,
   type OutcomePlan,
   type Plan,
@@ -70,7 +75,8 @@ import {
   type TakeoverPlan,
   type TimerDiscardPlan,
 } from "./plan.ts";
-import type { ActivationRecord, DeliveryAttempt, ExecutionRecord, MailboxEntry, ResolvedExchange } from "./state-records.ts";
+import type { RefusalRecord } from "./refusal.ts";
+import type { ActivationRecord, CancellationRecord, DeliveryAttempt, ExecutionRecord, MailboxEntry, ResolvedExchange } from "./state-records.ts";
 import type { BoundaryValue, CanonicalValue } from "./value-types.ts";
 import type { SourceCategory } from "./waits.ts";
 
@@ -102,6 +108,9 @@ const STALE_PLAN = "plan refused: its Execution changed after the plan was forme
  * would break one rule whatever the coordinator decided, and names the rule it guards:
  *
  * - S1: a terminal Execution never reopens; dispatch needs `READY` and an Outcome `RUNNING`.
+ * - S2: a plan whose next state is terminal disposes every queued Event: acknowledged or ended. It
+ *   does not by itself prove that a cancellation acknowledges nothing; the cancellation plan carries
+ *   no acknowledgment to apply.
  * - S3: `WAITING` exactly when one generation is live; a plan that retires a generation names the live one.
  * - S4: at most one timeout Event per generation: only the live generation expires, once.
  * - S5: readiness is set only over none, and only by a retirement.
@@ -110,6 +119,7 @@ const STALE_PLAN = "plan refused: its Execution changed after the plan was forme
  * which plan an operation forms stay the coordinator's, checked by the tests (L-15).
  */
 const S1 = "S1 a terminal Execution never reopens";
+const S2 = "S2 a terminal decision disposes every queued Event";
 const S3 = "S3 WAITING exactly when one generation is live";
 const S4 = "S4 at most one timeout Event per generation";
 const S5 = "S5 readiness only over none, by a retirement";
@@ -291,6 +301,33 @@ class ExecutionReader {
     return this.#record.readiness;
   }
 
+  /** The terminal result of an accepted `complete` or `fail`, frozen, or `null`. */
+  get result(): TerminalResultView | null {
+    return this.#record.result;
+  }
+
+  /** The Execution deadline set at creation, or `null`. */
+  get executionDeadline(): number | null {
+    return this.#record.executionDeadline;
+  }
+
+  /** The authenticated namespace that created this Execution: the actor of its Execution deadline. */
+  get creatorNamespace(): string {
+    return this.#record.creationRequestId.producerNamespace;
+  }
+
+  /** The accepted cancellation's frozen facts, or `null`. */
+  get cancellation(): CancellationView | null {
+    const cancelled = this.#record.cancellation;
+    return cancelled === null ? null : cancelled.facts;
+  }
+
+  /** The retained refusal of a losing proposal under one exact-retry key, or `null` (CX-6). */
+  losingRefusal(key: string): RefusalRecord | null {
+    const losing = mapGet(this.#record.losingIndex, key);
+    return losing === undefined ? null : losing.refusal;
+  }
+
   /** The retired record of one generation, frozen, or `null` while it is live or was never issued. */
   retiredWait(generation: number): RetiredWait | null {
     const retired = readAt(this.#record.retiredWaits, generation - 1);
@@ -464,6 +501,14 @@ export class KernelState {
       this.#applyTimerDiscard(plan);
       return;
     }
+    if (plan.kind === "cancellation") {
+      this.#applyCancellation(plan);
+      return;
+    }
+    if (plan.kind === "losing_outcome") {
+      this.#applyLosingOutcome(plan);
+      return;
+    }
     const unreachable: never = plan;
     throw new PrimordialError(`${STALE_PLAN}: unknown plan ${typeof unreachable}`);
   }
@@ -508,6 +553,7 @@ export class KernelState {
       progressCodec: plan.progressCodec,
       authorityContext: plan.authorityContext,
       creationIdentity: plan.creationIdentity,
+      executionDeadline: plan.executionDeadline,
       creationReceipt: receipt,
       initialEventId: initial.eventId,
       mailbox: [entry],
@@ -534,6 +580,8 @@ export class KernelState {
       readiness: null,
       retiredWaits: [],
       timerFires: [],
+      cancellation: null,
+      losingIndex: new PrimordialMap<string, LosingOutcomeView>(),
       version: plan.basis + 1,
     };
     mapSet(this.#executions, executionId, record);
@@ -650,6 +698,7 @@ export class KernelState {
     if (retired !== null && retired.generation !== registrations) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
     if (timeout !== null && (retired === null || retired.retiredBy !== "deadline" || timeout.generation !== retired.generation)) throw new PrimordialError(`${STALE_PLAN} (${S4})`);
     if ((retired === null) !== (readiness === null) || (readiness !== null && record.readiness !== null)) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
+    if (isTerminal(plan.nextState) && !disposesEveryQueued(record.mailbox, plan.acknowledgeAt, plan.endAt)) throw new PrimordialError(`${STALE_PLAN} (${S2})`);
     const timeoutEntry: MailboxEntry | null =
       timeout === null
         ? null
@@ -803,6 +852,61 @@ export class KernelState {
     appendOwn(record.timerFires, fire);
   }
 
+  #applyCancellation(plan: CancellationPlan): void {
+    const record = this.#resolve(plan.executionId, plan.basis);
+    const facts = plan.record;
+    const retired = plan.retired;
+    const history = plan.history;
+    const fire = plan.fire;
+    const ending = plan.ending;
+    const live = record.wait;
+    const intent = record.activation;
+    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
+    if (retired === null ? live !== null : live === null || live.generation !== retired.generation || retired.retiredBy !== "cancellation") throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if (!disposesEveryQueued(record.mailbox, NO_POSITIONS, plan.endAt)) throw new PrimordialError(`${STALE_PLAN} (${S2})`);
+    if ((intent === null) !== (facts.endedExchange === null) || (intent !== null && facts.endedExchange !== null && intent.activation.activationId !== facts.endedExchange.activationId)) {
+      throw new PrimordialError(STALE_PLAN);
+    }
+    const toEnd: MailboxEntry[] = [];
+    for (let index = 0; index < plan.endAt.length; index += 1) {
+      appendOwn(toEnd, readAt(record.mailbox, readAt(plan.endAt, index) as number) as MailboxEntry);
+    }
+    // The ended exchange's delivery log stays the one the capabilities write into, as for a resolved
+    // exchange, so a late report still settles its original row; the frozen facts never hold it.
+    const cancellation: CancellationRecord = PrimordialObjectFreeze({ facts, deliveries: intent === null ? null : intent.deliveries });
+    const position = facts.position;
+    // A cancellation takes an acceptance position and mints no receipt (identity.md's six boundaries).
+    record.version = plan.basis + 1;
+    record.nextAcceptancePosition = position + 1;
+    for (let index = 0; index < toEnd.length; index += 1) (readAt(toEnd, index) as MailboxEntry).disposition = ending;
+    if (retired !== null) appendOwn(record.retiredWaits, retired);
+    appendAllOwn(record.recoveryHistory, history);
+    if (fire !== null) appendOwn(record.timerFires, fire);
+    record.cancellation = cancellation;
+    record.wait = null;
+    record.readiness = null;
+    record.activation = null;
+    record.state = "CANCELLED";
+  }
+
+  #applyLosingOutcome(plan: LosingOutcomePlan): void {
+    const record = this.#resolve(plan.executionId, plan.basis);
+    const refusal = plan.refusal;
+    const losing = plan.losing;
+    const key = plan.key;
+    const position = refusal.position;
+    // A proposal loses only to an accepted cancellation, and an indexed proposal is answered from its
+    // retained refusal, never recorded twice.
+    if (record.cancellation === null || mapGet(record.losingIndex, key) !== undefined) throw new PrimordialError(STALE_PLAN);
+    // The refusal is appended, then its position consumed, as the refusal arm does (SELF-R8-REFUSAL-01);
+    // the index insert comes last. A fault there leaves the refusal recorded with no index entry, the
+    // unindexed form a proposal with no usable content would get (the fault sweep's declared window).
+    record.version = plan.basis + 1;
+    appendOwn(record.refusals, refusal);
+    record.nextRefusalPosition = position + 1;
+    mapSet(record.losingIndex, key, losing);
+  }
+
   #applyRefusal(plan: RefusalPlan): void {
     const record = this.#resolve(plan.executionId, plan.basis);
     const refusal = plan.refusal;
@@ -814,7 +918,7 @@ export class KernelState {
   }
 }
 
-/** The delivery log of one exchange of `record`, unresolved or resolved, or `null`. */
+/** The delivery log of one exchange of `record`, unresolved, resolved or ended by cancellation, or `null`. */
 const deliveriesOf = (record: ExecutionRecord, activationId: string): DeliveryAttempt[] | null => {
   const open = record.activation;
   if (open !== null && open.activation.activationId === activationId) return open.deliveries;
@@ -822,7 +926,32 @@ const deliveriesOf = (record: ExecutionRecord, activationId: string): DeliveryAt
     const exchange = readAt(record.exchanges, index) as ResolvedExchange;
     if (exchange.activationId === activationId) return exchange.deliveries;
   }
+  const cancelled = record.cancellation;
+  if (cancelled !== null && cancelled.facts.endedExchange !== null && cancelled.facts.endedExchange.activationId === activationId) return cancelled.deliveries;
   return null;
+};
+
+/** No positions: the cancellation acknowledges nothing. */
+const NO_POSITIONS: readonly number[] = PrimordialObjectFreeze([]);
+
+/**
+ * S2: whether two position lists together name every queued entry of `mailbox` exactly once, and only
+ * queued ones. A terminal decision must leave nothing queued (B-5).
+ */
+const disposesEveryQueued = (mailbox: readonly MailboxEntry[], first: readonly number[], second: readonly number[]): boolean => {
+  let queued = 0;
+  for (let index = 0; index < mailbox.length; index += 1) {
+    if ((readAt(mailbox, index) as MailboxEntry).disposition.kind === "queued") queued += 1;
+  }
+  if (first.length + second.length !== queued) return false;
+  const named = (list: readonly number[]): boolean => {
+    for (let index = 0; index < list.length; index += 1) {
+      const entry = readAt(mailbox, readAt(list, index) as number);
+      if (entry === undefined || entry.disposition.kind !== "queued") return false;
+    }
+    return true;
+  };
+  return named(first) && named(second);
 };
 
 // -- View construction -------------------------------------------------------
@@ -978,5 +1107,34 @@ function viewOf(record: ExecutionRecord): ExecutionView {
     waitEndedReadiness: record.readiness === null ? null : toReadinessView(record.readiness),
     retiredWaits: copyOwn(record.retiredWaits),
     timerFires: copyOwn(record.timerFires),
+    executionDeadline: record.executionDeadline,
+    cancellation: record.cancellation === null ? null : toCancellationView(record.cancellation),
+    losingOutcomes: losingOutcomesOf(record),
   };
 }
+
+/** The retained losing proposals in insertion order, as own data: `Map.forEach` through the load-time reference. */
+const losingOutcomesOf = (record: ExecutionRecord): LosingOutcomeView[] => {
+  const losing: LosingOutcomeView[] = [];
+  PrimordialReflectApply(PrimordialMapForEach, record.losingIndex, [
+    (entry: LosingOutcomeView) => {
+      appendOwn(losing, entry);
+    },
+  ]);
+  return losing;
+};
+
+/** The cancellation as inspection shows it: its frozen facts, and a fresh copy of the ended exchange's deliveries. */
+const toCancellationView = (cancelled: CancellationRecord): CancellationView & { readonly deliveries: readonly DeliveryAttemptView[] } => {
+  const facts = cancelled.facts;
+  return {
+    cause: facts.cause,
+    actorNamespace: facts.actorNamespace,
+    actorScope: facts.actorScope,
+    position: facts.position,
+    endedExchange: facts.endedExchange,
+    retiredGeneration: facts.retiredGeneration,
+    terminalDispositions: facts.terminalDispositions,
+    deliveries: cancelled.deliveries === null ? [] : mapOwn(cancelled.deliveries, toDeliveryView),
+  };
+};

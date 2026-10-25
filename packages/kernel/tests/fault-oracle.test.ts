@@ -63,6 +63,7 @@ const EXAMPLE_SCENARIOS = [
   "takeover: refused, the safety callback took the exchange over itself",
   "outcome: continue",
   "outcome: exact replay",
+  "outcome: refused, losing to an accepted cancellation (CX-6, indexed)",
 ];
 
 interface Report {
@@ -93,6 +94,13 @@ const EXAMPLE_CLASSES: Record<string, readonly string[]> = {
   "outcome: continue": ["refused without naming the Execution: nothing recorded", "threw: no-call state", "refused: exactly one refusal recorded", "threw inside the declared Outcome apply window: a permitted prefix", "completed"],
   "outcome: continue, ending a code and a protocol hold": ["refused without naming the Execution: nothing recorded", "threw: no-call state", "refused: exactly one refusal recorded", "threw inside the declared Outcome apply window: a permitted prefix", "completed"],
   "outcome: exact replay": ["refused without naming the Execution: nothing recorded", "threw: no-call state", "refused: exactly one refusal recorded", "completed"],
+  "outcome: refused, losing to an accepted cancellation (CX-6, indexed)": [
+    "refused without naming the Execution: nothing recorded",
+    "threw: no-call state",
+    "refused: exactly one refusal recorded, unindexed after a contained fault",
+    "threw inside the declared losing-proposal apply window: refusal recorded, index entry not",
+    "completed",
+  ],
 };
 
 const child = (args: string[]): { status: number | null; failure: string | null; report: Report } => {
@@ -310,6 +318,16 @@ describe("every located exception needs its location", () => {
         stack.map((frame) => (frame.file === MODEL.takeoverClearingAppend?.file && frame.line === lineOf(MODEL.takeoverClearingAppend) ? { ...frame, line: lineOf(MODEL.takeoverDeliverCall) } : frame)),
       ),
       "receipt only, outside the window",
+    ));
+
+  const LOSING = "outcome: refused, losing to an accepted cancellation (CX-6, indexed)";
+  test("the losing window's refusal-only state, outside the index insert", () =>
+    rejected(
+      contextOf(LOSING),
+      withStack(exampleOf(LOSING, "threw inside the declared losing-proposal apply window: refusal recorded, index entry not"), (stack) =>
+        stack.map((frame) => (frame.file === MODEL.losingIndexInsert?.file && frame.line === lineOf(MODEL.losingIndexInsert) ? { ...frame, line: lineOf(MODEL.losingIndexInsert) - 1 } : frame)),
+      ),
+      "refusal only, outside the window",
     ));
 
   const OUTCOME = "outcome: continue, ending a code and a protocol hold";

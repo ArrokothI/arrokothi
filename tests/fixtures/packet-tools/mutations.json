@@ -609,6 +609,45 @@
       }
     },
     {
+      "id": "oracle.losingWindowAt",
+      "source": "K1.3 design 01 addendum 01; fault-oracle.ts CHECKS.losingWindowAt (CX-6 losing-proposal commit window)",
+      "assertion": "oracle.losingWindowAt.negative-control",
+      "files": [],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/oracle-probe.mjs",
+        "losingWindowAt"
+      ],
+      "timeout_seconds": 200,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "id": "mutation-6b4fcacc9924060fc7c5c79565bc6d02eae3508d44ab30d2b1f1e1464b2be25e",
+          "path": "packages/kernel/tests/sweep/fault-oracle.ts",
+          "before": "losingWindowAt: (model: SourceModel, fault: Fault | null): boolean =>\n    fault !== null && fault.stack.some((frame) => inLines(frame, model.losingIndexInsert))",
+          "after": "losingWindowAt: () => true",
+          "name": "oracle.disable-losingWindowAt",
+          "operator": "remove-check"
+        }
+      ],
+      "category": "oracle-decision-field",
+      "input": {
+        "file": "packages/kernel/tests/fault-oracle.test.ts",
+        "named_tests": [
+          "the losing window's refusal-only state, outside the index insert"
+        ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
+      }
+    },
+    {
       "id": "oracle.outcomeStepAt",
       "source": "K12C1-R12-ORACLE-01; K12C1-R9I-ORACLE-01; oracle-mutants-09.mjs CHECKS.outcomeStepAt",
       "assertion": "oracle.outcomeStepAt.negative-control",

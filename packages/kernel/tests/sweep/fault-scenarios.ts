@@ -57,6 +57,8 @@ export interface Scenario {
   readonly bare?: boolean;
   /** K1.3: the coordinator's clock reads this value, or throws; absent means no clock. */
   readonly clock?: number | "throws";
+  /** K1.3, CX-6: the call is a well-formed proposal for the setup exchange that loses to a cancellation, indexed with its coordinates. */
+  readonly losing?: true;
 }
 
 /** Suspends the sweep around the Driver's safety callback. */
@@ -100,6 +102,10 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
   };
   const complete = (env: Env): void => answerOutcome(env, { next: { step: "complete", result: { done: true } } });
   const nothing = (): void => {};
+  /** K1.3: cancels the Execution with the scenario caller plus cancel power. */
+  const cancel = (env: Env): void => {
+    harness.accepted(env.kernel.cancelExecution({ ...env.who, cancelScopes: ["tenant-a"] }, env.executionId));
+  };
   /** K1.3: an input an `await` subscribing to class `s` is eligible for, queued outside the batch. */
   const eligibleInput = (env: Env): void => {
     harness.accepted(env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "eligible", kind: "update", payload: bytes({ eligible: true }), subscriptionClass: "s" }));
@@ -204,7 +210,7 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
     { name: "takeover: refused, the safety callback took the exchange over itself", control: "requestTakeover", expect: refused("stale_exchange"), exit: ["requestTakeover", "is not the current epoch ${exchange.activation.writerEpoch}"], setup: nothing, call: takeover(), callback: (env) => { harness.accepted(env.kernel.requestTakeover(env.who, env.executionId, { activationId: env.open.activationId, writerEpoch: 1 })); } },
     { name: "takeover: refused, the safety callback held the exchange's code", control: "requestTakeover", expect: refused("recovery_held"), exit: ["requestTakeover", "${postCallbackHold.reason}"], setup: nothing, call: takeover(), callback: (env) => codeHold(env) },
 
-    // -- submitOutcome: 27 -----------------------------------------------------------------------
+    // -- submitOutcome: 29 -----------------------------------------------------------------------
     { name: "outcome: continue", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, call: submit() },
     { name: "outcome: complete with an Emission and a queued outside-batch input", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, call: submit({ next: { step: "complete", result: { done: true } }, emissions: [{ emissionKey: "e", value: { output: true } }] }) },
     { name: "outcome: fail", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, call: submit({ next: { step: "fail", error: { reason: "x" } } }) },
@@ -237,6 +243,8 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
     { name: "outcome: await, the wait stays live", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, clock: 0, call: submit({ next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }], deadline: 10 } } }) },
     { name: "outcome: await, a queued eligible input wakes it at registration", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: eligibleInput, call: submit({ next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }] } } }) },
     { name: "outcome: await, a due deadline mints its timeout at registration", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, clock: 10, call: submit({ next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }], deadline: 10 } } }) },
+    { name: "outcome: refused, losing to an accepted cancellation (CX-6, indexed)", control: "submitOutcome", expect: refused("cancellation_terminal_conflict"), exit: ["submitOutcome", "this.#refuseLosing(record, activationId, capture.outcome)"], setup: cancel, losing: true, call: submit() },
+    { name: "outcome: refused, losing to an accepted cancellation, identity unusable", control: "submitOutcome", expect: refused("cancellation_terminal_conflict"), exit: ["submitOutcome", "this.#refusal(\"cancellation_terminal_conflict\""], setup: cancel, call: submit({ activationId: 42 }) },
     { name: "outcome: refused, the clock gave no usable reading for a deadline", control: "submitOutcome", expect: refused("clock_unavailable"), exit: ["submitOutcome", "registers a wait whose deadline must be compared with the clock"], setup: nothing, clock: "throws", call: submit({ next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }], deadline: 10 } } }) },
   ];
 

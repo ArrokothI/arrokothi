@@ -90,7 +90,7 @@
   * commit order, and a decision whose build faults commits nothing (owner choice 01).
   */
 
-import type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver, SubmissionGrant } from "./driver.ts";
+import type { Activation, ActivationEvent, CancellationRequest, DeliverySettlement, ExecutionDriver, SubmissionGrant } from "./driver.ts";
 import {
   acceptActivationIdentity,
   acceptIdentityText,
@@ -130,13 +130,15 @@ import {
   type InputId,
   type Receipt,
 } from "./identity.ts";
-import type { EmissionView, ExecutionView, MailboxDisposition, RecoveryHistoryRecord, TerminalResultView } from "./inspection.ts";
+import type { CancellationView, EmissionView, ExecutionView, MailboxDisposition, RecoveryHistoryRecord, TerminalResultView } from "./inspection.ts";
 import { isTerminal, type ExecutionState } from "./lifecycle.ts";
 import { appendAllOwn, appendOwn, mapOwn, readAt } from "./own-array.ts";
 import {
   holdsOf,
   QUEUED,
   type AcceptedOutcome,
+  type CancellationDecision,
+  type CancellationPlan,
   type ControlPlan,
   type CreationAccepted,
   type CreationPlan,
@@ -148,6 +150,7 @@ import {
   type InputAccepted,
   type InputPlan,
   type LiveWait,
+  type LosingOutcomePlan,
   type OutcomeAccepted,
   type OutcomePlan,
   type Readiness,
@@ -168,7 +171,6 @@ import { UNKNOWN_DESTINATION_REASON, mintRefusal, type RefusalClassification, ty
 import { err, ok, type Result } from "./result.ts";
 import { KernelState, type EntryReader, type ExchangeReader, type ExecutionReader } from "./state.ts";
 import { isClock, readClock, type ClockHolder, type ClockReading, type KernelClock } from "./time.ts";
-import { refuseUnsupportedSurface } from "./unsupported.ts";
 import { acceptCanonicalBytes, type CanonicalValue, type ValueIssue } from "./values.ts";
 import { eligible, selectWaitEndedBatch, type AcceptedWait } from "./waits.ts";
 
@@ -270,6 +272,18 @@ export interface CreateExecutionRequest {
   /** Opaque application authority context, supplied to the Runtime as its execution view. */
   readonly authorityContext: Uint8Array;
   readonly initialInput: InputContent;
+  /**
+   * K1.3, owner decision 1: an optional Execution deadline, on the injected clock's scale (a safe
+   * integer of at least 0). Part of creation's canonical content: an exact retry replays, and an added,
+   * removed or changed deadline under the same key conflicts. Immutable after creation.
+   *
+   * Enforcement is fire-only (owner choice 01, D01-CHK-07): creation never reads the clock, so a
+   * deadline already past creates a `READY` Execution; the host fires its timer (`pendingTimers`,
+   * `fireTimer`), and the accepted fire cancels the Execution through the same decision as
+   * `cancelExecution`. A decision accepted before that fire, an Outcome or a dispatch, may win. A
+   * coordinator without a clock refuses the field as `deadline_unsupported`.
+   */
+  readonly executionDeadline?: number;
 }
 
 /** One post-creation input request. */
@@ -411,6 +425,124 @@ const mayControlScope = (caller: AuthenticatedCaller, scope: string): boolean =>
 };
 
 /**
+ * K1.3: whether the caller holds cancel power over `scope` (`cancelScopes`; design check 01 Q1).
+ *
+ * `authority.md` lists cancel as a separate power. Visibility, `controlScopes` (the three exchange
+ * controls) and a submission grant each authorize something else, and none of them cancels. Read
+ * through `hostMember` like `controlScopes`, with the same full scan.
+ */
+const mayCancelScope = (caller: AuthenticatedCaller, scope: string): boolean => {
+  const cancels = hostMember(caller, "cancelScopes") as readonly string[] | undefined;
+  if (cancels === undefined) return false;
+  let allowed = false;
+  for (let index = 0; index < cancels.length; index += 1) {
+    if (cancels[index] === scope) allowed = true;
+  }
+  return allowed;
+};
+
+/** The exact CX-6 reason, which the K0.2 fixture compares verbatim. */
+const CANCELLATION_CONFLICT_REASON = "cancellation accepted before Outcome acceptance";
+
+/** One cancellation's records, built from Kernel data for either cause (design 01 § 9). */
+interface CancellationFacts {
+  readonly endAt: readonly number[];
+  readonly ending: MailboxDisposition;
+  readonly record: CancellationView;
+  readonly retired: RetiredWait | null;
+  readonly history: readonly RecoveryHistoryRecord[];
+  readonly request: CancellationRequest;
+}
+
+/**
+ * The one cancellation decision both causes make (lifecycle § Cancellation order; CX-6, B-5).
+ *
+ * Every queued Event, the open exchange's reserved batch and any queued timeout included, gets the
+ * B-5 terminal disposition; nothing is acknowledged. The open exchange ends unacknowledged and is named
+ * in the record. A live wait retires as `cancellation`; readiness is discarded with the state. Each
+ * hold on the open exchange contributes an `ended_by_cancellation` record. The record takes the next
+ * acceptance position, with no receipt. Reads Kernel state only.
+ */
+function cancellationOf(record: ExecutionReader, cause: "explicit" | "execution_deadline", actorNamespace: string, actorScope: string): CancellationFacts {
+  const endAt: number[] = [];
+  const ended: string[] = [];
+  for (let index = 0; index < record.mailboxLength; index += 1) {
+    const entry = record.entryAt(index);
+    if (entry.disposition.kind !== "queued") continue;
+    appendOwn(endAt, index);
+    appendOwn(ended, entry.eventId);
+  }
+  const ending: MailboxDisposition = PrimordialObjectFreeze({
+    kind: "terminal" as const,
+    reason:
+      cause === "explicit"
+        ? "Execution ended as CANCELLED before this Event was acknowledged"
+        : "Execution ended as CANCELLED (its Execution deadline expired) before this Event was acknowledged",
+  });
+  const exchange = record.activation;
+  const live = record.wait;
+  const retired: RetiredWait | null =
+    live === null
+      ? null
+      : PrimordialObjectFreeze({
+          generation: live.generation,
+          registeredBy: live.registeredBy,
+          declaration: live.declaration,
+          deadline: live.deadline,
+          retiredBy: "cancellation" as const,
+          endingEventId: null,
+        });
+  const history: RecoveryHistoryRecord[] = [];
+  const authority = cause === "explicit" ? ("cancellation" as const) : ("execution_deadline" as const);
+  // Code hold first, as inspection lists them (K1.2-DEC-18).
+  const endHold = (hold: StoredHold | null): void => {
+    if (exchange === null || hold === null) return;
+    appendOwn(
+      history,
+      PrimordialObjectFreeze({
+        activationId: exchange.activation.activationId,
+        writerEpoch: exchange.activation.writerEpoch,
+        cause: hold.cause,
+        transition: "ended_by_cancellation" as const,
+        authority,
+        reason: `the Execution was cancelled, ending the exchange and the hold that had reported: ${hold.reason}`,
+        actorNamespace,
+        actorScope,
+      }),
+    );
+  };
+  if (exchange !== null) {
+    endHold(exchange.codeHold);
+    endHold(exchange.protocolFailureHold);
+  }
+  const endedExchange =
+    exchange === null
+      ? null
+      : PrimordialObjectFreeze({
+          activationId: exchange.activation.activationId,
+          writerEpoch: exchange.activation.writerEpoch,
+          baseProgressRevision: exchange.activation.baseProgressRevision,
+          batch: exchange.batch,
+          dispatchReceipt: exchange.receipt,
+        });
+  const facts: CancellationView = PrimordialObjectFreeze({
+    cause,
+    actorNamespace,
+    actorScope,
+    position: record.nextAcceptancePosition,
+    endedExchange,
+    retiredGeneration: live === null ? null : live.generation,
+    terminalDispositions: PrimordialObjectFreeze(ended),
+  });
+  const request: CancellationRequest = PrimordialObjectFreeze({
+    executionId: record.executionId,
+    cause,
+    attempt: exchange === null ? null : PrimordialObjectFreeze({ activationId: exchange.activation.activationId, writerEpoch: exchange.activation.writerEpoch }),
+  });
+  return PrimordialObjectFreeze({ endAt: PrimordialObjectFreeze(endAt), ending, record: facts, retired, history: PrimordialObjectFreeze(history), request });
+}
+
+/**
  * Reads back an exchange's code hold with the full union type.
  *
  * A hold check earlier in the same call narrows `exchange.codeHold` to null for the rest of that
@@ -512,13 +644,24 @@ interface ResolvedFire {
   readonly expiry: { readonly timeout: TimeoutFacts; readonly retired: RetiredWait; readonly readiness: Readiness } | null;
 }
 
-/** The Execution-deadline row until an Execution deadline exists on the record. */
-const EXECUTION_DEADLINE_ABSENT: ResolvedFire = PrimordialObjectFreeze({
-  result: "stale" as const,
-  reason: "this Execution has no Execution deadline",
-  timeoutEventId: null,
-  expiry: null,
-});
+/**
+ * Resolves a fire of the Execution deadline against current state and one reading (design 01 § 7):
+ * no deadline or another terminal state is `stale`; a cancellation this deadline already made is
+ * `duplicate`; a nonterminal Execution is `clock_unavailable`, `not_due`, or `cancelled` once the
+ * reading reaches the deadline. Enforcement is fire-only (owner choice 01): nothing else expires it.
+ */
+function resolveExecutionFire(record: ExecutionReader, reading: ClockReading): ResolvedFire {
+  const deadline = record.executionDeadline;
+  if (deadline === null) return discarded("stale", "this Execution has no Execution deadline", null);
+  if (isTerminal(record.state)) {
+    const cancelled = record.cancellation;
+    if (cancelled !== null && cancelled.cause === "execution_deadline") return discarded("duplicate", "the Execution deadline already cancelled this Execution", null);
+    return discarded("stale", `the Execution already ended as ${record.state}`, null);
+  }
+  if (!reading.usable) return discarded("clock_unavailable", "the clock gave no usable reading", null);
+  if (reading.now < deadline) return discarded("not_due", `Execution deadline ${deadline} is after the reading ${reading.now}`, null);
+  return PrimordialObjectFreeze({ result: "cancelled" as const, reason: `Execution deadline ${deadline} reached at reading ${reading.now}`, timeoutEventId: null, expiry: null });
+}
 
 /** A fire with no logical change. */
 const discarded = (result: Exclude<TimerFireRecord["result"], "expired" | "cancelled">, reason: string, timeoutEventId: string | null): ResolvedFire =>
@@ -640,12 +783,14 @@ interface AcceptedCreation {
   readonly progressCodec: string;
   readonly authorityContext: CanonicalValue;
   readonly initialInput: AcceptedInput;
+  readonly executionDeadline: number | null;
   readonly identity: string;
 }
 
 function acceptCreationContent(
   request: CreateExecutionRequest,
   validatedScope: string,
+  deadlineSupported: boolean,
 ): Result<AcceptedCreation, ValueIssue[]> {
   const issues: ValueIssue[] = [];
   // Each of these is packed into the creation content identity, so each is identity text.
@@ -685,8 +830,21 @@ function acceptCreationContent(
           return err([] as ValueIssue[]) as Result<AcceptedInput, ValueIssue[]>;
         })();
   if (!initialInput.ok) appendIssues(issues, initialInput.error);
+  // K1.3: the optional Execution deadline, observed once like every other creation field.
+  const deadlineField = observeField(request, "executionDeadline", "executionDeadline", issues);
+  const deadlineObserved: unknown = deadlineField.observed;
+  let executionDeadline: number | null = null;
+  if (deadlineField.ok && deadlineObserved !== undefined) {
+    if (typeof deadlineObserved !== "number" || !PrimordialNumberIsSafeInteger(deadlineObserved) || deadlineObserved < 0) {
+      appendIssue(issues, { path: "executionDeadline", code: "unsupported_form", message: "expected a safe integer of at least 0" });
+    } else if (!deadlineSupported) {
+      appendIssue(issues, { path: "executionDeadline", code: "deadline_unsupported", message: "this coordinator has no clock, so it cannot honour an Execution deadline" });
+    } else {
+      executionDeadline = deadlineObserved;
+    }
+  }
 
-  if (!scalarsOk || !authorityContext.ok || !initialInput.ok || issues.length > 0) return err(issues);
+  if (!scalarsOk || !authorityContext.ok || !initialInput.ok || !deadlineField.ok || issues.length > 0) return err(issues);
   const definitionRevision = definitionObserved as string;
   const runtimeContractRevision = runtimeObserved as string;
   const progressCodec = codecObserved as string;
@@ -697,14 +855,21 @@ function acceptCreationContent(
     progressCodec,
     authorityContext: authorityContext.value,
     initialInput: initialInput.value,
-    identity: packIdentity([
-      validatedScope,
-      definitionRevision,
-      runtimeContractRevision,
-      progressCodec,
-      authorityContext.value.canonical,
-      initialInput.value.identity,
-    ]),
+    executionDeadline,
+    // A seventh part only when a deadline is present, so every identity without one is unchanged. Part
+    // counts are part of the length-prefixed packing, so six and seven parts never collide.
+    identity:
+      executionDeadline === null
+        ? packIdentity([validatedScope, definitionRevision, runtimeContractRevision, progressCodec, authorityContext.value.canonical, initialInput.value.identity])
+        : packIdentity([
+            validatedScope,
+            definitionRevision,
+            runtimeContractRevision,
+            progressCodec,
+            authorityContext.value.canonical,
+            initialInput.value.identity,
+            `${executionDeadline}`,
+          ]),
   });
 }
 
@@ -806,7 +971,7 @@ export class ExecutionCoordinator {
     const keyIssues: ValueIssue[] = [];
     const creationKeyField = observeField(request, "creationKey", "creationKey", keyIssues);
     const keyOk = creationKeyField.ok && acceptIdentityText(creationKeyField.observed, "creationKey", keyIssues);
-    const content = acceptCreationContent(request, scope);
+    const content = acceptCreationContent(request, scope, this.#clock !== null);
     if (!keyOk || !content.ok) {
       // No spread: spread iteration consults the ambient `Symbol.iterator`, which content
       // observation in the same tick may have replaced.
@@ -901,6 +1066,7 @@ export class ExecutionCoordinator {
       runtimeContractRevision: content.value.runtimeContractRevision,
       progressCodec: content.value.progressCodec,
       authorityContext: content.value.authorityContext,
+      executionDeadline: content.value.executionDeadline,
       creationIdentity: content.value.identity,
       receipt,
       initial: entry,
@@ -1390,6 +1556,14 @@ export class ExecutionCoordinator {
       }
     }
 
+    // CX-6: after the replay lookup (an Outcome accepted before the cancellation still replays) and
+    // before every other check, a cancelled Execution's proposal loses whatever its step, epoch, grant
+    // or content. A well-formed proposal is indexed by Activation and content identity, so its exact
+    // retry gets the same refusal; one with no usable identity or content has nothing to index.
+    if (record.state === "CANCELLED") {
+      if (identityUsable && capture.outcome !== null) return err(this.#refuseLosing(record, activationId, capture.outcome));
+      return err(this.#refusal("cancellation_terminal_conflict", CANCELLATION_CONFLICT_REASON, record));
+    }
     if (isTerminal(record.state)) {
       return err(
         this.#refusal(
@@ -1950,7 +2124,8 @@ export class ExecutionCoordinator {
   /**
    * Every deadline the Kernel would honour now, for the host's scheduler (K1.3).
    *
-   * One entry per `WAITING` Execution whose live wait has a deadline, in creation order. A retired
+   * One entry per `WAITING` Execution whose live wait has a deadline, and one per nonterminal Execution
+   * with an Execution deadline, in creation order. A retired
    * generation and a terminal Execution are never listed, so a pending timer can never keep an ended
    * Execution alive. A generation that expired at registration is not listed either: its key comes from
    * the accepted decision (`TimerKey`). This is a host entry of the trusted in-process binding, not a
@@ -1967,6 +2142,10 @@ export class ExecutionCoordinator {
           timers,
           PrimordialObjectFreeze({ executionId: record.executionId, kind: "wait_deadline" as const, generation: live.generation, deadline: live.deadline }),
         );
+      }
+      const executionDeadline = record.executionDeadline;
+      if (!isTerminal(record.state) && executionDeadline !== null) {
+        appendOwn(timers, PrimordialObjectFreeze({ executionId: record.executionId, kind: "execution_deadline" as const, generation: null, deadline: executionDeadline }));
       }
     }
     return timers;
@@ -2014,7 +2193,7 @@ export class ExecutionCoordinator {
     const basis = record.version;
     const timer = kind === "wait_deadline" ? ("wait_deadline" as const) : ("execution_deadline" as const);
     const named = kind === "wait_deadline" ? (generation as number) : null;
-    const resolved = named === null ? EXECUTION_DEADLINE_ABSENT : resolveWaitFire(record, named, reading);
+    const resolved = named === null ? resolveExecutionFire(record, reading) : resolveWaitFire(record, named, reading);
     const fire: TimerFireRecord = PrimordialObjectFreeze({
       timer,
       generation: named,
@@ -2025,10 +2204,12 @@ export class ExecutionCoordinator {
     });
     const answer: TimerFireAnswer = { result: resolved.result, reason: resolved.reason, timeoutEventId: resolved.timeoutEventId };
     const expiry = resolved.expiry;
-    const plan: ExpiryPlan | TimerDiscardPlan =
-      expiry === null
-        ? PrimordialObjectFreeze({ kind: "timer_discard" as const, executionId: record.executionId, basis, fire, answer })
-        : PrimordialObjectFreeze({
+    // An expired Execution deadline cancels through the same decision as `cancelExecution`, with the
+    // creating producer and the Execution's scope as the actor: the authority that set the deadline.
+    const cancellation = resolved.result === "cancelled" ? cancellationOf(record, "execution_deadline", record.creatorNamespace, record.scope) : null;
+    const plan: ExpiryPlan | TimerDiscardPlan | CancellationPlan =
+      expiry !== null
+        ? PrimordialObjectFreeze({
             kind: "expiry" as const,
             executionId: record.executionId,
             basis,
@@ -2037,16 +2218,75 @@ export class ExecutionCoordinator {
             readiness: expiry.readiness,
             fire,
             answer,
-          });
+          })
+        : cancellation !== null
+          ? PrimordialObjectFreeze({
+              kind: "cancellation" as const,
+              executionId: record.executionId,
+              basis,
+              endAt: cancellation.endAt,
+              ending: cancellation.ending,
+              record: cancellation.record,
+              retired: cancellation.retired,
+              history: cancellation.history,
+              fire,
+              answer,
+            })
+          : PrimordialObjectFreeze({ kind: "timer_discard" as const, executionId: record.executionId, basis, fire, answer });
     this.#state.apply(plan);
+    this.#requestCancellation(cancellation === null ? null : cancellation.request);
     return answer;
   }
 
-  // -- Surfaces later packets own --------------------------------------------
+  // -- Cancellation (K1.3) ----------------------------------------------------
 
-  /** Out-of-band cancellation and terminal disposition are K1.3's (governing 007). */
-  cancelExecution(): never {
-    return refuseUnsupportedSurface("cancelExecution", "K1.3");
+  /**
+   * Cancels one Execution, or reports that it had already ended (`lifecycle.md` § Cancellation order).
+   *
+   * 1. **Visibility**: an Execution the caller cannot see answers `unknown_destination`, identically to
+   *    a missing one.
+   * 2. **Cancel power**: the Execution's scope must be in the caller's `cancelScopes`, else a scoped
+   *    `unauthorized_control` naming the Execution, with nothing changed.
+   * 3. **Terminal**: `COMPLETED` or `FAILED` reports its result and `CANCELLED` its cancellation, with
+   *    `changed: false` and nothing changed (CX-2).
+   * 4. **One cancellation decision** (`cancellationOf`): every unprocessed Event terminal-disposed, any
+   *    open exchange ended unacknowledged, any wait retired and readiness discarded, `CANCELLED`, at the
+   *    next acceptance position with no receipt. Request acceptance and the terminal transition are one
+   *    decision, so nothing can defer the fence.
+   * 5. **After it commits**, the Driver is asked to cancel the native work (`requestCancellation`):
+   *    never awaited, nothing observed, a throw contained (owner choice 01).
+   *
+   * An Outcome accepted before this decision stands (CX-2): a `COMPLETED` Execution is reported, never
+   * reopened. One accepted after it loses (`submitOutcome`, CX-6).
+   */
+  cancelExecution(caller: AuthenticatedCaller, executionId: string): Result<CancellationDecision, RefusalRecord> {
+    const record = this.#visible(caller, executionId);
+    if (record === null) return err(this.#refusal("unknown_destination", UNKNOWN_DESTINATION_REASON, null));
+    const power = this.#requireCancel(caller, record);
+    if (power !== null) return err(power);
+    // The cancel-power read may run a host getter: the decision below is planned against this version.
+    const basis = record.version;
+    if (isTerminal(record.state)) {
+      return ok({ changed: false, state: record.state, cancellation: record.cancellation, result: record.result });
+    }
+    const facts = cancellationOf(record, "explicit", caller.namespace, record.scope);
+    const request = facts.request;
+    const answer = ok({ changed: true, state: "CANCELLED" as const, cancellation: facts.record, result: null });
+    const plan: CancellationPlan = PrimordialObjectFreeze({
+      kind: "cancellation",
+      executionId: record.executionId,
+      basis,
+      endAt: facts.endAt,
+      ending: facts.ending,
+      record: facts.record,
+      retired: facts.retired,
+      history: facts.history,
+      fire: null,
+      answer,
+    });
+    this.#state.apply(plan);
+    this.#requestCancellation(request);
+    return answer;
   }
 
   // -- Internals -------------------------------------------------------------
@@ -2371,6 +2611,57 @@ export class ExecutionCoordinator {
       `caller may inspect Execution ${diagnosticIdentity(record.executionId)} but holds no control power over its scope; takeover, recovery declarations and protocol-failure reports require control authority distinct from inspection`,
       record,
     );
+  }
+
+  /**
+   * K1.3: the cancel power check, after visibility. A visible caller without the Execution's scope in
+   * `cancelScopes` is refused as `unauthorized_control`, with the Execution named and nothing changed.
+   */
+  #requireCancel(caller: AuthenticatedCaller, record: ExecutionReader): RefusalRecord | null {
+    if (mayCancelScope(caller, record.scope)) return null;
+    return this.#refusal(
+      "unauthorized_control",
+      `caller may inspect Execution ${diagnosticIdentity(record.executionId)} but holds no cancel power over its scope; cancellation requires cancel authority distinct from inspection, exchange control and Outcome submission`,
+      record,
+    );
+  }
+
+  /**
+   * CX-6: refuses one well-formed proposal that lost to the cancellation, and indexes it.
+   *
+   * The key packs the Activation ID with the captured content identity, which already packs the writer
+   * epoch and base revision: an exact retry, even as a fresh equal object, returns the retained refusal;
+   * any other proposal, however similar, is a new losing record. Nothing of the proposal is installed.
+   */
+  #refuseLosing(record: ExecutionReader, activationId: string, outcome: CapturedOutcome): RefusalRecord {
+    // Called after the proposal's last observation: the decision below is planned against this version.
+    const basis = record.version;
+    const key = packIdentity([activationId, outcome.identity]);
+    const retained = record.losingRefusal(key);
+    if (retained !== null) return retained;
+    const refusal = mintRefusal("cancellation_terminal_conflict", CANCELLATION_CONFLICT_REASON, record.nextRefusalPosition, record.executionId);
+    const losing = PrimordialObjectFreeze({ activationId, writerEpoch: outcome.writerEpoch, baseProgressRevision: outcome.baseProgressRevision, refusal });
+    const plan: LosingOutcomePlan = PrimordialObjectFreeze({ kind: "losing_outcome", executionId: record.executionId, basis, key, losing, refusal });
+    this.#state.apply(plan);
+    return refusal;
+  }
+
+  /**
+   * Asks the Driver to cancel native work, after a cancellation committed (owner choice 01).
+   *
+   * Resolved on the Driver's own chain through `hostMember`; called once with the load-time
+   * `Reflect.apply`. Its return value is never read, so no thenable is consulted, and a throw from the
+   * lookup or the call is contained: the cancellation is already committed and cannot change. A Driver
+   * without the member receives no request. `null` means no cancellation was decided.
+   */
+  #requestCancellation(request: CancellationRequest | null): void {
+    if (request === null) return;
+    try {
+      const ask = hostMember(this.#driver, "requestCancellation");
+      if (typeof ask === "function") PrimordialReflectApply(ask, this.#driver, [request]);
+    } catch {
+      // Contained: the Driver owns its failures, and the committed decision stands.
+    }
   }
 
   /**

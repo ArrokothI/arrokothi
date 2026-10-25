@@ -72,7 +72,9 @@ const PLANNERS: readonly (readonly [string, PlannerShape])[] = [
   ["recoverExecution", "suffix"],
   ["reportProtocolFailure", "suffix"],
   ["fireTimer", "suffix"],
+  ["cancelExecution", "suffix"],
   ["#accept", "suffix"],
+  ["#refuseLosing", "suffix"],
   ["#refusal", "suffix"],
   ["#deliver", "delivery"],
   ["settle", "final"],
@@ -91,9 +93,11 @@ const ARMS: Readonly<Record<string, string>> = {
   refusal: "#applyRefusal",
   expiry: "#applyExpiry",
   timer_discard: "#applyTimerDiscard",
+  cancellation: "#applyCancellation",
+  losing_outcome: "#applyLosingOutcome",
 };
 
-const CREATED = "{authorityContext+basis+creationIdentity+creationRequestId+definitionRevision+executionId+initial+progressCodec+receipt+runtimeContractRevision+scope}";
+const CREATED = "{authorityContext+basis+creationIdentity+creationRequestId+definitionRevision+executionDeadline+executionId+initial+progressCodec+receipt+runtimeContractRevision+scope}";
 
 /** Each arm's commit statements, in order: `<form> <field> ← <plan field it comes from>` (D01-CHK-4). */
 const COMMITS: Readonly<Record<string, readonly string[]>> = {
@@ -164,6 +168,20 @@ const COMMITS: Readonly<Record<string, readonly string[]>> = {
     'write state ← "READY"',
   ],
   "#applyTimerDiscard": ["write version ← basis", "append timerFires ← fire"],
+  "#applyCancellation": [
+    "write version ← basis",
+    "write nextAcceptancePosition ← record",
+    "each disposition ← ending",
+    "append? retiredWaits ← retired",
+    "append recoveryHistory ← history",
+    "append? timerFires ← fire",
+    "write cancellation ← {record+state}",
+    "write wait ← null",
+    "write readiness ← null",
+    "write activation ← null",
+    'write state ← "CANCELLED"',
+  ],
+  "#applyLosingOutcome": ["write version ← basis", "append refusals ← refusal", "write nextRefusalPosition ← refusal", "insert losingIndex ← losing"],
 };
 
 /**
@@ -175,21 +193,21 @@ const ARM_WRITERS: Readonly<Record<string, readonly string[]>> = {
   "#byCreationRequestId": ["#applyCreation"],
   mailbox: ["#applyExpiry", "#applyInput", "#applyOutcome"],
   byInputId: ["#applyInput"],
-  refusals: ["#applyRefusal"],
-  nextRefusalPosition: ["#applyRefusal"],
+  refusals: ["#applyLosingOutcome", "#applyRefusal"],
+  nextRefusalPosition: ["#applyLosingOutcome", "#applyRefusal"],
   receipts: ["#applyDispatch", "#applyInput", "#applyOutcome", "#applyTakeover"],
-  nextAcceptancePosition: ["#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome", "#applyTakeover"],
+  nextAcceptancePosition: ["#applyCancellation", "#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome", "#applyTakeover"],
   activationsMinted: ["#applyDispatch"],
-  state: ["#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome"],
-  activation: ["#applyDispatch", "#applyOutcome", "#applyTakeover"],
+  state: ["#applyCancellation", "#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  activation: ["#applyCancellation", "#applyDispatch", "#applyOutcome", "#applyTakeover"],
   acceptedProgress: ["#applyOutcome"],
   progressRevision: ["#applyOutcome"],
   acceptedOutcomes: ["#applyOutcome"],
   exchanges: ["#applyOutcome"],
   emissions: ["#applyOutcome"],
   result: ["#applyOutcome"],
-  disposition: ["#applyOutcome"],
-  recoveryHistory: ["#applyControl", "#applyOutcome", "#applyTakeover"],
+  disposition: ["#applyCancellation", "#applyOutcome"],
+  recoveryHistory: ["#applyCancellation", "#applyControl", "#applyOutcome", "#applyTakeover"],
   codeHold: ["#applyControl"],
   protocolFailureHold: ["#applyControl", "#applyTakeover"],
   submission: ["#applyTakeover"],
@@ -198,16 +216,20 @@ const ARM_WRITERS: Readonly<Record<string, readonly string[]>> = {
   status: ["#applySettlement"],
   failure: ["#applySettlement"],
   registrations: ["#applyOutcome"],
-  wait: ["#applyExpiry", "#applyInput", "#applyOutcome"],
-  readiness: ["#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome"],
-  retiredWaits: ["#applyExpiry", "#applyInput", "#applyOutcome"],
-  timerFires: ["#applyExpiry", "#applyTimerDiscard"],
+  wait: ["#applyCancellation", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  readiness: ["#applyCancellation", "#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  retiredWaits: ["#applyCancellation", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  timerFires: ["#applyCancellation", "#applyExpiry", "#applyTimerDiscard"],
+  cancellation: ["#applyCancellation"],
+  losingIndex: ["#applyLosingOutcome"],
   version: [
+    "#applyCancellation",
     "#applyControl",
     "#applyDelivery",
     "#applyDispatch",
     "#applyExpiry",
     "#applyInput",
+    "#applyLosingOutcome",
     "#applyOutcome",
     "#applyRefusal",
     "#applySettlement",
@@ -322,7 +344,9 @@ describe("correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole 
     assert.deepEqual(suffix("requestTakeover"), ["this.#state.apply(plan);", "this.#deliver(exchange);", "return answer;"]);
     assert.deepEqual(suffix("redeliver"), ["this.#deliver(intent);", "return answer;"]);
     assert.deepEqual(suffix("submitOutcome"), ["return ok(this.#accept(record, intent, capture.outcome, caller, reading, basis));"]);
-    assert.deepEqual(suffix("fireTimer"), ["this.#state.apply(plan);", "return answer;"]);
+    assert.deepEqual(suffix("fireTimer"), ["this.#state.apply(plan);", "this.#requestCancellation(cancellation === null ? null : cancellation.request);", "return answer;"]);
+    assert.deepEqual(suffix("cancelExecution"), ["this.#state.apply(plan);", "this.#requestCancellation(request);", "return answer;"]);
+    assert.deepEqual(suffix("#refuseLosing"), ["this.#state.apply(plan);", "return refusal;"]);
     assert.deepEqual(suffix("#refusal"), ["this.#state.apply(plan);", "return refusal;"]);
   });
 
@@ -455,11 +479,11 @@ const MUTANTS: readonly { readonly name: string; readonly edits: readonly (reado
   // Controls 29–31: holds and history written in the wrong place.
   { name: "29: a protocol hold written while preparing", edits: [at(STATE, "    const stored = plan.history;", "    const stored = plan.history;\n    const probe = (exchange.protocolFailureHold = null);")], reason: "#applyControl: mutates before its commit" },
   { name: "30: a hold written by the wrong arm", edits: [at(STATE, "    appendOwn(exchange.deliveries, attempt);", "    appendOwn(exchange.deliveries, attempt);\n    exchange.codeHold = null;")], reason: "codeHold written by #applyControl, #applyDelivery" },
-  { name: "31: recovery history changed through an alias outside the arms", edits: [at(STATE, "  const open = record.activation;\n  if (open !== null", "  appendAllOwn(record.recoveryHistory, []);\n  const open = record.activation;\n  if (open !== null")], reason: "recoveryHistory written by #applyControl, #applyOutcome, #applyTakeover, deliveriesOf" },
+  { name: "31: recovery history changed through an alias outside the arms", edits: [at(STATE, "  const open = record.activation;\n  if (open !== null", "  appendAllOwn(record.recoveryHistory, []);\n  const open = record.activation;\n  if (open !== null")], reason: "recoveryHistory written by #applyCancellation, #applyControl, #applyOutcome, #applyTakeover, deliveriesOf" },
   // D01-CHK-2: getters.
   { name: "a reader getter that writes its record", edits: [at(STATE, "  get version(): number {\n    return this.#record.version;\n  }", "  get version(): number {\n    this.#record.version = this.#record.version;\n    return this.#record.version;\n  }")], reason: "version written by" },
   { name: "a changing getter read by a planner before its hand-over", edits: [at(STATE, "  get mailboxLength(): number {\n    return this.#record.mailbox.length;\n  }", "  get mailboxLength(): number {\n    appendAllOwn(this.#record.mailbox, []);\n    return this.#record.mailbox.length;\n  }")], reason: "submitInput: mutates before its hand-over: record.mailboxLength" },
-  { name: "a getter that returns a live record list, which a planner changes", edits: [at(STATE, "  get mailboxLength(): number {", "  get liveRefusals(): RefusalRecord[] {\n    return this.#record.refusals;\n  }\n\n  get mailboxLength(): number {"), at(STATE, 'import { isTerminal, type ExecutionState } from "./lifecycle.ts";', 'import { isTerminal, type ExecutionState } from "./lifecycle.ts";\nimport type { RefusalRecord } from "./refusal.ts";'), at(COORDINATOR, '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n', '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n    appendAllOwn(record.liveRefusals, []);\n')], reason: "submitInput: mutates before its hand-over: appendAllOwn(record.liveRefusals, [])" },
+  { name: "a getter that returns a live record list, which a planner changes", edits: [at(STATE, "  get mailboxLength(): number {", "  get liveRefusals(): RefusalRecord[] {\n    return this.#record.refusals;\n  }\n\n  get mailboxLength(): number {"), at(COORDINATOR, '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n', '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n    appendAllOwn(record.liveRefusals, []);\n')], reason: "submitInput: mutates before its hand-over: appendAllOwn(record.liveRefusals, [])" },
 ];
 
 describe("correction DEC-9 negative controls: every forbidden shape is reported", () => {

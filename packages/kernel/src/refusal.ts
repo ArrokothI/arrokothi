@@ -93,7 +93,15 @@ export type RefusalClassification =
    * or answered something other than a safe integer of at least 0. Only an `await` whose deadline
    * decides its registration needs one; nothing falls back to ambient time (`time.ts`).
    */
-  | "clock_unavailable";
+  | "clock_unavailable"
+  /**
+   * K1.3, CX-6: the Execution was cancelled before this Outcome was accepted, so the proposal loses
+   * whatever its step, epoch, grant or content. The K0.2 fixture's spelling; the reason is exactly
+   * `cancellation accepted before Outcome acceptance`. An Outcome accepted before the cancellation still
+   * replays its receipt (OA-2 is checked first), and an exact retry of a losing proposal returns this
+   * same retained refusal. `COMPLETED` and `FAILED` keep `terminal_destination`.
+   */
+  | "cancellation_terminal_conflict";
 
 /**
  * One refused request, retained and inspectable.

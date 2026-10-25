@@ -9,7 +9,7 @@
 
 import type { Activation, SubmissionGrant } from "./driver.ts";
 import type { CreationRequestId, InputId, Receipt } from "./identity.ts";
-import type { EmissionView, MailboxDisposition, RecoveryHistoryRecord, TerminalResultView } from "./inspection.ts";
+import type { CancellationView, EmissionView, LosingOutcomeView, MailboxDisposition, RecoveryHistoryRecord, TerminalResultView } from "./inspection.ts";
 import type { ExecutionState } from "./lifecycle.ts";
 import type { AcceptedOutcome, LiveWait, Readiness, RetiredWait, StoredHold, TimerFireRecord } from "./plan.ts";
 import type { RefusalRecord } from "./refusal.ts";
@@ -89,6 +89,12 @@ export interface ResolvedExchange {
   readonly deliveries: DeliveryAttempt[];
 }
 
+/** The accepted cancellation, with the ended exchange's delivery log shared so late reports settle there. */
+export interface CancellationRecord {
+  readonly facts: CancellationView;
+  readonly deliveries: DeliveryAttempt[] | null;
+}
+
 export interface ExecutionRecord {
   readonly executionId: string;
   readonly scope: string;
@@ -99,6 +105,8 @@ export interface ExecutionRecord {
   readonly authorityContext: CanonicalValue;
   /** The injective packing of the complete creation content this key is bound to. */
   readonly creationIdentity: string;
+  /** The Execution deadline set at creation (K1.3), or `null`. Immutable. */
+  readonly executionDeadline: number | null;
   readonly creationReceipt: Receipt;
   /** The Event the initial input was accepted as. Retained so a creation replay can name it. */
   readonly initialEventId: string;
@@ -158,6 +166,13 @@ export interface ExecutionRecord {
   readonly retiredWaits: RetiredWait[];
   /** Every host timer fire that named this Execution, oldest first. */
   readonly timerFires: TimerFireRecord[];
+  /** The accepted cancellation, once `CANCELLED`. */
+  cancellation: CancellationRecord | null;
+  /**
+   * Outcome proposals that lost to the cancellation, by Activation ID and content identity: the
+   * exact-retry index (CX-6) and, in insertion order, the retained losing records.
+   */
+  readonly losingIndex: Map<string, LosingOutcomeView>;
   /** The number of plans applied to this Execution: the basis a plan names. In no view or answer. */
   version: number;
 }

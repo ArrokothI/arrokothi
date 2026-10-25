@@ -117,6 +117,49 @@ export interface ReadinessView {
   readonly timeoutEventId: string | null;
 }
 
+/** The exchange an accepted cancellation ended unacknowledged. */
+export interface EndedExchangeView {
+  readonly activationId: string;
+  /** The epoch that was current when the cancellation was accepted. */
+  readonly writerEpoch: number;
+  readonly baseProgressRevision: number;
+  /** The reserved batch: terminal-disposed, never acknowledged. */
+  readonly batch: readonly string[];
+  readonly dispatchReceipt: Receipt;
+}
+
+/**
+ * One accepted cancellation (K1.3; `lifecycle.md` § Cancellation order, CX-6).
+ *
+ * Explicit cancellation and Execution-deadline expiry make the same decision; only `cause`, the
+ * actor and the disposition reason differ. It takes an acceptance position and mints no receipt.
+ */
+export interface CancellationView {
+  readonly cause: "explicit" | "execution_deadline";
+  /** The caller's namespace; for the Execution deadline, the namespace that created the Execution. */
+  readonly actorNamespace: string;
+  readonly actorScope: string;
+  readonly position: number;
+  /** The exchange it ended unacknowledged, or `null` when none was open. */
+  readonly endedExchange: EndedExchangeView | null;
+  /** The live wait generation it retired, or `null`. */
+  readonly retiredGeneration: number | null;
+  /** Every Event it gave a `B-5` terminal disposition, in acceptance order. */
+  readonly terminalDispositions: readonly string[];
+}
+
+/**
+ * One Outcome proposal that lost to an accepted cancellation (CX-6), retained with its coordinates.
+ * Its canonical content is retained privately as the index an exact retry is answered from.
+ */
+export interface LosingOutcomeView {
+  readonly activationId: string;
+  readonly writerEpoch: number;
+  readonly baseProgressRevision: number;
+  /** The refusal it received, which an exact retry receives again. */
+  readonly refusal: RefusalRecord;
+}
+
 /** What one host timer fire resolved to. */
 export type TimerFireResult = "expired" | "cancelled" | "duplicate" | "stale" | "not_due" | "clock_unavailable";
 
@@ -237,7 +280,7 @@ export interface RecoveryHistoryRecord {
   /** The writer epoch current when the decision was made (for takeover clears, the superseded epoch). */
   readonly writerEpoch: number;
   readonly cause: "pinned_code_unavailable" | "protocol_failure";
-  readonly transition: "entered" | "updated" | "cleared_by_declaration" | "cleared_by_takeover" | "ended_by_outcome";
+  readonly transition: "entered" | "updated" | "cleared_by_declaration" | "cleared_by_takeover" | "ended_by_outcome" | "ended_by_cancellation";
   /** The hold reason at entry/update, or the clearing/ending explanation. */
   readonly reason: string;
   /**
@@ -248,9 +291,11 @@ export interface RecoveryHistoryRecord {
    * `attempt_submission` means the accepted Outcome presented the current attempt's submission
    * grant (K1.2-DEC-20): a valid Runtime proposal, which is not by itself general control power.
    * The two are never conflated: a Runtime submitter without `controlScopes` is recorded as
-   * `attempt_submission`, never as a control actor.
+   * `attempt_submission`, never as a control actor. K1.3: `cancellation` means an explicit
+   * cancellation by a caller holding cancel power (`cancelScopes`) ended the hold with the exchange;
+   * `execution_deadline` means the Execution deadline set at creation did.
    */
-  readonly authority: "control" | "attempt_submission";
+  readonly authority: "control" | "attempt_submission" | "cancellation" | "execution_deadline";
   /** The authenticated actor: the caller's namespace as the host established it. */
   readonly actorNamespace: string;
   /**
@@ -348,4 +393,13 @@ export interface ExecutionView {
   readonly retiredWaits: readonly RetiredWaitView[];
   /** Every host timer fire that named this Execution, oldest first. */
   readonly timerFires: readonly TimerFireView[];
+  /** The Execution deadline set at creation, on the injected clock's scale; `null` when none was set. */
+  readonly executionDeadline: number | null;
+  /**
+   * The accepted cancellation, once `CANCELLED`. The ended exchange carries its delivery log: a late
+   * report still settles its own row there.
+   */
+  readonly cancellation: (CancellationView & { readonly deliveries: readonly DeliveryAttemptView[] }) | null;
+  /** Outcome proposals that lost to the cancellation, oldest first. */
+  readonly losingOutcomes: readonly LosingOutcomeView[];
 }

@@ -153,10 +153,12 @@ describe("correction DEC-8: every access that could reach a member its object do
       visit(source);
     }
     assert.deepEqual(calls.sort(), [
+      "#requestCancellation requestCancellation",
       "constructor clock",
       "constructor emissionsPerOutcome",
       "constructor mailboxCapacity",
       "isClock now",
+      "mayCancelScope cancelScopes",
       "mayControlScope controlScopes",
       "readClock now",
       "requestTakeover isSafeToReplace",
@@ -166,7 +168,7 @@ describe("correction DEC-8: every access that could reach a member its object do
 
 describe("correction DEC-8 at runtime: the unsupported-surface error owns its name (SELF-R7-UNSUPPORTED-01)", () => {
   test("an accessor installed on Error.prototype.name receives nothing, and the error still names itself", async () => {
-    const { ExecutionCoordinator, UnsupportedKernelSurfaceError } = await import("../src/index.ts");
+    const { UnsupportedKernelSurfaceError, refuseUnsupportedSurface } = await import("../src/index.ts");
     const original = Object.getOwnPropertyDescriptor(Error.prototype, "name");
     assert.ok(original !== undefined);
     const received: unknown[] = [];
@@ -177,8 +179,8 @@ describe("correction DEC-8 at runtime: the unsupported-surface error owns its na
     });
     let thrown: unknown;
     try {
-      const coordinator = new ExecutionCoordinator({ driver: { driverId: "probe", deliver: () => undefined } });
-      assert.throws(() => coordinator.cancelExecution(), (error: unknown) => {
+      // No coordinator surface refuses as unsupported after K1.3; the mechanism is called directly.
+      assert.throws(() => refuseUnsupportedSurface("admitEffect", "K2"), (error: unknown) => {
         thrown = error;
         return true;
       });

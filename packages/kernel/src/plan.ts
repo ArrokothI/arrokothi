@@ -21,7 +21,9 @@
 import type { Activation, SubmissionGrant } from "./driver.ts";
 import type { CreationRequestId, InputId, Receipt } from "./identity.ts";
 import type {
+  CancellationView,
   EmissionView,
+  LosingOutcomeView,
   MailboxDisposition,
   RecoveryHistoryRecord,
   RecoveryHoldView,
@@ -124,6 +126,21 @@ export interface TakeoverAccepted {
   readonly batch: readonly string[];
   /** The dispatch-intent receipt re-recording the exchange's current attempt (K1.2-DEC-6). */
   readonly receipt: Receipt;
+}
+
+/**
+ * The answer to `cancelExecution` (K1.3): what the request found or decided. Always terminal.
+ *
+ * `changed` is false when the Execution had already ended: `COMPLETED` or `FAILED` report their result
+ * unchanged, and `CANCELLED` reports the cancellation that ended it (CX-2: a repeat changes nothing).
+ */
+export interface CancellationDecision {
+  readonly changed: boolean;
+  readonly state: ExecutionState;
+  /** The accepted cancellation when the Execution is `CANCELLED`; otherwise `null`. */
+  readonly cancellation: CancellationView | null;
+  /** The terminal result when the Execution had completed or failed; otherwise `null`. */
+  readonly result: TerminalResultView | null;
 }
 
 /** What a recovery request or a protocol-failure report left in place. */
@@ -296,6 +313,8 @@ export interface CreationPlan {
   readonly runtimeContractRevision: string;
   readonly progressCodec: string;
   readonly authorityContext: CanonicalValue;
+  /** The Execution deadline set at creation (K1.3, owner decision 1), or `null`. Immutable. */
+  readonly executionDeadline: number | null;
   readonly creationIdentity: string;
   readonly receipt: Receipt;
   readonly initial: EntryFacts;
@@ -457,6 +476,44 @@ export interface TimerDiscardPlan {
   readonly answer: TimerFireAnswer;
 }
 
+/**
+ * One accepted cancellation (K1.3): explicit, or the Execution deadline's expiry through a timer fire.
+ *
+ * Every queued Event, the open exchange's reserved batch and any queued timeout included, takes `ending`;
+ * nothing is acknowledged. The open exchange ends unacknowledged; the owner keeps its delivery log with
+ * the cancellation record. A live wait retires as `cancellation`; readiness is discarded. Each hold on
+ * the open exchange contributes its `ended_by_cancellation` record. The state becomes `CANCELLED` at the
+ * record's acceptance position, with no receipt.
+ */
+export interface CancellationPlan {
+  readonly kind: "cancellation";
+  readonly executionId: string;
+  readonly basis: number;
+  /** Every queued mailbox position. */
+  readonly endAt: readonly number[];
+  readonly ending: MailboxDisposition;
+  readonly record: CancellationView;
+  readonly retired: RetiredWait | null;
+  readonly history: readonly RecoveryHistoryRecord[];
+  /** The fire that expired the Execution deadline; `null` for explicit cancellation. */
+  readonly fire: TimerFireRecord | null;
+  readonly answer: Ok<CancellationDecision> | TimerFireAnswer;
+}
+
+/**
+ * One Outcome proposal that lost to the cancellation (CX-6), indexed so an exact retry gets the same
+ * refusal. The refusal is recorded like any other, at the Execution's next refusal position.
+ */
+export interface LosingOutcomePlan {
+  readonly kind: "losing_outcome";
+  readonly executionId: string;
+  readonly basis: number;
+  /** The Activation ID and the captured content identity, packed: the exact-retry index key. */
+  readonly key: string;
+  readonly losing: LosingOutcomeView;
+  readonly refusal: RefusalRecord;
+}
+
 /** One recorded refusal of a request that named a visible Execution; the refusal is also its answer. */
 export interface RefusalPlan {
   readonly kind: "refusal";
@@ -493,7 +550,9 @@ export type Plan =
   | ControlPlan
   | RefusalPlan
   | ExpiryPlan
-  | TimerDiscardPlan;
+  | TimerDiscardPlan
+  | CancellationPlan
+  | LosingOutcomePlan;
 
 type AssertTrue<T extends true> = T;
 /** Compile-time proof that no plan variant holds a function anywhere (CR1-1). */

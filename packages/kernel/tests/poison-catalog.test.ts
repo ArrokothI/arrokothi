@@ -17,8 +17,9 @@ import { rawBytes } from "./binding-facade.ts";
  *
  * SDK capture is a separately declared source zone; its findings retain wrapper attribution.
  * Every public boundary is called at least once, with accepted, idempotent and refused exits: the
- * constructor, the eight coordinator methods, the delivery-report capability, the unsupported
- * surface and the value functions. Each call is a poison window. The catalog runs four times —
+ * constructor, the coordinator methods (K1.3 adds `cancelExecution`, `pendingTimers` and `fireTimer`,
+ * and `await` Outcomes), the delivery-report capability, the unsupported-surface mechanism and the
+ * value functions. Each call is a poison window. The catalog runs four times —
  * unpoisoned, then counting, throwing and re-entering — and must produce identical results with no
  * accessor reached from a zone frame and the poison demonstrably live in every window.
  */
@@ -28,7 +29,7 @@ import assert from "node:assert/strict";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import vm from "node:vm";
-import { type DeliverySettlement, type ExecutionDriver } from "../src/index.ts";
+import { refuseUnsupportedSurface, type DeliverySettlement, type ExecutionDriver } from "../src/index.ts";
 import { ExecutionCoordinator } from "./binding-facade.ts";
 import { boundaryValueIssues, canonicalize, isBoundaryValue, sameLogicalValue } from "../../sdk/src/internal/value-capture.ts";
 import { accepted, caller, createRequest, delayedDriver, observer, outcomeFor, recordingDriver, submissionFor, unsafeDriver } from "./harness.ts";
@@ -95,6 +96,7 @@ function runCatalog(poison: PoisonController): Catalog {
   };
 
   const who = caller("catalog", "tenant-a");
+  const canceller = { ...who, cancelScopes: ["tenant-a"] };
   const watcher = observer("catalog-observer");
 
   // -- Construction, creation and ingress --------------------------------------------------------
@@ -141,7 +143,9 @@ function runCatalog(poison: PoisonController): Catalog {
   call("inspect", (k) => k.inspect(who, id));
   call("inspect: hidden from another scope", (k) => k.inspect(caller("elsewhere", "tenant-b"), id));
   call("visibleExecutions", (k) => k.visibleExecutions(who));
-  call("cancelExecution", (k) => k.cancelExecution());
+  call("cancelExecution: without cancel power", (k) => k.cancelExecution(who, id));
+  call("cancelExecution: an Execution hidden from the caller", (k) => k.cancelExecution(caller("elsewhere", "tenant-b"), id));
+  call("refuseUnsupportedSurface", () => refuseUnsupportedSurface("admitEffect", "K2"));
 
   // -- Recovery controls ---------------------------------------------------------------------
   const activationId = open.activationId;
@@ -227,6 +231,55 @@ function runCatalog(poison: PoisonController): Catalog {
   call("dispatch: after the Execution ended", (k) => k.dispatch(who, id, { bound: 1 }));
   call("requestTakeover: after the Execution ended", (k) => k.requestTakeover(who, id, { activationId: next.activationId, writerEpoch: 1 }));
   call("inspect: the ended Execution", (k) => k.inspect(who, id));
+  call("cancelExecution: after the Execution completed (reported, unchanged)", (k) => k.cancelExecution(canceller, id));
+
+  // -- Waits, timers and cancellation (K1.3) --------------------------------------------------
+  let reading = 0;
+  const clock = { now: (): number => reading };
+  const asked: unknown[] = [];
+  const cancelling = { ...recordingDriver(), requestCancellation(request: unknown): undefined { asked.push(request); return undefined; } };
+  const timed = step("new ExecutionCoordinator (a clock and a cancellation request)", () => new ExecutionCoordinator({ driver: cancelling, clock })) as ExecutionCoordinator;
+  step("new ExecutionCoordinator (a clock on the host's own options prototype)", () => {
+    const options = Object.create({ clock }) as { driver: ExecutionDriver };
+    options.driver = recordingDriver();
+    return new ExecutionCoordinator(options);
+  });
+  const timedCall = (label: string, work: (k: ExecutionCoordinator) => unknown) => step(label, () => work(timed), timed, canceller);
+  const timedId = accepted(timedCall("createExecution: with an Execution deadline", (k) => k.createExecution(canceller, createRequest({ creationKey: "timed", executionDeadline: 100 } as never))) as ReturnType<ExecutionCoordinator["createExecution"]>).executionId;
+  timedCall("createExecution: a changed Execution deadline", (k) => k.createExecution(canceller, createRequest({ creationKey: "timed", executionDeadline: 101 } as never)));
+  const first = accepted(timedCall("dispatch: the first exchange", (k) => k.dispatch(canceller, timedId, { bound: 1 })) as ReturnType<ExecutionCoordinator["dispatch"]>);
+  const awaitWith = (deadline: number) => ({ step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }], deadline } });
+  timedCall("submitOutcome: await with a deadline (WAITING)", (k) => k.submitOutcome(canceller, outcomeFor(timedId, first, { next: awaitWith(10) }), submissionFor(cancelling, first.activationId)));
+  timedCall("pendingTimers", (k) => k.pendingTimers());
+  timedCall("dispatch: refused while WAITING", (k) => k.dispatch(canceller, timedId, { bound: 1 }));
+  timedCall("fireTimer: not due", (k) => k.fireTimer({ executionId: timedId, kind: "wait_deadline", generation: 1 }));
+  reading = 10;
+  timedCall("fireTimer: a key whose getter installs pollution while it is observed", (k) =>
+    k.fireTimer({
+      get executionId(): string {
+        Object.defineProperty(Object.prototype, "generation", plain({ value: 9, configurable: true }));
+        return "no-such-execution";
+      },
+      kind: "wait_deadline",
+    } as never),
+  );
+  delete (Object.prototype as Record<string, unknown>).generation;
+  timedCall("fireTimer: expired", (k) => k.fireTimer({ executionId: timedId, kind: "wait_deadline", generation: 1 }));
+  timedCall("fireTimer: duplicate", (k) => k.fireTimer({ executionId: timedId, kind: "wait_deadline", generation: 1 }));
+  const waitEnded = accepted(timedCall("dispatch: the wait-ended batch", (k) => k.dispatch(canceller, timedId, { bound: 2 })) as ReturnType<ExecutionCoordinator["dispatch"]>);
+  timedCall("submitOutcome: await, nothing due (WAITING)", (k) => k.submitOutcome(canceller, outcomeFor(timedId, waitEnded, { next: awaitWith(50) }), submissionFor(cancelling, waitEnded.activationId)));
+  timedCall("submitInput: an eligible input wakes the wait", (k) => k.submitInput(canceller, { destination: timedId, requestKey: "wake", kind: "update", payload: null, subscriptionClass: "s" }));
+  const third = accepted(timedCall("dispatch: after the wake", (k) => k.dispatch(canceller, timedId, { bound: 2 })) as ReturnType<ExecutionCoordinator["dispatch"]>);
+  timedCall("cancelExecution: accepted while RUNNING", (k) => k.cancelExecution(canceller, timedId));
+  timedCall("cancelExecution: repeated", (k) => k.cancelExecution(canceller, timedId));
+  timedCall("submitOutcome: losing to the cancellation", (k) => k.submitOutcome(canceller, outcomeFor(timedId, third), submissionFor(cancelling, third.activationId)));
+  timedCall("submitOutcome: the losing proposal's exact retry", (k) => k.submitOutcome(canceller, outcomeFor(timedId, third), submissionFor(cancelling, third.activationId)));
+  timedCall("redeliver: after cancellation", (k) => k.redeliver(canceller, timedId));
+  timedCall("fireTimer: the Execution deadline of a cancelled Execution", (k) => k.fireTimer({ executionId: timedId, kind: "execution_deadline", generation: null }));
+  const expiring = accepted(timed.createExecution(canceller, createRequest({ creationKey: "expiring", executionDeadline: 5 } as never))).executionId;
+  timedCall("fireTimer: the Execution deadline expires", (k) => k.fireTimer({ executionId: expiring, kind: "execution_deadline", generation: null }));
+  timedCall("inspect: the cancelled Execution", (k) => k.inspect(canceller, timedId));
+  if (asked.length !== 2) throw new Error(`expected two cancellation requests, saw ${asked.length}`);
 
   // -- Capacity, failure and the delivery-report capability ------------------------------------
   const small = step("new ExecutionCoordinator (capacity 1, one Emission)", () => new ExecutionCoordinator({ driver: recordingDriver(), mailboxCapacity: 1, emissionsPerOutcome: 1 })) as ExecutionCoordinator;

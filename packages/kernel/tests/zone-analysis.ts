@@ -1385,9 +1385,21 @@ export const isApplyCall = (checker: ts.TypeChecker, node: ts.Node): node is ts.
 /** Calls that hand a decision on to another planner, which applies it. */
 const DELEGATIONS: ReadonlySet<string> = new Set(["this.#accept", "this.#deliver"]);
 
-/** Whether `call` is `this.#refusal(...)` in exactly `return this.#refusal(...)` or `return err(this.#refusal(...))`. */
+/**
+ * The post-commit Driver calls a planner may make after its hand-over, before it returns: delivery,
+ * and K1.3's cancellation request (owner choice 01). Each runs after the decision is recorded.
+ */
+const POST_COMMIT_CALLS: ReadonlySet<string> = new Set(["this.#deliver", "this.#requestCancellation"]);
+
+/**
+ * The refusal recorders: `#refusal`, and K1.3's `#refuseLosing`, which records a CX-6 losing proposal's
+ * refusal with its index entry. Each forms and applies its own plan and returns the refusal.
+ */
+const REFUSAL_RECORDERS: ReadonlySet<string> = new Set(["this.#refusal", "this.#refuseLosing"]);
+
+/** Whether `call` is a refusal recorder in exactly `return <recorder>(...)` or `return err(<recorder>(...))`. */
 const isRefusalExit = (call: ts.Node): boolean => {
-  if (!ts.isCallExpression(call) || calleeText(call) !== "this.#refusal") return false;
+  if (!ts.isCallExpression(call) || !REFUSAL_RECORDERS.has(calleeText(call))) return false;
   const parent = call.parent;
   if (ts.isReturnStatement(parent)) return true;
   return ts.isCallExpression(parent) && calleeText(parent) === "err" && parent.arguments.length === 1 && ts.isReturnStatement(parent.parent);
@@ -1396,6 +1408,7 @@ const isRefusalExit = (call: ts.Node): boolean => {
 /** The refusal helpers a planner may call before handing its plan over, with the exit test each needs. */
 const REFUSAL_HELPERS: ReadonlyMap<string, "null" | "result"> = new Map([
   ["this.#requireControl", "null"],
+  ["this.#requireCancel", "null"],
   ["this.#openExchange", "result"],
 ]);
 
@@ -1481,7 +1494,7 @@ export function refusalsWithoutExit(zone: Zone): string[] {
   const out: string[] = [];
   for (const source of sourcesOf(zone)) {
     const visit = (node: ts.Node): void => {
-      if (ts.isCallExpression(node) && calleeText(node) === "this.#refusal" && !isRefusalExit(node)) out.push(`${ownerName(node)}: a refusal recorded without exiting: ${spelling(node).slice(0, 80)}`);
+      if (ts.isCallExpression(node) && REFUSAL_RECORDERS.has(calleeText(node)) && !isRefusalExit(node)) out.push(`${ownerName(node)}: a refusal recorded without exiting: ${spelling(node).slice(0, 80)}`);
       if (ts.isCallExpression(node) && REFUSAL_HELPERS.has(calleeText(node))) {
         const declaration = node.parent;
         const statement = ts.isVariableDeclaration(declaration) && declaration.initializer === node ? declaration.parent.parent : undefined;
@@ -1594,7 +1607,7 @@ export function checkPlanner(zone: Zone, analysis: EffectAnalysis, fn: Fn, shape
         rank = 1;
         continue;
       }
-      if (ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) && calleeText(statement.expression) === "this.#deliver" && rank <= 1) {
+      if (ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) && POST_COMMIT_CALLS.has(calleeText(statement.expression)) && rank <= 1) {
         rank = 2;
         continue;
       }
@@ -1912,7 +1925,7 @@ export function mutationsOutsideHandOver(zone: Zone, analysis: EffectAnalysis, f
       if (isApplyCall(zone.checker, node)) return;
       if (ts.isCallExpression(node)) {
         const callee = calleeText(node);
-        if (DELEGATIONS.has(callee) || callee === "this.#refusal" || REFUSAL_HELPERS.has(callee) || callee === "settle") return;
+        if (DELEGATIONS.has(callee) || REFUSAL_RECORDERS.has(callee) || REFUSAL_HELPERS.has(callee) || callee === "settle") return;
       }
       out.push(`${ownerName(node)}: changes accepted state outside a hand-over: ${spelling(node).slice(0, 100)}`);
     });

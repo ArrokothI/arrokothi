@@ -166,4 +166,34 @@ export interface ExecutionDriver {
    * after it returns and before committing (K1.2-DEC-19).
    */
   isSafeToReplace?(activation: Activation): boolean;
+  /**
+   * Asks the Driver to cancel the Execution's native work (K1.3; owner choice 01, D01-CHK-06).
+   *
+   * `lifecycle.md` § Cancellation order (CX-1) requires the Kernel to request Driver cancellation
+   * without awaiting cooperation. The Kernel calls this once, after an accepted cancellation commits,
+   * from whichever nonterminal state it ended: `RUNNING`, `WAITING`, or `READY`, including `READY`
+   * after an exchange resolved, since an accepted Outcome does not prove native work stopped. Both
+   * causes call it: explicit cancellation and the Execution deadline's expiry. A repeated cancellation
+   * changes nothing and requests nothing.
+   *
+   * The request names the Execution, and the open exchange's current attempt when one is open. It must
+   * return promptly and only `undefined`. The Kernel never awaits it and never observes its return
+   * value, so no thenable is read; the Driver owns its own asynchronous failures. A throw, from looking
+   * the member up or from calling it, is contained and cannot change the committed cancellation. The
+   * member is resolved on the Driver itself or its own prototype chain, never on a built-in prototype.
+   *
+   * This is a request, never a physical stop or a safe takeover. A Driver without the member receives
+   * no request; Kernel guarantees stay logical (`docs/development/017-known-limitations.md`). The call
+   * can reenter the coordinator: the Execution is already `CANCELLED`, so a reentrant Outcome loses and a
+   * delivery report settles only its own row.
+   */
+  requestCancellation?(request: CancellationRequest): undefined;
+}
+
+/** What `requestCancellation` names (owner choice 01). Frozen. */
+export interface CancellationRequest {
+  readonly executionId: string;
+  readonly cause: "explicit" | "execution_deadline";
+  /** The open exchange's current attempt; `null` when no exchange was open. */
+  readonly attempt: { readonly activationId: string; readonly writerEpoch: number } | null;
 }
