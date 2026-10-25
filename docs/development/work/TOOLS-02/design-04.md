@@ -129,3 +129,16 @@ At C the build regenerates the table and reports every status change. None is ex
 lists a fixtures directory, globs or copies; helpers reached at run time are found only by the census itself. The `reads`
 digest changes for every row whose record holds a fixture listing, because listing identities gain entry types. That
 includes the 21 `ambient-reads` and `control-commits` rows, which list `tests/fixtures` during repository walks.
+
+## 6. Correction (2026-10-24, after review 02)
+
+§1's sentence "In the git tree, beneath means subtrees, not symlinks, which matches Node's recursive listing" and
+§2's row "Symlinked directories | not descended, as in Node" are false for `readdir`. On Node 26.10.0, recursive
+`readdirSync` and `promises.readdir` descend a symlinked directory, while recursive `opendir` does not. The
+implementer did not test it. [Review 02](review-02.md)'s T2-R2-READ-01 found it, with T2-R2-PATTERN-01 (array glob
+arguments escaped §1's refusal).
+
+[Design 05](design-05.md), under [owner choice 04](owner-choice-04.md), supersedes both statements and §1's glob and
+cp refusal. A recursive listing that crosses a symlink refuses its file. Every traced row is admitted by an explicit
+matrix, refusing by default. The rest of this design stands.
+
