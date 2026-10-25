@@ -8,8 +8,12 @@ The resume point for any session continuing this packet. Newest facts first with
     T2-R3-PATH-01: on macOS, `tests/fixtures/INPUT.txt` reads the tracked `input.txt`, while its identity is absent.
     T2-R3-OPTIONS-01: `Object.create({fd})` hides `fd` from `Object.keys`. T2-R3-ADMIN-01 (P3): the default candidate
     check fails on design 04's trailing blank line. T2-2 passed again.
-  - Next: build rules P and O, measure with a dry-run regenerate (stop if a real member loses credit), C6,
-    fresh-clone checks, CI, then implementation 04 as H.
+  - **C6** `5d0f1cc49eb9cb534ad2818a8f8d38253438418d` (local until its checks pass):
+    - rules P and O, the candidate `whitespace_exceptions` accommodation (registered ablation; census 330/330), review 03's
+      probes and exact-spelling controls end to end, and one mutant per rule; all 21 read mutants kill;
+    - the measure-first dry-run regenerate wrote a byte-identical table, so no member changes status. Tool tests: 671.
+  - Its fresh-clone sequence (quiet gate, regenerate, corpus, tool tests, both registries, full verify) is running.
+    Next: push, one CI dispatch, then H with `implementation-04.md` (drafted in the scratchpad).
 - Earlier: range 1 round 3 at H `23d65ac3` with [implementation 03](implementation-03.md) over C5; CI run
   40162436361 passed.
 - [Owner choice 04](owner-choice-04.md) picks 006's refined finishable claim: an explicit
