@@ -71,6 +71,7 @@ const PLANNERS: readonly (readonly [string, PlannerShape])[] = [
   ["requestTakeover", "suffix"],
   ["recoverExecution", "suffix"],
   ["reportProtocolFailure", "suffix"],
+  ["fireTimer", "suffix"],
   ["#accept", "suffix"],
   ["#refusal", "suffix"],
   ["#deliver", "delivery"],
@@ -88,6 +89,8 @@ const ARMS: Readonly<Record<string, string>> = {
   takeover: "#applyTakeover",
   control: "#applyControl",
   refusal: "#applyRefusal",
+  expiry: "#applyExpiry",
+  timer_discard: "#applyTimerDiscard",
 };
 
 const CREATED = "{authorityContext+basis+creationIdentity+creationRequestId+definitionRevision+executionId+initial+progressCodec+receipt+runtimeContractRevision+scope}";
@@ -95,8 +98,26 @@ const CREATED = "{authorityContext+basis+creationIdentity+creationRequestId+defi
 /** Each arm's commit statements, in order: `<form> <field> ← <plan field it comes from>` (D01-CHK-4). */
 const COMMITS: Readonly<Record<string, readonly string[]>> = {
   "#applyCreation": [`insert #executions ← ${CREATED}`, `insert #byCreationRequestId ← ${CREATED}`],
-  "#applyInput": ["write version ← basis", "write nextAcceptancePosition ← entry", "append mailbox ← {QUEUED+entry}", "insert byInputId ← {QUEUED+entry}", "append receipts ← entry"],
-  "#applyDispatch": ["write version ← basis", "write activationsMinted ← activationsMinted", "write nextAcceptancePosition ← receipt", "write activation ← {activation+batch+receipt+submission}", 'write state ← "RUNNING"', "append receipts ← receipt"],
+  "#applyInput": [
+    "write version ← basis",
+    "write nextAcceptancePosition ← entry",
+    "append mailbox ← {QUEUED+entry}",
+    "insert byInputId ← {QUEUED+entry}",
+    "append receipts ← entry",
+    "append? retiredWaits ← woken",
+    "write? wait ← null",
+    "write? readiness ← readiness",
+    'write? state ← "READY"',
+  ],
+  "#applyDispatch": [
+    "write version ← basis",
+    "write activationsMinted ← activationsMinted",
+    "write nextAcceptancePosition ← receipt",
+    "write activation ← {activation+batch+receipt+submission}",
+    'write state ← "RUNNING"',
+    "append receipts ← receipt",
+    "write readiness ← null",
+  ],
   "#applyDelivery": ["write version ← basis", "append deliveries ← {activationId+attempt+writerEpoch}"],
   "#applySettlement": ["write version ← basis", "write status ← status", "write failure ← failure"],
   "#applyOutcome": [
@@ -112,6 +133,11 @@ const COMMITS: Readonly<Record<string, readonly string[]>> = {
     "insert acceptedOutcomes ← stored",
     "append receipts ← receipt",
     "append recoveryHistory ← history",
+    "append? mailbox ← {QUEUED+TIMEOUT_KIND+timeout}",
+    "append? retiredWaits ← retired",
+    "write registrations ← registrations",
+    "write wait ← liveWait",
+    "write readiness ← readiness",
     "write activation ← null",
     "write state ← nextState",
   ],
@@ -127,6 +153,17 @@ const COMMITS: Readonly<Record<string, readonly string[]>> = {
   ],
   "#applyControl": ["write version ← basis", "append recoveryHistory ← history", "write codeHold ← codeHold", "write protocolFailureHold ← protocolFailureHold"],
   "#applyRefusal": ["write version ← basis", "append refusals ← refusal", "write nextRefusalPosition ← refusal"],
+  "#applyExpiry": [
+    "write version ← basis",
+    "write nextAcceptancePosition ← timeout",
+    "append mailbox ← {QUEUED+TIMEOUT_KIND+timeout}",
+    "append retiredWaits ← retired",
+    "append timerFires ← fire",
+    "write wait ← null",
+    "write readiness ← readiness",
+    'write state ← "READY"',
+  ],
+  "#applyTimerDiscard": ["write version ← basis", "append timerFires ← fire"],
 };
 
 /**
@@ -136,14 +173,14 @@ const COMMITS: Readonly<Record<string, readonly string[]>> = {
 const ARM_WRITERS: Readonly<Record<string, readonly string[]>> = {
   "#executions": ["#applyCreation"],
   "#byCreationRequestId": ["#applyCreation"],
-  mailbox: ["#applyInput"],
+  mailbox: ["#applyExpiry", "#applyInput", "#applyOutcome"],
   byInputId: ["#applyInput"],
   refusals: ["#applyRefusal"],
   nextRefusalPosition: ["#applyRefusal"],
   receipts: ["#applyDispatch", "#applyInput", "#applyOutcome", "#applyTakeover"],
-  nextAcceptancePosition: ["#applyDispatch", "#applyInput", "#applyOutcome", "#applyTakeover"],
+  nextAcceptancePosition: ["#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome", "#applyTakeover"],
   activationsMinted: ["#applyDispatch"],
-  state: ["#applyDispatch", "#applyOutcome"],
+  state: ["#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome"],
   activation: ["#applyDispatch", "#applyOutcome", "#applyTakeover"],
   acceptedProgress: ["#applyOutcome"],
   progressRevision: ["#applyOutcome"],
@@ -160,7 +197,23 @@ const ARM_WRITERS: Readonly<Record<string, readonly string[]>> = {
   deliveries: ["#applyDelivery"],
   status: ["#applySettlement"],
   failure: ["#applySettlement"],
-  version: ["#applyControl", "#applyDelivery", "#applyDispatch", "#applyInput", "#applyOutcome", "#applyRefusal", "#applySettlement", "#applyTakeover"],
+  registrations: ["#applyOutcome"],
+  wait: ["#applyExpiry", "#applyInput", "#applyOutcome"],
+  readiness: ["#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  retiredWaits: ["#applyExpiry", "#applyInput", "#applyOutcome"],
+  timerFires: ["#applyExpiry", "#applyTimerDiscard"],
+  version: [
+    "#applyControl",
+    "#applyDelivery",
+    "#applyDispatch",
+    "#applyExpiry",
+    "#applyInput",
+    "#applyOutcome",
+    "#applyRefusal",
+    "#applySettlement",
+    "#applyTakeover",
+    "#applyTimerDiscard",
+  ],
 };
 
 const OWNER_FILES = new Set(["state.ts", "state-records.ts", "plan.ts"]);
@@ -199,7 +252,7 @@ function violations(zone: Zone, analysis: EffectAnalysis): string[] {
   }
   out.push(...refusalsWithoutExit(zone));
   const accept = findMethod(zone, "ExecutionCoordinator", "#accept");
-  if (accept !== undefined) out.push(...basisArgumentViolations(zone, accept, 4));
+  if (accept !== undefined) out.push(...basisArgumentViolations(zone, accept, 5));
   for (const arm of Object.values(ARMS)) {
     const method = findMethod(zone, "KernelState", arm);
     if (method === undefined) {
@@ -268,13 +321,14 @@ describe("correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole 
     assert.deepEqual(suffix("reportProtocolFailure"), ["this.#state.apply(plan);", "return answer;"]);
     assert.deepEqual(suffix("requestTakeover"), ["this.#state.apply(plan);", "this.#deliver(exchange);", "return answer;"]);
     assert.deepEqual(suffix("redeliver"), ["this.#deliver(intent);", "return answer;"]);
-    assert.deepEqual(suffix("submitOutcome"), ["return ok(this.#accept(record, intent, capture.outcome, caller, basis));"]);
+    assert.deepEqual(suffix("submitOutcome"), ["return ok(this.#accept(record, intent, capture.outcome, caller, reading, basis));"]);
+    assert.deepEqual(suffix("fireTimer"), ["this.#state.apply(plan);", "return answer;"]);
     assert.deepEqual(suffix("#refusal"), ["this.#state.apply(plan);", "return refusal;"]);
   });
 
   test("every refusal ends its request, and #accept takes its basis from its caller's own binding", () => {
     assert.deepEqual(refusalsWithoutExit(zone), []);
-    assert.deepEqual(basisArgumentViolations(zone, findMethod(zone, "ExecutionCoordinator", "#accept")!, 4), []);
+    assert.deepEqual(basisArgumentViolations(zone, findMethod(zone, "ExecutionCoordinator", "#accept")!, 5), []);
     for (const [name, shape] of [["#requireControl", "null"], ["#openExchange", "result"]] as const) {
       const method = findMethod(zone, "ExecutionCoordinator", name);
       assert.ok(method !== undefined, name);
@@ -381,7 +435,7 @@ const MUTANTS: readonly { readonly name: string; readonly edits: readonly (reado
   { name: "25: the basis bound before the safety callback", edits: [at(COORDINATOR, TAKEOVER_BASIS, "\n    // -- K1.2-DEC-19 revalidation"), at(COORDINATOR, "    let safe = false;\n    try {", "    const basis = record.version;\n    let safe = false;\n    try {")], reason: "requestTakeover: binds its basis before its last callback" },
   { name: "25: a plan's basis read when the plan is assembled", edits: [at(COORDINATOR, '      kind: "takeover",\n      executionId: record.executionId,\n      basis,', '      kind: "takeover",\n      executionId: record.executionId,\n      basis: record.version,')], reason: "requestTakeover: a plan's basis is not the planner's bound basis" },
   { name: "25: accepted state read after the last callback, before the basis", edits: [at(COORDINATOR, '    const content = acceptInputContent(request, "");\n', '    const content = acceptInputContent(request, "");\n    const early = record.mailboxLength;\n')], reason: "submitInput: reads accepted state after its last callback and before binding its basis: record.mailboxLength" },
-  { name: "25: #accept handed a basis that is not its caller's binding", edits: [at(COORDINATOR, "return ok(this.#accept(record, intent, capture.outcome, caller, basis));", "return ok(this.#accept(record, intent, capture.outcome, caller, record.version));")], reason: "submitOutcome: passes #accept a basis that is not its own binding" },
+  { name: "25: #accept handed a basis that is not its caller's binding", edits: [at(COORDINATOR, "return ok(this.#accept(record, intent, capture.outcome, caller, reading, basis));", "return ok(this.#accept(record, intent, capture.outcome, caller, reading, record.version));")], reason: "submitOutcome: passes #accept a basis that is not its own binding" },
   // Control 26: the Driver handed the attempt before it is recorded.
   { name: "26: the Driver handed the attempt before the decision is applied", edits: [at(COORDINATOR, "    this.#state.apply(plan);\n    this.#deliver(exchange);\n    return answer;", "    this.#deliver(exchange);\n    this.#state.apply(plan);\n    return answer;")], reason: "requestTakeover: statement outside the hand-over → delivery → return suffix" },
   // Control 27 (round 6 H3): holds written before their history append.
@@ -405,7 +459,7 @@ const MUTANTS: readonly { readonly name: string; readonly edits: readonly (reado
   // D01-CHK-2: getters.
   { name: "a reader getter that writes its record", edits: [at(STATE, "  get version(): number {\n    return this.#record.version;\n  }", "  get version(): number {\n    this.#record.version = this.#record.version;\n    return this.#record.version;\n  }")], reason: "version written by" },
   { name: "a changing getter read by a planner before its hand-over", edits: [at(STATE, "  get mailboxLength(): number {\n    return this.#record.mailbox.length;\n  }", "  get mailboxLength(): number {\n    appendAllOwn(this.#record.mailbox, []);\n    return this.#record.mailbox.length;\n  }")], reason: "submitInput: mutates before its hand-over: record.mailboxLength" },
-  { name: "a getter that returns a live record list, which a planner changes", edits: [at(STATE, "  get mailboxLength(): number {", "  get liveRefusals(): RefusalRecord[] {\n    return this.#record.refusals;\n  }\n\n  get mailboxLength(): number {"), at(STATE, 'import type { ExecutionState } from "./lifecycle.ts";', 'import type { ExecutionState } from "./lifecycle.ts";\nimport type { RefusalRecord } from "./refusal.ts";'), at(COORDINATOR, '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n', '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n    appendAllOwn(record.liveRefusals, []);\n')], reason: "submitInput: mutates before its hand-over: appendAllOwn(record.liveRefusals, [])" },
+  { name: "a getter that returns a live record list, which a planner changes", edits: [at(STATE, "  get mailboxLength(): number {", "  get liveRefusals(): RefusalRecord[] {\n    return this.#record.refusals;\n  }\n\n  get mailboxLength(): number {"), at(STATE, 'import { isTerminal, type ExecutionState } from "./lifecycle.ts";', 'import { isTerminal, type ExecutionState } from "./lifecycle.ts";\nimport type { RefusalRecord } from "./refusal.ts";'), at(COORDINATOR, '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n', '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n    appendAllOwn(record.liveRefusals, []);\n')], reason: "submitInput: mutates before its hand-over: appendAllOwn(record.liveRefusals, [])" },
 ];
 
 describe("correction DEC-9 negative controls: every forbidden shape is reported", () => {

@@ -44,8 +44,9 @@ import type {
   ExecutionView,
   MailboxDisposition,
   MailboxEntryView,
+  ReadinessView,
 } from "./inspection.ts";
-import type { ExecutionState } from "./lifecycle.ts";
+import { isTerminal, type ExecutionState } from "./lifecycle.ts";
 import { appendAllOwn, appendOwn, copyOwn, mapOwn, readAt } from "./own-array.ts";
 import {
   holdsOf,
@@ -55,17 +56,26 @@ import {
   type CreationPlan,
   type DeliveryPlan,
   type DispatchPlan,
+  type ExpiryPlan,
   type InputPlan,
+  type LiveWait,
   type OutcomeAccepted,
   type OutcomePlan,
   type Plan,
+  type Readiness,
   type RefusalPlan,
+  type RetiredWait,
   type SettlementPlan,
   type StoredHold,
   type TakeoverPlan,
+  type TimerDiscardPlan,
 } from "./plan.ts";
 import type { ActivationRecord, DeliveryAttempt, ExecutionRecord, MailboxEntry, ResolvedExchange } from "./state-records.ts";
-import type { BoundaryValue } from "./value-types.ts";
+import type { BoundaryValue, CanonicalValue } from "./value-types.ts";
+import type { SourceCategory } from "./waits.ts";
+
+/** The one kind a Kernel timeout Event carries (the K0.2 fixture's token). */
+const TIMEOUT_KIND = "kernel.wait.timeout";
 
 const PrimordialObjectFreeze = Object.freeze;
 const PrimordialReflectApply = Reflect.apply;
@@ -86,6 +96,23 @@ const mapSet = <K, V>(map: Map<K, V>, key: K, value: V): void => {
 };
 
 const STALE_PLAN = "plan refused: its Execution changed after the plan was formed, or does not hold what the plan names";
+
+/**
+ * The owner's structural checks (K1.3, design 01 § 12 and addendum 01 § A7). Each refuses a plan that
+ * would break one rule whatever the coordinator decided, and names the rule it guards:
+ *
+ * - S1: a terminal Execution never reopens; dispatch needs `READY` and an Outcome `RUNNING`.
+ * - S3: `WAITING` exactly when one generation is live; a plan that retires a generation names the live one.
+ * - S4: at most one timeout Event per generation: only the live generation expires, once.
+ * - S5: readiness is set only over none, and only by a retirement.
+ *
+ * These are owner guards, not semantic closure: which Events are eligible, which batch is selected and
+ * which plan an operation forms stay the coordinator's, checked by the tests (L-15).
+ */
+const S1 = "S1 a terminal Execution never reopens";
+const S3 = "S3 WAITING exactly when one generation is live";
+const S4 = "S4 at most one timeout Event per generation";
+const S5 = "S5 readiness only over none, by a retirement";
 
 // -- Readers ------------------------------------------------------------------
 
@@ -109,12 +136,21 @@ class EntryReader {
     return this.#entry.acceptancePosition;
   }
 
-  get receipt(): Receipt {
+  /** The accepting boundary's receipt; `null` for a timeout, which mints none. */
+  get receipt(): Receipt | null {
     return this.#entry.receipt;
   }
 
   get disposition(): MailboxDisposition {
     return this.#entry.disposition;
+  }
+
+  get sourceCategory(): SourceCategory {
+    return this.#entry.sourceCategory;
+  }
+
+  get subscriptionClass(): string | null {
+    return this.#entry.subscriptionClass;
   }
 }
 
@@ -240,6 +276,27 @@ class ExecutionReader {
     return this.#record.activationsMinted;
   }
 
+  /** Accepted `await` registrations so far. */
+  get registrations(): number {
+    return this.#record.registrations;
+  }
+
+  /** The live wait generation, frozen, or `null`. */
+  get wait(): LiveWait | null {
+    return this.#record.wait;
+  }
+
+  /** Wait-ended readiness, frozen, or `null`. */
+  get readiness(): Readiness | null {
+    return this.#record.readiness;
+  }
+
+  /** The retired record of one generation, frozen, or `null` while it is live or was never issued. */
+  retiredWait(generation: number): RetiredWait | null {
+    const retired = readAt(this.#record.retiredWaits, generation - 1);
+    return retired === undefined || retired.generation !== generation ? null : retired;
+  }
+
   /** The version a plan formed now names as its basis. */
   get version(): number {
     return this.#record.version;
@@ -258,6 +315,11 @@ class ExecutionReader {
   /** The mailbox entry at `index`, which must be below `mailboxLength`. */
   entryAt(index: number): EntryReader {
     return new EntryReader(readAt(this.#record.mailbox, index) as MailboxEntry);
+  }
+
+  /** The mailbox entry at `index` as the frozen Event an Activation carries. */
+  activationEventAt(index: number): ActivationEvent {
+    return toActivationEvent(readAt(this.#record.mailbox, index) as MailboxEntry);
   }
 
   /** The post-creation ingress entry under one Input ID key, or `null`. */
@@ -336,6 +398,17 @@ export class KernelState {
     return visible;
   }
 
+  /** Every Execution's ID, in creation order. For the host's timer listing, which names no caller. */
+  executionIds(): string[] {
+    const ids: string[] = [];
+    PrimordialReflectApply(PrimordialMapForEach, this.#executions, [
+      (record: ExecutionRecord) => {
+        appendOwn(ids, record.executionId);
+      },
+    ]);
+    return ids;
+  }
+
   /** One delivery attempt's status, or `null` when no such attempt is recorded. */
   deliveryStatus(executionId: string, activationId: string, attempt: number): DeliveryAttempt["status"] | null {
     const record = mapGet(this.#executions, executionId);
@@ -383,6 +456,14 @@ export class KernelState {
       this.#applyRefusal(plan);
       return;
     }
+    if (plan.kind === "expiry") {
+      this.#applyExpiry(plan);
+      return;
+    }
+    if (plan.kind === "timer_discard") {
+      this.#applyTimerDiscard(plan);
+      return;
+    }
     const unreachable: never = plan;
     throw new PrimordialError(`${STALE_PLAN}: unknown plan ${typeof unreachable}`);
   }
@@ -405,11 +486,15 @@ export class KernelState {
     const initial = plan.initial;
     const entry: MailboxEntry = {
       eventId: initial.eventId,
+      sourceCategory: "application_input",
       inputId: initial.inputId,
+      destination: executionId,
       contentIdentity: initial.contentIdentity,
       kind: initial.kind,
       payload: initial.payload,
       subscriptionClass: initial.subscriptionClass,
+      waitGeneration: null,
+      deadline: null,
       acceptancePosition: initial.acceptancePosition,
       receipt: initial.receipt,
       disposition: QUEUED,
@@ -444,6 +529,11 @@ export class KernelState {
       nextRefusalPosition: 1,
       activationsMinted: 0,
       recoveryHistory: [],
+      registrations: 0,
+      wait: null,
+      readiness: null,
+      retiredWaits: [],
+      timerFires: [],
       version: plan.basis + 1,
     };
     mapSet(this.#executions, executionId, record);
@@ -456,13 +546,24 @@ export class KernelState {
     const inputId: InputId = facts.inputId;
     const receipt = facts.receipt;
     const position = receipt.position;
+    const woken = plan.woken;
+    const readiness = plan.readiness;
+    const live = record.wait;
+    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
+    if ((woken === null) !== (readiness === null)) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
+    if (woken !== null && (record.state !== "WAITING" || live === null || live.generation !== woken.generation)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if (readiness !== null && record.readiness !== null) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
     const entry: MailboxEntry = {
       eventId: facts.eventId,
+      sourceCategory: "application_input",
       inputId,
+      destination: inputId.destination,
       contentIdentity: facts.contentIdentity,
       kind: facts.kind,
       payload: facts.payload,
       subscriptionClass: facts.subscriptionClass,
+      waitGeneration: null,
+      deadline: null,
       acceptancePosition: facts.acceptancePosition,
       receipt,
       disposition: QUEUED,
@@ -472,11 +573,16 @@ export class KernelState {
     appendOwn(record.mailbox, entry);
     mapSet(record.byInputId, inputIdKey(inputId), entry);
     appendOwn(record.receipts, receipt);
+    if (woken !== null) appendOwn(record.retiredWaits, woken);
+    if (woken !== null) record.wait = null;
+    if (readiness !== null) record.readiness = readiness;
+    if (woken !== null) record.state = "READY";
   }
 
   #applyDispatch(plan: DispatchPlan): void {
     const record = this.#resolve(plan.executionId, plan.basis);
     if (record.activation !== null) throw new PrimordialError(STALE_PLAN);
+    if (record.state !== "READY") throw new PrimordialError(`${STALE_PLAN} (${S1})`);
     const receipt = plan.receipt;
     const position = receipt.position;
     const activationsMinted = plan.activationsMinted;
@@ -495,6 +601,7 @@ export class KernelState {
     record.activation = intent;
     record.state = "RUNNING";
     appendOwn(record.receipts, receipt);
+    record.readiness = null;
   }
 
   #applyDelivery(plan: DeliveryPlan): void {
@@ -531,6 +638,36 @@ export class KernelState {
     const intent = record.activation;
     const facts = plan.resolved;
     if (intent === null || intent.activation.activationId !== facts.activationId) throw new PrimordialError(STALE_PLAN);
+    if (record.state !== "RUNNING") throw new PrimordialError(`${STALE_PLAN} (${S1})`);
+    const registrations = plan.registrations;
+    const liveWait = plan.liveWait;
+    const retired = plan.retired;
+    const readiness = plan.readiness;
+    const timeout = plan.timeout;
+    if ((plan.nextState === "WAITING") !== (liveWait !== null)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if (registrations !== record.registrations && registrations !== record.registrations + 1) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if (liveWait !== null && (liveWait.generation !== registrations || record.wait !== null)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if (retired !== null && retired.generation !== registrations) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if (timeout !== null && (retired === null || retired.retiredBy !== "deadline" || timeout.generation !== retired.generation)) throw new PrimordialError(`${STALE_PLAN} (${S4})`);
+    if ((retired === null) !== (readiness === null) || (readiness !== null && record.readiness !== null)) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
+    const timeoutEntry: MailboxEntry | null =
+      timeout === null
+        ? null
+        : {
+            eventId: timeout.eventId,
+            sourceCategory: "kernel_timeout",
+            inputId: null,
+            destination: timeout.destination,
+            contentIdentity: "",
+            kind: TIMEOUT_KIND,
+            payload: null,
+            subscriptionClass: null,
+            waitGeneration: timeout.generation,
+            deadline: timeout.deadline,
+            acceptancePosition: timeout.acceptancePosition,
+            receipt: null,
+            disposition: QUEUED,
+          };
     const toAcknowledge: MailboxEntry[] = [];
     for (let index = 0; index < plan.acknowledgeAt.length; index += 1) {
       appendOwn(toAcknowledge, readAt(record.mailbox, readAt(plan.acknowledgeAt, index) as number) as MailboxEntry);
@@ -575,6 +712,11 @@ export class KernelState {
     mapSet(record.acceptedOutcomes, activationId, stored);
     appendOwn(record.receipts, receipt);
     appendAllOwn(record.recoveryHistory, historyToAppend);
+    if (timeoutEntry !== null) appendOwn(record.mailbox, timeoutEntry);
+    if (retired !== null) appendOwn(record.retiredWaits, retired);
+    record.registrations = registrations;
+    record.wait = liveWait;
+    record.readiness = readiness;
     record.activation = null;
     record.state = nextState;
   }
@@ -615,6 +757,52 @@ export class KernelState {
     exchange.protocolFailureHold = protocolFailureHold;
   }
 
+  #applyExpiry(plan: ExpiryPlan): void {
+    const record = this.#resolve(plan.executionId, plan.basis);
+    const timeout = plan.timeout;
+    const retired = plan.retired;
+    const readiness = plan.readiness;
+    const fire = plan.fire;
+    const live = record.wait;
+    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
+    if (record.state !== "WAITING" || live === null || live.generation !== retired.generation) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if (timeout.generation !== live.generation || retired.retiredBy !== "deadline") throw new PrimordialError(`${STALE_PLAN} (${S4})`);
+    if (record.readiness !== null || readiness.generation !== live.generation) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
+    const entry: MailboxEntry = {
+      eventId: timeout.eventId,
+      sourceCategory: "kernel_timeout",
+      inputId: null,
+      destination: timeout.destination,
+      contentIdentity: "",
+      kind: TIMEOUT_KIND,
+      payload: null,
+      subscriptionClass: null,
+      waitGeneration: timeout.generation,
+      deadline: timeout.deadline,
+      acceptancePosition: timeout.acceptancePosition,
+      receipt: null,
+      disposition: QUEUED,
+    };
+    // A timeout takes the next acceptance position and mints no receipt (identity.md: timeout
+    // acceptance is Kernel-internal, not a seventh receipt boundary).
+    record.version = plan.basis + 1;
+    record.nextAcceptancePosition = timeout.acceptancePosition + 1;
+    appendOwn(record.mailbox, entry);
+    appendOwn(record.retiredWaits, retired);
+    appendOwn(record.timerFires, fire);
+    record.wait = null;
+    record.readiness = readiness;
+    record.state = "READY";
+  }
+
+  #applyTimerDiscard(plan: TimerDiscardPlan): void {
+    const record = this.#resolve(plan.executionId, plan.basis);
+    const fire = plan.fire;
+    // A discarded fire is operational evidence only: nothing logical changes.
+    record.version = plan.basis + 1;
+    appendOwn(record.timerFires, fire);
+  }
+
   #applyRefusal(plan: RefusalPlan): void {
     const record = this.#resolve(plan.executionId, plan.basis);
     const refusal = plan.refusal;
@@ -648,11 +836,23 @@ const deliveriesOf = (record: ExecutionRecord, activationId: string): DeliveryAt
  * copy from acceptance.
  */
 const toActivationEvent = (entry: MailboxEntry): ActivationEvent => {
+  if (entry.sourceCategory === "kernel_timeout") {
+    return PrimordialObjectFreeze({
+      eventId: entry.eventId,
+      destination: entry.destination,
+      kind: entry.kind,
+      payload: null,
+      sourceCategory: "kernel_timeout" as const,
+      waitGeneration: entry.waitGeneration as number,
+      deadline: entry.deadline as number,
+      acceptancePosition: entry.acceptancePosition,
+    });
+  }
   const base = {
     eventId: entry.eventId,
-    destination: entry.inputId.destination,
+    destination: entry.destination,
     kind: entry.kind,
-    payload: entry.payload.value,
+    payload: (entry.payload as CanonicalValue).value,
     sourceCategory: "application_input",
     acceptancePosition: entry.acceptancePosition,
   } as const;
@@ -686,17 +886,41 @@ const toActivationView = (intent: ActivationRecord): ActivationView => ({
   deliveries: mapOwn(intent.deliveries, toDeliveryView),
 });
 
-const toMailboxView = (entry: MailboxEntry, isReserved: (eventId: string) => boolean): MailboxEntryView => ({
-  eventId: entry.eventId,
-  inputId: { ...entry.inputId },
-  kind: entry.kind,
-  payload: entry.payload.value,
-  subscriptionClass: entry.subscriptionClass,
-  sourceCategory: "application_input",
-  acceptancePosition: entry.acceptancePosition,
-  disposition: entry.disposition,
-  reserved: isReserved(entry.eventId),
-  receipt: entry.receipt,
+const toMailboxView = (entry: MailboxEntry, isReserved: (eventId: string) => boolean): MailboxEntryView => {
+  if (entry.sourceCategory === "kernel_timeout") {
+    return {
+      eventId: entry.eventId,
+      inputId: null,
+      kind: entry.kind,
+      payload: null,
+      subscriptionClass: null,
+      sourceCategory: "kernel_timeout",
+      waitGeneration: entry.waitGeneration as number,
+      deadline: entry.deadline as number,
+      acceptancePosition: entry.acceptancePosition,
+      disposition: entry.disposition,
+      reserved: isReserved(entry.eventId),
+      receipt: null,
+    };
+  }
+  return {
+    eventId: entry.eventId,
+    inputId: { ...(entry.inputId as InputId) },
+    kind: entry.kind,
+    payload: (entry.payload as CanonicalValue).value,
+    subscriptionClass: entry.subscriptionClass,
+    sourceCategory: "application_input",
+    acceptancePosition: entry.acceptancePosition,
+    disposition: entry.disposition,
+    reserved: isReserved(entry.eventId),
+    receipt: entry.receipt as Receipt,
+  };
+};
+
+const toReadinessView = (readiness: Readiness): ReadinessView => ({
+  species: readiness.species,
+  generation: readiness.generation,
+  timeoutEventId: readiness.timeoutEventId,
 });
 
 function viewOf(record: ExecutionRecord): ExecutionView {
@@ -749,5 +973,10 @@ function viewOf(record: ExecutionRecord): ExecutionView {
     terminalDispositions,
     refusals: copyOwn(record.refusals),
     receipts: copyOwn(record.receipts),
+    // The live wait, the retired records and the fire records are frozen at acceptance.
+    wait: record.wait,
+    waitEndedReadiness: record.readiness === null ? null : toReadinessView(record.readiness),
+    retiredWaits: copyOwn(record.retiredWaits),
+    timerFires: copyOwn(record.timerFires),
   };
 }

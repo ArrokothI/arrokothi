@@ -77,7 +77,7 @@ for (const [label, namespace] of namespaces) {
       assert.match(r.reason, /<identity omitted>/);
       if (classification === "malformed_envelope") {
         assert.match(r.reason, /progress.*missing_field/);
-        assert.match(r.reason, /next.step.*wait_unsupported/);
+        assert.match(r.reason, /next\.wait.*missing_field/);
       }
     }
     const valid = propose({ progress: { exact: "accepted" }, emissions: [{ emissionKey: "key", value: 7 }] });

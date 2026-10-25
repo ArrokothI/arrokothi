@@ -152,7 +152,15 @@ describe("correction DEC-8: every access that could reach a member its object do
       };
       visit(source);
     }
-    assert.deepEqual(calls.sort(), ["constructor emissionsPerOutcome", "constructor mailboxCapacity", "mayControlScope controlScopes", "requestTakeover isSafeToReplace"]);
+    assert.deepEqual(calls.sort(), [
+      "constructor clock",
+      "constructor emissionsPerOutcome",
+      "constructor mailboxCapacity",
+      "isClock now",
+      "mayControlScope controlScopes",
+      "readClock now",
+      "requestTakeover isSafeToReplace",
+    ]);
   });
 });
 

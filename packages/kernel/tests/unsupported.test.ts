@@ -43,7 +43,7 @@ describe("target Kernel scaffolding", () => {
     assert.match(error.message, /@arrokothi\/core, which is explicitly legacy/);
   });
 
-  test("the package exports exactly the K1.1/K1.2 controls and BINDING-01 byte surface and nothing that could look like a later packet's", async () => {
+  test("the package exports exactly the K1.1/K1.2/K1.3 controls and BINDING-01 byte surface and nothing that could look like a later packet's", async () => {
     const surface = await import("../src/index.ts");
     assert.deepEqual(Object.keys(surface).sort(), [
       "BOUNDARY_LIMITS",
@@ -62,10 +62,11 @@ describe("target Kernel scaffolding", () => {
       "validateCanonicalBytes",
     ]);
     // Nothing named for a boundary no packet has built yet. The list above is exact so adding one is a
-    // deliberate, reviewed change rather than a drift. K1.2 adds only types and coordinator methods,
-    // no runtime export; Outcome acceptance and takeover are built now, so the guard names what is not.
+    // deliberate, reviewed change rather than a drift. K1.2 and K1.3 add only types and coordinator
+    // methods, no runtime export; Outcome acceptance, takeover, waits, deadlines and cancellation are
+    // built now, so the guard names what is not.
     for (const name of Object.keys(surface)) {
-      assert.doesNotMatch(name, /effect|wait|deadline|cancel|child|message/i, `${name} would advertise an unbuilt boundary`);
+      assert.doesNotMatch(name, /effect|child|message/i, `${name} would advertise an unbuilt boundary`);
     }
   });
 });

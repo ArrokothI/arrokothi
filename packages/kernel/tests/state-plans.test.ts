@@ -63,7 +63,7 @@ const during = <T>(operation: () => T): { result: T; plans: Applied[] } => {
   return { result, plans: [...applied] };
 };
 
-const KINDS = new Set(["creation", "input", "dispatch", "delivery", "settlement", "outcome", "takeover", "control", "refusal"]);
+const KINDS = new Set(["creation", "input", "dispatch", "delivery", "settlement", "outcome", "takeover", "control", "refusal", "expiry", "timer_discard"]);
 
 /** Everything wrong with `value` as plan data: functions, accessors, foreign bytes, exotic objects and, when `frozen`, anything unfrozen. */
 function dataViolations(value: unknown, path: string, frozen: boolean, seen = new Set<object>()): string[] {
@@ -273,12 +273,15 @@ describe("CR1-2: the owner's views alias nothing it holds", () => {
         findCreation: () => state.findCreation(creationRequestIdKey({ producerNamespace: "app-a", scope: "tenant-a", requestKey: "report-17" })),
         visibleExecutionIds: () => state.visibleExecutionIds(author),
         deliveryStatus: () => state.deliveryStatus(executionId, first.activationId, 1),
+        executionIds: () => state.executionIds(),
       },
       ExecutionReader: {
         entryAt: () => execution.entryAt(1),
         inputEntry: () => execution.inputEntry(inputIdKey({ producerNamespace: "app-a", destination: executionId, requestKey: "k1" })),
         acceptedOutcome: () => execution.acceptedOutcome(first.activationId),
         queuedEvents: () => execution.queuedEvents(8),
+        activationEventAt: () => execution.activationEventAt(1),
+        retiredWait: () => execution.retiredWait(1),
       },
       ExchangeReader: {},
       EntryReader: {},

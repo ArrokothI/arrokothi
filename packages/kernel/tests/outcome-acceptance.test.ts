@@ -625,7 +625,9 @@ describe("K1.2-C7 Effects, obligations and waits are refused whole", () => {
     assert.equal(accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next: { step: "complete", result: { ok: true } } }), submissionFor(driver, dispatched.activationId))).nextState, "COMPLETED");
   });
 
-  test("`await` is refused naming K1.3, and the wait is never read", () => {
+  test("`await` reads its wait once with the rest of the envelope and registers it (K1.3, DEC-10)", () => {
+    // Until K1.3 an `await` was refused naming K1.3 and its wait was never read. The wait is now read
+    // exactly once, at capture, because an exact duplicate must compare it too.
     const { kernel, driver, executionId } = created();
     const dispatched = accepted(kernel.dispatch(author, executionId, { bound: 1 }));
     let reads = 0;
@@ -636,13 +638,14 @@ describe("K1.2-C7 Effects, obligations and waits are refused whole", () => {
       },
       enumerable: true,
     });
-    const before = view(kernel, executionId);
-    const refusal = refused(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next }), submissionFor(driver, dispatched.activationId)));
-    assert.equal(refusal.classification, "malformed_envelope");
-    assert.match(refusal.reason, /not supported before K1\.3/);
-    assert.equal(reads, 0);
-    assertRefusedWhole(before, view(kernel, executionId), "malformed_envelope");
-    assert.equal(view(kernel, executionId).state, "RUNNING", "never WAITING");
+    const decision = accepted(kernel.submitOutcome(author, outcomeFor(executionId, dispatched, { next }), submissionFor(driver, dispatched.activationId)));
+    assert.equal(reads, 1);
+    assert.equal(decision.nextState, "WAITING");
+    assert.deepEqual(decision.wait, { generation: 1, result: "waiting", timeoutEventId: null });
+    const after = view(kernel, executionId);
+    assert.equal(after.state, "WAITING");
+    assert.equal(after.wait?.generation, 1);
+    assert.deepEqual(after.wait?.declaration.subscriptions, [{ subscriptionClass: "editor-correction" }]);
   });
 });
 

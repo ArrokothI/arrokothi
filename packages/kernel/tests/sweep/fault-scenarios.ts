@@ -55,6 +55,8 @@ export interface Scenario {
   readonly emissionsPerOutcome?: number;
   /** Review 11's exact setup: no input accepted after the reservation. */
   readonly bare?: boolean;
+  /** K1.3: the coordinator's clock reads this value, or throws; absent means no clock. */
+  readonly clock?: number | "throws";
 }
 
 /** Suspends the sweep around the Driver's safety callback. */
@@ -98,6 +100,10 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
   };
   const complete = (env: Env): void => answerOutcome(env, { next: { step: "complete", result: { done: true } } });
   const nothing = (): void => {};
+  /** K1.3: an input an `await` subscribing to class `s` is eligible for, queued outside the batch. */
+  const eligibleInput = (env: Env): void => {
+    harness.accepted(env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "eligible", kind: "update", payload: bytes({ eligible: true }), subscriptionClass: "s" }));
+  };
 
   const hidden = () => harness.caller("hidden", "other-scope");
   const recover = (available: typeof AVAILABLE, activationId?: string) => (env: Env): Call => {
@@ -198,7 +204,7 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
     { name: "takeover: refused, the safety callback took the exchange over itself", control: "requestTakeover", expect: refused("stale_exchange"), exit: ["requestTakeover", "is not the current epoch ${exchange.activation.writerEpoch}"], setup: nothing, call: takeover(), callback: (env) => { harness.accepted(env.kernel.requestTakeover(env.who, env.executionId, { activationId: env.open.activationId, writerEpoch: 1 })); } },
     { name: "takeover: refused, the safety callback held the exchange's code", control: "requestTakeover", expect: refused("recovery_held"), exit: ["requestTakeover", "${postCallbackHold.reason}"], setup: nothing, call: takeover(), callback: (env) => codeHold(env) },
 
-    // -- submitOutcome: 23 -----------------------------------------------------------------------
+    // -- submitOutcome: 27 -----------------------------------------------------------------------
     { name: "outcome: continue", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, call: submit() },
     { name: "outcome: complete with an Emission and a queued outside-batch input", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, call: submit({ next: { step: "complete", result: { done: true } }, emissions: [{ emissionKey: "e", value: { output: true } }] }) },
     { name: "outcome: fail", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, call: submit({ next: { step: "fail", error: { reason: "x" } } }) },
@@ -227,6 +233,11 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
     { name: "outcome: refused over the Emission capacity, identity unusable", control: "submitOutcome", expect: refused("capacity_exhausted"), exit: ["submitOutcome", `${UNUSABLE} the Outcome carries`], setup: nothing, emissionsPerOutcome: 1, call: submit({ activationId: 42, emissions: [{ emissionKey: "a", value: 1 }, { emissionKey: "b", value: 2 }] }) },
     { name: "outcome: refused malformed content", control: "submitOutcome", expect: refused("malformed_envelope"), exit: ["submitOutcome", `${USABLE} refused whole`], setup: nothing, call: submit({ progress: harness.rawBytes("1e400") }) },
     { name: "outcome: refused malformed content, identity unusable", control: "submitOutcome", expect: refused("malformed_envelope"), exit: ["submitOutcome", `${UNUSABLE} the Outcome is refused whole`], setup: nothing, call: submit({ activationId: 42 }) },
+    // K1.3: the three registration outcomes of an `await`, and the one refusal its deadline adds.
+    { name: "outcome: await, the wait stays live", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, clock: 0, call: submit({ next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }], deadline: 10 } } }) },
+    { name: "outcome: await, a queued eligible input wakes it at registration", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: eligibleInput, call: submit({ next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }] } } }) },
+    { name: "outcome: await, a due deadline mints its timeout at registration", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, clock: 10, call: submit({ next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }], deadline: 10 } } }) },
+    { name: "outcome: refused, the clock gave no usable reading for a deadline", control: "submitOutcome", expect: refused("clock_unavailable"), exit: ["submitOutcome", "registers a wait whose deadline must be compared with the clock"], setup: nothing, clock: "throws", call: submit({ next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }], deadline: 10 } } }) },
   ];
 
   /**
@@ -236,7 +247,13 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
    */
   const fresh = (scenario: Scenario, hook = true): Env => {
     const driver = scenario.unsafeDriver === true ? (harness.unsafeDriver() as unknown as ReturnType<typeof harness.recordingDriver>) : harness.recordingDriver();
-    const coordinator = new ExecutionCoordinator(scenario.emissionsPerOutcome === undefined ? { driver } : { driver, emissionsPerOutcome: scenario.emissionsPerOutcome });
+    const reading = scenario.clock;
+    const clock = reading === undefined ? undefined : { now: (): number => { if (reading === "throws") throw new Error("clock unavailable"); return reading; } };
+    const coordinator = new ExecutionCoordinator({
+      driver,
+      ...(scenario.emissionsPerOutcome === undefined ? {} : { emissionsPerOutcome: scenario.emissionsPerOutcome }),
+      ...(clock === undefined ? {} : { clock }),
+    });
     const who = harness.caller("fault", "tenant-a");
     const { executionId } = harness.accepted(coordinator.createExecution(who, create()));
     const open = harness.accepted(coordinator.dispatch(who, executionId, { bound: 1 }));

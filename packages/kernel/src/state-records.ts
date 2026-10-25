@@ -11,20 +11,35 @@ import type { Activation, SubmissionGrant } from "./driver.ts";
 import type { CreationRequestId, InputId, Receipt } from "./identity.ts";
 import type { EmissionView, MailboxDisposition, RecoveryHistoryRecord, TerminalResultView } from "./inspection.ts";
 import type { ExecutionState } from "./lifecycle.ts";
-import type { AcceptedOutcome, StoredHold } from "./plan.ts";
+import type { AcceptedOutcome, LiveWait, Readiness, RetiredWait, StoredHold, TimerFireRecord } from "./plan.ts";
 import type { RefusalRecord } from "./refusal.ts";
 import type { BoundaryValue, CanonicalValue } from "./value-types.ts";
+import type { SourceCategory } from "./waits.ts";
 
+/**
+ * One accepted Event: application input, or a Kernel timeout (K1.3).
+ *
+ * One shape for both, every field required: a field one category has no value for is `null`. Input
+ * owns its Input ID, content identity, payload and receipt; a timeout owns its wait generation and
+ * deadline, and its payload is the canonical `null`.
+ */
 export interface MailboxEntry {
   readonly eventId: string;
-  readonly inputId: InputId;
-  /** The injective packing of this input's content parts; equal identity means equal content. */
+  /** The trusted path that accepted or minted it; written once, never inferred from content. */
+  readonly sourceCategory: SourceCategory;
+  readonly inputId: InputId | null;
+  readonly destination: string;
+  /** The injective packing of this input's content parts; equal identity means equal content. `""` for a timeout. */
   readonly contentIdentity: string;
   readonly kind: string;
-  readonly payload: CanonicalValue;
+  /** The accepted payload; `null` is a timeout's canonical `null` payload. */
+  readonly payload: CanonicalValue | null;
   readonly subscriptionClass: string | null;
+  readonly waitGeneration: number | null;
+  readonly deadline: number | null;
   readonly acceptancePosition: number;
-  readonly receipt: Receipt;
+  /** The receipt of the boundary that accepted it; `null` for a timeout, which mints none. */
+  readonly receipt: Receipt | null;
   disposition: MailboxDisposition;
 }
 
@@ -133,6 +148,16 @@ export interface ExecutionRecord {
    * exchange resolving, and the Execution ending. Idempotent duplicates append nothing.
    */
   readonly recoveryHistory: RecoveryHistoryRecord[];
+  /** Accepted `await` registrations so far; the next one creates generation `registrations + 1`. */
+  registrations: number;
+  /** The live wait generation, exactly while `WAITING`. */
+  wait: LiveWait | null;
+  /** Wait-ended readiness, from a retirement until the next reservation or a terminal decision. */
+  readiness: Readiness | null;
+  /** Retired generations in generation order: a generation retires once, before the next exists. */
+  readonly retiredWaits: RetiredWait[];
+  /** Every host timer fire that named this Execution, oldest first. */
+  readonly timerFires: TimerFireRecord[];
   /** The number of plans applied to this Execution: the basis a plan names. In no view or answer. */
   version: number;
 }

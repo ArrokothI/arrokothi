@@ -190,6 +190,12 @@ export const OUTCOME_APPLY = [
   ["acceptedOutcomes", "mapSet(record.acceptedOutcomes, activationId, stored);"],
   ["receipts", "appendOwn(record.receipts, receipt);"],
   ["history", "appendAllOwn(record.recoveryHistory, historyToAppend);"],
+  // K1.3: an `await` registration's facts, in the same commit.
+  ["timeout", "if (timeoutEntry !== null) appendOwn(record.mailbox, timeoutEntry);"],
+  ["retired", "if (retired !== null) appendOwn(record.retiredWaits, retired);"],
+  ["registrations", "record.registrations = registrations;"],
+  ["wait", "record.wait = liveWait;"],
+  ["readiness", "record.readiness = readiness;"],
   ["activation", "record.activation = null;"],
   ["state", "record.state = nextState;"],
 ] as const;
@@ -512,9 +518,22 @@ export const CHECKS = {
       resultId: string | null;
       terminalDispositions: readonly string[];
       replayed: boolean;
+      wait: { generation: number; result: string; timeoutEventId: string | null } | null;
     };
     const before = context.s0.view;
     const after = decision.state.view;
+    // K1.3: an `await`'s registration result agrees with the wait state it left; any other step leaves none.
+    const wait = answer.wait;
+    const lastRetired = after.retiredWaits.at(-1);
+    const readiness = after.waitEndedReadiness;
+    const waitAgrees =
+      wait === null
+        ? after.wait === null && readiness === null && after.retiredWaits.length === before.retiredWaits.length
+        : wait.result === "waiting"
+          ? after.wait !== null && after.wait.generation === wait.generation && readiness === null && wait.timeoutEventId === null
+          : after.wait === null && lastRetired !== undefined && lastRetired.generation === wait.generation && readiness !== null &&
+            readiness.generation === wait.generation && readiness.timeoutEventId === wait.timeoutEventId &&
+            (wait.result === "expired" ? lastRetired.retiredBy === "deadline" && lastRetired.endingEventId === wait.timeoutEventId : lastRetired.retiredBy === "event");
     const added = (list: readonly string[], base: readonly string[]): string[] => list.filter((id) => !base.includes(id));
     if (before.activation === null || typeof context.s0.nextAcceptance !== "number") return false;
     return answer.replayed === false && answer.activationId === before.activation.activationId &&
@@ -527,8 +546,8 @@ export const CHECKS = {
       answer.resultId === (after.result === null ? null : after.result.resultId) &&
       isDeepStrictEqual([...answer.terminalDispositions], added(after.terminalDispositions, before.terminalDispositions)) &&
       after.activation === null && decision.state.nextRefusal === context.s0.nextRefusal &&
-      decision.state.nextAcceptance === (after.state === "READY" ? context.s0.nextAcceptance + 1 : "terminal_destination") &&
-      decision.state.setupGrant === "duplicate_conflict";
+      decision.state.nextAcceptance === (after.state === "READY" || after.state === "WAITING" ? context.s0.nextAcceptance + 1 : "terminal_destination") &&
+      decision.state.setupGrant === "duplicate_conflict" && waitAgrees;
   },
   // Exits.
   declaredExit: (declared: readonly Exit[], executed: (exit: Exit) => boolean): boolean => declared.length === 1 && executed(declared[0] as Exit),
@@ -617,6 +636,25 @@ export function outcomeLadder(context: Context): { readonly step: OutcomeStep; r
         for (let added = 1; added <= s1.view.recoveryHistory.length - s0.view.recoveryHistory.length; added += 1) {
           elements.push((current) => withView(current, { recoveryHistory: s1.view.recoveryHistory.slice(0, s0.view.recoveryHistory.length + added) }));
         }
+        break;
+      case "timeout":
+        for (let added = 1; added <= s1.view.mailbox.length - s0.view.mailbox.length; added += 1) {
+          elements.push((current) => withMailbox(current, [...current.view.mailbox, ...s1.view.mailbox.slice(current.view.mailbox.length, current.view.mailbox.length + 1)]));
+        }
+        break;
+      case "retired":
+        for (let added = 1; added <= s1.view.retiredWaits.length - s0.view.retiredWaits.length; added += 1) {
+          elements.push((current) => withView(current, { retiredWaits: s1.view.retiredWaits.slice(0, s0.view.retiredWaits.length + added) }));
+        }
+        break;
+      case "registrations":
+        // Not in any view: the generation is observable only through the live and retired waits.
+        break;
+      case "wait":
+        elements.push((current) => withView(current, { wait: s1.view.wait }));
+        break;
+      case "readiness":
+        elements.push((current) => withView(current, { waitEndedReadiness: s1.view.waitEndedReadiness }));
         break;
       case "activation":
         elements.push((current) =>

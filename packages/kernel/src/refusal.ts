@@ -82,7 +82,18 @@ export type RefusalClassification =
    * or end the Execution. Exact replays and conflicts are answered before this check (OA-2 order)
    * because they return or refuse on retained evidence without accepting anything.
    */
-  | "unauthorized_submission";
+  | "unauthorized_submission"
+  /**
+   * K1.3: the Execution is `WAITING`. `waits.md` § Selecting: there is no dispatch or batch selection
+   * while a wait is live; an eligible Event or the wait's expiry ends it first.
+   */
+  | "not_ready"
+  /**
+   * K1.3: the decision needed the injected clock's reading and the clock gave none usable: it threw,
+   * or answered something other than a safe integer of at least 0. Only an `await` whose deadline
+   * decides its registration needs one; nothing falls back to ambient time (`time.ts`).
+   */
+  | "clock_unavailable";
 
 /**
  * One refused request, retained and inspectable.

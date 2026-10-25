@@ -24,9 +24,23 @@
  *
  * EF-1 forbids accepting an Outcome minus the Effect it proposed. The same reasoning covers any field
  * this binding does not know: accepting the rest of the proposal would drop that field without a
- * trace. Unknown own fields on the envelope, on `next` and on an Emission are therefore refused, not
- * ignored (K1.2-DEC-1). An Effect list is never read beyond its length, and a wait is never read at
- * all: both are refused whole before K2 and K1.3 respectively.
+ * trace. Unknown own fields on the envelope, on `next`, on an Emission and anywhere in a wait are
+ * therefore refused, not ignored (K1.2-DEC-1). An Effect list is never read beyond its length: any
+ * Effect is refused whole before K2.
+ *
+ * ## The wait
+ *
+ * An `await` carries a wait declaration (`waits.ts`), read here once with the rest of the envelope,
+ * because an exact duplicate must compare the wait too (K1.2-DEC-10's single reading). Its rules are
+ * W-1's grammar and nothing else: at least one entry across dependency alternatives and input
+ * subscriptions, even with a deadline; each alternative supplies at least one of its three fields; a
+ * supplied kind set is non-empty; text is identity text; a deadline is a safe integer of at least 0 and
+ * needs a coordinator with a clock. Well-formedness is structural, never satisfiability: duplicate
+ * entries, empty-string text and alternatives no Event can match are accepted. One operational bound
+ * applies: at most 256 selector strings per wait, counted across subscription classes, kinds, event
+ * identities and correlations, with each list's length read before its elements. A wait issue is a
+ * content issue like any other: it decides a refusal only after the exchange checks and submission
+ * authority pass.
  *
  * ## The zone's rule
  *
@@ -50,6 +64,7 @@ import {
 import { packIdentity } from "./identity.ts";
 import { appendOwn, readAt } from "./own-array.ts";
 import { acceptCanonicalBytes, type BoundaryValue, type CanonicalValue } from "./values.ts";
+import type { AcceptedAlternative, AcceptedSubscription, AcceptedWait, WaitDeclaration } from "./waits.ts";
 
 const PrimordialArrayIsArray = Array.isArray;
 const PrimordialNumberIsSafeInteger = Number.isSafeInteger;
@@ -72,8 +87,8 @@ export interface EmissionProposal {
 /** The one next step an Outcome proposes. */
 export type OutcomeNext =
   | { readonly step: "continue" }
-  /** Refused whole until K1.3 implements wait registration; the wait is never read here. */
-  | { readonly step: "await"; readonly wait: unknown }
+  /** Registers the declared wait in this Outcome's acceptance (`waits.md` § Registering a wait). */
+  | { readonly step: "await"; readonly wait: WaitDeclaration }
   | { readonly step: "complete"; readonly result: Uint8Array }
   | { readonly step: "fail"; readonly error: Uint8Array };
 
@@ -114,6 +129,18 @@ const EMISSION_FIELDS: readonly string[] = PrimordialObjectFreeze(["emissionKey"
 const CONTINUE_FIELDS: readonly string[] = PrimordialObjectFreeze(["step"]);
 const COMPLETE_FIELDS: readonly string[] = PrimordialObjectFreeze(["step", "result"]);
 const FAIL_FIELDS: readonly string[] = PrimordialObjectFreeze(["step", "error"]);
+const AWAIT_FIELDS: readonly string[] = PrimordialObjectFreeze(["step", "wait"]);
+const WAIT_FIELDS: readonly string[] = PrimordialObjectFreeze(["dependencies", "subscriptions", "deadline"]);
+const ALTERNATIVE_FIELDS: readonly string[] = PrimordialObjectFreeze(["eventIdentity", "kinds", "correlation"]);
+const SUBSCRIPTION_FIELDS: readonly string[] = PrimordialObjectFreeze(["subscriptionClass"]);
+
+/**
+ * The declared operational bound on one wait: selector strings across all its lists.
+ *
+ * Like the Emission limit, it bounds the work one proposal can ask of validation; it says nothing about
+ * which waits are meaningful. 256 strings are accepted and 257 refused as `too_many_selectors`.
+ */
+export const WAIT_SELECTOR_LIMIT = 256;
 
 /**
  * How many unknown-field issues one object reports before the scan stops.
@@ -130,8 +157,14 @@ export interface CapturedEmission {
   readonly value: CanonicalValue;
 }
 
+/** An accepted wait plus its injective packing, which joins the Outcome's content identity. */
+export interface CapturedWait extends AcceptedWait {
+  readonly identity: string;
+}
+
 export type CapturedNext =
   | { readonly step: "continue" }
+  | { readonly step: "await"; readonly wait: CapturedWait }
   | { readonly step: "complete"; readonly result: CanonicalValue }
   | { readonly step: "fail"; readonly error: CanonicalValue };
 
@@ -353,7 +386,234 @@ function refuseEffects(observed: unknown, issues: LocatedIssue[]): void {
   }
 }
 
-function captureNext(observed: unknown, issues: LocatedIssue[]): CapturedNext | null {
+/** One optional identity-text field of a wait entry: absent is `null`. `undefined` when it is unusable. */
+function optionalText(holder: object, key: string, label: string, issues: LocatedIssue[]): string | null | undefined {
+  const field = observeField(holder, key, label, issues);
+  if (!field.ok) return undefined;
+  if (field.observed === undefined) return null;
+  return acceptIdentityText(field.observed, label, issues) ? (field.observed as string) : undefined;
+}
+
+/**
+ * One wait list field: absent means empty. Its elements are not read here, only its own length.
+ * `null` when the field is present but not a list whose length can be observed.
+ */
+function waitList(observed: unknown, label: string, issues: LocatedIssue[]): { readonly list: unknown; readonly length: number } | null {
+  if (observed === undefined) return { list: undefined, length: 0 };
+  if (!isListLike(observed)) {
+    appendIssue(issues, { path: label, code: "unsupported_form", message: `expected a list for ${label}` });
+    return null;
+  }
+  const length = observeLength(observed, label, issues);
+  return length === null ? null : { list: observed, length };
+}
+
+/** The `too_many_selectors` issue, raised as soon as the running count passes the bound. */
+function tooManySelectors(issues: LocatedIssue[]): void {
+  appendIssue(issues, {
+    path: "next.wait",
+    code: "too_many_selectors",
+    message: `a wait may name at most ${WAIT_SELECTOR_LIMIT} selector strings across its subscription classes, kinds, event identities and correlations`,
+  });
+}
+
+/**
+ * Reads one wait declaration (W-1), each field once, own fields only.
+ *
+ * `selectors` counts selector strings as they are found, and every list's length is checked against
+ * the bound before its elements are read, so an over-bound wait costs a bounded amount of reading.
+ * The lists' combined length is checked first: every valid alternative supplies at least one string.
+ */
+function captureWait(observed: unknown, deadlineSupported: boolean, issues: LocatedIssue[]): CapturedWait | null {
+  if (observed === undefined) {
+    appendIssue(issues, { path: "next.wait", code: "missing_field", message: "next.wait is required for await" });
+    return null;
+  }
+  if (!isRecordLike(observed)) {
+    appendIssue(issues, { path: "next.wait", code: "unsupported_form", message: "expected a wait declaration" });
+    return null;
+  }
+  const wait = observed as object;
+  const dependenciesField = observeField(wait, "dependencies", "next.wait.dependencies", issues);
+  const subscriptionsField = observeField(wait, "subscriptions", "next.wait.subscriptions", issues);
+  const deadlineField = observeField(wait, "deadline", "next.wait.deadline", issues);
+  refuseUnknownFields(wait, WAIT_FIELDS, "next.wait", issues);
+  if (!dependenciesField.ok || !subscriptionsField.ok || !deadlineField.ok) return null;
+
+  let deadline: number | null = null;
+  let deadlineOk = true;
+  const deadlineObserved: unknown = deadlineField.observed;
+  if (deadlineObserved !== undefined) {
+    if (typeof deadlineObserved !== "number" || !PrimordialNumberIsSafeInteger(deadlineObserved) || deadlineObserved < 0) {
+      const received = typeof deadlineObserved === "number" ? `${deadlineObserved}` : deadlineObserved === null ? "null" : typeof deadlineObserved;
+      appendIssue(issues, { path: "next.wait.deadline", code: "unsupported_form", message: `expected a safe integer of at least 0, received ${received}` });
+      deadlineOk = false;
+    } else if (!deadlineSupported) {
+      appendIssue(issues, {
+        path: "next.wait.deadline",
+        code: "deadline_unsupported",
+        message: "this coordinator has no clock, so it cannot honour a deadline; the Outcome is refused whole",
+      });
+      deadlineOk = false;
+    } else {
+      deadline = deadlineObserved;
+    }
+  }
+
+  const dependencies = waitList(dependenciesField.observed, "next.wait.dependencies", issues);
+  const subscriptions = waitList(subscriptionsField.observed, "next.wait.subscriptions", issues);
+  if (dependencies === null || subscriptions === null) return null;
+  if (dependencies.length === 0 && subscriptions.length === 0) {
+    appendIssue(issues, {
+      path: "next.wait",
+      code: "empty_wait",
+      message: "a wait needs at least one dependency alternative or input subscription, even with a deadline",
+    });
+    return null;
+  }
+  if (dependencies.length + subscriptions.length > WAIT_SELECTOR_LIMIT) {
+    tooManySelectors(issues);
+    return null;
+  }
+
+  let selectors = 0;
+  let entriesOk = true;
+  const alternatives: AcceptedAlternative[] = [];
+  for (let index = 0; index < dependencies.length; index += 1) {
+    const label = `next.wait.dependencies[${index}]`;
+    const elementSeen = observeOwn(dependencies.list, `${index}`);
+    if (elementSeen.threw) {
+      appendIssue(issues, { path: label, code: "unstable_representation", message: `${label} could not be observed` });
+      entriesOk = false;
+      continue;
+    }
+    const element = elementSeen.observed;
+    if (!isRecordLike(element)) {
+      appendIssue(issues, { path: label, code: "unsupported_form", message: "expected a dependency alternative" });
+      entriesOk = false;
+      continue;
+    }
+    const alternative = element as object;
+    const eventIdentity = optionalText(alternative, "eventIdentity", `${label}.eventIdentity`, issues);
+    const kindsField = observeField(alternative, "kinds", `${label}.kinds`, issues);
+    const correlation = optionalText(alternative, "correlation", `${label}.correlation`, issues);
+    refuseUnknownFields(alternative, ALTERNATIVE_FIELDS, label, issues);
+    if (eventIdentity === undefined || correlation === undefined || !kindsField.ok) {
+      entriesOk = false;
+      continue;
+    }
+    if (eventIdentity !== null) selectors += 1;
+    if (correlation !== null) selectors += 1;
+    let kinds: readonly string[] | null = null;
+    if (kindsField.observed !== undefined) {
+      const kindList = waitList(kindsField.observed, `${label}.kinds`, issues);
+      if (kindList === null) {
+        entriesOk = false;
+        continue;
+      }
+      if (kindList.length === 0) {
+        appendIssue(issues, { path: `${label}.kinds`, code: "empty_kind_set", message: "a supplied kind set needs at least one kind" });
+        entriesOk = false;
+        continue;
+      }
+      if (selectors + kindList.length > WAIT_SELECTOR_LIMIT) {
+        tooManySelectors(issues);
+        return null;
+      }
+      const accepted: string[] = [];
+      for (let position = 0; position < kindList.length; position += 1) {
+        const kindLabel = `${label}.kinds[${position}]`;
+        const kindSeen = observeOwn(kindList.list, `${position}`);
+        if (kindSeen.threw) {
+          appendIssue(issues, { path: kindLabel, code: "unstable_representation", message: `${kindLabel} could not be observed` });
+          entriesOk = false;
+          continue;
+        }
+        if (acceptIdentityText(kindSeen.observed, kindLabel, issues)) appendOwn(accepted, kindSeen.observed as string);
+        else entriesOk = false;
+      }
+      selectors += kindList.length;
+      kinds = PrimordialObjectFreeze(accepted);
+    }
+    if (selectors > WAIT_SELECTOR_LIMIT) {
+      tooManySelectors(issues);
+      return null;
+    }
+    if (eventIdentity === null && kinds === null && correlation === null) {
+      appendIssue(issues, { path: label, code: "empty_alternative", message: "an alternative supplies at least one of eventIdentity, kinds and correlation" });
+      entriesOk = false;
+      continue;
+    }
+    appendOwn(alternatives, PrimordialObjectFreeze({ eventIdentity, kinds, correlation }));
+  }
+
+  if (selectors + subscriptions.length > WAIT_SELECTOR_LIMIT) {
+    tooManySelectors(issues);
+    return null;
+  }
+  const classes: AcceptedSubscription[] = [];
+  for (let index = 0; index < subscriptions.length; index += 1) {
+    const label = `next.wait.subscriptions[${index}]`;
+    const elementSeen = observeOwn(subscriptions.list, `${index}`);
+    if (elementSeen.threw) {
+      appendIssue(issues, { path: label, code: "unstable_representation", message: `${label} could not be observed` });
+      entriesOk = false;
+      continue;
+    }
+    const element = elementSeen.observed;
+    if (!isRecordLike(element)) {
+      appendIssue(issues, { path: label, code: "unsupported_form", message: "expected an input subscription" });
+      entriesOk = false;
+      continue;
+    }
+    const subscription = element as object;
+    const classField = observeField(subscription, "subscriptionClass", `${label}.subscriptionClass`, issues);
+    refuseUnknownFields(subscription, SUBSCRIPTION_FIELDS, label, issues);
+    if (!classField.ok) {
+      entriesOk = false;
+      continue;
+    }
+    if (classField.observed === undefined) {
+      appendIssue(issues, { path: `${label}.subscriptionClass`, code: "missing_field", message: "an input subscription names its subscriptionClass" });
+      entriesOk = false;
+      continue;
+    }
+    if (!acceptIdentityText(classField.observed, `${label}.subscriptionClass`, issues)) {
+      entriesOk = false;
+      continue;
+    }
+    appendOwn(classes, PrimordialObjectFreeze({ subscriptionClass: classField.observed as string }));
+  }
+
+  if (!entriesOk || !deadlineOk) return null;
+  // The injective packing: every variable-length part is preceded by its count, every part is
+  // length-prefixed by `packIdentity`, and absence is its own part. Absent and empty lists pack alike.
+  const parts: string[] = [`${alternatives.length}`];
+  for (let index = 0; index < alternatives.length; index += 1) {
+    const alternative = readAt(alternatives, index) as AcceptedAlternative;
+    appendOwn(parts, alternative.eventIdentity === null ? "absent" : "present");
+    appendOwn(parts, alternative.eventIdentity ?? "");
+    appendOwn(parts, alternative.kinds === null ? "absent" : "present");
+    appendOwn(parts, `${alternative.kinds === null ? 0 : alternative.kinds.length}`);
+    if (alternative.kinds !== null) {
+      for (let position = 0; position < alternative.kinds.length; position += 1) appendOwn(parts, readAt(alternative.kinds, position) as string);
+    }
+    appendOwn(parts, alternative.correlation === null ? "absent" : "present");
+    appendOwn(parts, alternative.correlation ?? "");
+  }
+  appendOwn(parts, `${classes.length}`);
+  for (let index = 0; index < classes.length; index += 1) appendOwn(parts, (readAt(classes, index) as AcceptedSubscription).subscriptionClass);
+  appendOwn(parts, deadline === null ? "absent" : "present");
+  appendOwn(parts, deadline === null ? "" : `${deadline}`);
+  return PrimordialObjectFreeze({
+    dependencies: PrimordialObjectFreeze(alternatives),
+    subscriptions: PrimordialObjectFreeze(classes),
+    deadline,
+    identity: packIdentity(parts),
+  });
+}
+
+function captureNext(observed: unknown, deadlineSupported: boolean, issues: LocatedIssue[]): CapturedNext | null {
   if (observed === undefined) {
     appendIssue(issues, { path: "next", code: "missing_field", message: "next is required" });
     return null;
@@ -389,14 +649,13 @@ function captureNext(observed: unknown, issues: LocatedIssue[]): CapturedNext | 
     return error === null ? null : PrimordialObjectFreeze({ step: "fail" as const, error });
   }
   if (step === "await") {
-    // The wait is not read: its grammar, eligibility and registration are K1.3's, and a
-    // well-formedness verdict here would be a K1.3 decision taken early.
-    appendIssue(issues, {
-      path: "next.step",
-      code: "wait_unsupported",
-      message: "wait registration is not supported before K1.3; an Outcome proposing await is refused whole",
-    });
-    return null;
+    const waitField = observeField(next, "wait", "next.wait", issues);
+    const waitIssues: LocatedIssue[] = [];
+    const wait = waitField.ok ? captureWait(waitField.observed, deadlineSupported, waitIssues) : null;
+    refuseUnknownFields(next, AWAIT_FIELDS, "next", issues);
+    if (!waitField.ok) return null;
+    appendIssues(issues, waitIssues);
+    return wait === null ? null : PrimordialObjectFreeze({ step: "await" as const, wait });
   }
   appendIssue(issues, { path: "next.step", code: "unsupported_form", message: "expected continue, await, complete or fail" });
   return null;
@@ -407,8 +666,9 @@ function captureNext(observed: unknown, issues: LocatedIssue[]): CapturedNext | 
  *
  * Fields are observed in a fixed order, each once. Value roots carry bounded details and exact
  * suffix counts (DEC-7); DEC-5 composes them with envelope issues into one bounded refusal.
+ * `deadlineSupported` says whether the coordinator has a clock: without one a wait deadline is refused.
  */
-export function captureOutcome(envelope: object, emissionLimit: number): OutcomeCapture {
+export function captureOutcome(envelope: object, emissionLimit: number, deadlineSupported: boolean): OutcomeCapture {
   const issues: LocatedIssue[] = [];
 
   const epochField = observeField(envelope, "writerEpoch", "writerEpoch", issues);
@@ -428,7 +688,7 @@ export function captureOutcome(envelope: object, emissionLimit: number): Outcome
   if (effectsField.ok) refuseEffects(effectsField.observed, issues);
 
   const nextField = observeField(envelope, "next", "next", issues);
-  const next = nextField.ok ? captureNext(nextField.observed, issues) : null;
+  const next = nextField.ok ? captureNext(nextField.observed, deadlineSupported, issues) : null;
 
   refuseUnknownFields(envelope, ENVELOPE_FIELDS, "", issues);
 
@@ -443,7 +703,8 @@ export function captureOutcome(envelope: object, emissionLimit: number): Outcome
     appendOwn(emissionParts, emission.emissionKey);
     appendOwn(emissionParts, emission.value.canonical);
   }
-  const nextPayload = next.step === "complete" ? next.result.canonical : next.step === "fail" ? next.error.canonical : "";
+  const nextPayload =
+    next.step === "complete" ? next.result.canonical : next.step === "fail" ? next.error.canonical : next.step === "await" ? next.wait.identity : "";
   const identity = packIdentity([
     "outcome",
     `${claim.writerEpoch}`,

@@ -36,10 +36,17 @@ export type {
   InputAccepted,
   InputContent,
   OutcomeAccepted,
+  PendingTimer,
   RecoveryDecision,
   SubmitInputRequest,
   TakeoverAccepted,
+  TimerFireAnswer,
+  TimerKey,
+  WaitOutcome,
 } from "./coordinator.ts";
+
+export type { KernelClock } from "./time.ts";
+export type { AcceptedAlternative, AcceptedSubscription, AcceptedWait, DependencyAlternative, InputSubscription, SourceCategory, WaitDeclaration } from "./waits.ts";
 
 export type {
   CodeAvailability,
@@ -51,7 +58,15 @@ export type {
   TakeoverRequest,
 } from "./outcome.ts";
 
-export type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver, SubmissionGrant } from "./driver.ts";
+export type {
+  Activation,
+  ActivationEvent,
+  DeliverySettlement,
+  ExecutionDriver,
+  InputActivationEvent,
+  SubmissionGrant,
+  TimeoutActivationEvent,
+} from "./driver.ts";
 
 export { creationRequestIdKey, inputIdKey, mayReachScope, mintReceipt } from "./identity.ts";
 export type { AuthenticatedCaller, CreationRequestId, InputId, Receipt, ReceiptBoundary } from "./identity.ts";
@@ -62,11 +77,18 @@ export type {
   EmissionView,
   ExchangeView,
   ExecutionView,
+  InputMailboxEntryView,
   MailboxDisposition,
   MailboxEntryView,
+  ReadinessView,
   RecoveryHistoryRecord,
   RecoveryHoldView,
+  RetiredWaitView,
   TerminalResultView,
+  TimeoutMailboxEntryView,
+  TimerFireResult,
+  TimerFireView,
+  WaitView,
 } from "./inspection.ts";
 
 export { TERMINAL_STATES, isTerminal } from "./lifecycle.ts";

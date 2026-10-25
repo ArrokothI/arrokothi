@@ -43,7 +43,7 @@ export const ACCESS_INVENTORY: readonly InventoryEntry[] = [
   { file: "coordinator.ts", kind: "spread", mode: "read", text: "...exchange.activation", count: 1, reason: "the frozen Kernel-built Activation (takeover copies it with a new epoch)" },
   // state.ts (COORD-REFACTOR-01: the view projections moved here with the records they read)
   { file: "state.ts", kind: "spread", mode: "read", text: "...base", count: 1, reason: "a view literal built immediately above" },
-  { file: "state.ts", kind: "spread", mode: "read", text: "...entry.inputId", count: 1, reason: "the frozen Kernel copy of an accepted Input ID" },
+  { file: "state.ts", kind: "spread", mode: "read", text: "...(entry.inputId as InputId)", count: 1, reason: "the frozen Kernel copy of an accepted Input ID; application input always owns one (K1.3 makes the field nullable for timeouts)" },
   // envelope.ts
   { file: "envelope.ts", kind: "dynamic", mode: "read", text: "(holder as Record<string, unknown>)[key]", count: 1, getter: true, reason: "observeOwn: the single own observation, reached only after the holder's own descriptor was found" },
   { file: "envelope.ts", kind: "envelope", mode: "read", text: "(holder as Record<string, unknown>)[key]", count: 1, reason: "the same observation: the one member access the envelope rule permits on a caller-owned value" },
@@ -86,6 +86,7 @@ export const FOREIGN_CALLS: ReadonlyMap<string, string> = new Map([
   ["#deliver this.#driver.deliver(intent.activation, settlement, intent.submission)", "the Driver's delivery of the frozen Activation, a fresh settlement capability and the frozen grant, after the decision is recorded (post-commit)"],
   ["hostMember PrimordialReflectApply(getter, holder, [])", "a trusted host object's own accessor for an optional member, with the host as receiver"],
   ["requestTakeover PrimordialReflectApply(establish, this.#driver, [exchange.activation])", "the Driver's safe-replacement callback on the frozen current Activation; K1.2-DEC-19 revalidates after it"],
+  ["readClock PrimordialReflectApply(now, clock, [])", "the host clock's `now`, resolved on its own chain (K1.3): a trusted host callback that may reenter, read before the basis of every plan it informs"],
 ]);
 
 /**

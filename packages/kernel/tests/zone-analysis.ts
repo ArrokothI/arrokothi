@@ -1744,6 +1744,12 @@ const commitSource = (checker: ts.TypeChecker, fn: Fn, plan: string, expression:
     return `{${[...parts].filter((part) => !part.startsWith('"') && part !== "null" && !/^[0-9]/.test(part) && part !== "[]").sort().join("+")}}`;
   }
   if (ts.isArrayLiteralExpression(target) || ts.isNewExpression(target)) return "[]";
+  // K1.3: a value built only when its plan field is present (`field === null ? null : {...}`) comes
+  // from that field; the `null` side contributes nothing.
+  if (ts.isConditionalExpression(target)) {
+    const sides = [...new Set([commitSource(checker, fn, plan, target.whenTrue, depth + 1), commitSource(checker, fn, plan, target.whenFalse, depth + 1)])].filter((side) => side !== "null").sort();
+    return sides.length === 1 ? sides[0]! : `(${sides.join("|")})`;
+  }
   if (ts.isCallExpression(target) && calleeText(target) === "PrimordialObjectFreeze" && target.arguments.length === 1) return commitSource(checker, fn, plan, target.arguments[0]!, depth + 1);
   if (ts.isIdentifier(target)) {
     if (target.text === plan) return "plan";
