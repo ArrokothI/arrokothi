@@ -1,0 +1,87 @@
+{
+  "review": "TOOLS-02 review 01, range 1 only",
+  "base": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+  "payload": "a6ce515018c2bd59a930b20c762a339089bb0973",
+  "head": "f2184fc60e0b766b36877784b56e66af5a9cfbb5",
+  "ci": {
+    "run": 40064371529,
+    "job": 120784407929,
+    "artifact": 12550686084,
+    "result": "checks_passed",
+    "exit": 0
+  },
+  "local": {
+    "node": "v26.10.0",
+    "python": "3.14.6",
+    "platform": "macOS arm64",
+    "checkout": "separate git clone --no-local at C; dependencies copied from workspace; no npm ci run",
+    "commands": [
+      {
+        "command": "python3 -B -m unittest discover -s tests/tooling -p 'test_*.py'",
+        "exit": 0,
+        "tests": 639,
+        "seconds": 569.33,
+        "result": "OK"
+      },
+      {
+        "command": "python3 -B tests/tooling/check-refusal-registry.py",
+        "exit": 0,
+        "refusal_checks": 329,
+        "registered_mutations": 329
+      },
+      {
+        "command": "tool.mutations(git, C, registry_path) for mutations.json and refusal-guards.json; git.document filters cases to IDs absent at B, determinism_sample=[]; all source reads remain pinned to C",
+        "exit": 0,
+        "read_form_killed": 6,
+        "refusal_killed": 7
+      },
+      {
+        "command": "python3 -B probe-range1.py /path/to/clean-checkout-at-C",
+        "exit": 0,
+        "meaning": "counterexample reproduced; not an acceptance pass"
+      },
+      {
+        "command": "python3 -B scripts/packet_tools.py candidate --payload C --head H --spec docs/development/work/TOOLS-02/verification.json",
+        "exit": 0,
+        "result": "facts_verified"
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "brief-02.md",
+      "bytes": 4282,
+      "sha256": "04fa99e069eb8b0f3a27e3b4b7cdd5dad31cabf351644c45fb6c38f20350018e"
+    },
+    {
+      "path": "candidate.json",
+      "bytes": 755,
+      "sha256": "9a7c508bf45968e6fb3499b137065c58702ed59d1815324a3b80afbce383baa7"
+    },
+    {
+      "path": "packet-verify-40064371529.zip",
+      "bytes": 1989683,
+      "sha256": "462d470a420fd0f796d0a9073289fd178d0bc9ca200c894efc65de19fe972922"
+    },
+    {
+      "path": "probe-range1.json",
+      "bytes": 1359,
+      "sha256": "6cf9208e4354908ab96338f2959be2c43181698b0ce93a860058bb39a06c9c14"
+    },
+    {
+      "path": "probe-range1.py",
+      "bytes": 5275,
+      "sha256": "4430586bfa6f5a92dc4ce9cae36f4b39c5fd3e752b30ff33074f12ae70865ddc"
+    },
+    {
+      "path": "selected-mutants.json",
+      "bytes": 24340,
+      "sha256": "b4033809b11f715969199964d779ab2823ef7fa161b12a5dfc66f3eed7873c49"
+    },
+    {
+      "path": "tool-tests.log",
+      "bytes": 1838,
+      "sha256": "33ed9be2bd7d57ecfa376a01b86539fca232651e25e9370233c7ed94435382f1"
+    }
+  ]
+}

@@ -1,9 +1,9 @@
 # Owner progress summary
 
-Snapshot: checked 2026-10-23 against remote main `d17ea6d1`, the merge of COORD-REFACTOR-01 (PR #56).
-COORD-REFACTOR-01's accepted H is `23c8919f949b932b67567a6ee3f54d8b77b76449` and its payload C is
-`9f1412d1b3f6f41120609a4886a51b4c32c69880`. Its [cleanup](work/COORD-REFACTOR-01/cleanup-01.md) is complete and it is
-[integrated](work/COORD-REFACTOR-01/integration-01.md). The
+Snapshot: checked 2026-10-25 against remote main `b5daf35a`, the merge of TOOLS-02's release (PR #58).
+TOOLS-02 range 1's accepted H is `34ab91a5de23beb4997cdd2ae209a3b67aac50a0`, its payload C is
+`5d0f1cc49eb9cb534ad2818a8f8d38253438418d`, and its review is recorded at A `3634d945ce0de5322d1cf5b81462d5ec9b2fc819`.
+Range 1's [cleanup](work/TOOLS-02/cleanup-01.md) is complete, and its integration waits for the owner's merge. The
 [status ledger](007-work-packets.md) and linked records own exact acceptance, integration and release
 identities.
 
@@ -17,13 +17,13 @@ identities.
 | Value-capture claim holds | None remain. V-ENV ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)) was released for the bytes core on 2026-10-22 ([hold release](work/BINDING-01/hold-release-01.md)); the SDK wrapper makes no V-ENV claim (017 L-01). The V-D1 and classification holds were released on 2026-10-19 ([hold release](work/K1.1-correction-03/hold-release-01.md)) |
 | DESIGN-AUDIT-01 | Accepted, integrated and owner-closed. Owner [decision-01](work/DESIGN-AUDIT-01/decision-01.md) adopts CORE as the target direction and answers PROXY-01 (refuse every Proxy). [Decision-02](work/DESIGN-AUDIT-01/decision-02.md) gives the wrapper to the SDK, moved in stages |
 | BINDING-01 | Independently accepted at H `b7a24c79`; integrated at `cd8d9250` (PR #53) |
-| COORD-REFACTOR-01 | Independently accepted at H above; integrated at `d17ea6d1` (PR #56) |
+| COORD-REFACTOR-01 | Independently accepted at H `23c8919f`; integrated at `d17ea6d1` (PR #56) |
 | TOOLS-01 | Independently accepted at H `a50c3886`; integrated at `8f829003` (PR #45) |
-| TOOLS-02 | Released 2026-10-23 ([release 01](work/TOOLS-02/release-01.md)), scope B; not started; acceptance and integration required before K1.4 acceptance |
+| TOOLS-02 | In progress (released 2026-10-23, [release 01](work/TOOLS-02/release-01.md), scope B). Range 1 (T2-1, T2-2) independently accepted at H above; cleanup complete; integration pending the owner's merge. Ranges 2–4 (T2-3 to T2-5) open. The whole packet must be accepted and integrated before K1.4 acceptance |
 | TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
 | K1.1-correction-03 | Independently accepted at H `4b121d7b`; integrated at `b976f3a3` (PR #48) |
-| Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-15) under 006 working principle 6 |
-| K1.3 | Planned; not released; needs a release and a brief |
+| Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-16 and L-18) under 006 working principle 6 |
+| K1.3 | Planned; not released. The owner decides its release separately, after range 1 merges |
 | K1 / E1 | Open; no E1 gate result |
 
 ## What has been achieved
@@ -76,10 +76,11 @@ K1.3 is not released. Limits:
 - The sweeps are finite evidence for their declared scenarios, not a proof over arbitrary future
   code.
 - The supported SDK is unchanged.
-- One value-capture claim inherited from K1.1 is still held: code that runs before or during capture
-  can declare a global `let JSON` that steers the canonical bytes. A conflicting creation retry is then
-  answered as a replay ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)). The refusal-cost
-  and re-prototyped built-in claims are restored by K1.1-correction-03 (below).
+- One value-capture claim inherited from K1.1 was held: code that runs before or during capture
+  could declare a global `let JSON` that steers the canonical bytes, so a conflicting creation retry was
+  answered as a replay ([invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)). Since BINDING-01
+  (below), it is released for the bytes core only. The refusal-cost and re-prototyped built-in claims are
+  restored by K1.1-correction-03 (below).
 
 **A root-cause audit of accepted design.** DESIGN-AUDIT-01 answered which choices accepted in
 K0.1–K1.2 keep producing defect families, and what the owner's options are for each. It looked hardest at
@@ -143,6 +144,41 @@ E1 result. The advisory report blocks no packet. Live-provider, large-memory/tim
 known-base-failure profile were not run. The repository verification floor is now Node 26.10+;
 this does not change the supported SDK's runtime declaration.
 
+**A read census that unrelated files do not churn.** TOOLS-02's range 1 answered two questions. Can the
+preserved-test read census stay valid when unrelated files are added, while still catching a real change to what
+a test reads? Can any fixture be written from an unclean tree? The evidence tooling now:
+
+- records each preserved test's reads by form. A named or fixture read keeps its identity at C; any other
+  enumerated read is recorded by its walk root. Adding an unrelated file or test no longer invalidates the table.
+- expands recursive listings for identity, compares them at the pin, and gives listing entries their type.
+- admits only an explicit matrix of traced read calls. Any other traced call refuses preservation of its test.
+  So do a recursive listing that crosses a symlink, a path that is not a Git entry at C under its exact spelling
+  (rule P), and an options object whose prototype is neither `Object.prototype` nor `null` (rule O).
+- refuses every fixture-writing operation in a checkout with entries not tracked at C, and makes a new
+  `regenerate` operation the only writer of the preserved table. A bounded census classifies the tooling's
+  writers.
+
+The correction refused seven formerly preserved `mcp-boundaries` members, leaving 23 of 1,272 members preserved.
+Their two origins went to range 4 for revalidation ([owner choice 03](work/TOOLS-02/owner-choice-03.md)); no other
+member changed status.
+
+The lesson from its review history is to state the threat model before the design. Each correction closed the
+last counterexample, and the next review found another access form one step further on: a deeper listing, a
+symlink, an array glob, a case variant of a path, an inherited options prototype. The drift ended when the owner
+made the census's threat model cooperative test code and recorded evasive forms as a limit
+([owner choice 05](work/TOOLS-02/owner-choice-05.md)).
+
+Status: range 1 is independently accepted at H `34ab91a5`. Its cleanup is complete and its integration waits
+for the owner's merge; TOOLS-02 stays in progress. Limits:
+- Range 1 is part of TOOLS-02, not the packet. Target-set kill provenance (T2-3), the hold register's match with
+  current claims (T2-4) and origin triage (T2-5) are open. The origin corpus and the hold register are unchanged
+  apart from the two transferred origins above.
+- The census assumes cooperative test code. A test written to hide a read from the trace can keep preservation
+  credit (017 L-18). Reads the tracer cannot see, such as native or module-loader reads, are outside it.
+- One value-cost registry case may exceed its 900 s timeout on a loaded local machine (L-16). The Packet verify
+  CI run at range 1's C passed it.
+- This is development tooling. It changes no Kernel behaviour, claim or hold, and gives no E1 result.
+
 **Metered value refusal cost.** K1.1-correction-03 answered whether refusing a live value can be
 proven to cost no more than accepting one at the limits, and whether capture can refuse Proxies and
 re-prototyped built-ins instead of silently projecting them. The private Kernel's in-process capture
@@ -176,7 +212,7 @@ Status: independently accepted at H `4b121d7b` and integrated at `b976f3a3` (PR 
   process (L-02). V-ENV is now claimed for the bytes core only; BINDING-01 (below) moved capture out of the Kernel.
 - The static checks are bounded syntactic guards, and mutation credit covers a declared assertion
   vocabulary only (L-11, L-12). The reviewer's run of the full verify failed on a census difference,
-  which TOOLS-02 owns.
+  which TOOLS-02A has since closed.
 
 **A bytes-only Kernel value core.** BINDING-01 answered whether the Kernel can admit values without
 trusting caller objects or the globals present at call time. The private Kernel now:
@@ -237,30 +273,34 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-All successors remain unreleased. The dependencies below come from 007 and become eligible for an
-owner release only after their prerequisites are accepted and integrated. Briefs follow 006 working
-principle 6: build right what later work builds on, and record the rest in [017](017-known-limitations.md).
+TOOLS-02 is the only released packet still in progress; every other successor is unreleased. The dependencies
+below come from 007 and become eligible for an owner release only after their prerequisites are accepted and
+integrated. Briefs follow 006 working principle 6: build right what later work builds on, and record the rest in
+[017](017-known-limitations.md).
 
-1. **BINDING-01** is accepted and integrated, and its V-ENV core claim is released. The supported SDK
-   surface changes at K1.4, as [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies; K1.4 also
-   carries the wrapper's L-01 obligation.
-2. **TOOLS-02** also depends on TOOLS-01. It owns the remaining extraction, mention triage and
-   mutation-family work, target-set assertion-provenance design, and the transferred origins.
-   These include [choice 11](work/TOOLS-01/owner-choice-11.md)'s three origins, the limited member
-   `kernel-landing-zone.test.ts:1200:9@deedd7950724`, the origins K1.1-correction-03 transferred, and
-   review 03's three P3 observations. TOOLS-02A has already closed KC3-R3-CENSUS-01: the composed verify now passes in a clean checkout and in CI. From BINDING-01 it takes the 853 rule-1 V-ENV
-   hold-register entries and the reopened origins, without new credit, and three P3 items listed in its
-   [cleanup](work/BINDING-01/cleanup-01.md). From COORD-REFACTOR-01 it takes one reopened origin and three P3
-   items, listed in its [cleanup](work/COORD-REFACTOR-01/cleanup-01.md). It is released ([release 01](work/TOOLS-02/release-01.md)) with the owner's scope B:
-   tooling fixes first, then origin triage with a sampled audit. Hold-register entries held under the now-released V-D1 and
-   classification claims need revalidation. TOOLS-02 must be accepted and integrated before K1.4
-   acceptance; 007 does not make it a prerequisite for BINDING-01 or K1.3.
-3. **COORD-REFACTOR-01** is accepted and integrated. **K1.3** is next. It needs
-   an owner release and a brief, and adds its waits, deadlines and cancellation as new plan variants.
-4. **K1.4** owns the SDK host bridge and full K1/E1 gate. The external dependency is unchanged:
-   before K1.3 closes, the benchmark owner must confirm that E1 fixtures drive the new supported
-   entry. An unavailable fixture makes K1.4 BLOCKED_EXTERNAL. Fixture preparation is not an E1
-   result; no E1 gate result is recorded in the current ledger.
+1. **TOOLS-02 range 1** waits for the owner's merge. An integration receipt follows it.
+2. **TOOLS-02 ranges 2–4** follow, released with the owner's scope B
+   ([release 01](work/TOOLS-02/release-01.md)): target-set kill provenance (T2-3), the hold register under current
+   claims (T2-4), then origin triage with a sampled audit (T2-5). T2-4's design 03 sits on its own branch, outside
+   range 1. The ranges also carry:
+   - the remaining extraction, mention triage and mutation-family work;
+   - the transferred origins: [choice 11](work/TOOLS-01/owner-choice-11.md)'s three origins, the limited member
+     `kernel-landing-zone.test.ts:1200:9@deedd7950724`, the origins K1.1-correction-03 transferred, and the two
+     `mcp-boundaries` origins range 1 reopened;
+   - the P3 items from K1.1-correction-03's review 03 and from the [BINDING-01](work/BINDING-01/cleanup-01.md)
+     and [COORD-REFACTOR-01](work/COORD-REFACTOR-01/cleanup-01.md) cleanups;
+   - the rule-1 V-ENV hold-register entries and the origins those two packets reopened, without new credit;
+   - revalidation of entries held under the released V-D1 and classification claims.
+
+   TOOLS-02 must be accepted and integrated before K1.4 acceptance; 007 does not make it a prerequisite for K1.3.
+3. **K1.3** is not released. The owner decides its release separately, after range 1 merges. It adds waits,
+   deadlines and cancellation as new plan variants.
+4. **K1.4** owns the SDK host bridge and full K1/E1 gate. The supported SDK surface changes there, as
+   [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies. K1.4 also carries BINDING-01's wrapper obligation:
+   a startup check, or L-01 stated in the public bridge contract. The external dependency is unchanged: before K1.3
+   closes, the benchmark owner must confirm that E1 fixtures drive the new supported entry. An unavailable fixture
+   makes K1.4 BLOCKED_EXTERNAL. Fixture preparation is not an E1 result; no E1 gate result is recorded in the
+   current ledger.
 
 Carry forward:
 - the historical Node 22.22.3 legacy Effect-test cancellation limitation, distinct from TOOLS-01's

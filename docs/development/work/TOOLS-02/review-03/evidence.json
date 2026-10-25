@@ -1,0 +1,87 @@
+{
+  "review_date": "2026-10-25",
+  "base": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+  "payload": "311c30a35a4ca13ca6497bef316aab81a3de3a8e",
+  "head": "23d65ac332fdbd267b00d12d5b02e3b77ad8923e",
+  "ci": {
+    "run": 40162436361,
+    "job": 121076616516,
+    "artifact": 12589830020,
+    "url": "https://github.com/ArrokothI/arrokothi/actions/runs/40162436361",
+    "archive_sha256": "ab2126a10836beeed3e99c5809bbbc05d9f6c105d05259ca220af75cecb4f0a1",
+    "archive_members": {
+      "run.txt": "9ff5051b461a6787662e91223ee9feedb2e46348e0061cbc1bf78770e0364067",
+      "summary.json": "878af42b36785a5e54da11f45e3fcda0e53b030a2493738b9f9fa759eb695037",
+      "verify.json": "e37cbe5c41147654f0f71a213f868e7c9584f76f27ae2aec635bc453a4c8a8bb",
+      "verify.stderr.log": "1bc4e603a99f6df4b8011f1df8b6ab0ac2021e7ac42da12de8504dcf173d949c"
+    },
+    "hosted_expiry": "2027-01-23T04:35:26Z",
+    "retention_owner": "Repository review evidence; later retirement follows docs/development/archive.md",
+    "inspected_not_locally_repeated": true
+  },
+  "local_environment": {
+    "os": "macOS arm64",
+    "node": "v26.10.0",
+    "python": "3.14.6",
+    "checkout": "separate git clone --no-local at payload C",
+    "dependencies": "copied from the existing workspace; not a fresh npm ci",
+    "case_insensitive_filesystem_observed": true
+  },
+  "commands": [
+    {
+      "command": "python3 -B -m unittest test_read_form test_pristine_routes test_writer_census test_target_tools.ProbeAnchorTests",
+      "environment": "Node v26.10.0 first in PATH; PYTHONPATH=tests/tooling",
+      "cwd": "clean payload checkout",
+      "exit": 0,
+      "tests": 49,
+      "skips": 0,
+      "elapsed_seconds": 242.475,
+      "output": "targeted-tests.txt"
+    },
+    {
+      "command": "python3 -B tests/tooling/check-refusal-registry.py",
+      "cwd": "clean payload checkout",
+      "exit": 0,
+      "output": {
+        "refusal_checks": 329,
+        "registered_mutations": 329,
+        "sources": {
+          "scripts/packet_tools.py": 327,
+          "tests/tooling/requalify-value-cost.py": 1,
+          "tests/tooling/value-cost-loss-ledger.py": 1
+        }
+      }
+    },
+    {
+      "command": "python3 -B scripts/packet_tools.py candidate --payload 311c30a35a4ca13ca6497bef316aab81a3de3a8e --head 23d65ac332fdbd267b00d12d5b02e3b77ad8923e --spec docs/development/work/TOOLS-02/verification.json",
+      "exit": 2,
+      "output": "candidate.json",
+      "diagnostic": "identity.json records independent facts and git diff --check diagnostic"
+    },
+    {
+      "command": "python3 -B <review-evidence>/probe-range1.py <clean-C-checkout>",
+      "environment": "Node v26.10.0 first in PATH; case-insensitive filesystem for case_paths",
+      "exit": 0,
+      "meaning": "counterexamples reproduced, not acceptance",
+      "output": "probe-range1.json"
+    },
+    {
+      "command": "python3 -B <review-evidence>/probe-matrix.py <clean-C-checkout>",
+      "environment": "Node v26.10.0 first in PATH",
+      "exit": 0,
+      "output": "probe-matrix.json"
+    }
+  ],
+  "files": {
+    "brief-04.md": "da319b3097d023ecc6cb53e26279b16729d5c6dd1592d4171db17b75274852b2",
+    "candidate.json": "6be3d00098f9def36fafaf39dbe13a778d38d7d2d7c4efc59c9393a325510b9a",
+    "identity.json": "2a71152dd191e44afa26c4019a06fd2b1cbb04ad451f75a923609c54a515a461",
+    "packet-verify-40162436361.zip": "ab2126a10836beeed3e99c5809bbbc05d9f6c105d05259ca220af75cecb4f0a1",
+    "probe-matrix.json": "125705e6bf3b14480e4d6ff6a2d498ce8ccf45fd7304a0313c51971d78dc0bcc",
+    "probe-matrix.py": "ea8cb78f516dd3a562da8bd2e660ce241f1063c080cf31d248bc2700b57c0dd0",
+    "probe-range1.json": "2c95ae846fa53c120d309f3507b000bd917caab3807f30e57dda36467187c271",
+    "probe-range1.py": "596c4093a3b3d8538d53720df682b813158f43873fc601e9d4e61ab95200794d",
+    "targeted-tests.txt": "825e25764c5430f0e6bbe95ae470d13f4b549004697c5dccdc6c037812bc025b",
+    "../review-03.md": "d7174fdbae43454f40d1bf6110d2a78416b28fdd67763cb260dc8706c37d58d5"
+  }
+}

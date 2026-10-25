@@ -1,4 +1,5 @@
 """Suite targets (design 05 P1-T): source facts, reach against a no-test baseline, token guards and run validity."""
+import importlib.util
 import json
 import unittest
 from pathlib import Path
@@ -290,6 +291,31 @@ class PinnedToolchainTests(unittest.TestCase):
                 self.assertEqual(copied, [pin], path.name)
                 checked.append(path.name)
         self.assertEqual(checked, ['mutations.json', 'refusal-guards.json', 'value-cost.json'])
+
+
+
+class ProbeAnchorTests(unittest.TestCase):
+    def test_every_python_probe_mutant_has_a_reach_anchor(self):
+        """python-probe.py traces reach at its mutant's anchor in the mutated source. A replacement that is empty
+        or occurs elsewhere has none, and its run is only a setup error, found after the whole registry ran."""
+        loader = importlib.util.spec_from_file_location('python_probe', ROOT / 'tests/tooling/python-probe.py')
+        probe = importlib.util.module_from_spec(loader)
+        loader.loader.exec_module(probe)
+        checked = []
+        for path in sorted((ROOT / 'tests/fixtures/packet-tools').glob('*.json')):
+            registry = json.loads(path.read_text())
+            if not isinstance(registry, dict) or 'cases' not in registry:
+                continue
+            for case in registry['cases']:
+                if 'tests/tooling/python-probe.py' not in case.get('argv', []):
+                    continue
+                mutant = case['mutants'][0]
+                with self.subTest(registry=path.name, case=case['id']):
+                    source = (ROOT / mutant['path']).read_text()
+                    self.assertEqual(source.count(mutant['before']), 1)
+                    probe.reach_anchor(source.replace(mutant['before'], mutant['after']), mutant)
+                checked.append(path.name)
+        self.assertEqual(sorted(set(checked)), ['mutations.json', 'refusal-guards.json'])
 
 
 if __name__ == '__main__':

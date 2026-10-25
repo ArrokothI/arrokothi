@@ -1,0 +1,118 @@
+{
+  "candidate": "5ab098bd893e3d39f58851276926abea81e5a5d8",
+  "node": "v26.10.0",
+  "python": "3.14.6",
+  "symlink_initial": {
+    "tests/sync/sync.test.mjs": {
+      "status": "preserved",
+      "reads": "a4b30fd4c0d7850730d935877893a8e583fbb5bf35b5e9a870c6237e7fd8fd78",
+      "reasons": []
+    },
+    "tests/typed/typed.test.mjs": {
+      "status": "preserved",
+      "reads": "a4b30fd4c0d7850730d935877893a8e583fbb5bf35b5e9a870c6237e7fd8fd78",
+      "reasons": []
+    }
+  },
+  "symlink_steps": [
+    {
+      "revision": "6a387e6e0b10ed0a865cd71a92c2f9f6f41a0559",
+      "pristine": true,
+      "before": [
+        "link",
+        "link/seed.json"
+      ],
+      "after": [
+        "link",
+        "link/one.json",
+        "link/seed.json"
+      ],
+      "regenerate": "table_current",
+      "changed": [],
+      "corpus": "revalidation_complete"
+    },
+    {
+      "revision": "498ab8d026f733a64fce4513bd773cf165da018d",
+      "pristine": true,
+      "before": [
+        "link",
+        "link/one.json",
+        "link/seed.json"
+      ],
+      "after": [
+        "link",
+        "link/deeper",
+        "link/deeper/two.json",
+        "link/one.json",
+        "link/seed.json"
+      ],
+      "regenerate": "table_current",
+      "changed": [],
+      "corpus": "revalidation_complete"
+    }
+  ],
+  "symlink_direct_control": {
+    "regenerate": "table_differs",
+    "changed": [
+      "tests/sync/sync.test.mjs:4:1@5b2cbed99104",
+      "tests/typed/typed.test.mjs:4:1@ba981ae36515"
+    ]
+  },
+  "pattern_initial": {
+    "tests/string/string.test.mjs": {
+      "status": "refused",
+      "reasons": [
+        "the traced run read through a pattern or copy whose dependency identity is not represented: tests/fixtures/entry"
+      ]
+    },
+    "tests/sync/sync.test.mjs": {
+      "status": "preserved",
+      "reads": "94eba5dab96bc67ed287e8855412711a54d84bb2af471d013a9d4a50b9434f1d",
+      "reasons": []
+    }
+  },
+  "pattern_steps": [
+    {
+      "revision": "1a4db2ff6ea8d5b02487bf67aa650354616e2203",
+      "pristine": true,
+      "before": [
+        {
+          "name": "entry",
+          "file": true,
+          "directory": false
+        }
+      ],
+      "after": [
+        {
+          "name": "entry",
+          "file": false,
+          "directory": true
+        }
+      ],
+      "regenerate": "table_current",
+      "changed": [],
+      "corpus": "revalidation_complete"
+    },
+    {
+      "revision": "dd35b88432955f4da41a259076bc3a2dfe09c246",
+      "pristine": true,
+      "before": [
+        {
+          "name": "entry",
+          "file": false,
+          "directory": true
+        }
+      ],
+      "after": [
+        {
+          "name": "entry",
+          "file": true,
+          "directory": false
+        }
+      ],
+      "regenerate": "table_current",
+      "changed": [],
+      "corpus": "revalidation_complete"
+    }
+  ]
+}

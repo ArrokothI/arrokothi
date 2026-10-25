@@ -1,0 +1,53 @@
+{
+  "revision": "a3f68ef5d1d9a941da877f0afa5666be6eeaf812",
+  "node": "v26.10.0",
+  "argument_forms": [
+    "string",
+    "Buffer (ASCII)",
+    "file URL"
+  ],
+  "operations": [
+    "accessSync",
+    "createReadStream",
+    "existsSync",
+    "lstatSync",
+    "open",
+    "openAsBlob",
+    "openSync",
+    "opendirSync",
+    "promises.open",
+    "promises.readFile",
+    "promises.readdir",
+    "readFile",
+    "readFileSync",
+    "readdirSync",
+    "realpathSync",
+    "realpathSync.native",
+    "statSync",
+    "statfsSync"
+  ],
+  "rows": 51,
+  "refused": 0,
+  "outcomes": [
+    [
+      "read",
+      "tests/fixtures",
+      "listing"
+    ],
+    [
+      "read",
+      "tests/fixtures",
+      "tree"
+    ],
+    [
+      "read",
+      "tests/fixtures/file.txt",
+      "bytes"
+    ],
+    [
+      "read",
+      "tests/fixtures/file.txt",
+      "exists"
+    ]
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "candidate_payload": "a6ce515018c2bd59a930b20c762a339089bb0973",
+  "pristine_controls": {
+    "clean": true,
+    "wrong_head_refused": true,
+    "unstaged_refused": true,
+    "staged_refused": true,
+    "empty_directory_refused": true,
+    "permitted_entries_accepted": true
+  },
+  "counterexample": {
+    "finding": "T2-R1-READ-01",
+    "initial_status": "preserved",
+    "recursive_additions": [
+      {
+        "addition": "nested/one.json",
+        "actual_entries": [
+          "named.txt",
+          "nested",
+          "nested/one.json",
+          "nested/seed.json",
+          "scan.input.txt"
+        ],
+        "regenerate": "table_current",
+        "changed_members": [],
+        "corpus": "revalidation_complete",
+        "member_status": "preserved",
+        "member_reads_unchanged": true
+      },
+      {
+        "addition": "nested/deeper/two.json",
+        "actual_entries": [
+          "named.txt",
+          "nested",
+          "nested/deeper",
+          "nested/deeper/two.json",
+          "nested/one.json",
+          "nested/seed.json",
+          "scan.input.txt"
+        ],
+        "regenerate": "table_current",
+        "changed_members": [],
+        "corpus": "revalidation_complete",
+        "member_status": "preserved",
+        "member_reads_unchanged": true
+      }
+    ],
+    "immediate_child_control": "table_differs"
+  }
+}

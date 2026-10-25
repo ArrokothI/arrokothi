@@ -1006,7 +1006,28 @@
           "venv-load",
           "venv-hooks",
           "venv-unresolved",
-          "venv-case"
+          "venv-case",
+          "read-form-named-only",
+          "read-form-walk-root-named",
+          "read-form-named-dropped",
+          "read-form-identity-free",
+          "read-form-fixtures-dropped",
+          "fixture-read-directory",
+          "read-form-recursion-ignored",
+          "read-form-tree-unexpanded",
+          "read-form-pin-unexpanded",
+          "read-form-pattern-accepted",
+          "read-form-types-dropped",
+          "read-matrix-default-outside",
+          "read-matrix-option-guard",
+          "read-matrix-normalized",
+          "read-matrix-alias",
+          "read-matrix-crossing",
+          "read-matrix-pin-ancestor",
+          "read-matrix-pin-crossing",
+          "read-matrix-exists-mode-only",
+          "read-matrix-rule-p",
+          "read-matrix-rule-o"
         ],
         "environment": [
           "POSIX-Python"
@@ -1124,6 +1145,174 @@
           "case": "result.venv-case",
           "values": {
             "failure": "venv-case",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.named-only",
+          "values": {
+            "failure": "read-form-named-only",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.walk-root-named",
+          "values": {
+            "failure": "read-form-walk-root-named",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.named-dropped",
+          "values": {
+            "failure": "read-form-named-dropped",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.identity-free",
+          "values": {
+            "failure": "read-form-identity-free",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.fixtures-dropped",
+          "values": {
+            "failure": "read-form-fixtures-dropped",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.fixture-read.directory",
+          "values": {
+            "failure": "fixture-read-directory",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.recursion-ignored",
+          "values": {
+            "failure": "read-form-recursion-ignored",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.tree-unexpanded",
+          "values": {
+            "failure": "read-form-tree-unexpanded",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.pin-unexpanded",
+          "values": {
+            "failure": "read-form-pin-unexpanded",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.pattern-accepted",
+          "values": {
+            "failure": "read-form-pattern-accepted",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-form.types-dropped",
+          "values": {
+            "failure": "read-form-types-dropped",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-matrix.default-outside",
+          "values": {
+            "failure": "read-matrix-default-outside",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-matrix.option-guard",
+          "values": {
+            "failure": "read-matrix-option-guard",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-matrix.normalized",
+          "values": {
+            "failure": "read-matrix-normalized",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-matrix.alias",
+          "values": {
+            "failure": "read-matrix-alias",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-matrix.crossing",
+          "values": {
+            "failure": "read-matrix-crossing",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-matrix.pin-ancestor",
+          "values": {
+            "failure": "read-matrix-pin-ancestor",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-matrix.pin-crossing",
+          "values": {
+            "failure": "read-matrix-pin-crossing",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-matrix.exists-mode-only",
+          "values": {
+            "failure": "read-matrix-exists-mode-only",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-matrix.rule-p",
+          "values": {
+            "failure": "read-matrix-rule-p",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-matrix.rule-o",
+          "values": {
+            "failure": "read-matrix-rule-o",
             "environment": "POSIX-Python",
             "stage": "result-classification"
           }

@@ -1,0 +1,130 @@
+{
+  "base": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+  "payload": "5d0f1cc49eb9cb534ad2818a8f8d38253438418d",
+  "head": "34ab91a5de23beb4997cdd2ae209a3b67aac50a0",
+  "policy_baseline": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+  "review_scope": [
+    "T2-1",
+    "T2-2"
+  ],
+  "node": "v26.10.0",
+  "python": "3.14.6",
+  "local_platform": "Darwin arm64",
+  "local_checkout": "separate git clone --no-local at C; node_modules copied from workspace",
+  "local_exit_codes": {
+    "candidate": 0,
+    "targeted_tests": 0,
+    "refusal_census": 0,
+    "probe_bounds": 0,
+    "probe_regressions": 0
+  },
+  "local_targeted_tests": {
+    "tests": 72,
+    "seconds": 333.432,
+    "skips": 0
+  },
+  "local_final_checkout_clean": true,
+  "ci": {
+    "run_id": 40181329943,
+    "job_id": 121132844879,
+    "artifact_id": 12596745533,
+    "artifact_sha256": "ed26505a36c13ece5ebdc5591f39064ded29ce5e9c4ee1b8b3f95bb924dc0d79",
+    "inspected_not_locally_repeated": [
+      "full verify",
+      "full registries",
+      "real-repository corpus"
+    ]
+  },
+  "commands": {
+    "packet_verify": "python3 -B scripts/packet_tools.py verify --revision 5d0f1cc49eb9cb534ad2818a8f8d38253438418d --spec docs/development/work/TOOLS-02/verification.json",
+    "candidate": "python3 -B scripts/packet_tools.py candidate --payload 5d0f1cc49eb9cb534ad2818a8f8d38253438418d --head 34ab91a5de23beb4997cdd2ae209a3b67aac50a0 --spec docs/development/work/TOOLS-02/verification.json",
+    "targeted_tests": "PYTHONPATH=tests/tooling python3 -B -m unittest -v test_read_form test_pristine_routes test_writer_census test_target_tools.ProbeAnchorTests test_packet_tools.CandidateTests",
+    "refusal_census": "python3 -B tests/tooling/check-refusal-registry.py",
+    "bounds_probe": "PYTHONPATH=tests/tooling python3 -B /path/to/review-04/probe-bounds.py",
+    "prior_probes": "python3 -B /path/to/review-04/probe-regressions.py /path/to/clean-C"
+  },
+  "sources": {
+    "docs/development/work/TOOLS-02/brief-01.md": {
+      "revision": "34ab91a5de23beb4997cdd2ae209a3b67aac50a0",
+      "sha256": "209d3f01b6c23e3524ac7fd96da83818026ccb4359f1f6be0b56ce4ffd75f699"
+    },
+    "docs/development/work/TOOLS-02/owner-choice-01.md": {
+      "revision": "34ab91a5de23beb4997cdd2ae209a3b67aac50a0",
+      "sha256": "0d141550ba9f4727d02c713e30f43559f6ec8759b88f552b48f6956ee90439ea"
+    },
+    "docs/development/work/TOOLS-02/owner-choice-03.md": {
+      "revision": "34ab91a5de23beb4997cdd2ae209a3b67aac50a0",
+      "sha256": "63215dc837cbee8727f03f8c95036084abc878c437779edf03ac4ed0ccac259c"
+    },
+    "docs/development/work/TOOLS-02/owner-choice-04.md": {
+      "revision": "34ab91a5de23beb4997cdd2ae209a3b67aac50a0",
+      "sha256": "2898f14db25dbc238ac28279cb8a49133f09e1c04b5c854567ccc6ec157c94e6"
+    },
+    "docs/development/work/TOOLS-02/owner-choice-05.md": {
+      "revision": "34ab91a5de23beb4997cdd2ae209a3b67aac50a0",
+      "sha256": "c8adabad20ed3ba9bff9a81beb30268ff4cef22e1c575834db610f6aafa13129"
+    },
+    "docs/development/work/TOOLS-02/design-05.md": {
+      "revision": "34ab91a5de23beb4997cdd2ae209a3b67aac50a0",
+      "sha256": "cce62f08efa49859efe7c13dc2a5a76e7fc4466feda64cb93f555873508d5557"
+    },
+    "docs/development/work/TOOLS-02/verification.json": {
+      "revision": "34ab91a5de23beb4997cdd2ae209a3b67aac50a0",
+      "sha256": "45e50129cbe2396efcc090349016e40c214cde8e929bfcbc4a642a8bbc03458e"
+    },
+    "docs/development/work/TOOLS-02/implementation-04.md": {
+      "revision": "34ab91a5de23beb4997cdd2ae209a3b67aac50a0",
+      "sha256": "390d12aa3c41db63c94d9ccad69ca9eb5dd467f9443f421fafbc52262ee0d170"
+    }
+  },
+  "files": {
+    "packet-verify-40181329943.zip": {
+      "bytes": 1995136,
+      "sha256": "ed26505a36c13ece5ebdc5591f39064ded29ce5e9c4ee1b8b3f95bb924dc0d79"
+    },
+    "ci-metadata.json": {
+      "bytes": 5229,
+      "sha256": "b48d71cae9e16af7ca4dbf5973d4bfaca465aeaee299caf685445d2bd75e0323"
+    },
+    "ci-summary.json": {
+      "bytes": 2937,
+      "sha256": "b55e39748af2e05d304e5edb3b3f2930ad6acc37d2ae52be81cd4490906feb8d"
+    },
+    "candidate.json": {
+      "bytes": 839,
+      "sha256": "d60b6f33643af83f41ebf0b312f1a7bb04d325b066990f239255fa1a93a643d5"
+    },
+    "identity.json": {
+      "bytes": 3610,
+      "sha256": "bc9dcee3beac56cc27762948b491a35ad97b92ba18a476661ef10652e33751ce"
+    },
+    "selected-mutants.json": {
+      "bytes": 46293,
+      "sha256": "50d4279c16e9e0697259fdbc11a31bfa311c0c4cd8cbfea1e663b458cf7a760e"
+    },
+    "targeted-tests.txt": {
+      "bytes": 11093,
+      "sha256": "c8fc9993a9b055f77f4afb9de895081fb78e5534f6dceb7c6c881f82cdcc9417"
+    },
+    "probe-bounds.py": {
+      "bytes": 7732,
+      "sha256": "5af79d339a8808863c036f5bf4774ce2ccaa10bd0a88e1bef3a774ec46598626"
+    },
+    "probe-bounds.json": {
+      "bytes": 3082,
+      "sha256": "70a1217d8bb36849943c6c7b2ebbaa416d083d3ded0c9da043ee4b22e2b6cef0"
+    },
+    "probe-regressions.py": {
+      "bytes": 5342,
+      "sha256": "0be631e6ecedd88b60cf35f2d21e8138b34d29914677a32e21fcbc2256555127"
+    },
+    "probe-regressions.json": {
+      "bytes": 4305,
+      "sha256": "efea90886a7435bd55ed5270f83ab6fd210931aea3c8db4d3515fb3b9b9204f3"
+    },
+    "refusal-census.json": {
+      "bytes": 188,
+      "sha256": "3995ee48662be113199623ce03d97b225ff285b0b384dc3e1f338c0001f66c44"
+    }
+  }
+}

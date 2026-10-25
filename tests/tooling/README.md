@@ -10,12 +10,37 @@ never acceptance, owner decisions or released claims.
 npm run test:packet-tools
 npm run verify:packet -- inventory --revision <full-C-SHA> --spec tests/fixtures/packet-tools/inventory.json
 npm run verify:packet -- corpus --revision <full-C-SHA> --spec tests/fixtures/packet-tools/adoption.json
+npm run verify:packet -- regenerate --revision <full-C-SHA> --spec tests/fixtures/packet-tools/adoption.json --write
 npm run verify:packet -- coverage --revision <full-C-SHA> --spec tests/fixtures/packet-tools/coverage.json
 npm run verify:packet -- mutations --revision <full-C-SHA> --spec tests/fixtures/packet-tools/mutations.json
 npm run verify:packet -- mutations --revision <full-C-SHA> --spec tests/fixtures/packet-tools/refusal-guards.json
 npm run verify:packet -- verify --revision <full-C-SHA> --spec docs/development/work/TOOLS-01/checks.json
 npm run verify:packet -- candidate --payload <full-C-SHA> --head <full-H-SHA> --spec docs/development/work/TOOLS-01/verification.json
 ```
+
+**Clean checkout (TOOLS-02 T2-2, design 02 §2).** Every operation whose output is fixture data refuses
+unless the checkout is pristine at the revision:
+- what pristine means:
+  - HEAD is the revision;
+  - nothing is modified;
+  - no entry is untracked, ignored or invisible to Git, other than `node_modules` and `.DS_Store`;
+- where the check sits:
+  - at the CLI dispatch, for `inventory`, `mutations`, `cases`, `corpus`, `coverage` and `regenerate`;
+  - inside the corpus census route and `preserved_census`;
+  - in `requalify-value-cost.py` and `value-cost-loss-ledger.py`;
+  - `verify` keeps its own check before and after every step;
+- exempt: `candidate` and `gate`, which print no fixture data.
+
+Run them in a fresh clone or in the Packet verify workflow.
+
+`regenerate --revision <C> --spec tests/fixtures/packet-tools/adoption.json --write` is the one
+supported writer of the manifest's derived preserved table. It recomputes the census as `corpus` does,
+replaces only that table in the working-tree file and reports what changed. Commit the file, then run
+`corpus`.
+
+`test_writer_census.py` classes every file under `scripts/` and `tests/tooling/` that calls a declared
+write API. Fixture writers must hold a guarded route. Writes outside that vocabulary are not detected,
+such as shell redirection or subprocess output.
 
 `candidate` reads its specification at C and checks B→C→H, the exact C..H file set,
 preserved paths and accessible evidence digests. An administrative allowlist cannot establish
@@ -216,11 +241,56 @@ requires them to equal the recomputation exactly. A stale record fails; it never
   unreferenced by live prefix code (design 05 §2.3 rule 4). Refused members record each blocking kind
   once per side, with its first line and how many more share it.
 - **Reads.** One traced run per file, through `NODE_OPTIONS=--import=tests/tooling/read-trace.mjs`,
-  must give the catalog run's leaf verdicts. Reads inside the repository, outside `node_modules` and
-  outside the static import closure are compared at the pin and at C (bytes, listing or existence). A
-  changed fixture (a non-module file under a test directory, or a listing of a `fixtures` directory
-  under one) refuses the file. Any other changed read is labelled `repository_read_changed`. The
-  record keeps a digest of the compared reads.
+  must give the catalog run's leaf verdicts. The comparison covers reads inside the repository, outside
+  `node_modules` and outside the static import closure.
+  - **Classes** (TOOLS-02 T2-1, owner choice 01, design 02 §1). Each `(path, kind)` read is in exactly
+    one class:
+    - a listing with no listed proper ancestor is a *walk-root listing*;
+    - a read beneath a directory the same run lists is *enumerated* under its outermost listed
+      ancestor;
+    - every other read is *named*.
+
+    A path can appear in more than one class through different kinds. For example, the existence read
+    of `tests` is named, while its listing is a walk root.
+  - **Admission** (design 05, owner choice 04's refined claim). Every traced row is admitted by an
+    explicit matrix before anything reads it, and the default is refusal; a refused row refuses its file.
+    - **Captured facts:** the trace keeps each call's operation, the first argument's form, a path's
+      original text and call-time working directory, the second argument's form, an options object's own
+      keys and `recursive`.
+    - **First argument:** only a path is admitted. A descriptor, file handle or other form refuses.
+    - **Second argument:** `READ_ARGUMENTS` in `packet_tools.py` names the admitted forms and option keys
+      per operation. Any other refuses: `createReadStream`'s `fd` and `fs` overrides, for example.
+    - **Glob and copy:** every `glob` refuses. A `cp` refuses unless its source lies outside the repository.
+    - **Path walk:** the path is walked component by component, as the operating system resolves it,
+      before normalization. A tracked symlink refuses the row, and no target is followed. Untracked links,
+      such as system prefixes and `node_modules` workspace links, are followed.
+    - **Rule P (path binding, owner choice 05):** every component that exists in the checkout, inside the
+      repository and outside `node_modules`, must be a Git entry at C under exactly that spelling. This is
+      checked before the symlink check. A case- or normalization-variant spelling refuses.
+    - **Rule O (options, owner choice 05):** an options object must have `Object.prototype` or `null` as its
+      prototype. The trace records it with intrinsics captured at load; any other prototype refuses.
+    - **Threat model:** cooperative test code. Forms built to evade the census are 017 L-18.
+  - **Listing modes** (design 04). A `readdir` or `opendir` whose options set `recursive` is a *tree*
+    read. It stands for the immediate listing of its directory and of every subtree beneath it, each
+    classed like any listing. A tree read that crosses a tracked symlink refuses its file, because
+    `readdir` descends links and `opendir` does not (design 05 §2). Listing identities are
+    `[name, type]` entries, as `withFileTypes` returns them.
+  - **Existence identity:** a file's Git mode and blob ID; a directory's type alone. This is Git-recorded
+    content, type and executable-bit identity, not equality of complete `stat` results.
+  - **Fixture reads:** a non-module file under a test directory, or a listing or directory existence
+    read beneath a `fixtures` directory under one.
+  - **What the record keeps:**
+    - `walks`, the sorted walk roots;
+    - `reads`, a digest of every named read and every fixture read with its identity at C (blob ID,
+      typed entries or existence) plus the walk roots. A tree read's implied listings enter at C.
+
+    Non-fixture walk-root listings and enumerated reads are recorded only by their walk root. Every
+    edit of a named or fixture read changes the record; an unrelated new file under a walk does not.
+  - **Pin comparison.** Named reads and fixture reads are compared at the pin and at C. A tree read
+    compares its implied fixture listings over both revisions' directories, so a fixture subtree present
+    only at the pin counts. A read whose path or any ancestor was a tracked symlink at the pin, or a tree
+    read that crossed one there, refuses that origin's members. A changed fixture refuses the file; any
+    other changed named read is labelled `repository_read_changed`.
 - **Helper closure.** Every test-side module the file imports statically, transitively, must be
   byte-identical, or covered by a counted `helper_reviews` record. A record is bound to its origin,
   its module and both blob IDs, covers the whole module, and applies only to literal titles. Changed
@@ -428,7 +498,10 @@ Fixtures emit one JSON observation with case, assertion, boolean reached/passed 
 an ordered list of named failures. Passing exit is 0; assertion failure uses failure_exit.
 Setup errors must escape the observation adapter. The Node test reporter accepts assertion
 failures only. The Python adapter accepts unittest assertion failures only; errors, skips and
-wrong test counts invalidate the run. A malformed-input test can assert that a tool boundary
+wrong test counts invalidate the run. It traces reach at the mutant's `before` when that still
+occurs once in the mutated file, else at its `after`, which must then occur exactly once; an empty or
+repeated replacement has no anchor, and `test_target_tools.ProbeAnchorTests` refuses one before any
+registry runs. A malformed-input test can assert that a tool boundary
 returns its declared CheckError rather than an accidental IndexError/KeyError; that is a named
 boundary assertion, not a harness crash promoted to a kill.
 

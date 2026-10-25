@@ -43,9 +43,11 @@ CATALOG_REPORTER = 'tests/tooling/catalog-reporter.mjs'
 SOURCE_FACTS = 'tests/tooling/source-facts.mjs'
 REACH_COVERAGE = 'tests/tooling/reach-coverage.mjs'
 # Design 05 §2.3 rule 5: the reads-phase preload, and how each fs operation is compared at pin and C.
+# TOOLS-02 design 04 §1: a recursive listing is a `tree` read. Design 05 §1 admits each row through READ_ARGUMENTS;
+# glob and cp have no represented dependency identity (kind `pattern`), so admission refuses them.
 READ_TRACE = 'tests/tooling/read-trace.mjs'
 READ_KIND = {'readFile': 'bytes', 'open': 'bytes', 'createReadStream': 'bytes', 'openAsBlob': 'bytes',
-             'readdir': 'listing', 'opendir': 'listing', 'glob': 'listing',
+             'readdir': 'listing', 'opendir': 'listing', 'glob': 'pattern', 'cp': 'pattern',
              'stat': 'exists', 'lstat': 'exists', 'statfs': 'exists', 'exists': 'exists', 'access': 'exists',
              'realpath': 'exists', 'readlink': 'exists'}
 NODE_BUILTINS = {'assert', 'async_hooks', 'buffer', 'child_process', 'crypto', 'events', 'fs', 'http', 'https', 'module',
@@ -91,6 +93,11 @@ CONTEXT_TOKEN = re.compile(r'[^\s`\x27"<>()[\]{},;]+')
 CONTEXT_LOCAL = re.compile(r'[\w.@/-]+', re.ASCII)
 CONTEXT_GITHUB = re.compile(r'https://github\.com/ArrokothI/arrokothi/blob/([0-9a-f]{7,40})/([\w.@/-]+)', re.ASCII)
 SEALED_PREFIXES = ('docs/',)
+# TOOLS-02 T2-2 (design 02 §2.1): operations whose output is fixture data; each refuses an unclean checkout at
+# dispatch. `verify` keeps its own clean_payload; `candidate` and `gate` print no fixture data.
+GUARDED_OPERATIONS = ('inventory', 'mutations', 'cases', 'corpus', 'coverage', 'regenerate')
+UNCLEAN = (': the checkout must be pristine at the revision (HEAD there, no changes, and no untracked, ignored or '
+           'git-invisible entries); run in a fresh clone or the Packet verify workflow')
 # P1-X area gate (gate-design-01): the maintained manifest the gate reads, and its lexical names.
 ADOPTION_MANIFEST = 'tests/fixtures/packet-tools/adoption.json'
 OPEN_STATES = ('pending', 'pending_revalidation')
@@ -310,7 +317,15 @@ def candidate(git, payload, head, spec_path):
                 f'executable/configuration attachment requires payload review: {path}')
     changed = sorted(x.decode() for x in git.run('diff', '--name-only', '-z', c, h).split(b'\0') if x)
     require(changed == sorted(allowed), f'C..H files differ: actual={changed}, expected={sorted(allowed)}')
-    git.run('diff', '--check', b, h)
+    # TOOLS-02 design 05 §8.3 (T2-R3-ADMIN-01): an explicit, recorded exemption from the whitespace check, only for a
+    # path whose bytes the preserve list freezes at the same revision.
+    exceptions = spec.get('whitespace_exceptions', [])
+    preserved = {(item.get('revision'), item.get('path')) for item in spec.get('preserve', []) if isinstance(item, dict)}
+    require(isinstance(exceptions, list) and all(isinstance(item, dict) and set(item) == {'path', 'revision', 'reason'} and
+                                                 isinstance(item['reason'], str) and bool(item['reason'].strip()) and
+                                                 (item['revision'], item['path']) in preserved for item in exceptions),
+            'a whitespace exception names a path preserved at its revision, with a reason')
+    git.run('diff', '--check', b, h, '--', '.', *(':(exclude)' + item['path'] for item in exceptions))
     for item in spec.get('preserve', []):
         old = git.commit(item['revision'])
         path_name(item['path'])
@@ -326,6 +341,7 @@ def candidate(git, payload, head, spec_path):
         attachments.append({'path': item['path'], 'at': item['at'], 'sha256': digest(data)})
     return {'operation': 'candidate', 'result': 'facts_verified', 'base': b, 'payload': c,
             'candidate': h, 'specification': spec_path, 'administrative_files': changed,
+            'whitespace_exceptions': [item['path'] for item in exceptions],
             'evidence': attachments, 'acceptance': 'not evaluated',
             'limits': ['File sets do not establish absence of semantic prose changes',
                        'Owner/reviewer authenticity and command execution are not inferred from metadata',
@@ -716,6 +732,8 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register):
 
 
 def corpus_format_2(git, rev, spec, intake, toolchain=None):
+    # TOOLS-02 T2-2: suite targets and the census run in the working tree, so only a pristine checkout at C.
+    require(pristine(git, rev), 'corpus' + UNCLEAN)
     origins = {row['id']: row for row in intake['origins']}
     require(all(table in spec for table in FORMAT_2_TABLES), 'format 2 needs every adoption table')
     rows = unique_records(spec['origins'], 'origins')
@@ -845,6 +863,52 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
                        'reads outside fs, by native code or in processes that drop NODE_OPTIONS are unseen',
                        'The hold register covers leaf registrations in preserved and target files and every '
                        'registry case']}
+
+
+def manifest_text(spec):
+    """Canonical adoption-manifest text: two-space JSON, ASCII escapes, one line per preserved member."""
+    rows = ',\n'.join('    ' + json.dumps(row, ensure_ascii=True) for row in spec['preserved'])
+    text = json.dumps(dict(spec, preserved='\x00preserved'), indent=2, ensure_ascii=True)
+    return text.replace(json.dumps('\x00preserved'), '[\n' + rows + '\n  ]' if rows else '[]', 1) + '\n'
+
+
+def regenerate(git, revision, spec_path, write=False, toolchain=None):
+    """TOOLS-02 T2-2 (design 01 §2.2, design 02 §2): the one supported writer of the adoption manifest's derived
+    preserved table. It refuses an unclean checkout, recomputes the census at C exactly as `corpus` does, and,
+    with `write`, replaces only that table in the working-tree manifest. Classifications, register entries,
+    targets, origins and every other field stay byte-identical; `corpus` then revalidates the committed result."""
+    rev = git.commit(revision)
+    require(pristine(git, rev), 'regenerate' + UNCLEAN)
+    spec = git.document(rev, spec_path, versions=(2,))
+    require(manifest_text(spec).encode() == git.blob(rev, spec_path),
+            'regenerate writes only a manifest already in its canonical form')
+    intake = inventory(git, rev, spec['inventory'])
+    claims = holds_table(git, rev, spec['holds'])
+    registry, _ = scheduled_registry(git, rev, spec)
+    targets = unique_records(spec['suite_targets'], 'suite targets')
+    tested = test_file_origins(intake)
+    moves = moves_table(git, rev, spec['moves'])
+    scope = sorted({moves.get(row['path'], row['path']) for row in tested if blob_id(git, rev, moves.get(row['path'], row['path']))} |
+                   {target['file'] for target in targets.values() if isinstance(target.get('file'), str) and
+                    blob_id(git, rev, target['file'])})
+    with contextlib.ExitStack() as stack:
+        context = target_context(git, rev, spec, stack, toolchain) if targets or tested else None
+        environment = child_environment(environment_declaration(None))[0] if context is None else context['environment']
+        register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain,
+                                 registry['cases'], spec['registry'])
+        evaluations, _ = preserved_census(git, rev, spec, intake, context, register) if tested else ([], None)
+    table = preserved_table(evaluations)
+    stored = {row.get('member'): row for row in spec['preserved'] if isinstance(row, dict)}
+    census = {row['member']: row for row in table}
+    if write and spec['preserved'] != table:
+        (git.repo / path_name(spec_path)).write_text(manifest_text(dict(spec, preserved=table)))
+    return {'operation': 'regenerate', 'revision': rev, 'specification': spec_path,
+            'result': 'table_current' if spec['preserved'] == table else 'table_written' if write else 'table_differs',
+            'members': len(table), 'changed': sorted(key for key in census if key in stored and stored[key] != census[key]),
+            'added': sorted(set(census) - set(stored)), 'removed': sorted(set(stored) - set(census)),
+            'by_status': {'stored': dict(Counter(row.get('status') for row in stored.values())),
+                          'census': dict(Counter(row['status'] for row in table))},
+            'limits': ['Writes only the preserved table; register, targets and every other field are reported by corpus']}
 
 
 def coverage_manifest(spec, registry):
@@ -1929,14 +1993,43 @@ def blob_id(git, rev, path):
     return None if entry is None else entry[1]
 
 
+ENTRY_TYPES = {'040000': 'directory', '120000': 'symlink', '160000': 'submodule'}
+# TOOLS-02 design 05 §7.1: the second-argument forms each read operation admits, and an options object's admitted
+# keys. A missing second argument is always admitted; any other form or key refuses the row.
+READ_ARGUMENTS = {'readFile': ({'string', 'function', 'options'}, {'encoding', 'flag', 'signal'}),
+                  'open': ({'string', 'number', 'function'}, set()),
+                  'createReadStream': ({'string', 'options'}, {'encoding', 'flags', 'mode', 'autoClose', 'emitClose',
+                                                               'start', 'end', 'highWaterMark', 'signal'}),
+                  'openAsBlob': ({'options'}, {'type'}),
+                  'readdir': ({'string', 'function', 'options'}, {'encoding', 'withFileTypes', 'recursive'}),
+                  'opendir': ({'function', 'options'}, {'encoding', 'bufferSize', 'recursive'}),
+                  'stat': ({'function', 'options'}, {'bigint', 'throwIfNoEntry'}),
+                  'lstat': ({'function', 'options'}, {'bigint', 'throwIfNoEntry'}),
+                  'statfs': ({'function', 'options'}, {'bigint'}),
+                  'exists': ({'function'}, set()),
+                  'access': ({'number', 'function'}, set()),
+                  'realpath': ({'string', 'function', 'options'}, {'encoding'}),
+                  'readlink': ({'string', 'function', 'options'}, {'encoding'})}
+
+
 def listing(git, rev, path):
-    """Entry names of a directory at a revision; None when the path is absent or not a directory."""
+    """`[name, type]` entries of a directory at a revision, as `withFileTypes` observes them (TOOLS-02 design 04 §1);
+    None when the path is absent or not a directory."""
     entry = git.tree(rev).get(path) if path else ('040000', None)
     if entry is None or entry[0] != '040000':
         return None
     prefix = path + '/' if path else ''
-    return sorted(name[len(prefix):] for name in git.tree(rev)
+    return sorted([name[len(prefix):], ENTRY_TYPES.get(mode, 'file')] for name, (mode, _) in git.tree(rev).items()
                   if name.startswith(prefix) and '/' not in name[len(prefix):])
+
+
+def tree_listings(git, revs, directory):
+    """A recursive listing's implied immediate listings: the directory and every subtree beneath it at any of `revs`
+    (TOOLS-02 design 04 §1). A symlink beneath the directory refuses the read instead (design 05 §2), because
+    `readdir` descends it and `opendir` does not, so no expansion could follow both."""
+    prefix = '' if directory == '.' else directory + '/'
+    return sorted({directory} | {name for rev in revs for name, (mode, _) in git.tree(rev).items()
+                                 if mode == '040000' and name.startswith(prefix)})
 
 
 def workspace_packages(git, rev):
@@ -2030,49 +2123,229 @@ def traced_reads(git, flags, file, environment):
             'reads': [row for row in reads if row.get('operation') != 'preload']}
 
 
-def read_kind(operation):
-    return READ_KIND.get(operation.removeprefix('promises.').removesuffix('.native').removesuffix('Sync'))
+def tree_symlinks(git, revs, directory):
+    """Tracked symlinks beneath a recursive listing's directory at any of `revs` (TOOLS-02 design 05 §2)."""
+    prefix = '' if directory == '.' else directory + '/'
+    return sorted({name for rev in revs for name, (mode, _) in git.tree(rev).items()
+                   if mode == '120000' and name.startswith(prefix)})
 
 
-def fixture_read(path, kind):
+def read_kind(row):
+    """A traced row's kind: READ_KIND by operation, except that a listing marked `recursive` is a `tree` read."""
+    kind = READ_KIND.get((row.get('operation') or '').removeprefix('promises.').removesuffix('.native').removesuffix('Sync'))
+    if kind == 'listing' and row.get('recursive') is True:
+        return 'tree'
+    return kind
+
+
+def walk_path(git, rev, root, text, base):
+    """TOOLS-02 design 05 §7.2 and §8.1: resolve a traced path as the operating system does, one component at a time,
+    before any normalization. Rule P comes first: an existing component inside the repository, outside node_modules,
+    must be a Git entry at C under exactly that spelling. A tracked symlink (Git mode 120000 at C) then ends the walk,
+    and no target is followed. An untracked symlink (a system prefix, a node_modules workspace link) is followed. A
+    missing component ends the walk, and the rest is appended lexically. Returns (physical path, refusal or None)."""
+    tree = git.tree(rev)
+    parts = (text if text.startswith('/') else base + '/' + text).split('/')
+    current = Path('/')
+    for index, part in enumerate(parts):
+        if part in ('', '.'):
+            continue
+        if part == '..':
+            current = current.parent
+            continue
+        candidate = current / part
+        relative = candidate.relative_to(root).as_posix() if candidate.is_relative_to(root) and candidate != root else None
+        bound = relative is not None and 'node_modules' not in PurePosixPath(relative).parts
+        if bound and relative not in tree and os.path.lexists(candidate):
+            return None, 'the traced run read a path whose spelling is not a tracked entry at C: ' + relative
+        if bound and tree.get(relative, ('',))[0] == '120000':
+            return None, 'the traced run read through a symlink in the repository: ' + relative
+        if candidate.is_symlink():
+            current = Path(os.path.realpath(candidate))
+        elif not os.path.lexists(candidate):
+            return Path(os.path.normpath('/'.join([str(candidate), *parts[index + 1:]]))), None
+        else:
+            current = candidate
+    return current, None
+
+
+def admit(git, rev, root, row, aside):
+    """TOOLS-02 design 05 §1 and §7: one outcome per traced row, refusal by default. `('read', path, kind)` is a
+    represented repository read; `('outside',)` reads outside the repository, under node_modules or in the static
+    import closure; `('refused', reason)` is everything the matrix does not admit. Only a path first argument is
+    admitted, walked before it is normalized (rule P binds its spelling); glob refuses in every form, and cp refuses a
+    repository source. Options must have an ordinary prototype (rule O, §8.2) and only admitted own keys."""
+    operation = (row.get('operation') or '').removeprefix('promises.').removesuffix('.native').removesuffix('Sync')
+    if operation == 'glob':
+        return ('refused', 'the traced run read through a glob pattern, whose dependency identity is not represented: ' +
+                str(row.get('text') or row.get('argument')))
+    if operation not in READ_ARGUMENTS and operation != 'cp':
+        return ('refused', 'an operation the read matrix does not name: ' + str(row.get('operation')))
+    if row.get('argument') != 'path' or not isinstance(row.get('text'), str) or not isinstance(row.get('cwd'), str):
+        return ('refused', f"a first argument the read matrix does not admit ({row.get('argument')}): {row['operation']}")
+    physical, alias = walk_path(git, rev, root, row['text'], row['cwd'])
+    if alias is not None:
+        return ('refused', alias)
+    inside = physical.is_relative_to(root)
+    if operation == 'cp':
+        return (('refused', 'the traced run copied a repository tree, whose identity is not represented: ' +
+                 physical.relative_to(root).as_posix()) if inside else ('outside',))
+    forms, keys = READ_ARGUMENTS[operation]
+    second = row.get('second', 'undefined')
+    if second != 'undefined' and second not in forms:
+        return ('refused', f"a second argument the read matrix does not admit ({second}): {row['operation']}")
+    if second == 'options' and row.get('prototype') not in ('Object.prototype', 'null'):
+        return ('refused', 'an options object with another prototype: ' + row['operation'])
+    if second == 'options' and not set(row.get('keys', [])) <= keys:
+        return ('refused', f"an option the read matrix does not name: {row['operation']} "
+                           f"{', '.join(sorted(set(row.get('keys', [])) - keys))}")
+    if not inside:
+        return ('outside',)
+    relative, kind = physical.relative_to(root).as_posix(), read_kind(row)
+    if 'node_modules' in PurePosixPath(relative).parts or relative in aside or (relative == '.' and kind == 'bytes'):
+        return ('outside',)
+    return ('read', relative, kind)
+
+
+def admitted_reads(git, rev, root, reads, aside):
+    """TOOLS-02 design 05 §1: admit every traced row. Returns the compared reads, the listed directories (the root as
+    `.`) and the sorted refusals; a recursive listing that crosses a tracked symlink at C refuses too (§2)."""
+    compared, listed, refusals = set(), set(), set()
+    for row in reads:
+        outcome = admit(git, rev, root, row, aside)
+        if outcome[0] == 'refused':
+            refusals.add(outcome[1])
+        elif outcome[0] == 'read':
+            _, relative, kind = outcome
+            if kind in ('listing', 'tree'):
+                listed.add(relative)
+            if relative != '.' or kind == 'tree':
+                compared.add((relative, kind))
+    for relative, kind in sorted(compared):
+        links = tree_symlinks(git, (rev,), relative) if kind == 'tree' else []
+        if links:
+            refusals.add('a recursive listing crosses a symlink: ' + links[0])
+    return sorted(compared), listed, sorted(refusals)
+
+
+def pin_refusals(git, pin, compared):
+    """TOOLS-02 design 05 §7.3 and §2: at one origin's pin, a compared read whose path or any ancestor is a tracked
+    symlink, and a recursive listing that crosses one. No target is followed."""
+    tree, reasons = git.tree(pin), set()
+    for relative, kind in compared:
+        prefixes = [str(parent) for parent in reversed(PurePosixPath(relative).parents) if str(parent) != '.']
+        for prefix in prefixes + ([relative] if relative != '.' else []):
+            if tree.get(prefix, ('',))[0] == '120000':
+                reasons.add('a read path or its ancestor is a symlink at the pin: ' + prefix)
+                break
+        links = tree_symlinks(git, (pin,), relative) if kind == 'tree' else []
+        if links:
+            reasons.add('a recursive listing crosses a symlink at the pin: ' + links[0])
+    return sorted(reasons)
+
+
+def fixture_read(path, kind, directory=False):
     """A changed fixture refuses the file: a non-module file under a test directory, or a listing of a
-    `fixtures` directory under one (design 05 §2.3 rule 5)."""
+    `fixtures` directory under one (design 05 §2.3 rule 5). An existence read of a directory follows the
+    listing rule (TOOLS-02 design 02 §1.2), so discovering an unrelated test directory reads no fixture."""
     parts = PurePosixPath(path).parts
     if 'tests' not in parts:
         return False
-    if kind == 'listing':
+    if kind == 'listing' or (kind == 'exists' and directory):
         return 'fixtures' in parts[parts.index('tests'):]
     return not path.endswith(SOURCE_SUFFIXES)
 
 
-def compared_reads(root, reads, aside):
-    """Traced reads inside the repository, outside node_modules and the static import closure."""
-    compared = set()
-    for row in reads:
-        kind = read_kind(row.get('operation') or '')
-        if kind is None or not isinstance(row.get('path'), str):
+def is_directory(git, rev, path):
+    entry = git.tree(rev).get(path)
+    return entry is not None and entry[0] == '040000'
+
+
+def exists_identity(git, rev, relative):
+    """TOOLS-02 design 05 §3 and §7: an existence read's identity, the Git-recorded content, type and executable bit:
+    a file's mode and blob ID, a directory's type alone (D02-CHK-02), or None when absent."""
+    entry = git.tree(rev).get(relative)
+    if entry is None:
+        return None
+    if entry[0] == '040000':
+        return 'directory'
+    return [entry[0], entry[1]]
+
+
+def read_identity(git, rev, relative, kind):
+    """A read's identity at a revision: blob ID, typed entries, or the existence identity."""
+    if kind == 'bytes':
+        return blob_id(git, rev, relative)
+    if kind == 'listing':
+        return listing(git, rev, relative)
+    return exists_identity(git, rev, relative)
+
+
+def read_form(git, rev, listed, compared):
+    """TOOLS-02 T2-1 (owner choice 01; design 02 §1.1, D02-CHK-01). Each compared (path, kind) read is in
+    exactly one class: a listing with no listed proper ancestor is a walk-root listing; a read beneath a listed
+    directory is enumerated under its outermost listed ancestor; every other read is named. One path can
+    still appear in several classes through different kinds (`tests` existence is named, its listing a walk
+    root). The record keeps the identity at C of every named read and of every fixture read in the other two
+    classes; non-fixture walk-root listings and enumerated reads are recorded only by their walk root, because
+    their content cannot change a member's status and every member is rerun fresh at C. `checked` holds the
+    reads compared with each pin: the named reads and every fixture read. Fixture membership here uses the
+    directory kind at C, so a path absent at C takes the file rule: a superset of `changed_reads`'s fixtures.
+    A `tree` read stands for its implied listings at C, classified like any listing; `checked` keeps the tree read
+    itself, which `changed_reads` expands over the pin too (design 04 §1). Admission (design 05) supplies `listed`
+    and `compared`; refused rows never reach this record."""
+    named, fixtures, walks, checked = [], [], set(), []
+    reads = {(relative, kind): False for relative, kind in compared if kind not in ('tree', 'pattern')}
+    for relative, kind in compared:
+        if kind == 'tree':
+            checked.append((relative, kind))
+            for directory in tree_listings(git, (rev,), relative):
+                reads.setdefault((directory, 'listing'), True)
+    for (relative, kind), implied in sorted(reads.items()):
+        ancestors = [str(parent) for parent in reversed(PurePosixPath(relative).parents)]
+        root = next((directory for directory in ancestors if directory in listed), None)
+        if root is None and kind == 'listing' and relative in listed:
+            root = relative
+        row = [relative, kind, read_identity(git, rev, relative, kind)]
+        if root is None:
+            named.append(row)
+            checked.append((relative, kind))
             continue
-        absolute = Path(os.path.realpath(row['path']))
-        if not absolute.is_relative_to(root):
-            continue
-        relative = absolute.relative_to(root).as_posix()
-        if relative != '.' and 'node_modules' not in PurePosixPath(relative).parts and relative not in aside:
-            compared.add((relative, kind))
-    return sorted(compared)
+        walks.add(root)
+        if fixture_read(relative, kind, is_directory(git, rev, relative)):
+            fixtures.append(row)
+            if not implied:
+                checked.append((relative, kind))
+    record = {'named': named, 'fixtures': fixtures, 'walks': sorted(walks)}
+    return {'digest': digest(json.dumps(record).encode()), 'walks': sorted(walks), 'checked': sorted(checked)}
 
 
 def changed_reads(git, pin, rev, compared):
-    """Each remaining read compared at the pin and at C: bytes, directory entries or existence."""
-    changed = []
+    """Each remaining read compared at the pin and at C: bytes, directory entries or existence. A `tree` read
+    compares its implied fixture listings over the directories of both revisions, so a fixture subtree present only
+    at the pin still counts (TOOLS-02 design 04 §1); its other implied listings are recorded by its root only."""
+    changed, seen = [], set()
     for relative, kind in compared:
+        if kind == 'tree':
+            for directory in tree_listings(git, (pin, rev), relative):
+                if (fixture_read(directory, 'listing') and (directory, 'listing') not in seen and
+                        listing(git, pin, directory) != listing(git, rev, directory)):
+                    seen.add((directory, 'listing'))
+                    changed.append({'path': directory, 'kind': 'listing', 'fixture': True})
+            continue
+        if (relative, kind) in seen:
+            continue
+        seen.add((relative, kind))
         if kind == 'bytes':
             same = blob_id(git, pin, relative) == blob_id(git, rev, relative)
         elif kind == 'listing':
             same = listing(git, pin, relative) == listing(git, rev, relative)
         else:
-            same = (blob_id(git, pin, relative) is None) == (blob_id(git, rev, relative) is None)
+            same = exists_identity(git, pin, relative) == exists_identity(git, rev, relative)
         if not same:
-            changed.append({'path': relative, 'kind': kind, 'fixture': fixture_read(relative, kind)})
+            directory = is_directory(git, rev, relative) or (blob_id(git, rev, relative) is None and
+                                                             is_directory(git, pin, relative))
+            changed.append({'path': relative, 'kind': kind, 'fixture': fixture_read(relative, kind, directory)})
     return changed
 
 
@@ -2480,10 +2753,12 @@ def origin_census(git, rev, origin, path, leaves, run, closures, prefixes, revie
         fixtures = [entry['path'] for entry in changed_reads_now if entry['fixture']]
         if fixtures:
             reasons.append('changed test fixture read: ' + ', '.join(fixtures))
+        reasons += pin_refusals(git, pin, run['compared'])
         entry = register.get(f'{path}:{current[0]}:{current[1]}') if current is not None else None
         evaluations.append(dict(row, reasons=reasons, current=None if current is None else list(current),
                                 helper_closure='unchanged' if not changed else {'reviewed': sorted(reviewed)},
-                                reads=run['reads_digest'], register=None if entry is None else entry['classification'],
+                                reads=run['reads_digest'], walks=run['walks'],
+                                register=None if entry is None else entry['classification'],
                                 production_changed=[module for module in closures['production']
                                                     if blob_id(git, pin, module) != blob_id(git, rev, module)],
                                 repository_read_changed=[entry['path'] for entry in changed_reads_now if not entry['fixture']]))
@@ -2491,7 +2766,9 @@ def origin_census(git, rev, origin, path, leaves, run, closures, prefixes, revie
 
 
 def preserved_census(git, rev, spec, intake, context, register):
-    """P1-P for every member of every whole-file test origin, fresh at C (design 05 §2.3, D05-CHK-07, -11)."""
+    """P1-P for every member of every whole-file test origin, fresh at C (design 05 §2.3, D05-CHK-07, -11).
+    It runs tests in the working tree, so it refuses any checkout but a pristine one at `rev` (TOOLS-02 T2-2)."""
+    require(pristine(git, rev), 'preserved_census' + UNCLEAN)
     origins = {row['id']: row for row in intake['origins']}
     moves = moves_table(git, rev, spec['moves'])
     all_earlier = not floor_order_model(git, rev, spec['floor'])
@@ -2549,15 +2826,20 @@ def preserved_census(git, rev, spec, intake, context, register):
                 traced = traced_reads(git, step['catalog']['flags'], path, context['environment_for'](step))
                 expected = sorted([pair['line'], pair['column'], pair['path'], pair['verdict']]
                                   for pair in tree['files'][path]['pairs'] if pair['leaf'])
-                compared = compared_reads(root, traced['reads'], {path, *closures_now[path]['test_side'],
-                                                                  *closures_now[path]['production']})
-                traces[path] = {'compared': compared, 'digest': digest(json.dumps(compared).encode()),
-                                'refused': None if traced['verdicts'] == expected and traced['child_preloads'] >= 1 else
-                                'the traced run differs from the catalog run, or did not load the trace'}
+                compared, listed, refusals = admitted_reads(git, rev, root, traced['reads'],
+                                                            {path, *closures_now[path]['test_side'],
+                                                             *closures_now[path]['production']})
+                form = read_form(git, rev, listed, compared)
+                refused = None if traced['verdicts'] == expected and traced['child_preloads'] >= 1 else \
+                    'the traced run differs from the catalog run, or did not load the trace'
+                if refused is None and refusals:
+                    refused = '; '.join(refusals[:3]) + (f' (and {len(refusals) - 3} more)' if len(refusals) > 3 else '')
+                traces[path] = {'compared': form['checked'], 'digest': form['digest'], 'walks': form['walks'],
+                                'refused': refused}
             run['refused'] = traces[path]['refused']
         if run['refused'] is None:
             now, then = closures_now[path], closures_then[pin][pin_path]
-            run.update(pairs=tree['files'][path]['pairs'], compared=traces[path]['compared'],
+            run.update(pairs=tree['files'][path]['pairs'], compared=traces[path]['compared'], walks=traces[path]['walks'],
                        reads_digest=traces[path]['digest'], whole=(pin, pin_path, path) not in prefixes,
                        changed_helpers=sorted(set(now['test_side']) ^ set(then['test_side']) |
                                               {module for module in now['test_side']
@@ -2587,7 +2869,8 @@ def preserved_table(evaluations):
         if 'scope' in first:
             reviewed = sorted({review for row in rows if isinstance(row['helper_closure'], dict)
                                for review in row['helper_closure']['reviewed']})
-            record.update(scope=first['scope'], current=first['current'], reads=first['reads'], register=register,
+            record.update(scope=first['scope'], current=first['current'], reads=first['reads'], walks=first['walks'],
+                          register=register,
                           helper_closure={'reviewed': reviewed} if reviewed else 'unchanged',
                           production_changed=sorted({module for row in rows for module in row['production_changed']}),
                           repository_read_changed=sorted({path for row in rows for path in row['repository_read_changed']}))
@@ -2618,6 +2901,7 @@ def census_figures(evaluations, table, all_earlier):
                                                                           for reason in row['reasons'])]),
         'identical_read_labelled': distinct([row for row in whole if row['repository_read_changed']]),
         'members': len(table), 'by_status': dict(Counter(row['status'] for row in table)),
+        'walk_members': sum(bool(row.get('walks')) for row in table),
         'preserved_whole_file': sum(row['scope'] == 'whole_file' for row in preserved),
         'preserved_prefix_inert': sum(row['scope'] == 'span' for row in preserved),
         'preserved_helper_reviewed': sum(isinstance(row['helper_closure'], dict) for row in preserved),
@@ -3348,6 +3632,13 @@ def untracked_entries(git, rev):
     return sorted(extra)
 
 
+def pristine(git, rev):
+    """TOOLS-02 T2-2 (design 02 §2.2): TOOLS-02A's clean checkout as a predicate for the guarded routes. HEAD
+    is `rev`, nothing is modified, and no entry is untracked at `rev`, ignored and git-invisible ones included."""
+    return (git.run('rev-parse', 'HEAD').decode().strip() == rev and
+            not git.run('status', '--porcelain', '--untracked-files=all').strip() and not untracked_entries(git, rev))
+
+
 def clean_payload(git, rev):
     require(git.run('rev-parse', 'HEAD').decode().strip() == rev, 'HEAD must be payload C')
     require(not git.run('status', '--porcelain', '--untracked-files=all').strip(), 'payload checkout must be clean')
@@ -3435,13 +3726,17 @@ def main():
     c.add_argument('--payload', required=True)
     c.add_argument('--head', required=True)
     c.add_argument('--spec', required=True)
-    for name in ('inventory', 'mutations', 'cases', 'corpus', 'verify', 'coverage', 'gate'):
+    for name in ('inventory', 'mutations', 'cases', 'corpus', 'verify', 'coverage', 'gate', 'regenerate'):
         child = sub.add_parser(name)
         child.add_argument('--revision', required=True)
         child.add_argument('--spec', required=True)
+        if name == 'regenerate':
+            child.add_argument('--write', action='store_true', help='Replace the derived preserved table in the checkout')
     args = p.parse_args()
     try:
         git = Git(args.repo)
+        if args.operation in GUARDED_OPERATIONS:
+            require(pristine(git, git.commit(args.revision)), args.operation + UNCLEAN)
         if args.operation == 'candidate':
             result = candidate(git, args.payload, args.head, args.spec)
         elif args.operation == 'inventory':
@@ -3454,6 +3749,8 @@ def main():
             result = verify(git, args.revision, args.spec)
         elif args.operation == 'gate':
             result = area_gate(git, args.revision, args.spec)
+        elif args.operation == 'regenerate':
+            result = regenerate(git, args.revision, args.spec, write=args.write)
         else:
             result = mutations(git, args.revision, args.spec, cases_only=args.operation == 'cases')
         print(json.dumps(result, indent=2))

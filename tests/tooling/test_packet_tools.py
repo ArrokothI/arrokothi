@@ -157,6 +157,34 @@ class CandidateTests(RepositoryFixture):
         with self.assertRaisesRegex(tool.CheckError, 'preserved path changed'):
             tool.candidate(self.reader, c, h, 'spec.json')
 
+    def test_a_whitespace_exception_must_be_preserved_with_a_reason(self):
+        """TOOLS-02 design 05 §8.3 (T2-R3-ADMIN-01): an exemption names a path the preserve list freezes at the same
+        revision, with a reason; anything else refuses before the whitespace check runs."""
+        for exceptions in ([{'path': 'unsealed.md', 'revision': self.b, 'reason': 'Recorded.'}],
+                           [{'path': 'sealed.txt', 'revision': self.b, 'reason': ' '}],
+                           [{'path': 'sealed.txt', 'revision': self.b}]):
+            with self.subTest(exceptions=exceptions):
+                self.git('reset', '-q', '--hard', self.b)
+                c, h = self.candidate_pair(whitespace_exceptions=exceptions)
+                with self.assertRaisesRegex(tool.CheckError, 'whitespace exception names a path preserved'):
+                    tool.candidate(self.reader, c, h, 'spec.json')
+
+    def test_a_trailing_blank_line_fails_without_a_recorded_exception(self):
+        self.write('sealed-notes.md', 'Sealed.\n\n')
+        sealed = self.commit('sealed notes')
+        c, h = self.candidate_pair(preserve=[{'revision': sealed, 'path': 'sealed-notes.md'}])
+        with self.assertRaises(tool.CheckError):
+            tool.candidate(self.reader, c, h, 'spec.json')
+
+    def test_a_recorded_whitespace_exception_exempts_only_its_path(self):
+        self.write('sealed-notes.md', 'Sealed.\n\n')
+        sealed = self.commit('sealed notes')
+        c, h = self.candidate_pair(preserve=[{'revision': sealed, 'path': 'sealed-notes.md'}],
+                                   whitespace_exceptions=[{'path': 'sealed-notes.md', 'revision': sealed,
+                                                           'reason': 'A sealed record with a trailing blank line.'}])
+        result = tool.candidate(self.reader, c, h, 'spec.json')
+        self.assertEqual((result['result'], result['whitespace_exceptions']), ('facts_verified', ['sealed-notes.md']))
+
     def test_missing_preservation_source_is_not_empty_success(self):
         c, h = self.candidate_pair(preserve=[{'revision': self.b, 'path': 'missing'}])
         with self.assertRaisesRegex(tool.CheckError, 'source is missing'):
