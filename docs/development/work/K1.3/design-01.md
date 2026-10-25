@@ -682,3 +682,240 @@ K1.3 builds.
 - **Q6 Host entries.** `pendingTimers` and `fireTimer` take no caller (recommended), or take a caller and filter by
   visibility?
 - **Q7 017.** Approve the limits above and the L-15 narrowing.
+
+## Addendum 01 — design check 01 and owner choice 01
+
+2026-10-25, the implementer. [Design check 01](design-check-01.md) approved this design with required changes
+D01-CHK-01 to -07, after [attack 01](attack-01.md). [Owner choice 01](owner-choice-01.md) answers D01-CHK-06 and -07
+and lets the build start without a new design check. This addendum supersedes the sections above wherever they
+differ. It is a routine correction inside an approved design under 006: no mechanism is replaced.
+
+### A1. K13-5's mutant claim (D01-CHK-01)
+
+"Why each criterion closes / K13-5" overclaimed. Its replacement:
+
+- **Kept.** The five small distinguishing examples, as five separate Kernel cases with the exact batch and the
+  exact remaining queue, and §8's owned rule (mandatory member first).
+- **Killed alternatives.** Three test-local selectors over the same mailbox facts, each failing at least one of
+  the five: ignore eligibility; freeze candidates at wake; **omit the timeout's membership** (select from eligible
+  Events only, so `T` never travels). The registry mutants of `waits.ts` are the two one-line forms of the first
+  and third: drop the eligibility filter, and drop the timeout from the candidates.
+- **Equivalent, recorded under 012.** Sorting the correct union (eligible Events plus `T`) and truncating,
+  without explicit mandatory-first priority, is equivalent on reachable states:
+  - at registration, W-2 step 2 tests the backlog before step 3 mints `T`;
+  - while `WAITING`, an eligible arrival retires the wait in its own decision (§6), before any fire;
+  - so every eligible candidate beside a real `T` was accepted after `T`;
+  - for an Event wake, the mandatory member is by definition the earliest eligible candidate.
+
+  The registry records this as an equivalent entry with that argument. One synthetic selector-unit test
+  (eligible `R` older than `T`) checks the literal `selectWaitEndedBatch`. It is labelled as synthetic input,
+  not a reachable Kernel history, and claims no live-search kill.
+- **Prose.**
+  - The brief gets a dated correction note.
+  - [waits § Small distinguishing examples](../../../../mental-model/mechanisms/waits.md#small-distinguishing-examples)
+    keeps its five rows and its owned rule. The build corrects only its explanation of what row 4 and the closing
+    sentence distinguish.
+  - Sealed K0 history is not altered.
+
+### A2. The K13-9 oracle (D01-CHK-02)
+
+- **Payload bytes are compared.** The harness keeps an independent copy of the value it submitted with every
+  input, by model name. After every step it compares that copy with:
+  - each mailbox view entry's payload;
+  - each carried Event's payload in every Activation the fake Driver received.
+
+  The "except payload bytes" exclusion is withdrawn.
+- **INV-7, restated.** A dispatch that consumed readiness:
+  - carries its mandatory member;
+  - is non-empty and within the bound;
+  - is in acceptance order;
+  - every member other than the exact mandatory timeout is eligible under the retired selector;
+  - no other generation's timeout Event is a member.
+
+  The S5 `d` trace at `B = 1` (batch `[T1]`, with `eligible(wait, T1) === false`) is a maintained
+  oracle-positive control.
+- **Pending timer keys.**
+  - The model derives the expected `pendingTimers()` listing from its own state, and the harness compares the
+    whole listing after every step.
+  - The keys the harness holds for `t` and `s` are kept separately: every listed key, plus every key named by an
+    accepted decision's `wait`. An immediately expired generation is never listed, so it comes only from the
+    decision.
+  - An omitted listing entry therefore fails the comparison. It never makes the model omit the same work.
+- **Stable identity and references.**
+  - Kernel Event IDs map to model names through one injective map, built when each Event is first observed and
+    never rebuilt. A view that names an unmapped ID, or maps two IDs to one name, fails.
+  - Receipts are not masked. The harness keeps every receipt object it was given. An exact retry must return the
+    same object (`===`), and positions are compared with the model.
+  - An indexed loser's retry must return the same refusal object.
+- **Negative controls.** The comparator must reject each of these corrupted observations:
+  - A05: retained input payload replaced with `null` after cancellation;
+  - A21: a pending timer omitted from the listing;
+  - A21: an existing Event renamed between two views;
+  - A21: a retry returning a different receipt object with equal fields;
+  - A21: a cancellation-record field corrupted beside an untouched delivery row.
+
+  Masking covers only the operational delivery rows a late report may change.
+
+### A3. Search reporting and the attack corpus (D01-CHK-03)
+
+- **Reporting.**
+  - The exhaustive search (13⁴ × 8 × 2 = 456,976 runs) and the supplementary walk are reported separately.
+  - Each seed's prefix is validated against its declared starting state before any word runs.
+  - The run reports attempted words, skips per letter, exercised (letter, state) transitions, and the witness of
+    every class.
+- **Supplementary walk.** 20,000 words in total: 5,000 for each of S0 and S1 at each bound, length 12. The RNG is
+  xorshift32 with a fixed seed per combination, pinned in the test source. The walk is outside the claim.
+- **`x` without an Execution deadline.** The harness fires the Execution key without advancing the clock, and the
+  expected result is `stale`. The clock advances only when the deadline is defined.
+- **Mutant kills.** A kill names the owner guard that refused the plan or the observable mismatch it caused. A
+  load or compile failure is not a semantic kill.
+- **Corpus map.** The design check's map, carried into the build. "Maintained" means a Kernel test whose name
+  starts with the label; the right column is the planned file under `packages/kernel/tests/`.
+
+| Label | Obligation (design check, "Attack disposition") | Planned file |
+|---|---|---|
+| K13-A01 | Five examples; sort-union equivalence recorded (A1); omitted timeout membership killed | `waits-selection.test.ts`; registry |
+| K13-A02 | Cancelled exchange keeps its delivery log; delivered/failed/contradictory repeats, failed first, a redelivery's second capability | `cancellation.test.ts` |
+| K13-A03 | S4 `e d w`, fire held g2 retired by Event and by timeout; g3 untouched | `waits-timers.test.ts` |
+| K13-A04 | Selector s then x and x then s, including alternative plus subscription; unmatched input stays queued | `waits-selection.test.ts` |
+| K13-A05 | Nonempty payload compared; the null-replacement transcript rejected | `race-search.test.ts` |
+| K13-A06 | S4 `e d q p p p` | `cancellation.test.ts` |
+| K13-A07 | Fresh equal loser, another loser, then original retry return the retained refusal | `losing-outcomes.test.ts` |
+| K13-A08 | Losers differing only in progress, then only in an Emission, keep separate keys | `losing-outcomes.test.ts` |
+| K13-A09 | OA-2 before the fence: saved A1 exact retry replays and changed A1 conflicts after a losing A2 | `losing-outcomes.test.ts` |
+| K13-A10 | Both orders for continue, await, complete and fail with nonempty content, two reserved Events and backlog | `cancellation.test.ts` |
+| K13-A11 | Older acknowledgment kept; reserved and backlog terminal-disposed; exact input retry replays, changed conflicts, fresh refused | `cancellation.test.ts` |
+| K13-A12 | S0 `e d z` at bounds 1 and 2; no, future and due deadlines | `waits-registration.test.ts` |
+| K13-A13 | Duplicate g1 before and after reservation, after continue, during g2, after cancellation; immediate-expiry key | `waits-timers.test.ts` |
+| K13-A14 | Bound-3 `T` with two ineligible backlog entries; eligible candidates beyond the bound after a wake | `waits-selection.test.ts` |
+| K13-A15 | Reentrant clock accepts cancellation and input; `cancelScopes` getter completes; the cancellation hook submits an Outcome and reports delivery | `waits-registration.test.ts`, `cancellation.test.ts` |
+| K13-A16 | Explicit and deadline cancellation from identical prefixes, with holds and a queued `T`; narrow masks | `execution-deadline.test.ts` |
+| K13-A17 | Exact creation retry; added, removed and changed deadline; numeric edges; absent-field identity unchanged | `execution-deadline.test.ts` |
+| K13-A18 | D−1, D, D+1; throwing, NaN and absent clocks; eligible queued Event; replay; not-due fire; read counts | `waits-registration.test.ts` |
+| K13-A19 | §3's whole valid and invalid table; 256/257 across all lists; duplicate-heavy input | `waits-declaration.test.ts` |
+| K13-A20 | Spoofed kind, ID and correlation payload; selector units; timeout exclusion | `waits-eligibility.test.ts` |
+| K13-A21 | The A2 negative controls | `race-search.test.ts` |
+| K13-A22 | Cancellation then dispatch, redelivery, takeover and recovery; COMPLETED/FAILED tokens kept | `cancellation.test.ts` |
+| K13-A23 | Invisible retries, grant-less visible caller, two Executions, malformed coordinates; no cross-Execution alias | `losing-outcomes.test.ts` |
+| K13-A24 | Wait and Execution deadlines 10/25, 10/5, 10/10 in both fire orders | `execution-deadline.test.ts` |
+
+The three attack probes stay where they are as evidence.
+
+### A4. Terminal redelivery (D01-CHK-04)
+
+§10's last sentence is replaced:
+
+- **Redelivery.** After cancellation it answers `no_unresolved_exchange`, because the cancellation plan removed
+  the exchange. That is the answer `terminal.test.ts` pins after `COMPLETED`/`FAILED`.
+- **Other controls.** Dispatch, takeover, recovery declaration and protocol-failure report answer
+  `terminal_destination` through their existing terminal checks.
+- **Outcomes.** On `CANCELLED`, an Outcome is first checked for OA-2 replay and conflict, then answers
+  `cancellation_terminal_conflict`. `COMPLETED` and `FAILED` keep `terminal_destination`.
+- **No new behaviour.** No new delivery or logical change exists on any of these paths. Q4 is resolved this way.
+
+### A5. Timer keys and clock readings (D01-CHK-05; Q5, Q6)
+
+```ts
+type TimerKey =
+  | { readonly executionId: string; readonly kind: "wait_deadline"; readonly generation: number }
+  | { readonly executionId: string; readonly kind: "execution_deadline"; readonly generation: null };
+type PendingTimer = TimerKey & { readonly deadline: number };
+```
+
+- **Identity.** A timer is identified by Execution ID, kind and generation (`null` for the Execution deadline).
+  The persisted Kernel deadline alone decides due-ness.
+- **What a fire reads.** `fireTimer` reads exactly the key's own `executionId`, `kind` and `generation`. Any other
+  member, `deadline` included, is never read. A listed `PendingTimer` therefore fires as its key, and a mismatching
+  descriptive deadline cannot accelerate expiry; a test shows a fire with `deadline: 0` answers `not_due`.
+- **Immediately expired generation.** Its key is
+  `{executionId, kind: "wait_deadline", generation: answer.wait.generation}`, taken from the accepted decision.
+  It is never listed. A fire answers `duplicate` and names the existing timeout Event. A generation woken at
+  registration answers `stale`.
+- **Classification before the §7 table:**
+
+| Key | Result | Recorded |
+|---|---|---|
+| Not an object, or a field read throws | `unknown`, reason "malformed timer key" | nothing |
+| `executionId` not text; `kind` neither of the two; a wait generation not a safe integer ≥ 1; an Execution key's generation not `null` | `unknown`, reason "malformed timer key" | nothing |
+| No Execution with that ID | `unknown`, reason "no such Execution" | nothing |
+| Wait generation above the Execution's registration count | `stale`, reason "generation never issued" | fire record |
+| Wait generation issued without a deadline | `stale`, reason "generation had no deadline" | fire record |
+
+- **The §7 table.** Its other rows are unchanged.
+- **Timeout Event ID.** It is ``timeout-${packIdentity([executionId, `${g}`])}``, packing the generation as
+  decimal text.
+- **Clock readings.** The §5 sentence "never affected by the clock" is corrected:
+  - An unusable reading does not override replay, the cancellation fence or an eligible Event.
+  - A clock callback can, however, accept input or cancellation on its own. The outer decision is then formed
+    against the state after the callback, and the nested decision is not rolled back.
+  - Read-count tests count `submitOutcome` and `fireTimer` separately; `fireTimer` reads the clock once per key
+    that names an Execution.
+- **Host-only entries.** Approved for this trusted in-process binding. They are not a tenant-facing API.
+
+### A6. Owner choice 01
+
+**D01-CHK-06.** `requestInterrupt(activation)` is replaced:
+
+```ts
+interface ExecutionDriver {
+  // ...existing members
+  requestCancellation?(request: CancellationRequest): undefined;
+}
+interface CancellationRequest {
+  readonly executionId: string;
+  readonly cause: "explicit" | "execution_deadline";
+  /** The open exchange's current attempt; null when no exchange is open. */
+  readonly attempt: { readonly activationId: string; readonly writerEpoch: number } | null;
+}
+```
+
+- **When.** It is called once after the cancellation plan applies, from every nonterminal state the cancellation
+  ended (`READY`, `RUNNING`, `WAITING`), for both causes.
+- **Lookup and invocation.** The member is resolved with `hostMember` and invoked with the load-time
+  `Reflect.apply`, inside one `try` that contains both a lookup throw and an invocation throw. Its return value
+  is not read; no `then` is consulted.
+- **No repeat.** A repeated cancellation, and a duplicate Execution-deadline fire, form no plan and make no
+  request.
+- **Records.** Nothing is recorded about the request. It never claims a physical stop. The Driver authoring
+  contract (`driver.ts`), BASELINE and the 017 entry change together.
+
+**D01-CHK-07.** Fire-only enforcement as §9 states; owner choice 01 records it as the policy. BASELINE and 017
+state the host's duty to fire and that no instant enforcement exists.
+
+**Tests these two choices require.** Each is a named case in the planned file.
+
+- `cancellation.test.ts` (CHK-06):
+  - the request is made once from `RUNNING` (attempt coordinates), `WAITING` and `READY` after a resolved exchange
+    (attempt `null`), and fresh `READY` (attempt `null`), for both causes;
+  - a repeated cancel makes none;
+  - a throwing hook, and a throwing getter for the member, leave the committed cancellation unchanged;
+  - an absent hook, and a hook only `Object.prototype` supplies, make no request;
+  - a returned thenable's `then` is never read;
+  - a hook that reenters `submitOutcome` gets `cancellation_terminal_conflict`;
+  - a hook that reports `delivered()` settles only its own row.
+- `execution-deadline.test.ts` (CHK-07):
+  - creation with a past deadline is `READY` and dispatches;
+  - an Outcome accepted before the fire wins, and the later fire is `stale` after `COMPLETED`;
+  - a fire before the Outcome cancels, and the Outcome loses;
+  - wait and Execution deadlines at 10/25, 10/5 and 10/10, in both fire orders;
+  - accepted expiry mints no timeout Event and no later progress.
+
+### A7. Other check items carried into the build
+
+- **S1–S5.** These are owner guards with direct negative controls in `state-plans.test.ts`; they are not semantic
+  closure:
+  - S1 adds "dispatch requires `READY`" and "Outcome requires `RUNNING` and its own exchange".
+  - S3 requires a matching live generation only when a plan retires one; cancellation from `READY` or `RUNNING`
+    needs none.
+  - S2, S4 and S5 claim only what they check.
+- **Plan facts.** Every planner reads its basis after its last callback and builds its state-dependent facts after
+  that read, never from facts cached before the callback.
+- **Delivery list.** The frozen cancellation record never holds the shared mutable delivery list. The owner
+  attaches that list in its cancellation arm, as it does for resolved exchanges.
+- **Clock.** The clock's unit, precision and source are recorded at operations' `OPEN(implementation)` marker,
+  which stays, and in BASELINE.
+- **017.** Entries take real IDs at build time, after checking which IDs TOOLS-02 has used.
+- **Cancel power.** Q1 is approved as `cancelScopes`. Every combination is tested: visible or not, with and without
+  `scopes`, `controlScopes`, `cancelScopes`, and a submission grant.
+- **Unindexable losers.** An unindexable malformed loser gets an unindexed refusal with the cancellation
+  classification and reason, and no pre-authority content diagnostic (attack O5).

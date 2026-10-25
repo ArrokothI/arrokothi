@@ -172,3 +172,11 @@ TOOLS-02 range 1 lands." Their effects on this brief:
 - **Decision 3.** A Prompt E adversary attacks the design note before the build, focused on K13-6 and
   K13-9. The design check reads the attack record.
 - **Release.** After TOOLS-02 range 1 integrated (PR #59), recorded as [release 01](release-01.md).
+
+**Correction (2026-10-25, design check 01 D01-CHK-01).** K13-5's third wrong rule, "treating the timeout as
+merely earliest", cannot be killed by the five examples on reachable states. W-2 tests the backlog before it
+mints a timeout, and an eligible arrival retires a live wait before any fire. So every eligible Event beside a
+real timeout is newer than it. K13-5 instead kills "omitting the timeout from the batch". The sort-only rule is
+recorded as an equivalent mutant: see [design 01, addendum 01 § A1](design-01.md#a1-k13-5s-mutant-claim-d01-chk-01).
+The brief also lists the SDK's `application.test.ts` among tests that pin K1.3 refusals. That test uses the
+legacy `@arrokothi/core` Harness, so it is not a K1.3 pin (design 01, "Accepted designs relied on").

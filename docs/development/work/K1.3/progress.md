@@ -2,10 +2,13 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS, design. [Design 01](design-01.md) is pushed and the implementer has stopped. Next, in
-  order: a Prompt E adversary attacks it (`attack-01.md` plus probe files, focused on K13-6 and K13-9); then a Codex
-  GPT-6 design check that reads the attack record and answers design 01's owner questions Q1–Q7 with the owner. No
-  production code before the check. Every attack item becomes a maintained test in the build.
+- **Phase:** IN_PROGRESS, build. [Attack 01](attack-01.md) and [design check 01](design-check-01.md) (APPROVED WITH
+  REQUIRED CHANGES) are on this branch. [Owner choice 01](owner-choice-01.md) answers D01-CHK-06 (an optional,
+  Execution-scoped Driver cancellation request) and D01-CHK-07 (fire-only Execution-deadline enforcement), and
+  starts the build without a new design check. [Design 01's addendum](design-01.md#addendum-01--design-check-01-and-owner-choice-01)
+  records D01-CHK-01 to -05, the K13-A01 to K13-A24 corpus map and the tests the two choices require. Next: build
+  range 1, then range 2; before dispatching, tool-tests, both mutation registries and the full verify in a fresh
+  clone; then one Packet verify dispatch; when CI passes, implementation-01 as H and stop for the review.
 - Design 01 in brief: injected `KernelClock`; host entries `pendingTimers()` and `fireTimer(key)` (a fire is a hint
   resolved against the Kernel's clock and state); wait capture in `outcome.ts`, pure eligibility and selection in
   `waits.ts`; four new plan variants (expiry, cancellation, losing outcome, timer discard) and three extended ones;
