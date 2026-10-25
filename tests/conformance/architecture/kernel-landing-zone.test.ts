@@ -154,7 +154,8 @@ describe("K1.0 target Kernel landing zone", () => {
     // internal and is reached through `values.ts`/`coordinator.ts`, not re-exported. K1.2 added
     // `outcome.ts`, which reads the Outcome envelope and the exchange controls, and `envelope.ts`,
     // which holds the own-field observation helpers K1.1 wrote in `coordinator.ts` so both boundaries
-    // share one copy.
+    // share one copy. K1.3 added `time.ts`, the injected clock's reading, and `waits.ts`, the pure wait
+    // semantics (eligibility, the alternative grammar, wait-ended selection).
     assert.deepEqual(files, [
       "packages/kernel/src/canonical-bytes.ts",
       "packages/kernel/src/coordinator.ts",
@@ -171,9 +172,11 @@ describe("K1.0 target Kernel landing zone", () => {
       "packages/kernel/src/result.ts",
       "packages/kernel/src/state-records.ts",
       "packages/kernel/src/state.ts",
+      "packages/kernel/src/time.ts",
       "packages/kernel/src/unsupported.ts",
       "packages/kernel/src/value-types.ts",
       "packages/kernel/src/values.ts",
+      "packages/kernel/src/waits.ts",
     ]);
 
     const internalEdges = graph.edges.filter((edge) => edge.resolution.kind === "internal");

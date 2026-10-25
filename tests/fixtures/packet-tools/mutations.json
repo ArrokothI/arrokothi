@@ -5678,6 +5678,626 @@
       ]
     },
     {
+      "id": "k13.fire-generation",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "assertion": "k13.fire-generation.killed",
+      "files": [
+        "tsconfig.json",
+        "tests/tooling/k13-probe.mjs",
+        "tests/fixtures/packet-tools/k13-controls.json",
+        "packages/kernel/tests/waits-kit.ts",
+        "packages/kernel/tests/race-search/harness.ts",
+        "packages/kernel/tests/race-search/model.ts",
+        "packages/kernel/tests/race-search/run.ts",
+        "packages/kernel/tests/race-search/witnesses.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/waits-timers.test.ts",
+        "packages/kernel/tests/race-search.test.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/k13-probe.mjs",
+        "fire-generation"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k13-semantic",
+      "input": {
+        "family": "fire-generation",
+        "killers": [
+          "W-9 case 2: a stale fire of generation 1 while generation 2 is live leaves generation 2 untouched",
+          "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant"
+        ],
+        "guard": "S3"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "K13-4 a wait fire skips the generation check",
+          "operator": "remove-check",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "  const isLive = live !== null && live.generation === named;",
+          "after": "  const isLive = live !== null;",
+          "id": "mutation-539a788c2a0f9c05aeee1820ccefe043133fae9943b8f0af0c675bdd9764edc7"
+        }
+      ]
+    },
+    {
+      "id": "k13.fire-duplicate",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "assertion": "k13.fire-duplicate.killed",
+      "files": [
+        "tsconfig.json",
+        "tests/tooling/k13-probe.mjs",
+        "tests/fixtures/packet-tools/k13-controls.json",
+        "packages/kernel/tests/waits-kit.ts",
+        "packages/kernel/tests/race-search/harness.ts",
+        "packages/kernel/tests/race-search/model.ts",
+        "packages/kernel/tests/race-search/run.ts",
+        "packages/kernel/tests/race-search/witnesses.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/waits-timers.test.ts",
+        "packages/kernel/tests/race-search.test.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/k13-probe.mjs",
+        "fire-duplicate"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k13-semantic",
+      "input": {
+        "family": "fire-duplicate",
+        "killers": [
+          "K13-A13 a repeated expiry fire is a duplicate naming the one timeout: before and after reservation, after the next Outcome, during the next generation",
+          "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant"
+        ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "K13-4 an expired generation's repeat fire is not answered as its duplicate",
+          "operator": "remove-check",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "  if (retired !== null && retired.retiredBy === \"deadline\") {\n    return discarded(\"duplicate\", \"generation already expired; its one timeout Event stands\", retired.endingEventId);\n  }\n",
+          "after": "",
+          "id": "mutation-9229eb7c01f488f1cc6eee53c77e0121c7584f4e9d9bece74607baf1761fc7ee"
+        }
+      ]
+    },
+    {
+      "id": "k13.registration-step2",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "assertion": "k13.registration-step2.killed",
+      "files": [
+        "tsconfig.json",
+        "tests/tooling/k13-probe.mjs",
+        "tests/fixtures/packet-tools/k13-controls.json",
+        "packages/kernel/tests/waits-kit.ts",
+        "packages/kernel/tests/race-search/harness.ts",
+        "packages/kernel/tests/race-search/model.ts",
+        "packages/kernel/tests/race-search/run.ts",
+        "packages/kernel/tests/race-search/witnesses.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/waits-registration.test.ts",
+        "packages/kernel/tests/race-search.test.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/k13-probe.mjs",
+        "registration-step2"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k13-semantic",
+      "input": {
+        "family": "registration-step2",
+        "killers": [
+          "an eligible Event already queued retires the generation at registration: READY, Event readiness, no timeout",
+          "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant"
+        ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "K13-3 registration skips W-2 step 2 (the queued-backlog check)",
+          "operator": "remove-check",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "      const woke = this.#firstEligibleOutside(record, intent.batch, declaration);",
+          "after": "      const woke: string | null = null;",
+          "id": "mutation-1081dee915aa55f00ee7008de4be3344ff0cf4ef6f26193c93ec42f892a55ac2"
+        }
+      ]
+    },
+    {
+      "id": "k13.registration-order",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "assertion": "k13.registration-order.killed",
+      "files": [
+        "tsconfig.json",
+        "tests/tooling/k13-probe.mjs",
+        "tests/fixtures/packet-tools/k13-controls.json",
+        "packages/kernel/tests/waits-kit.ts",
+        "packages/kernel/tests/race-search/harness.ts",
+        "packages/kernel/tests/race-search/model.ts",
+        "packages/kernel/tests/race-search/run.ts",
+        "packages/kernel/tests/race-search/witnesses.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/waits-registration.test.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/k13-probe.mjs",
+        "registration-order"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k13-semantic",
+      "input": {
+        "family": "registration-order",
+        "killers": [
+          "eligible and due at once: the Event wins and no timeout exists (the tie)"
+        ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "K13-3 registration tests the due deadline before the queued backlog (W-2 steps 2 and 3 swapped)",
+          "operator": "swap-order",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "      if (woke !== null) {\n        retired = PrimordialObjectFreeze({ generation, registeredBy: activationId, declaration, deadline, retiredBy: \"event\" as const, endingEventId: woke });",
+          "after": "      if (woke !== null && !(deadline !== null && reading !== null && reading.usable && reading.now >= deadline)) {\n        retired = PrimordialObjectFreeze({ generation, registeredBy: activationId, declaration, deadline, retiredBy: \"event\" as const, endingEventId: woke });",
+          "id": "mutation-92b31c0247fad939c0724ab2720531a06d02b488f374c5f0b69a0b6a49263869"
+        }
+      ]
+    },
+    {
+      "id": "k13.input-wake",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "assertion": "k13.input-wake.killed",
+      "files": [
+        "tsconfig.json",
+        "tests/tooling/k13-probe.mjs",
+        "tests/fixtures/packet-tools/k13-controls.json",
+        "packages/kernel/tests/waits-kit.ts",
+        "packages/kernel/tests/race-search/harness.ts",
+        "packages/kernel/tests/race-search/model.ts",
+        "packages/kernel/tests/race-search/run.ts",
+        "packages/kernel/tests/race-search/witnesses.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/waits-eligibility.test.ts",
+        "packages/kernel/tests/race-search.test.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/k13-probe.mjs",
+        "input-wake"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k13-semantic",
+      "input": {
+        "family": "input-wake",
+        "killers": [
+          "kind, Event ID and correlation imitations stay queued; only the subscription class wakes",
+          "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant"
+        ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "B-6 path B an eligible input accepted while WAITING does not wake the wait",
+          "operator": "remove-check",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    const wakes = live !== null && eligible(live.declaration, { sourceCategory: \"application_input\", subscriptionClass: content.value.subscriptionClass });",
+          "after": "    const wakes = false;",
+          "id": "mutation-598c0e5655e5865127b80bdd6dee7b2e7602dd5e398d47aabc77695bc0aefc4b"
+        }
+      ]
+    },
+    {
+      "id": "k13.selection-eligibility",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "assertion": "k13.selection-eligibility.killed",
+      "files": [
+        "tsconfig.json",
+        "tests/tooling/k13-probe.mjs",
+        "tests/fixtures/packet-tools/k13-controls.json",
+        "packages/kernel/tests/waits-kit.ts",
+        "packages/kernel/tests/race-search/harness.ts",
+        "packages/kernel/tests/race-search/model.ts",
+        "packages/kernel/tests/race-search/run.ts",
+        "packages/kernel/tests/race-search/witnesses.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/waits-selection.test.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/k13-probe.mjs",
+        "selection-eligibility"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k13-semantic",
+      "input": {
+        "family": "selection-eligibility",
+        "killers": [
+          "Event wake, bound 3, U/E1 present (spare capacity)",
+          "the same expiry; bound 2"
+        ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "K13-5 wait-ended selection ignores eligibility when filling capacity",
+          "operator": "remove-check",
+          "path": "packages/kernel/src/waits.ts",
+          "before": "    } else if (spare > 0 && eligible(selection.selector, readAt(queued, index) as SelectableEntry)) {",
+          "after": "    } else if (spare > 0) {",
+          "id": "mutation-b5ed89355792618b91807a9ef82e4f42f6daed38fcb52698a40b0f41cf45099e"
+        }
+      ]
+    },
+    {
+      "id": "k13.selection-timeout",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "assertion": "k13.selection-timeout.killed",
+      "files": [
+        "tsconfig.json",
+        "tests/tooling/k13-probe.mjs",
+        "tests/fixtures/packet-tools/k13-controls.json",
+        "packages/kernel/tests/waits-kit.ts",
+        "packages/kernel/tests/race-search/harness.ts",
+        "packages/kernel/tests/race-search/model.ts",
+        "packages/kernel/tests/race-search/run.ts",
+        "packages/kernel/tests/race-search/witnesses.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/waits-selection.test.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/k13-probe.mjs",
+        "selection-timeout"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k13-semantic",
+      "input": {
+        "family": "selection-timeout",
+        "killers": [
+          "expiry T accepted, eligible R follows; bound 1",
+          "the same expiry; bound 2"
+        ],
+        "guard": "invariant"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "K13-5 wait-ended selection omits the timeout's membership",
+          "operator": "remove-membership",
+          "path": "packages/kernel/src/waits.ts",
+          "before": "  if (selection.species === \"deadline\") {",
+          "after": "  if (selection.species === \"never\") {",
+          "id": "mutation-6933151eadbb304e2951582fc121a289bcf10db9a1d37b1ae1408ebabaa21bce"
+        }
+      ]
+    },
+    {
+      "id": "k13.dispatch-readiness",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "assertion": "k13.dispatch-readiness.killed",
+      "files": [
+        "tsconfig.json",
+        "tests/tooling/k13-probe.mjs",
+        "tests/fixtures/packet-tools/k13-controls.json",
+        "packages/kernel/tests/waits-kit.ts",
+        "packages/kernel/tests/race-search/harness.ts",
+        "packages/kernel/tests/race-search/model.ts",
+        "packages/kernel/tests/race-search/run.ts",
+        "packages/kernel/tests/race-search/witnesses.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/waits-selection.test.ts",
+        "packages/kernel/tests/control-commits.test.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/k13-probe.mjs",
+        "dispatch-readiness"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k13-semantic",
+      "input": {
+        "family": "dispatch-readiness",
+        "killers": [
+          "Event wake, bound 1, U/E1/E2 present",
+          "#applyDispatch: prepares without changing anything, then commits exactly its declared statements"
+        ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "B-8 dispatch does not consume wait-ended readiness",
+          "operator": "drop-commit",
+          "path": "packages/kernel/src/state.ts",
+          "before": "    appendOwn(record.receipts, receipt);\n    record.readiness = null;\n  }",
+          "after": "    appendOwn(record.receipts, receipt);\n  }",
+          "id": "mutation-de1632040f1a50af1c69270bd682fd514bec1f77685a13f5e9ca73bf12749364"
+        }
+      ]
+    },
+    {
+      "id": "k13.cancellation-acknowledges",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "assertion": "k13.cancellation-acknowledges.killed",
+      "files": [
+        "tsconfig.json",
+        "tests/tooling/k13-probe.mjs",
+        "tests/fixtures/packet-tools/k13-controls.json",
+        "packages/kernel/tests/waits-kit.ts",
+        "packages/kernel/tests/race-search/harness.ts",
+        "packages/kernel/tests/race-search/model.ts",
+        "packages/kernel/tests/race-search/run.ts",
+        "packages/kernel/tests/race-search/witnesses.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/cancellation.test.ts",
+        "packages/kernel/tests/race-search.test.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/k13-probe.mjs",
+        "cancellation-acknowledges"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k13-semantic",
+      "input": {
+        "family": "cancellation-acknowledges",
+        "killers": [
+          "RUNNING, with an outside-batch input",
+          "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant"
+        ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "K13-6 cancellation acknowledges the Events it ends",
+          "operator": "wrong-disposition",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "  const ending: MailboxDisposition = PrimordialObjectFreeze({\n    kind: \"terminal\" as const,",
+          "after": "  const ending: MailboxDisposition = PrimordialObjectFreeze({\n    kind: \"acknowledged\" as const,",
+          "id": "mutation-6da647ef0f817c177e69a3df269ee036198135cecf2a4bb35292382cf4333068"
+        }
+      ]
+    },
+    {
+      "id": "k13.cancellation-readiness",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "assertion": "k13.cancellation-readiness.killed",
+      "files": [
+        "tsconfig.json",
+        "tests/tooling/k13-probe.mjs",
+        "tests/fixtures/packet-tools/k13-controls.json",
+        "packages/kernel/tests/waits-kit.ts",
+        "packages/kernel/tests/race-search/harness.ts",
+        "packages/kernel/tests/race-search/model.ts",
+        "packages/kernel/tests/race-search/run.ts",
+        "packages/kernel/tests/race-search/witnesses.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/cancellation.test.ts",
+        "packages/kernel/tests/control-commits.test.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/k13-probe.mjs",
+        "cancellation-readiness"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k13-semantic",
+      "input": {
+        "family": "cancellation-readiness",
+        "killers": [
+          "READY with Event readiness",
+          "#applyCancellation: prepares without changing anything, then commits exactly its declared statements"
+        ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "K13-6 cancellation leaves wait-ended readiness behind",
+          "operator": "drop-commit",
+          "path": "packages/kernel/src/state.ts",
+          "before": "    record.cancellation = cancellation;\n    record.wait = null;\n    record.readiness = null;\n",
+          "after": "    record.cancellation = cancellation;\n    record.wait = null;\n",
+          "id": "mutation-37f0c3b1db8b7346952ce3a8717253946458028e5cbc93a5b7a5dc9b6613bfe4"
+        }
+      ]
+    },
+    {
+      "id": "k13.losing-retry",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "assertion": "k13.losing-retry.killed",
+      "files": [
+        "tsconfig.json",
+        "tests/tooling/k13-probe.mjs",
+        "tests/fixtures/packet-tools/k13-controls.json",
+        "packages/kernel/tests/waits-kit.ts",
+        "packages/kernel/tests/race-search/harness.ts",
+        "packages/kernel/tests/race-search/model.ts",
+        "packages/kernel/tests/race-search/run.ts",
+        "packages/kernel/tests/race-search/witnesses.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/losing-outcomes.test.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/k13-probe.mjs",
+        "losing-retry"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k13-semantic",
+      "input": {
+        "family": "losing-retry",
+        "killers": [
+          "loser, fresh equal loser, another loser, then the original again"
+        ],
+        "guard": "plan refused"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "CX-6 a losing proposal's exact retry records a fresh refusal",
+          "operator": "remove-check",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    if (retained !== null) return retained;\n",
+          "after": "",
+          "id": "mutation-3299d600d1e145b4f906650c8d90c2c43fa0bd62a452376214768af94188392d"
+        }
+      ]
+    },
+    {
+      "id": "k13.deadline-terminal",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "assertion": "k13.deadline-terminal.killed",
+      "files": [
+        "tsconfig.json",
+        "tests/tooling/k13-probe.mjs",
+        "tests/fixtures/packet-tools/k13-controls.json",
+        "packages/kernel/tests/waits-kit.ts",
+        "packages/kernel/tests/race-search/harness.ts",
+        "packages/kernel/tests/race-search/model.ts",
+        "packages/kernel/tests/race-search/run.ts",
+        "packages/kernel/tests/race-search/witnesses.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/execution-deadline.test.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/k13-probe.mjs",
+        "deadline-terminal"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k13-semantic",
+      "input": {
+        "family": "deadline-terminal",
+        "killers": [
+          "an Outcome accepted before the fire wins; the later fire is stale on COMPLETED"
+        ],
+        "guard": "S1"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "K13-7 an Execution-deadline fire on a COMPLETED Execution cancels it",
+          "operator": "remove-check",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "  if (isTerminal(record.state)) {\n    const cancelled = record.cancellation;",
+          "after": "  if (false) {\n    const cancelled = record.cancellation;",
+          "id": "mutation-79c8843c3c0f46c3d635bf03de724d0dca297e129430e02e114ef8d5acc406f1"
+        }
+      ]
+    },
+    {
       "id": "result.read-form.named-only",
       "assertion": "test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged",
       "category": "tool-result",

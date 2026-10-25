@@ -6,8 +6,8 @@
  * that answers a caller with a silent no-op a later packet could mistake for working behaviour.
  *
  * The example surface changed with K1.1 (`createExecution` became implemented) and again with K1.2
- * (Outcome acceptance became implemented), so the refusal cases now name `registerWait`, which K1.3
- * owns.
+ * (Outcome acceptance became implemented) and K1.3 (waits and cancellation became implemented), so
+ * the refusal cases now name `admitEffect`, which K2 owns.
  */
 
 import { test, describe } from "node:test";
@@ -19,27 +19,27 @@ describe("target Kernel scaffolding", () => {
   test("an unimplemented surface throws rather than returning anything", () => {
     let returned: unknown = "sentinel";
     assert.throws(() => {
-      returned = refuseUnsupportedSurface("registerWait", "K1.3");
+      returned = refuseUnsupportedSurface("admitEffect", "K2");
     }, UnsupportedKernelSurfaceError);
     assert.equal(returned, "sentinel", "the refusal never produced a value a caller could act on");
   });
 
   test("the refusal names the surface and the packet that owns implementing it", () => {
     try {
-      refuseUnsupportedSurface("registerWait", "K1.3");
+      refuseUnsupportedSurface("admitEffect", "K2");
       assert.fail("expected a refusal");
     } catch (error) {
       assert.ok(error instanceof UnsupportedKernelSurfaceError);
       assert.equal(error.name, "UnsupportedKernelSurfaceError");
-      assert.equal(error.surface, "registerWait");
-      assert.equal(error.owner, "K1.3");
-      assert.match(error.message, /registerWait is not implemented in @arrokothi\/kernel/);
-      assert.match(error.message, /K1\.3 owns this surface/);
+      assert.equal(error.surface, "admitEffect");
+      assert.equal(error.owner, "K2");
+      assert.match(error.message, /admitEffect is not implemented in @arrokothi\/kernel/);
+      assert.match(error.message, /K2 owns this surface/);
     }
   });
 
   test("the refusal points at the supported implementation instead of leaving a dead end", () => {
-    const error = new UnsupportedKernelSurfaceError("cancelExecution", "K1.3");
+    const error = new UnsupportedKernelSurfaceError("admitEffect", "K2");
     assert.match(error.message, /@arrokothi\/core, which is explicitly legacy/);
   });
 

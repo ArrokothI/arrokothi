@@ -2,13 +2,18 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS, build. [Attack 01](attack-01.md) and [design check 01](design-check-01.md) (APPROVED WITH
-  REQUIRED CHANGES) are on this branch. [Owner choice 01](owner-choice-01.md) answers D01-CHK-06 (an optional,
-  Execution-scoped Driver cancellation request) and D01-CHK-07 (fire-only Execution-deadline enforcement), and
-  starts the build without a new design check. [Design 01's addendum](design-01.md#addendum-01--design-check-01-and-owner-choice-01)
-  records D01-CHK-01 to -05, the K13-A01 to K13-A24 corpus map and the tests the two choices require. Next: build
-  range 1, then range 2; before dispatching, tool-tests, both mutation registries and the full verify in a fresh
-  clone; then one Packet verify dispatch; when CI passes, implementation-01 as H and stop for the review.
+- **Phase:** IN_PROGRESS, build (stopped at a usage limit, 2026-10-25). Range 1 and range 2 code and tests are
+  committed and pushed; the full kernel suite and conformance pass locally under Node v26.10.0; the K13-9 search
+  (`node --experimental-strip-types packages/kernel/tests/race-search/run.ts`) passes 456,976 exhaustive runs, 20,000
+  supplementary words and 20 classes in about 48 s. 12 K1.3 registry mutants (`k13.*`, probe
+  `tests/tooling/k13-probe.mjs`, fixture `k13-controls.json`) were each killed in a local trial; the registry runner
+  itself has not run them yet. **Left before the dispatch:** Layer 3 (creation.md deadline rows; rewrite-index §3/§4
+  rows and the K1.3 schedule row; operations.md done; waits.md explanation done); BASELINE; 017 (narrow L-15; new
+  limits with IDs after checking TOOLS-02's); `verification.json` (add a `race-search` check, preserve rows);
+  regenerate `adoption.json` with TOOLS-02's `regenerate` in a fresh clone; run the refusal census, value-cost checks,
+  poison sweep, builder docs; tool-tests (a run was started; check result); both mutation registries and the full verify
+  in a fresh clone; then `gh workflow run packet-verify.yml -f revision=<full C> -f spec=docs/development/work/K1.3/verification.json`,
+  report the run ID, and on CI pass write implementation-01.md as H.
 - Design 01 in brief: injected `KernelClock`; host entries `pendingTimers()` and `fireTimer(key)` (a fire is a hint
   resolved against the Kernel's clock and state); wait capture in `outcome.ts`, pure eligibility and selection in
   `waits.ts`; four new plan variants (expiry, cancellation, losing outcome, timer discard) and three extended ones;

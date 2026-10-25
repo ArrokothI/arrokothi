@@ -1,0 +1,142 @@
+{
+  "version": 1,
+  "source": "K1.3 design 01 addendum 01 \u00a7 A3 and design check 01: one case per mutant family; a kill is an assertion failure of a named killer, or a failure naming the family's declared owner guard or invariant",
+  "families": {
+    "fire-generation": {
+      "files": [
+        "packages/kernel/tests/waits-timers.test.ts",
+        "packages/kernel/tests/race-search.test.ts"
+      ],
+      "test_count": 31,
+      "killers": [
+        "W-9 case 2: a stale fire of generation 1 while generation 2 is live leaves generation 2 untouched",
+        "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant"
+      ],
+      "guard": "S3"
+    },
+    "fire-duplicate": {
+      "files": [
+        "packages/kernel/tests/waits-timers.test.ts",
+        "packages/kernel/tests/race-search.test.ts"
+      ],
+      "test_count": 31,
+      "killers": [
+        "K13-A13 a repeated expiry fire is a duplicate naming the one timeout: before and after reservation, after the next Outcome, during the next generation",
+        "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant"
+      ]
+    },
+    "registration-step2": {
+      "files": [
+        "packages/kernel/tests/waits-registration.test.ts",
+        "packages/kernel/tests/race-search.test.ts"
+      ],
+      "test_count": 34,
+      "killers": [
+        "an eligible Event already queued retires the generation at registration: READY, Event readiness, no timeout",
+        "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant"
+      ]
+    },
+    "registration-order": {
+      "files": [
+        "packages/kernel/tests/waits-registration.test.ts"
+      ],
+      "test_count": 23,
+      "killers": [
+        "eligible and due at once: the Event wins and no timeout exists (the tie)"
+      ]
+    },
+    "input-wake": {
+      "files": [
+        "packages/kernel/tests/waits-eligibility.test.ts",
+        "packages/kernel/tests/race-search.test.ts"
+      ],
+      "test_count": 17,
+      "killers": [
+        "kind, Event ID and correlation imitations stay queued; only the subscription class wakes",
+        "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant"
+      ]
+    },
+    "selection-eligibility": {
+      "files": [
+        "packages/kernel/tests/waits-selection.test.ts"
+      ],
+      "test_count": 17,
+      "killers": [
+        "Event wake, bound 3, U/E1 present (spare capacity)",
+        "the same expiry; bound 2"
+      ]
+    },
+    "selection-timeout": {
+      "files": [
+        "packages/kernel/tests/waits-selection.test.ts"
+      ],
+      "test_count": 17,
+      "killers": [
+        "expiry T accepted, eligible R follows; bound 1",
+        "the same expiry; bound 2"
+      ],
+      "guard": "invariant"
+    },
+    "dispatch-readiness": {
+      "files": [
+        "packages/kernel/tests/waits-selection.test.ts",
+        "packages/kernel/tests/control-commits.test.ts"
+      ],
+      "test_count": 97,
+      "killers": [
+        "Event wake, bound 1, U/E1/E2 present",
+        "#applyDispatch: prepares without changing anything, then commits exactly its declared statements"
+      ]
+    },
+    "cancellation-acknowledges": {
+      "files": [
+        "packages/kernel/tests/cancellation.test.ts",
+        "packages/kernel/tests/race-search.test.ts"
+      ],
+      "test_count": 51,
+      "killers": [
+        "RUNNING, with an outside-batch input",
+        "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant"
+      ]
+    },
+    "cancellation-readiness": {
+      "files": [
+        "packages/kernel/tests/cancellation.test.ts",
+        "packages/kernel/tests/control-commits.test.ts"
+      ],
+      "test_count": 120,
+      "killers": [
+        "READY with Event readiness",
+        "#applyCancellation: prepares without changing anything, then commits exactly its declared statements"
+      ]
+    },
+    "losing-retry": {
+      "files": [
+        "packages/kernel/tests/losing-outcomes.test.ts"
+      ],
+      "test_count": 11,
+      "killers": [
+        "loser, fresh equal loser, another loser, then the original again"
+      ],
+      "guard": "plan refused"
+    },
+    "deadline-terminal": {
+      "files": [
+        "packages/kernel/tests/execution-deadline.test.ts"
+      ],
+      "test_count": 23,
+      "killers": [
+        "an Outcome accepted before the fire wins; the later fire is stale on COMPLETED"
+      ],
+      "guard": "S1"
+    }
+  },
+  "equivalent": [
+    {
+      "name": "K13-5 wait-ended selection without explicit mandatory-first priority (sort the correct union, truncate)",
+      "path": "packages/kernel/src/waits.ts",
+      "argument": "Equivalent on reachable states (design 01 addendum 01 \u00a7 A1, design check 01 D01-CHK-01): W-2 tests the queued backlog before it mints a timeout at registration, and an eligible arrival retires a live wait in its own ingress decision before any fire, so every eligible candidate beside a real timeout was accepted after it; for an Event wake the mandatory member is by definition the earliest eligible candidate. The five examples cannot kill it; waits-selection.test.ts asserts it passes all five and checks the literal rule on one synthetic selector input.",
+      "evidence": "packages/kernel/tests/waits-selection.test.ts: sort-union passes all five: an equivalent mutant on reachable states, recorded under 012"
+    }
+  ]
+}

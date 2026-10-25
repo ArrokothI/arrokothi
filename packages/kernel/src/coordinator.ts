@@ -26,9 +26,19 @@
  * - `reportProtocolFailure`: the inspectable hold for a response that could not be classified
  *   (OA-6), never a silent retry.
  *
- * Everything else refuses by name: out-of-band cancellation and its terminal disposition, wait
- * registration, wait matching and deadlines are K1.3's; Effects are K2's. `refuseUnsupportedSurface`
- * is the K1.0 mechanism for saying so, reused rather than reinvented.
+ * K1.3 adds waits, timers and cancellation:
+ *
+ * - `submitOutcome` registers an `await`'s wait in the Outcome decision (W-2): Event readiness when an
+ *   eligible Event is already queued, its one timeout Event when the deadline is already due, else
+ *   `WAITING`; after the replay lookup, a cancelled Execution's proposal loses (CX-6);
+ * - `submitInput` wakes a live wait with an eligible input in its own decision (B-6 path B);
+ * - `dispatch` refuses `WAITING`, and selects a wait-ended batch by the retired selector at reservation;
+ * - `pendingTimers` and `fireTimer`: the host's entries for the deadlines the Kernel holds, resolved
+ *   against an injected clock and current state;
+ * - `cancelExecution`: one cancellation decision, shared with the Execution deadline's expiry, then a
+ *   request to the Driver.
+ *
+ * Effects are K2's and are refused whole.
  *
  * ## What this coordinator is not
  *
@@ -244,7 +254,8 @@ export interface InputContent {
   readonly kind: string;
   readonly payload: Uint8Array;
   /**
-   * The declared input-subscription class, when the producer declares one. Matched by K1.3, not here.
+   * The declared input-subscription class, when the producer declares one. An input subscription in a
+   * live wait matches it by equality (K1.3, `waits.ts`); `kind` is never matched.
    *
    * Omitting it and passing `undefined` mean the same thing at this request envelope, which is an
    * ordinary TypeScript optional property rather than a boundary value. The content value the Kernel
