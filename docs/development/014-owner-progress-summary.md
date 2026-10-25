@@ -1,6 +1,6 @@
 # Owner progress summary
 
-Snapshot: checked 2026-10-25 against remote main `4015599e`, the merge of TOOLS-02 range 1 (PR #59).
+Snapshot: checked 2026-10-25 against remote main `c3b45a64`, which merges TOOLS-02 range 1 (PR #59, `4015599e`) and its receipt (PR #60); K1.3 release 01 is added by the PR that carries this edit.
 TOOLS-02 range 1's accepted H is `34ab91a5de23beb4997cdd2ae209a3b67aac50a0`, its payload C is
 `5d0f1cc49eb9cb534ad2818a8f8d38253438418d`, and its review is recorded at A `3634d945ce0de5322d1cf5b81462d5ec9b2fc819`.
 Range 1's [cleanup](work/TOOLS-02/cleanup-01.md) is complete, and range 1 is
@@ -24,7 +24,7 @@ identities.
 | TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
 | K1.1-correction-03 | Independently accepted at H `4b121d7b`; integrated at `b976f3a3` (PR #48) |
 | Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-16 and L-18) under 006 working principle 6 |
-| K1.3 | Planned; not released. The owner decides its release separately |
+| K1.3 | Released 2026-10-25 ([release 01](work/K1.3/release-01.md)); not started |
 | K1 / E1 | Open; no E1 gate result |
 
 ## What has been achieved
@@ -68,7 +68,7 @@ shows each one is needed, and draws its list of control exits from the source ra
 scenarios.
 
 Status: K1.2 and its cumulative correction are independently accepted, integrated and owner-closed;
-K1.3 is not released. Limits:
+K1.3 is released but not built. Limits:
 - The Kernel is in-process and not durable. How submission authority survives a restart is open
   for K3.2.
 - There are no Effects (K2), waits, deadlines or cancellation (K1.3), and no output reads (K4.4).
@@ -274,7 +274,7 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-TOOLS-02 is the only released packet still in progress; every other successor is unreleased. The dependencies
+TOOLS-02 and K1.3 are the released packets in progress; every other successor is unreleased. The dependencies
 below come from 007 and become eligible for an owner release only after their prerequisites are accepted and
 integrated. Briefs follow 006 working principle 6: build right what later work builds on, and record the rest in
 [017](017-known-limitations.md).
@@ -293,8 +293,8 @@ integrated. Briefs follow 006 working principle 6: build right what later work b
    - revalidation of entries held under the released V-D1 and classification claims.
 
    TOOLS-02 must be accepted and integrated before K1.4 acceptance; 007 does not make it a prerequisite for K1.3.
-2. **K1.3** is not released. The owner decides its release separately. It adds waits,
-   deadlines and cancellation as new plan variants.
+2. **K1.3** is released ([release 01](work/K1.3/release-01.md)). It adds waits, wait deadlines, cancellation and
+   the Execution deadline as new plan variants, built in two ranges with an adversary pass before the build.
 3. **K1.4** owns the SDK host bridge and full K1/E1 gate. The supported SDK surface changes there, as
    [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies. K1.4 also carries BINDING-01's wrapper obligation:
    a startup check, or L-01 stated in the public bridge contract. The external dependency is unchanged: before K1.3

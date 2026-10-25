@@ -1,7 +1,8 @@
 # Brief 01 — K1.3
 
 Planner: the owner's Claude Code desktop session (`claude-opus-5-5`), 2026-10-25, at the owner's request
-("start the K1.3 brief now"), using Prompt D. **Draft: K1.3 is not released.** The brief is written under
+("start the K1.3 brief now"), using Prompt D. The owner answered its decisions and released it on 2026-10-25
+([release 01](release-01.md)), unchanged except for this header and the owner answers at the end. The brief is written under
 [006 working principle 6](../../006-development-process.md#working-principles) and
 [017](../../017-known-limitations.md): build right now what is expensive to change, and record the rest
 as limits.
@@ -170,5 +171,4 @@ TOOLS-02 range 1 lands." Their effects on this brief:
   review at the end. Question 7 is settled.
 - **Decision 3.** A Prompt E adversary attacks the design note before the build, focused on K13-6 and
   K13-9. The design check reads the attack record.
-- **Release.** Not yet released. The owner releases K1.3 after TOOLS-02 range 1 is integrated; the
-  release record then names the base.
+- **Release.** After TOOLS-02 range 1 integrated (PR #59), recorded as [release 01](release-01.md).
