@@ -8,12 +8,16 @@ The resume point for any session continuing this packet. Newest facts first with
     T2-R3-PATH-01: on macOS, `tests/fixtures/INPUT.txt` reads the tracked `input.txt`, while its identity is absent.
     T2-R3-OPTIONS-01: `Object.create({fd})` hides `fd` from `Object.keys`. T2-R3-ADMIN-01 (P3): the default candidate
     check fails on design 04's trailing blank line. T2-2 passed again.
-  - **C6** `5d0f1cc49eb9cb534ad2818a8f8d38253438418d` (local until its checks pass):
+  - **C6** `5d0f1cc49eb9cb534ad2818a8f8d38253438418d`, pushed. Packet verify CI run
+    [40181329943](https://github.com/ArrokothI/arrokothi/actions/runs/40181329943), dispatched 2026-10-25; not polled.
     - rules P and O, the candidate `whitespace_exceptions` accommodation (registered ablation; census 330/330), review 03's
       probes and exact-spelling controls end to end, and one mutant per rule; all 21 read mutants kill;
     - the measure-first dry-run regenerate wrote a byte-identical table, so no member changes status. Tool tests: 671.
-  - Its fresh-clone sequence (quiet gate, regenerate, corpus, tool tests, both registries, full verify) is running.
-    Next: push, one CI dispatch, then H with `implementation-04.md` (drafted in the scratchpad).
+  - Fresh clone at C6 before dispatch (quiet gate): regenerate `table_current` (245 s); `corpus` `revalidation_complete`
+    (282 s); tool tests 671 OK (792 s); `mutations.json` 140 killed (598 s); `value-cost.json` 238 killed (1,019 s);
+    full verify, all 18 checks passed (3,929 s).
+  - Next: if CI run 40181329943 passes, H with `implementation-04.md` (drafted in the scratchpad), push, stop for
+    review 04.
 - Earlier: range 1 round 3 at H `23d65ac3` with [implementation 03](implementation-03.md) over C5; CI run
   40162436361 passed.
 - [Owner choice 04](owner-choice-04.md) picks 006's refined finishable claim: an explicit
