@@ -6110,11 +6110,11 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "            return None, candidate.relative_to(root).as_posix()\n",
+          "before": "            return None, 'the traced run read through a symlink in the repository: ' + relative\n",
           "after": "            pass  # tools02-mutant:alias\n",
           "operator": "weaken-read-form",
           "name": "result.read-matrix.alias",
-          "id": "mutation-c3e61b81ad21b6c57739082a609bca8fc7a418091c1a31c3f6ef8557b8eeceea"
+          "id": "mutation-d8960468fa0219146580bba3971973e2e5f608debc9880912314994ca3ed4a41"
         }
       ]
     },
@@ -6243,6 +6243,70 @@
           "operator": "weaken-read-form",
           "name": "result.read-matrix.exists-mode-only",
           "id": "mutation-dabc4c79a81704e2fd0339373913e8e39499e56ae7ac14db6e464f57e1ea0939"
+        }
+      ]
+    },
+    {
+      "id": "result.read-matrix.rule-p",
+      "assertion": "test_read_form.ReadFormTests.test_rule_p_refuses_a_spelling_that_is_not_a_tracked_entry",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (owner choice 05; design 05 section 8): rule P removed: a read whose spelling is not a tracked entry at C is admitted (review 03 T2-R3-PATH-01)",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_rule_p_refuses_a_spelling_that_is_not_a_tracked_entry"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-matrix.rule-p",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "        if bound and relative not in tree and os.path.lexists(candidate):\n",
+          "after": "        if False:  # tools02-mutant:rule-p\n",
+          "operator": "weaken-read-form",
+          "name": "result.read-matrix.rule-p",
+          "id": "mutation-5ddbd22e8905405fb25ddde70a8b21116a578399d0acdeba144f857db4559982"
+        }
+      ]
+    },
+    {
+      "id": "result.read-matrix.rule-o",
+      "assertion": "test_read_form.ReadFormTests.test_rule_o_refuses_an_options_object_with_another_prototype",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (owner choice 05; design 05 section 8): rule O removed: an options object with an inherited prototype is admitted (review 03 T2-R3-OPTIONS-01)",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_rule_o_refuses_an_options_object_with_another_prototype"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-matrix.rule-o",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "    if second == 'options' and row.get('prototype') not in ('Object.prototype', 'null'):\n",
+          "after": "    if False:  # tools02-mutant:rule-o\n",
+          "operator": "weaken-read-form",
+          "name": "result.read-matrix.rule-o",
+          "id": "mutation-f5977b91564e5990aa7cbfb653f28aa053e4a939baf93bd14d7428085b3c9d4d"
         }
       ]
     }

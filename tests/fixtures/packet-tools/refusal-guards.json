@@ -9549,6 +9549,35 @@
           "id": "mutation-5b437055517ae3592160e308ce6191c4658e1914ac374de2bdd1c4a83ab072fc"
         }
       ]
+    },
+    {
+      "id": "guard.candidate.b18bb9556e89e1e2",
+      "assertion": "test_packet_tools.CandidateTests.test_a_whitespace_exception_must_be_preserved_with_a_reason",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: candidate",
+      "input": {
+        "test": "test_packet_tools.CandidateTests.test_a_whitespace_exception_must_be_preserved_with_a_reason"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.candidate.b18bb9556e89e1e2"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(exceptions, list) and all(isinstance(item, dict) and set(item) == {'path', 'revision', 'reason'} and\n                                                 isinstance(item['reason'], str) and bool(item['reason'].strip()) and\n                                                 (item['revision'], item['path']) in preserved for item in exceptions),\n            'a whitespace exception names a path preserved at its revision, with a reason')",
+          "after": "pass  # tools01-ablate:b18bb9556e89e1e2",
+          "operator": "remove-refusal-check",
+          "name": "guard.candidate.b18bb9556e89e1e2",
+          "id": "mutation-df3386e8f081a742eb8bce08424e06a789b94c8b5b6390cf761af54531bee9ce"
+        }
+      ]
     }
   ],
   "determinism_sample": [

@@ -317,7 +317,15 @@ def candidate(git, payload, head, spec_path):
                 f'executable/configuration attachment requires payload review: {path}')
     changed = sorted(x.decode() for x in git.run('diff', '--name-only', '-z', c, h).split(b'\0') if x)
     require(changed == sorted(allowed), f'C..H files differ: actual={changed}, expected={sorted(allowed)}')
-    git.run('diff', '--check', b, h)
+    # TOOLS-02 design 05 §8.3 (T2-R3-ADMIN-01): an explicit, recorded exemption from the whitespace check, only for a
+    # path whose bytes the preserve list freezes at the same revision.
+    exceptions = spec.get('whitespace_exceptions', [])
+    preserved = {(item.get('revision'), item.get('path')) for item in spec.get('preserve', []) if isinstance(item, dict)}
+    require(isinstance(exceptions, list) and all(isinstance(item, dict) and set(item) == {'path', 'revision', 'reason'} and
+                                                 isinstance(item['reason'], str) and bool(item['reason'].strip()) and
+                                                 (item['revision'], item['path']) in preserved for item in exceptions),
+            'a whitespace exception names a path preserved at its revision, with a reason')
+    git.run('diff', '--check', b, h, '--', '.', *(':(exclude)' + item['path'] for item in exceptions))
     for item in spec.get('preserve', []):
         old = git.commit(item['revision'])
         path_name(item['path'])
@@ -333,6 +341,7 @@ def candidate(git, payload, head, spec_path):
         attachments.append({'path': item['path'], 'at': item['at'], 'sha256': digest(data)})
     return {'operation': 'candidate', 'result': 'facts_verified', 'base': b, 'payload': c,
             'candidate': h, 'specification': spec_path, 'administrative_files': changed,
+            'whitespace_exceptions': [item['path'] for item in exceptions],
             'evidence': attachments, 'acceptance': 'not evaluated',
             'limits': ['File sets do not establish absence of semantic prose changes',
                        'Owner/reviewer authenticity and command execution are not inferred from metadata',
@@ -2130,10 +2139,11 @@ def read_kind(row):
 
 
 def walk_path(git, rev, root, text, base):
-    """TOOLS-02 design 05 §7.2: resolve a traced path as the operating system does, one component at a time, before any
-    normalization. A tracked symlink (Git mode 120000 at C) ends the walk as an alias, and no target is followed. An
-    untracked symlink (a system prefix, a node_modules workspace link) is followed. A missing component ends the walk,
-    and the rest is appended lexically. Returns (physical path, alias or None)."""
+    """TOOLS-02 design 05 §7.2 and §8.1: resolve a traced path as the operating system does, one component at a time,
+    before any normalization. Rule P comes first: an existing component inside the repository, outside node_modules,
+    must be a Git entry at C under exactly that spelling. A tracked symlink (Git mode 120000 at C) then ends the walk,
+    and no target is followed. An untracked symlink (a system prefix, a node_modules workspace link) is followed. A
+    missing component ends the walk, and the rest is appended lexically. Returns (physical path, refusal or None)."""
     tree = git.tree(rev)
     parts = (text if text.startswith('/') else base + '/' + text).split('/')
     current = Path('/')
@@ -2144,8 +2154,12 @@ def walk_path(git, rev, root, text, base):
             current = current.parent
             continue
         candidate = current / part
-        if candidate.is_relative_to(root) and tree.get(candidate.relative_to(root).as_posix(), ('',))[0] == '120000':
-            return None, candidate.relative_to(root).as_posix()
+        relative = candidate.relative_to(root).as_posix() if candidate.is_relative_to(root) and candidate != root else None
+        bound = relative is not None and 'node_modules' not in PurePosixPath(relative).parts
+        if bound and relative not in tree and os.path.lexists(candidate):
+            return None, 'the traced run read a path whose spelling is not a tracked entry at C: ' + relative
+        if bound and tree.get(relative, ('',))[0] == '120000':
+            return None, 'the traced run read through a symlink in the repository: ' + relative
         if candidate.is_symlink():
             current = Path(os.path.realpath(candidate))
         elif not os.path.lexists(candidate):
@@ -2159,7 +2173,8 @@ def admit(git, rev, root, row, aside):
     """TOOLS-02 design 05 §1 and §7: one outcome per traced row, refusal by default. `('read', path, kind)` is a
     represented repository read; `('outside',)` reads outside the repository, under node_modules or in the static
     import closure; `('refused', reason)` is everything the matrix does not admit. Only a path first argument is
-    admitted, walked before it is normalized; glob refuses in every form, and cp refuses a repository source."""
+    admitted, walked before it is normalized (rule P binds its spelling); glob refuses in every form, and cp refuses a
+    repository source. Options must have an ordinary prototype (rule O, §8.2) and only admitted own keys."""
     operation = (row.get('operation') or '').removeprefix('promises.').removesuffix('.native').removesuffix('Sync')
     if operation == 'glob':
         return ('refused', 'the traced run read through a glob pattern, whose dependency identity is not represented: ' +
@@ -2170,7 +2185,7 @@ def admit(git, rev, root, row, aside):
         return ('refused', f"a first argument the read matrix does not admit ({row.get('argument')}): {row['operation']}")
     physical, alias = walk_path(git, rev, root, row['text'], row['cwd'])
     if alias is not None:
-        return ('refused', 'the traced run read through a symlink in the repository: ' + alias)
+        return ('refused', alias)
     inside = physical.is_relative_to(root)
     if operation == 'cp':
         return (('refused', 'the traced run copied a repository tree, whose identity is not represented: ' +
@@ -2179,6 +2194,8 @@ def admit(git, rev, root, row, aside):
     second = row.get('second', 'undefined')
     if second != 'undefined' and second not in forms:
         return ('refused', f"a second argument the read matrix does not admit ({second}): {row['operation']}")
+    if second == 'options' and row.get('prototype') not in ('Object.prototype', 'null'):
+        return ('refused', 'an options object with another prototype: ' + row['operation'])
     if second == 'options' and not set(row.get('keys', [])) <= keys:
         return ('refused', f"an option the read matrix does not name: {row['operation']} "
                            f"{', '.join(sorted(set(row.get('keys', [])) - keys))}")

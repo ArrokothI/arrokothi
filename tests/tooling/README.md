@@ -264,6 +264,12 @@ requires them to equal the recomputation exactly. A stale record fails; it never
     - **Path walk:** the path is walked component by component, as the operating system resolves it,
       before normalization. A tracked symlink refuses the row, and no target is followed. Untracked links,
       such as system prefixes and `node_modules` workspace links, are followed.
+    - **Rule P (path binding, owner choice 05):** every component that exists in the checkout, inside the
+      repository and outside `node_modules`, must be a Git entry at C under exactly that spelling. This is
+      checked before the symlink check. A case- or normalization-variant spelling refuses.
+    - **Rule O (options, owner choice 05):** an options object must have `Object.prototype` or `null` as its
+      prototype. The trace records it with intrinsics captured at load; any other prototype refuses.
+    - **Threat model:** cooperative test code. Forms built to evade the census are 017 L-18.
   - **Listing modes** (design 04). A `readdir` or `opendir` whose options set `recursive` is a *tree*
     read. It stands for the immediate listing of its directory and of every subtree beneath it, each
     classed like any listing. A tree read that crosses a tracked symlink refuses its file, because

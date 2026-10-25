@@ -4,7 +4,7 @@
 // A listing called with a truthy `recursive` option is marked `recursive` (TOOLS-02 design 04 §1).
 // Each row also keeps what admission needs before anything is normalized (TOOLS-02 design 05 §7): the first
 // argument's form, a path's original text and the call-time working directory, the second argument's form,
-// and an options object's own keys.
+// and an options object's own keys and prototype (design 05 §8.2, rule O).
 // Limits: processes that drop NODE_OPTIONS, reads outside fs and reads by native code are unseen.
 import fs from 'node:fs';
 import { syncBuiltinESMExports } from 'node:module';
@@ -18,6 +18,8 @@ if (typeof destination !== 'string' || !path.isAbsolute(destination)) {
 const append = fs.appendFileSync;
 const resolve = path.resolve;
 const cwd = process.cwd;
+const getPrototypeOf = Object.getPrototypeOf;
+const objectPrototype = Object.prototype;
 let busy = false;
 
 function pathText(target) {
@@ -47,6 +49,12 @@ function secondForm(value) {
   return typeof value === 'object' ? 'options' : typeof value;
 }
 
+function prototypeName(value) {
+  const prototype = getPrototypeOf(value);
+  if (prototype === objectPrototype) return 'Object.prototype';
+  return prototype === null ? 'null' : 'other';
+}
+
 function record(operation, target, second) {
   if (busy) return; // appendFileSync may call wrapped functions internally
   busy = true;
@@ -59,7 +67,7 @@ function record(operation, target, second) {
       argument: argumentForm(target, text),
       ...(text === null ? {} : { text, cwd: directory }),
       second: form,
-      ...(form === 'options' ? { keys: Object.keys(second).sort() } : {}),
+      ...(form === 'options' ? { keys: Object.keys(second).sort(), prototype: prototypeName(second) } : {}),
       ...(LISTING.test(operation) && form === 'options' && second.recursive ? { recursive: true } : {}) };
     append(destination, JSON.stringify(row) + '\n');
   } finally {

@@ -1025,7 +1025,9 @@
           "read-matrix-crossing",
           "read-matrix-pin-ancestor",
           "read-matrix-pin-crossing",
-          "read-matrix-exists-mode-only"
+          "read-matrix-exists-mode-only",
+          "read-matrix-rule-p",
+          "read-matrix-rule-o"
         ],
         "environment": [
           "POSIX-Python"
@@ -1295,6 +1297,22 @@
           "case": "result.read-matrix.exists-mode-only",
           "values": {
             "failure": "read-matrix-exists-mode-only",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-matrix.rule-p",
+          "values": {
+            "failure": "read-matrix-rule-p",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.read-matrix.rule-o",
+          "values": {
+            "failure": "read-matrix-rule-o",
             "environment": "POSIX-Python",
             "stage": "result-classification"
           }

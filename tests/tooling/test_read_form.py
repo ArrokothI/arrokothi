@@ -173,6 +173,8 @@ fs.rmSync(target, { recursive: true, force: true });
     def row(self, operation, text, second='undefined', **fields):
         """A traced row as read-trace.mjs writes it, for a path read from the repository root."""
         root = os.path.realpath(self.repo.root)
+        if second == 'options':
+            fields.setdefault('prototype', 'Object.prototype')
         return {'pid': 1, 'operation': operation, 'path': os.path.join(root, text), 'argument': 'path', 'text': text,
                 'cwd': root, 'second': second, **fields}
 
@@ -235,9 +237,9 @@ fs.rmSync(target, { recursive: true, force: true });
                          ('refused', 'the traced run read through a symlink in the repository: tests/fixtures/link'))
         self.assertEqual(self.admit(self.row('readFileSync', 'tests/fixtures/actual.txt'), rev),
                          ('read', 'tests/fixtures/actual.txt', 'bytes'))
-        (self.repo.root / 'scratch').mkdir()
-        os.symlink('../config', self.repo.root / 'scratch/untracked')  # untracked, like a workspace link: followed
-        self.assertEqual(self.admit(self.row('readFileSync', 'scratch/untracked/scan.json'), rev),
+        (self.repo.root / 'node_modules').mkdir()
+        os.symlink('../config', self.repo.root / 'node_modules/workspace')  # untracked, like a workspace link: followed
+        self.assertEqual(self.admit(self.row('readFileSync', 'node_modules/workspace/scan.json'), rev),
                          ('read', 'config/scan.json', 'bytes'))
 
     def test_a_recursive_listing_that_crosses_a_symlink_refuses(self):
@@ -287,6 +289,43 @@ fs.rmSync(target, { recursive: true, force: true });
                          [{'path': 'tests/fixtures/scan.input.txt', 'kind': 'exists', 'fixture': True}])
         self.assertEqual(tool.changed_reads(reader, self.rev, edited, [('tests/fixtures', 'exists')]), [])
 
+    def case_insensitive(self):
+        """Whether this host's filesystem resolves an alternate case of a tracked name (review 03, T2-R3-PATH-01)."""
+        return os.path.lexists(self.repo.root / 'tests/fixtures/SCAN.INPUT.TXT')
+
+    def test_rule_p_refuses_a_spelling_that_is_not_a_tracked_entry(self):
+        """Design 05 §8.1. Host-independent: an untracked file and an untracked directory stand for the entries a
+        case-insensitive host reaches through another spelling."""
+        self.repo.write('tests/fixtures/alias.txt', 'untracked\n')
+        self.repo.write('tests/scratch/inside.txt', 'untracked\n')
+        self.assertEqual(self.admit(self.row('readFileSync', 'tests/fixtures/alias.txt')),
+                         ('refused', 'the traced run read a path whose spelling is not a tracked entry at C: '
+                                     'tests/fixtures/alias.txt'))
+        self.assertEqual(self.admit(self.row('statSync', 'tests/scratch/inside.txt')),
+                         ('refused', 'the traced run read a path whose spelling is not a tracked entry at C: tests/scratch'))
+        self.assertEqual(self.admit(self.row('readFileSync', 'tests/fixtures/scan.input.txt')),
+                         ('read', 'tests/fixtures/scan.input.txt', 'bytes'))
+        self.assertEqual(self.admit(self.row('existsSync', 'tests/fixtures/missing.txt')),
+                         ('read', 'tests/fixtures/missing.txt', 'exists'))
+        variant = self.admit(self.row('readFileSync', 'tests/fixtures/SCAN.INPUT.TXT'))
+        if self.case_insensitive():
+            self.assertEqual(variant, ('refused', 'the traced run read a path whose spelling is not a tracked entry at C: '
+                                                  'tests/fixtures/SCAN.INPUT.TXT'))
+        else:
+            self.assertEqual(variant, ('read', 'tests/fixtures/SCAN.INPUT.TXT', 'bytes'))
+
+    def test_rule_o_refuses_an_options_object_with_another_prototype(self):
+        """Design 05 §8.2: only an ordinary or null prototype is admitted, for every operation that takes options."""
+        for prototype in ('other', None):
+            with self.subTest(prototype=prototype):
+                row = self.row('createReadStream', 'tests/fixtures/scan.input.txt', 'options', keys=[])
+                row['prototype'] = prototype
+                self.assertEqual(self.admit(row), ('refused', 'an options object with another prototype: createReadStream'))
+        for prototype in ('Object.prototype', 'null'):
+            with self.subTest(prototype=prototype):
+                row = self.row('readFileSync', 'config/scan.json', 'options', keys=['encoding'], prototype=prototype)
+                self.assertEqual(self.admit(row), ('read', 'config/scan.json', 'bytes'))
+
     def test_real_trace_rows_are_admitted_or_refused(self):
         """The real preload through admission (design 05 §7.4): an inherited descriptor, a decoy-path stream with an
         fd override, a symlink-then-`..` path, array, callback and promise globs, and an ordinary positive control."""
@@ -301,6 +340,10 @@ execFileSync(process.execPath, ['-e', 'require("fs").readFileSync(0)'], { stdio:
 fs.globSync(['tests/fixtures/actual.txt']);
 await new Promise((done) => fs.glob('tests/fixtures/*.txt', () => done()));
 for await (const entry of fs.promises.glob('tests/fixtures/*.txt')) void entry;
+const inherited = fs.openSync('tests/fixtures/scan.input.txt');
+await new Promise((done) => fs.createReadStream('tests/fixtures/actual.txt', Object.create({ fd: inherited })).on('close', done).resume());
+fs.readFileSync('config/scan.json', Object.assign(Object.create(null), { encoding: 'utf8' }));
+try { fs.readFileSync('tests/fixtures/SCAN.INPUT.TXT'); } catch {}
 """
         (self.repo.root / 'forms.mjs').write_text(script)
         trace = self.repo.root.parent / (self.repo.root.name + '-trace.jsonl')
@@ -320,6 +363,14 @@ for await (const entry of fs.promises.glob('tests/fixtures/*.txt')) void entry;
         for operation in ('globSync', 'glob', 'promises.glob'):
             with self.subTest(operation=operation):
                 self.assertTrue(refused(operation, 'the traced run read through a glob pattern'))
+        self.assertTrue(refused('createReadStream', 'an options object with another prototype: createReadStream'))
+        null_prototype = [row for row in rows if row['operation'] == 'readFileSync' and row.get('prototype') == 'null']
+        self.assertEqual([self.admit(row, rev) for row in null_prototype], [('read', 'config/scan.json', 'bytes')])
+        variant = [outcome for name, outcome in outcomes if name == 'readFileSync' and 'SCAN.INPUT.TXT' in str(outcome)]
+        expected = (('refused', 'the traced run read a path whose spelling is not a tracked entry at C: '
+                                'tests/fixtures/SCAN.INPUT.TXT') if self.case_insensitive() else
+                    ('read', 'tests/fixtures/SCAN.INPUT.TXT', 'bytes'))
+        self.assertEqual(variant, [expected])
 
 
     def test_a_same_name_type_change_changes_a_fixture_listing(self):
@@ -661,16 +712,36 @@ class ReadMatrixCensusTests(CensusRepository):
             "import { cpSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';\n"
             "import { tmpdir } from 'node:os';\nimport { join } from 'node:path';"),
         'tests/pinlink/same.test.mjs': member("assert.ok(readFileSync('tests/fixtures/same', 'utf8').length > 0);"),
+        # Review 03's probes and design 05 §8.4's controls.
+        'tests/options/inherited.test.mjs': member(
+            "const fd = openSync('tests/fixtures/input.txt'); let out = '';\n"
+            "for await (const chunk of createReadStream('tests/fixtures/decoy.txt', streamOptions(fd))) out += chunk;\n"
+            "assert.ok(out.length > 0);",
+            "import { createReadStream, openSync } from 'node:fs';\nimport { streamOptions } from '../../src/options.mjs';"),
+        'tests/options/child.test.mjs': member(
+            "const code = \"import fs from 'node:fs'; let out = ''; for await (const chunk of fs.createReadStream("
+            "'tests/fixtures/decoy.txt', Object.create({ fd: 3, autoClose: false }))) out += chunk; process.stdout.write(out);\";\n"
+            "const out = execFileSync(process.execPath, ['--input-type=module', '-e', code],\n"
+            "  { stdio: ['ignore', 'pipe', 'pipe', openSync('tests/fixtures/input.txt')] });\nassert.ok(out.length > 0);",
+            "import { openSync } from 'node:fs';\nimport { execFileSync } from 'node:child_process';"),
+        'tests/options/own.test.mjs': member(
+            "assert.ok(readFileSync('tests/fixtures/other.txt', { encoding: 'utf8' }).length > 0);"),
+        'tests/options/null.test.mjs': member(
+            "assert.ok(readFileSync('tests/fixtures/other.txt', { __proto__: null, encoding: 'utf8' }).length > 0);"),
+        'tests/case/exact.test.mjs': member("assert.ok(readFileSync('tests/fixtures/input.txt', 'utf8').length > 0);"),
+        'tests/case/variant.test.mjs': member("assert.ok(readFileSync('tests/fixtures/INPUT.txt', 'utf8').length > 0);"),
     }
     seed = {'data/target/seed.json': '{}\n', 'data/sub/seed': 'seed\n', 'data/actual.txt': 'REAL\n',
             'tests/fixtures/actual.txt': 'DECOY\n', 'tests/fixtures/other.txt': 'OTHER\n',
             'tests/fixtures/plain/seed.json': '{}\n', 'tests/fixtures/entry': 'file\n',
-            'tests/fixtures/sized.txt': 'sized\n', 'tests/fixtures/target': 'TARGET CONTENT\n'}
+            'tests/fixtures/sized.txt': 'sized\n', 'tests/fixtures/target': 'TARGET CONTENT\n',
+            'tests/fixtures/input.txt': 'ACTUAL 1\n', 'tests/fixtures/decoy.txt': 'DECOY\n',
+            'src/options.mjs': 'export function streamOptions(fd) { return Object.create({ fd }); }\n'}
     links = {'tests/fixtures/link': '../../data/target', 'tests/fixtures/jump': '../../data/sub',
              'tests/fixtures/same': 'target'}
     globs = ['tests/linked/*.test.mjs', 'tests/plain/*.test.mjs', 'tests/alias/*.test.mjs', 'tests/glob/*.test.mjs',
              'tests/stat/*.test.mjs', 'tests/stream/*.test.mjs', 'tests/stdin/*.test.mjs', 'tests/copy/*.test.mjs',
-             'tests/pinlink/*.test.mjs']
+             'tests/pinlink/*.test.mjs', 'tests/options/*.test.mjs', 'tests/case/*.test.mjs']
 
     def reasons(self, table, member_file):
         return next(row for row in table if row['file'] == member_file)['reasons']
@@ -726,6 +797,34 @@ class ReadMatrixCensusTests(CensusRepository):
         self.advance()
         self.assert_refused(self.table, 'tests/pinlink/same.test.mjs',
                             'a read path or its ancestor is a symlink at the pin: tests/fixtures/same')
+
+
+    def case_insensitive(self):
+        return os.path.lexists(self.repo.root / 'tests/fixtures/INPUT.txt')
+
+    def test_rule_o_and_own_property_options_through_the_census(self):
+        initial = {row['file']: row for row in self.initial}
+        for member_file in ('tests/options/inherited.test.mjs', 'tests/options/child.test.mjs'):
+            with self.subTest(member=member_file):
+                self.assertNotEqual(initial[member_file]['status'], 'preserved', initial[member_file]['reasons'])
+        self.assert_refused(self.initial, 'tests/options/inherited.test.mjs',
+                            'an options object with another prototype: createReadStream')
+        for member_file in ('tests/options/own.test.mjs', 'tests/options/null.test.mjs', 'tests/case/exact.test.mjs'):
+            with self.subTest(member=member_file):
+                self.assertEqual(initial[member_file]['status'], 'preserved', initial[member_file]['reasons'])
+
+    def test_exact_and_variant_spellings_through_two_edits(self):
+        """Review 03's path probe: the alternate-case reader is never preserved; the exact reader keeps credit until an
+        edit, and each edit changes the table."""
+        start = ('the traced run read a path whose spelling is not a tracked entry at C: tests/fixtures/INPUT.txt'
+                 if self.case_insensitive() else 'a leaf at C does not pass')
+        self.assert_refused(self.initial, 'tests/case/variant.test.mjs', start)
+        for text in ('ACTUAL 2 longer\n', 'ACTUAL 3 longer still\n'):
+            with self.subTest(text=text):
+                self.assert_stale(self.step({'tests/fixtures/input.txt': text}), 'tests/case/exact.test.mjs')
+                self.assert_refused(self.table, 'tests/case/exact.test.mjs',
+                                    'changed test fixture read: tests/fixtures/input.txt')
+                self.assertNotEqual(self.row('tests/case/variant.test.mjs')['status'], 'preserved')
 
 
 if __name__ == '__main__':
