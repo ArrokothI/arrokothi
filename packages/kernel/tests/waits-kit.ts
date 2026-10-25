@@ -68,12 +68,16 @@ export interface KeepingDriver extends ExecutionDriver {
   readonly cancellations: SeenCancellation[];
 }
 
-export function keepingDriver(options: { readonly reportAtOnce?: boolean } = {}): KeepingDriver {
+/** How the fake Driver answers a cancellation request (owner choice 01). */
+export type CancellationBehaviour = "record" | "absent" | "throw" | ((request: SeenCancellation) => unknown);
+
+export function keepingDriver(options: { readonly reportAtOnce?: boolean; readonly cancellation?: CancellationBehaviour } = {}): KeepingDriver {
   const seen: Activation[] = [];
   const submissions: SubmissionGrant[] = [];
   const settlements: DeliverySettlement[] = [];
   const cancellations: SeenCancellation[] = [];
-  return {
+  const behaviour = options.cancellation ?? "record";
+  const driver: KeepingDriver = {
     driverId: "fake-keeping",
     seen,
     submissions,
@@ -90,6 +94,15 @@ export function keepingDriver(options: { readonly reportAtOnce?: boolean } = {})
       return true;
     },
   };
+  if (behaviour !== "absent") {
+    (driver as { requestCancellation?: (request: SeenCancellation) => unknown }).requestCancellation = (request: SeenCancellation): unknown => {
+      recordOwn(cancellations, request);
+      if (behaviour === "throw") throw new Error("native cancellation refused");
+      if (typeof behaviour === "function") return behaviour(request);
+      return undefined;
+    };
+  }
+  return driver;
 }
 
 export const author: AuthenticatedCaller = { ...caller("app-a", "tenant-a"), cancelScopes: ["tenant-a"] } as AuthenticatedCaller;

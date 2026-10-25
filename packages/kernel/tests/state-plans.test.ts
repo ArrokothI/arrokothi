@@ -262,6 +262,31 @@ describe("K1.3 CR1-1: wait, wake, expiry and fire decisions are frozen, data-onl
   });
 });
 
+describe("K1.3 CR1-1: cancellation and losing-proposal decisions are frozen, data-only plans", () => {
+  const canceller = { ...author, cancelScopes: ["tenant-a"] };
+
+  test("cancel: accepted, repeated, refused; a losing proposal: recorded, retried, unindexed", () => {
+    const { kernel, driver, executionId, open } = opened();
+    expectPlans(kernel, executionId, () => kernel.cancelExecution(author, executionId), ["refusal"]);
+    const cancelled = expectPlans(kernel, executionId, () => kernel.cancelExecution(canceller, executionId), ["cancellation"]);
+    assert.equal(cancelled.result, (cancelled.plans[0]!.plan as Extract<Plan, { kind: "cancellation" }>).answer, "the operation returns the plan's answer");
+    checkPlans(during(() => kernel.cancelExecution(canceller, executionId)).plans, [], null);
+    const losing = expectPlans(kernel, executionId, () => kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)), ["losing_outcome"]);
+    assert.equal(refused(losing.result), (losing.plans[0]!.plan as Extract<Plan, { kind: "losing_outcome" }>).refusal);
+    checkPlans(during(() => kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId))).plans, [], null);
+    expectPlans(kernel, executionId, () => kernel.submitOutcome(author, outcomeFor(executionId, open, { activationId: 42 }), submissionFor(driver, open.activationId)), ["refusal"]);
+  });
+
+  test("the Execution deadline's fire forms the same cancellation plan", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver, clock: { now: () => 10 } });
+    const created = accepted(kernel.createExecution(author, { ...createRequest(), executionDeadline: 5 } as never));
+    const fired = expectPlans(kernel, created.executionId, () => kernel.fireTimer({ executionId: created.executionId, kind: "execution_deadline", generation: null }), ["cancellation"]);
+    assert.equal(fired.result, (fired.plans[0]!.plan as Extract<Plan, { kind: "cancellation" }>).answer);
+    expectPlans(kernel, created.executionId, () => kernel.fireTimer({ executionId: created.executionId, kind: "execution_deadline", generation: null }), ["timer_discard"]);
+  });
+});
+
 describe("K1.3 the owner's structural guards refuse a plan that breaks them (direct negative controls)", () => {
   const refusedBy = (state: KernelState, plan: Plan, guard: RegExp, executionId: string): void => {
     const reader = ReflectApply(find, state, [executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
@@ -332,6 +357,22 @@ describe("K1.3 the owner's structural guards refuse a plan that breaks them (dir
       answer: { result: "expired", reason: "forged", timeoutEventId: "t-forged" },
     }) as unknown as Plan;
     refusedBy(recorded.state, forged, /S4/, executionId);
+  });
+
+  test("S1 and S2: a cancellation of a terminal Execution, and one that leaves a queued Event", () => {
+    const canceller = { ...author, cancelScopes: ["tenant-a"] };
+    const target = opened();
+    accepted(target.kernel.submitInput(author, { destination: target.executionId, requestKey: "backlog", kind: "k", payload: 1 }));
+    const other = accepted(target.kernel.createExecution(author, createRequest({ creationKey: "s2-template" })));
+    const template = during(() => target.kernel.cancelExecution(canceller, other.executionId)).plans[0]!;
+    const plan = template.plan as Extract<Plan, { kind: "cancellation" }>;
+    const reader = ReflectApply(find, template.state, [target.executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
+    const exchange = reader.activation!;
+    const record = { ...plan.record, endedExchange: { activationId: exchange.activation.activationId, writerEpoch: 1, baseProgressRevision: 0, batch: exchange.batch, dispatchReceipt: exchange.receipt } };
+    // Only the reserved batch's position, not the backlog: a terminal decision that leaves an Event queued.
+    refusedBy(template.state, Object.freeze({ ...plan, executionId: target.executionId, basis: reader.version, endAt: [0], record }) as Plan, /S2/, target.executionId);
+    const otherReader = ReflectApply(find, template.state, [other.executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
+    refusedBy(template.state, Object.freeze({ ...plan, basis: otherReader.version }) as Plan, /S1/, other.executionId);
   });
 
   test("S5: an input wake with no readiness, and readiness over readiness", () => {

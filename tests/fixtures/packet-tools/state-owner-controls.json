@@ -4,7 +4,7 @@
   "families": {
     "write-outside-apply": {
       "files": ["packages/kernel/tests/control-commits.test.ts", "packages/kernel/tests/state-plans.test.ts"],
-      "test_count": 96,
+      "test_count": 99,
       "killers": [
         "each record field has fixed arms, and the coordinator changes accepted state only by handing plans over",
         "every reader member returns a primitive, a reader, frozen data or a fresh list of frozen values"
@@ -20,7 +20,7 @@
     },
     "callback-inside-apply": {
       "files": ["packages/kernel/tests/control-commits.test.ts", "packages/kernel/tests/state-plans.test.ts", "tests/conformance/architecture/kernel-state-ownership.test.ts"],
-      "test_count": 105,
+      "test_count": 108,
       "killers": [
         "every call resolves to zone code, a classified primordial or an inventoried foreign call; the owner reaches none",
         "the real zone keeps every rule, and every rule matches real files and edges",
@@ -29,7 +29,7 @@
     },
     "view-aliases-state": {
       "files": ["packages/kernel/tests/state-plans.test.ts"],
-      "test_count": 16,
+      "test_count": 19,
       "killers": [
         "every reader member returns a primitive, a reader, frozen data or a fresh list of frozen values",
         "editing every container of a returned view changes neither the next view nor the Execution"
