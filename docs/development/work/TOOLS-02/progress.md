@@ -7,6 +7,13 @@ The resume point for any session continuing this packet. Newest facts first with
   [Design 05](design-05.md) states the matrix. GPT-6's [design check 05](design-check-05.md) (`8ab1607b`): APPROVED WITH
   REQUIRED CHANGES (D05-CHK-1 descriptor and option admission, -2 path walk before normalization, -3 pin-side
   symlinks). Design 05 §7 completes them; the build follows, as owner choice 04 directs.
+  - **C5** `311c30a35a4ca13ca6497bef316aab81a3de3a8e` (local until its checks pass): the design 05 build.
+    - `admit()`, the path walk, crossings at C and the pin, the pin ancestor check and the file existence identity;
+    - 8 new mutants, with `pattern-accepted` re-anchored; all 19 read mutants kill;
+    - `ReadMatrixCensusTests`, and design 04's correction note (`c10eb149`);
+    - regeneration: no status or reason change, 485 read digests change; tool tests 664 OK.
+  - Its fresh-clone sequence (quiet gate, regenerate, corpus, tool tests, both registries, full verify) is running.
+    The draft `implementation-03.md` waits in the scratchpad for H.
   - [Review 02](review-02.md) (GPT-6, 2026-10-24) of H `7791cda6` over C4: CHANGES REQUIRED.
     - T2-R2-READ-01: Node 26.10's recursive `readdir` (sync and promise) descends symlinked directories, and
       `tree_listings` follows only git subtrees. Design 04's claim that Node does not descend them was untested
