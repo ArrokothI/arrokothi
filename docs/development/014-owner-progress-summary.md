@@ -1,9 +1,10 @@
 # Owner progress summary
 
-Snapshot: checked 2026-10-25 against remote main `b5daf35a`, the merge of TOOLS-02's release (PR #58).
+Snapshot: checked 2026-10-25 against remote main `4015599e`, the merge of TOOLS-02 range 1 (PR #59).
 TOOLS-02 range 1's accepted H is `34ab91a5de23beb4997cdd2ae209a3b67aac50a0`, its payload C is
 `5d0f1cc49eb9cb534ad2818a8f8d38253438418d`, and its review is recorded at A `3634d945ce0de5322d1cf5b81462d5ec9b2fc819`.
-Range 1's [cleanup](work/TOOLS-02/cleanup-01.md) is complete, and its integration waits for the owner's merge. The
+Range 1's [cleanup](work/TOOLS-02/cleanup-01.md) is complete, and range 1 is
+[integrated](work/TOOLS-02/integration-01.md) at `4015599e` (PR #59). The
 [status ledger](007-work-packets.md) and linked records own exact acceptance, integration and release
 identities.
 
@@ -19,11 +20,11 @@ identities.
 | BINDING-01 | Independently accepted at H `b7a24c79`; integrated at `cd8d9250` (PR #53) |
 | COORD-REFACTOR-01 | Independently accepted at H `23c8919f`; integrated at `d17ea6d1` (PR #56) |
 | TOOLS-01 | Independently accepted at H `a50c3886`; integrated at `8f829003` (PR #45) |
-| TOOLS-02 | In progress (released 2026-10-23, [release 01](work/TOOLS-02/release-01.md), scope B). Range 1 (T2-1, T2-2) independently accepted at H above; cleanup complete; integration pending the owner's merge. Ranges 2–4 (T2-3 to T2-5) open. The whole packet must be accepted and integrated before K1.4 acceptance |
+| TOOLS-02 | In progress (released 2026-10-23, [release 01](work/TOOLS-02/release-01.md), scope B). Range 1 (T2-1, T2-2) independently accepted at H above and integrated at `4015599e` (PR #59). Ranges 2–4 (T2-3 to T2-5) open. The whole packet must be accepted and integrated before K1.4 acceptance |
 | TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
 | K1.1-correction-03 | Independently accepted at H `4b121d7b`; integrated at `b976f3a3` (PR #48) |
 | Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-16 and L-18) under 006 working principle 6 |
-| K1.3 | Planned; not released. The owner decides its release separately, after range 1 merges |
+| K1.3 | Planned; not released. The owner decides its release separately |
 | K1 / E1 | Open; no E1 gate result |
 
 ## What has been achieved
@@ -168,8 +169,8 @@ symlink, an array glob, a case variant of a path, an inherited options prototype
 made the census's threat model cooperative test code and recorded evasive forms as a limit
 ([owner choice 05](work/TOOLS-02/owner-choice-05.md)).
 
-Status: range 1 is independently accepted at H `34ab91a5`. Its cleanup is complete and its integration waits
-for the owner's merge; TOOLS-02 stays in progress. Limits:
+Status: range 1 is independently accepted at H `34ab91a5` and [integrated](work/TOOLS-02/integration-01.md) at
+`4015599e` (PR #59); TOOLS-02 stays in progress. Limits:
 - Range 1 is part of TOOLS-02, not the packet. Target-set kill provenance (T2-3), the hold register's match with
   current claims (T2-4) and origin triage (T2-5) are open. The origin corpus and the hold register are unchanged
   apart from the two transferred origins above.
@@ -278,8 +279,7 @@ below come from 007 and become eligible for an owner release only after their pr
 integrated. Briefs follow 006 working principle 6: build right what later work builds on, and record the rest in
 [017](017-known-limitations.md).
 
-1. **TOOLS-02 range 1** waits for the owner's merge. An integration receipt follows it.
-2. **TOOLS-02 ranges 2–4** follow, released with the owner's scope B
+1. **TOOLS-02 ranges 2–4** follow range 1's integration, released with the owner's scope B
    ([release 01](work/TOOLS-02/release-01.md)): target-set kill provenance (T2-3), the hold register under current
    claims (T2-4), then origin triage with a sampled audit (T2-5). T2-4's design 03 sits on its own branch, outside
    range 1. The ranges also carry:
@@ -293,9 +293,9 @@ integrated. Briefs follow 006 working principle 6: build right what later work b
    - revalidation of entries held under the released V-D1 and classification claims.
 
    TOOLS-02 must be accepted and integrated before K1.4 acceptance; 007 does not make it a prerequisite for K1.3.
-3. **K1.3** is not released. The owner decides its release separately, after range 1 merges. It adds waits,
+2. **K1.3** is not released. The owner decides its release separately. It adds waits,
    deadlines and cancellation as new plan variants.
-4. **K1.4** owns the SDK host bridge and full K1/E1 gate. The supported SDK surface changes there, as
+3. **K1.4** owns the SDK host bridge and full K1/E1 gate. The supported SDK surface changes there, as
    [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies. K1.4 also carries BINDING-01's wrapper obligation:
    a startup check, or L-01 stated in the public bridge contract. The external dependency is unchanged: before K1.3
    closes, the benchmark owner must confirm that E1 fixtures drive the new supported entry. An unavailable fixture
