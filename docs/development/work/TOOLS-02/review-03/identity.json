@@ -1,0 +1,87 @@
+{
+  "base": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+  "payload": "311c30a35a4ca13ca6497bef316aab81a3de3a8e",
+  "head": "23d65ac332fdbd267b00d12d5b02e3b77ad8923e",
+  "ancestry": [
+    {
+      "from": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+      "to": "311c30a35a4ca13ca6497bef316aab81a3de3a8e",
+      "exit": 0
+    },
+    {
+      "from": "311c30a35a4ca13ca6497bef316aab81a3de3a8e",
+      "to": "23d65ac332fdbd267b00d12d5b02e3b77ad8923e",
+      "exit": 0
+    }
+  ],
+  "administrative_files": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/TOOLS-02/implementation-03.md",
+    "docs/development/work/TOOLS-02/progress.md"
+  ],
+  "preserved_paths_checked": 43,
+  "preserved_path_failures": [],
+  "policy_006_008_012_changed": [],
+  "default_diff_check": {
+    "exit": 2,
+    "stdout": "docs/development/work/TOOLS-02/design-04.md:144: new blank line at EOF.\n",
+    "stderr": ""
+  },
+  "adoption_deltas": [
+    {
+      "from": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+      "to": "311c30a35a4ca13ca6497bef316aab81a3de3a8e",
+      "fields": [
+        "origins",
+        "preserved",
+        "transfer_lists",
+        "transferred"
+      ],
+      "member_fields": {
+        "walks": 1272,
+        "reads": 1272,
+        "repository_read_changed": 504,
+        "reasons": 439,
+        "status": 7
+      },
+      "status_before": {
+        "held": 1013,
+        "refused": 228,
+        "superseded": 1,
+        "preserved": 30
+      },
+      "status_after": {
+        "held": 1013,
+        "refused": 235,
+        "superseded": 1,
+        "preserved": 23
+      },
+      "members_added": [],
+      "members_removed": []
+    },
+    {
+      "from": "5ab098bd893e3d39f58851276926abea81e5a5d8",
+      "to": "311c30a35a4ca13ca6497bef316aab81a3de3a8e",
+      "fields": [
+        "preserved"
+      ],
+      "member_fields": {
+        "reads": 485
+      },
+      "status_before": {
+        "held": 1013,
+        "refused": 235,
+        "superseded": 1,
+        "preserved": 23
+      },
+      "status_after": {
+        "held": 1013,
+        "refused": 235,
+        "superseded": 1,
+        "preserved": 23
+      },
+      "members_added": [],
+      "members_removed": []
+    }
+  ]
+}

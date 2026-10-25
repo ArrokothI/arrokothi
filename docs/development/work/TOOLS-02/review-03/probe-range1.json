@@ -1,0 +1,145 @@
+{
+  "candidate": "311c30a35a4ca13ca6497bef316aab81a3de3a8e",
+  "node": "v26.10.0",
+  "python": "3.14.6",
+  "options": {
+    "initial": {
+      "tests/stream/inherited.test.mjs": {
+        "status": "held",
+        "reads": "48ae04456e46e0ad63bc4f3f4e19976603aa9c3385d0a6aa899f0f4e65e16788",
+        "reasons": []
+      },
+      "tests/stream/own.test.mjs": {
+        "status": "refused",
+        "reasons": [
+          "an option the read matrix does not name: createReadStream fd"
+        ]
+      }
+    },
+    "steps": [
+      {
+        "revision": "acbc352f9979b4e65964aac0627f9ad0d62e99fe",
+        "pristine": true,
+        "regenerate": "table_current",
+        "changed": [],
+        "corpus": "revalidation_complete",
+        "observed_content": "ACTUAL 2 longer\n"
+      },
+      {
+        "revision": "2e2cf9984ad6c3b1be328fe4c2b51bdad797fc29",
+        "pristine": true,
+        "regenerate": "table_current",
+        "changed": [],
+        "corpus": "revalidation_complete",
+        "observed_content": "ACTUAL 3 longer still\n"
+      }
+    ],
+    "relevant_rows": [
+      {
+        "pid": 43538,
+        "operation": "createReadStream",
+        "path": "/private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/packet-tools-test-lw0aiwnp/tests/fixtures/decoy.txt",
+        "argument": "path",
+        "text": "tests/fixtures/decoy.txt",
+        "cwd": "/private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/packet-tools-test-lw0aiwnp",
+        "second": "options",
+        "keys": []
+      }
+    ],
+    "child_preloads": 2,
+    "admissions": [
+      [
+        "read",
+        "tests/fixtures/decoy.txt",
+        "bytes"
+      ]
+    ],
+    "positive_control": {
+      "revision": "c6d8026a7aa0c0be7d2028f4e37b67d9ea2b061d",
+      "pristine": true,
+      "regenerate": "table_differs",
+      "changed": [
+        "tests/stream/inherited.test.mjs:4:1@d983d6e3cb02"
+      ],
+      "corpus": "invalid: preserved table differs from the census at C: 1 members differ, 0 not recomputed (first: ['tests/stream/inherited.test.mjs:4:1@d983d6e3cb02'])"
+    }
+  },
+  "direct_options": {
+    "initial": {
+      "tests/stream/inherited.test.mjs": {
+        "status": "preserved",
+        "reads": "90a31be71dbe2e56bf590f61581645e3f1f792ddfd6eac282f8453c84f3a00cd",
+        "reasons": []
+      }
+    },
+    "steps": [],
+    "relevant_rows": [
+      {
+        "pid": 43897,
+        "operation": "createReadStream",
+        "path": "/private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/packet-tools-test-nvjqkwbt/tests/fixtures/decoy.txt",
+        "argument": "path",
+        "text": "tests/fixtures/decoy.txt",
+        "cwd": "/private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/packet-tools-test-nvjqkwbt",
+        "second": "options",
+        "keys": []
+      }
+    ],
+    "child_preloads": 1,
+    "admissions": [
+      [
+        "read",
+        "tests/fixtures/decoy.txt",
+        "bytes"
+      ]
+    ],
+    "positive_control": null
+  },
+  "case_paths": {
+    "initial": {
+      "tests/read/case.test.mjs": {
+        "status": "preserved",
+        "reads": "370ca4b4cb6f2f34d2719ad55365904e1e9d3c1762ce884391401458eeb71d04",
+        "reasons": []
+      }
+    },
+    "steps": [
+      {
+        "revision": "15c266e275be45b6c1a57eacba94287658c6f4bc",
+        "pristine": true,
+        "regenerate": "table_current",
+        "changed": [],
+        "corpus": "revalidation_complete",
+        "observed_content": "ACTUAL 2 longer\n"
+      },
+      {
+        "revision": "ae6e88f605dcc69acda0321a1a4980e6d412a13b",
+        "pristine": true,
+        "regenerate": "table_current",
+        "changed": [],
+        "corpus": "revalidation_complete",
+        "observed_content": "ACTUAL 3 longer still\n"
+      }
+    ],
+    "relevant_rows": [
+      {
+        "pid": 44232,
+        "operation": "readFileSync",
+        "path": "/private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/packet-tools-test-qqsoe97t/tests/fixtures/INPUT.txt",
+        "argument": "path",
+        "text": "tests/fixtures/INPUT.txt",
+        "cwd": "/private/var/folders/c3/jvkvjr6d701gtyf5sf6gn_fw0000gn/T/packet-tools-test-qqsoe97t",
+        "second": "string"
+      }
+    ],
+    "child_preloads": 1,
+    "admissions": [
+      [
+        "read",
+        "tests/fixtures/INPUT.txt",
+        "bytes"
+      ]
+    ],
+    "positive_control": null
+  }
+}
