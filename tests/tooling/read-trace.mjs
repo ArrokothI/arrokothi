@@ -2,6 +2,9 @@
 // NODE_OPTIONS=--import=<absolute path> for the reads phase, never in a verdict run.
 // It records the path argument of fs read, list, stat and existence calls; it changes no result.
 // A listing called with a truthy `recursive` option is marked `recursive` (TOOLS-02 design 04 §1).
+// Each row also keeps what admission needs before anything is normalized (TOOLS-02 design 05 §7): the first
+// argument's form, a path's original text and the call-time working directory, the second argument's form,
+// and an options object's own keys.
 // Limits: processes that drop NODE_OPTIONS, reads outside fs and reads by native code are unseen.
 import fs from 'node:fs';
 import { syncBuiltinESMExports } from 'node:module';
@@ -26,16 +29,38 @@ function pathText(target) {
 
 const LISTING = /(?:^|\.)(?:readdir|opendir)(?:Sync)?(?:\.native)?$/;
 
-function record(operation, target, options) {
+function argumentForm(target, text) {
+  if (text !== null) return 'path';
+  if (target instanceof URL) return 'url';
+  if (typeof target === 'number') return 'fd';
+  if (target === null) return 'null';
+  if (Array.isArray(target)) return 'array';
+  if (typeof target === 'object' && typeof target.fd === 'number' && typeof target.close === 'function') {
+    return 'filehandle';
+  }
+  return typeof target;
+}
+
+function secondForm(value) {
+  if (value === undefined) return 'undefined';
+  if (value === null) return 'null';
+  return typeof value === 'object' ? 'options' : typeof value;
+}
+
+function record(operation, target, second) {
   if (busy) return; // appendFileSync may call wrapped functions internally
   busy = true;
   try {
     const text = pathText(target);
+    const directory = cwd();
+    const form = secondForm(second);
     const row = { pid: process.pid, operation,
-      path: text === null ? null : resolve(cwd(), text),
-      ...(text === null ? { argument: typeof target === 'number' ? 'fd' : typeof target } : {}),
-      ...(LISTING.test(operation) && options !== null && typeof options === 'object' && options.recursive
-        ? { recursive: true } : {}) };
+      path: text === null ? null : resolve(directory, text),
+      argument: argumentForm(target, text),
+      ...(text === null ? {} : { text, cwd: directory }),
+      second: form,
+      ...(form === 'options' ? { keys: Object.keys(second).sort() } : {}),
+      ...(LISTING.test(operation) && form === 'options' && second.recursive ? { recursive: true } : {}) };
     append(destination, JSON.stringify(row) + '\n');
   } finally {
     busy = false;

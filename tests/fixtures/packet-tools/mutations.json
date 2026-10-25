@@ -5930,7 +5930,7 @@
       "id": "result.read-form.pattern-accepted",
       "assertion": "test_read_form.ReadFormTests.test_pattern_reads_refuse_their_file",
       "category": "tool-result",
-      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 §4): a glob or cp read is accepted without a represented identity",
+      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01, review 02 T2-R2-PATTERN-01; design 05): a glob read is not refused as a glob in every argument form",
       "input": {
         "test": "test_read_form.ReadFormTests.test_pattern_reads_refuse_their_file"
       },
@@ -5950,11 +5950,11 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "    if patterns:\n",
+          "before": "    if operation == 'glob':\n",
           "after": "    if False:  # tools02-mutant:pattern-accepted\n",
           "operator": "weaken-read-form",
           "name": "result.read-form.pattern-accepted",
-          "id": "mutation-4c8006dfd03643e98ae548b5cfeaac20bbfd5c242d9c74212323b1f5b12bb040"
+          "id": "mutation-201eec43f955a025375c76f05742430442f40c77dab114df52c9cfd27c7a728b"
         }
       ]
     },
@@ -5987,6 +5987,262 @@
           "operator": "weaken-read-form",
           "name": "result.read-form.types-dropped",
           "id": "mutation-40d26c7b37c4a0f96ab7eac1a2a8b5ffac4fd9beb9bc5b3e669c454d1ad1322f"
+        }
+      ]
+    },
+    {
+      "id": "result.read-matrix.default-outside",
+      "assertion": "test_read_form.ReadFormTests.test_admission_refuses_every_row_the_matrix_does_not_name",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 02; design 05 and design check 05): an operation the matrix does not name is dropped as outside instead of refused (the review 02 root cause)",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_admission_refuses_every_row_the_matrix_does_not_name"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-matrix.default-outside",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "return ('refused', 'an operation the read matrix does not name: ' + str(row.get('operation')))",
+          "after": "return ('outside',)  # tools02-mutant:default-outside",
+          "operator": "weaken-read-form",
+          "name": "result.read-matrix.default-outside",
+          "id": "mutation-ba52df49b4b23ee73f7eccb853580be554720258813feca0b4476256d0d927f7"
+        }
+      ]
+    },
+    {
+      "id": "result.read-matrix.option-guard",
+      "assertion": "test_read_form.ReadFormTests.test_admission_refuses_every_row_the_matrix_does_not_name",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 02; design 05 and design check 05): any option key is admitted, so createReadStream's fd and fs overrides read another input (D05-CHK-1)",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_admission_refuses_every_row_the_matrix_does_not_name"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-matrix.option-guard",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "if second == 'options' and not set(row.get('keys', [])) <= keys:",
+          "after": "if False:  # tools02-mutant:option-guard",
+          "operator": "weaken-read-form",
+          "name": "result.read-matrix.option-guard",
+          "id": "mutation-b7c530d90f43d30ce65e84b8fac9cad6e4bff110fdf677e1d78952584f693619"
+        }
+      ]
+    },
+    {
+      "id": "result.read-matrix.normalized",
+      "assertion": "test_read_form.ReadFormTests.test_the_walk_refuses_a_tracked_symlink_before_normalizing",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 02; design 05 and design check 05): admission uses the tracer-normalized path, so a symlink followed by .. names a decoy (D05-CHK-2)",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_the_walk_refuses_a_tracked_symlink_before_normalizing"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-matrix.normalized",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "physical, alias = walk_path(git, rev, root, row['text'], row['cwd'])",
+          "after": "physical, alias = Path(os.path.realpath(row['path'])), None  # tools02-mutant:normalized",
+          "operator": "weaken-read-form",
+          "name": "result.read-matrix.normalized",
+          "id": "mutation-5ee25765d4f842bc81322147d99d90fe2cb2fbcea50d9f650d310b4eab2e01ce"
+        }
+      ]
+    },
+    {
+      "id": "result.read-matrix.alias",
+      "assertion": "test_read_form.ReadFormTests.test_the_walk_refuses_a_tracked_symlink_before_normalizing",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 02; design 05 and design check 05): the walk follows a tracked symlink instead of refusing the alias",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_the_walk_refuses_a_tracked_symlink_before_normalizing"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-matrix.alias",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "            return None, candidate.relative_to(root).as_posix()\n",
+          "after": "            pass  # tools02-mutant:alias\n",
+          "operator": "weaken-read-form",
+          "name": "result.read-matrix.alias",
+          "id": "mutation-c3e61b81ad21b6c57739082a609bca8fc7a418091c1a31c3f6ef8557b8eeceea"
+        }
+      ]
+    },
+    {
+      "id": "result.read-matrix.crossing",
+      "assertion": "test_read_form.ReadFormTests.test_a_recursive_listing_that_crosses_a_symlink_refuses",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 02; design 05 and design check 05): a recursive listing that crosses a symlink at C is admitted (owner choice 04)",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_a_recursive_listing_that_crosses_a_symlink_refuses"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-matrix.crossing",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "refusals.add('a recursive listing crosses a symlink: ' + links[0])",
+          "after": "None  # tools02-mutant:crossing",
+          "operator": "weaken-read-form",
+          "name": "result.read-matrix.crossing",
+          "id": "mutation-054013c1a3a36ae9be7aa15535412cca2bea8f90732e66d333c62e2a3cdb2065"
+        }
+      ]
+    },
+    {
+      "id": "result.read-matrix.pin-ancestor",
+      "assertion": "test_read_form.ReadFormTests.test_a_read_through_a_symlink_at_the_pin_refuses_its_origin",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 02; design 05 and design check 05): a read path that was a symlink at the pin keeps its equal-blob identity (D05-CHK-3)",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_a_read_through_a_symlink_at_the_pin_refuses_its_origin"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-matrix.pin-ancestor",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "reasons.add('a read path or its ancestor is a symlink at the pin: ' + prefix)",
+          "after": "None  # tools02-mutant:pin-ancestor",
+          "operator": "weaken-read-form",
+          "name": "result.read-matrix.pin-ancestor",
+          "id": "mutation-8d1a02b6e287f5f5ec2e53cc4c13a07d4d01619a4d9d6b09181d5c03b21aeecd"
+        }
+      ]
+    },
+    {
+      "id": "result.read-matrix.pin-crossing",
+      "assertion": "test_read_form.ReadFormTests.test_a_recursive_listing_that_crossed_a_symlink_at_the_pin_refuses_its_origin",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 02; design 05 and design check 05): a recursive listing that crossed a symlink at the pin is admitted",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_a_recursive_listing_that_crossed_a_symlink_at_the_pin_refuses_its_origin"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-matrix.pin-crossing",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "reasons.add('a recursive listing crosses a symlink at the pin: ' + links[0])",
+          "after": "None  # tools02-mutant:pin-crossing",
+          "operator": "weaken-read-form",
+          "name": "result.read-matrix.pin-crossing",
+          "id": "mutation-d3553224685524abc7be9ae1356b76bf13a5937fb2132e1885934b29c095294d"
+        }
+      ]
+    },
+    {
+      "id": "result.read-matrix.exists-mode-only",
+      "assertion": "test_read_form.ReadFormTests.test_a_stat_read_of_a_file_carries_its_content_and_mode",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-1 (review 02; design 05 and design check 05): a stat read of a file loses its blob ID, so a fixture size change is missed (design 05 section 3)",
+      "input": {
+        "test": "test_read_form.ReadFormTests.test_a_stat_read_of_a_file_carries_its_content_and_mode"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.read-matrix.exists-mode-only",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "    return [entry[0], entry[1]]\n",
+          "after": "    return [entry[0]]  # tools02-mutant:exists-mode-only\n",
+          "operator": "weaken-read-form",
+          "name": "result.read-matrix.exists-mode-only",
+          "id": "mutation-dabc4c79a81704e2fd0339373913e8e39499e56ae7ac14db6e464f57e1ea0939"
         }
       ]
     }

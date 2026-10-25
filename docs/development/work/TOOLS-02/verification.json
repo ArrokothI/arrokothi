@@ -4,7 +4,7 @@
   "require_direct_parent": false,
   "administrative_files": [
     "docs/development/007-work-packets.md",
-    "docs/development/work/TOOLS-02/implementation-02.md",
+    "docs/development/work/TOOLS-02/implementation-03.md",
     "docs/development/work/TOOLS-02/progress.md"
   ],
   "preserve": [
@@ -145,8 +145,40 @@
       "path": "docs/development/work/TOOLS-02/review-01"
     },
     {
-      "revision": "bcdfd0c4a5a826a21e2d6795012960838786dd6b",
+      "revision": "c10eb1491e438e93dffa5c193ad17482c91cb437",
       "path": "docs/development/work/TOOLS-02/design-04.md"
+    },
+    {
+      "revision": "7791cda6b0b28324e608ca5483e97059b7398b55",
+      "path": "docs/development/work/TOOLS-02/implementation-02.md"
+    },
+    {
+      "revision": "3e0bb93b3e3bcd10f5136bbc66091a7a92a01150",
+      "path": "docs/development/work/TOOLS-02/review-02.md"
+    },
+    {
+      "revision": "3e0bb93b3e3bcd10f5136bbc66091a7a92a01150",
+      "path": "docs/development/work/TOOLS-02/review-02"
+    },
+    {
+      "revision": "5ab098bd893e3d39f58851276926abea81e5a5d8",
+      "path": "docs/development/work/TOOLS-02/owner-choice-03.md"
+    },
+    {
+      "revision": "5ab098bd893e3d39f58851276926abea81e5a5d8",
+      "path": "docs/development/work/TOOLS-02/owner-choice-03"
+    },
+    {
+      "revision": "286ef01f778e6dcf0e5c33bece1bf8da8190e20d",
+      "path": "docs/development/work/TOOLS-02/owner-choice-04.md"
+    },
+    {
+      "revision": "94e291c18b4c211145c0e48e3b4db6c7165ff657",
+      "path": "docs/development/work/TOOLS-02/design-05.md"
+    },
+    {
+      "revision": "8ab1607b282c63c23752743babda9affa6882e6a",
+      "path": "docs/development/work/TOOLS-02/design-check-05.md"
     }
   ],
   "evidence": [],
@@ -608,7 +640,7 @@
     }
   ],
   "limits": [
-    "TOOLS-02 range 1 (T2-1 and T2-2; owner choice 01 item 2), corrected under review 01 brief 02 and design 04 (T2-R1-READ-01: recursive listings, glob and cp reads, typed listing entries): evidence tooling only. No product file changes; packages/ and examples/ are preserved at B.",
+    "TOOLS-02 range 1 (T2-1 and T2-2; owner choice 01 item 2), corrected under review 01 brief 02 and design 04 (T2-R1-READ-01: recursive listings, typed listing entries), then under owner choice 04 refined claim and design 05 with design check 05 (review 02 T2-R2-READ-01 and T2-R2-PATTERN-01: every traced row admitted by an explicit matrix with refusal by default; path walk before normalization; recursive listings crossing a symlink and reads through one, at C or the pin, refuse; file existence identity is Git mode and blob ID): evidence tooling only. No product file changes; packages/ and examples/ are preserved at B.",
     "The preserved table is regenerated mechanically by the new regenerate operation in a fresh clone. Read digests take the walk form of owner choice 01 and design 02 section 1. Design 02 section 1.3 self-check at C: by_status is unchanged (held 1013, refused 228, preserved 30, superseded 1) and no non-fixture reason changes; 21 members (ambient-reads, control-commits) drop directory-existence fixture reasons outside fixtures directories and stay held. No new credit. Design 04 correction self-check at C: held 1013 and superseded 1 unchanged; refused 228 -> 235 and preserved 30 -> 23, all seven changes in mcp-boundaries.test.ts, whose recursive listings of tests observe changed tests/fixtures entries (T2-R1-READ-01 in the real table); 418 rows gain fixture reasons, no non-fixture reason changes. Owner choice 03 reopens the two complete mcp-boundaries origins that held those seven members as pending_revalidation and transfers them to TOOLS-02 range 4 with a pinned list. No new credit.",
     "Fresh-clone local composed verification runs before the one CI dispatch; the CI run is the handoff evidence.",
     "No prior results reused; acceptance is not evaluated."

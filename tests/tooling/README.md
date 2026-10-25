@@ -252,12 +252,25 @@ requires them to equal the recomputation exactly. A stale record fails; it never
 
     A path can appear in more than one class through different kinds. For example, the existence read
     of `tests` is named, while its listing is a walk root.
-  - **Listing modes** (design 04, review 01's T2-R1-READ-01). The trace marks a `readdir` or `opendir`
-    call whose options set `recursive` (sync, callback and promise forms). Such a *tree* read stands for
-    the immediate listing of its directory and of every subtree beneath it (symlinks are not descended),
-    each classed like any listing. A `glob` or `cp` read inside the repository has no represented
-    dependency identity, so it refuses the file. Listing identities are `[name, type]` entries, as
-    `withFileTypes` returns them.
+  - **Admission** (design 05, owner choice 04's refined claim). Every traced row is admitted by an
+    explicit matrix before anything reads it, and the default is refusal; a refused row refuses its file.
+    - **Captured facts:** the trace keeps each call's operation, the first argument's form, a path's
+      original text and call-time working directory, the second argument's form, an options object's own
+      keys and `recursive`.
+    - **First argument:** only a path is admitted. A descriptor, file handle or other form refuses.
+    - **Second argument:** `READ_ARGUMENTS` in `packet_tools.py` names the admitted forms and option keys
+      per operation. Any other refuses: `createReadStream`'s `fd` and `fs` overrides, for example.
+    - **Glob and copy:** every `glob` refuses. A `cp` refuses unless its source lies outside the repository.
+    - **Path walk:** the path is walked component by component, as the operating system resolves it,
+      before normalization. A tracked symlink refuses the row, and no target is followed. Untracked links,
+      such as system prefixes and `node_modules` workspace links, are followed.
+  - **Listing modes** (design 04). A `readdir` or `opendir` whose options set `recursive` is a *tree*
+    read. It stands for the immediate listing of its directory and of every subtree beneath it, each
+    classed like any listing. A tree read that crosses a tracked symlink refuses its file, because
+    `readdir` descends links and `opendir` does not (design 05 §2). Listing identities are
+    `[name, type]` entries, as `withFileTypes` returns them.
+  - **Existence identity:** a file's Git mode and blob ID; a directory's type alone. This is Git-recorded
+    content, type and executable-bit identity, not equality of complete `stat` results.
   - **Fixture reads:** a non-module file under a test directory, or a listing or directory existence
     read beneath a `fixtures` directory under one.
   - **What the record keeps:**
@@ -269,8 +282,9 @@ requires them to equal the recomputation exactly. A stale record fails; it never
     edit of a named or fixture read changes the record; an unrelated new file under a walk does not.
   - **Pin comparison.** Named reads and fixture reads are compared at the pin and at C. A tree read
     compares its implied fixture listings over both revisions' directories, so a fixture subtree present
-    only at the pin counts. A changed fixture refuses the file; any other changed named read is labelled
-    `repository_read_changed`.
+    only at the pin counts. A read whose path or any ancestor was a tracked symlink at the pin, or a tree
+    read that crossed one there, refuses that origin's members. A changed fixture refuses the file; any
+    other changed named read is labelled `repository_read_changed`.
 - **Helper closure.** Every test-side module the file imports statically, transitively, must be
   byte-identical, or covered by a counted `helper_reviews` record. A record is bound to its origin,
   its module and both blob IDs, covers the whole module, and applies only to literal titles. Changed
