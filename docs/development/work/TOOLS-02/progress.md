@@ -4,7 +4,9 @@ The resume point for any session continuing this packet. Newest facts first with
 
 - **Phase:** IN_PROGRESS. [Owner choice 04](owner-choice-04.md) picks 006's refined finishable claim: an explicit
   supported matrix, refusing any traced call outside it and any recursive listing that crosses a symlink.
-  [Design 05](design-05.md) states the matrix and waits for a short GPT-6 design check; no code before it.
+  [Design 05](design-05.md) states the matrix. GPT-6's [design check 05](design-check-05.md) (`8ab1607b`): APPROVED WITH
+  REQUIRED CHANGES (D05-CHK-1 descriptor and option admission, -2 path walk before normalization, -3 pin-side
+  symlinks). Design 05 §7 completes them; the build follows, as owner choice 04 directs.
   - [Review 02](review-02.md) (GPT-6, 2026-10-24) of H `7791cda6` over C4: CHANGES REQUIRED.
     - T2-R2-READ-01: Node 26.10's recursive `readdir` (sync and promise) descends symlinked directories, and
       `tree_listings` follows only git subtrees. Design 04's claim that Node does not descend them was untested

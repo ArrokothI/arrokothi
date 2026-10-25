@@ -9,6 +9,8 @@
   `tree` expansion and typed listings.
 - **Replaces:** design 04's glob and cp refusal, its symlink assumption, and its §2 table.
 - **Next:** a short Codex GPT-6 design check; no code before it.
+- **Addendum:** §7 completes [design check 05](design-check-05.md)'s D05-CHK-1 to D05-CHK-3 and records its §6
+  answers. §7 replaces §1's `covered` outcome and its bytes-family rows, §2's alias check, and §2's pin-side claim.
 
 ## 0. Defects confirmed
 
@@ -166,3 +168,101 @@ All eleven earlier read-form mutants are kept. Those whose anchors move get new 
    preservation credit that the record does not support.
 3. Is `covered` for descriptors and handles sound under the tracer's declared bounds? Descriptors are not followed
    to their open across processes; children that drop `NODE_OPTIONS` are already unseen.
+
+## 7. Addendum after design check 05
+
+**§6 answers adopted:**
+- every glob is refused, before any path or scope filter;
+- file `exists` identity is `(Git mode, blob ID)` at C and at the pin, and directories stay type-only. This is
+  Git-recorded content, type and executable-bit identity. It does not claim equality of complete `stat`, access
+  or `statfs` results.
+- `covered` is withdrawn (D05-CHK-1).
+
+### 7.1 D05-CHK-1: effective input and options
+
+**Capture.** For every wrapped call, the tracer records:
+- the operation;
+- the first argument's form: `path` (a string, `file:` URL or Buffer), `fd`, `filehandle`, `array`, `null`, or
+  another `typeof` value;
+- for a path, the original text and the call-time `process.cwd()` (§7.2);
+- the second argument's form: `options`, `string`, `number`, `function` or `undefined`;
+- for options, their sorted own keys and the `recursive` value.
+
+**Admission.** Only a `path` first argument can be admitted. A descriptor, handle or any other form is `refused`:
+its provenance is not established, and no descriptor tracker is built. A second argument is admitted only as this
+table allows. Any other option key refuses the row, so `createReadStream`'s `fd` and `fs` overrides refuse:
+
+| Operation | Second argument admitted | Option keys admitted |
+|---|---|---|
+| `readFile` | string (encoding), function, options | `encoding`, `flag`, `signal` |
+| `open` | string or number (flags), function | none (options form refuses) |
+| `createReadStream` | string (encoding), options | `encoding`, `flags`, `mode`, `autoClose`, `emitClose`, `start`, `end`, `highWaterMark`, `signal` |
+| `openAsBlob` | options | `type` |
+| `readdir` | string, function, options | `encoding`, `withFileTypes`, `recursive` |
+| `opendir` | function, options | `encoding`, `bufferSize`, `recursive` |
+| `stat`, `lstat` | function, options | `bigint`, `throwIfNoEntry` |
+| `statfs` | function, options | `bigint` |
+| `exists` | function | none |
+| `access` | number (mode), function | none |
+| `realpath`, `realpath.native`, `readlink` | string, function, options | `encoding` |
+| `glob`, `cp` | any | refused (cp from outside the repository stays `outside`, §1) |
+
+A missing second argument is always admitted. A third argument (a callback, or `open`'s mode) never selects input.
+
+### 7.2 D05-CHK-2: walk the path before normalizing it
+
+The tracer keeps the original path text and the call-time working directory, and stops being the only resolver.
+Admission walks the path as the operating system does, one component at a time, on the pristine checkout at C:
+- the walk starts at `/` for an absolute text, or at the recorded working directory otherwise, joined without
+  normalization;
+- `.` is skipped. `..` moves to the parent of the current physical location;
+- a component that is a **tracked** symlink (Git mode `120000` at C) refuses the row with the reason `the traced run
+  read through a symlink in the repository: <path>`. The walk stops; no target is followed;
+- a component that is an untracked symlink, such as a system prefix like `/tmp` or a `node_modules` workspace link,
+  is followed. Those are not repository entries, and the physical path they reach is classified as usual;
+- a missing component ends the walk, and the rest is appended lexically. The call could not have traversed a link
+  beyond a missing entry.
+
+The walk runs before the outside-repository, `node_modules` and import-closure outcomes. An aliased repository path
+therefore refuses instead of disappearing into one of them. `tests/fixtures/jump/../actual.txt` refuses at
+`tests/fixtures/jump`, instead of being recorded as the decoy `tests/fixtures/actual.txt`.
+
+Every consumer, `listed_directories` included, reads only admitted rows. Preload markers stay separate
+trace-validity metadata.
+
+### 7.3 D05-CHK-3: symlinks at the pin
+
+`changed_reads` refuses, for an origin, any compared read whose path, or any ancestor of that path, is a tracked
+symlink at the pin. This includes a listing's or recursive listing's root, with the reason `a read path or its
+ancestor is a symlink at the pin: <path>`. Symlinks beneath a recursive listing's root keep §2's crossing reason.
+
+Bytes identity stays the blob ID. The pin check covers the equal-blob case: a link `same -> target` at the pin,
+replaced at C by a file whose content is `target`, has one blob ID in both trees. The pin check refuses it because
+`same` was a symlink. No target is followed.
+
+### 7.4 Additional controls and mutants
+
+Real-tracer controls, each through the census or through the real preload:
+- an inherited descriptor: a child process reads `readFileSync(0)` with stdin opened on a fixture. The `fd` row is
+  refused;
+- a stream with a decoy path plus `fd`: `createReadStream('tests/fixtures/actual.txt', {fd})`. The `fd` option
+  refuses it;
+- an ordinary path read: the positive control, preserved;
+- the `jump/../actual.txt` fixture, with two successive edits of `data/actual.txt`. Each run is refused, never
+  preserved with the decoy;
+- the equal-blob link→file case at the pin. It is refused with the pin reason.
+
+Mutants (python-probe, unique anchors):
+- the option guard admits any key;
+- admission uses the tracer's resolved path instead of the walk (premature normalization);
+- the pin ancestor check is skipped.
+
+§5's mutants stay, except that "`admit` returns `outside` for an unclassified row" now targets the default branch.
+`exists` identity dropping the blob ID stays.
+
+### 7.5 Corrections to current claims
+
+- **Design 04:** an appended correction notes that its symlink sentence was false for `readdir`, and that design 05
+  supersedes it.
+- **README and the `tree_listings` docstring:** the same sentence goes, replaced by the matrix and refusal rules.
+- **verification.json:** its preserve entry for design 04 moves to the commit that carries the correction.
