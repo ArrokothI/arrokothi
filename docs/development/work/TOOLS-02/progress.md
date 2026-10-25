@@ -2,8 +2,16 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS. Range 1 round 3 is at H with [implementation 03](implementation-03.md) over C5, waiting for
-  review 03 (Codex GPT-6). CI run 40162436361 at C5 passed (owner report, 2026-10-25).
+- **Phase:** IN_PROGRESS. Range 1 round 4 under [owner choice 05](owner-choice-05.md): cooperative threat model, rules P
+  and O, 017 L-18, and a bounded review 04 with no new design check. [Design 05](design-05.md) §8 states the rules.
+  - [Review 03](review-03.md) (GPT-6, 2026-10-25) of H `23d65ac3` over C5: CHANGES REQUIRED, stop-and-redesign.
+    T2-R3-PATH-01: on macOS, `tests/fixtures/INPUT.txt` reads the tracked `input.txt`, while its identity is absent.
+    T2-R3-OPTIONS-01: `Object.create({fd})` hides `fd` from `Object.keys`. T2-R3-ADMIN-01 (P3): the default candidate
+    check fails on design 04's trailing blank line. T2-2 passed again.
+  - Next: build rules P and O, measure with a dry-run regenerate (stop if a real member loses credit), C6,
+    fresh-clone checks, CI, then implementation 04 as H.
+- Earlier: range 1 round 3 at H `23d65ac3` with [implementation 03](implementation-03.md) over C5; CI run
+  40162436361 passed.
 - [Owner choice 04](owner-choice-04.md) picks 006's refined finishable claim: an explicit
   supported matrix, refusing any traced call outside it and any recursive listing that crosses a symlink.
   [Design 05](design-05.md) states the matrix. GPT-6's [design check 05](design-check-05.md) (`8ab1607b`): APPROVED WITH

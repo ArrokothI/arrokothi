@@ -11,6 +11,8 @@
 - **Next:** a short Codex GPT-6 design check; no code before it.
 - **Addendum:** §7 completes [design check 05](design-check-05.md)'s D05-CHK-1 to D05-CHK-3 and records its §6
   answers. §7 replaces §1's `covered` outcome and its bytes-family rows, §2's alias check, and §2's pin-side claim.
+- **Addendum 2:** §8 adds rules P and O under [owner choice 05](owner-choice-05.md), after [review 03](review-03.md).
+  Owner choice 05 requires no new design check; review 04 checks it.
 
 ## 0. Defects confirmed
 
@@ -266,3 +268,75 @@ Mutants (python-probe, unique anchors):
   supersedes it.
 - **README and the `tree_listings` docstring:** the same sentence goes, replaced by the matrix and refusal rules.
 - **verification.json:** its preserve entry for design 04 moves to the commit that carries the correction.
+
+## 8. Addendum 2 after review 03 (owner choice 05)
+
+**Threat model.** T2-1 assumes cooperative test code. A form built to evade the census, beyond rules P and O, is
+017 L-18. The matrix still refuses every traced call it does not name.
+
+### 8.1 Rule P: path binding (T2-R3-PATH-01)
+
+A successful supported read whose admitted path is not a tracked Git entry at C, under its exact spelling, refuses
+preservation. The reason is `the traced run read a path whose spelling is not a tracked entry at C: <path>`.
+
+- **Where it runs.** Rule P is the first check of each step of §7.2's walk, for every component inside the
+  repository outside `node_modules`. It therefore precedes the tracked-symlink check, identity, fixture
+  classification and the pin comparison. A case-variant spelling of a tracked symlink cannot slip past the symlink
+  check as an "untracked" link.
+- **What counts as successful.** A component reached the filesystem successfully when it exists in the checkout the
+  census runs in. The traced run executes in that pristine checkout at C, and the pre- and post-run checks bar
+  untracked entries other than `node_modules` and `.DS_Store`. Every existing component inside the repository must
+  therefore have a Git entry with exactly that spelling.
+- **What it catches.** On a case-insensitive host, `tests/fixtures/INPUT.txt` exists through the tracked
+  `input.txt`, so it refuses. Unicode-normalization variants refuse the same way.
+- **What it leaves alone.** A missing component is an unsuccessful read: its identity is absent at C, and the walk
+  ends as in §7.2. On a case-sensitive host the alternate spelling does not exist, so the read fails, as the traced
+  run itself observed.
+
+### 8.2 Rule O: options prototypes (T2-R3-OPTIONS-01)
+
+The tracer records each options object's prototype as one of three values:
+- `Object.prototype`;
+- `null`;
+- `other`.
+
+It compares with the intrinsics it captured when it loaded. Admission refuses any options-form second argument whose
+prototype is not `Object.prototype` or `null`, for every admitted operation, with the reason `an options object
+with another prototype: <operation>`. A row with no recorded prototype refuses too.
+
+Inherited keys then come only from `Object.prototype`, which is outside the cooperative model. §7.1's own-key check
+applies unchanged, so `Object.create({fd})` refuses by rule O, and `{fd}` by the key check.
+
+### 8.3 T2-R3-ADMIN-01: candidate-check accommodation
+
+`verification.json` gains `whitespace_exceptions`, a list of `{path, revision, reason}` entries. For each entry,
+`candidate`:
+1. requires a nonempty reason;
+2. requires that the path is preserved at that revision, so its bytes are frozen there;
+3. excludes only that path from `git diff --check B H`.
+
+The one entry is `design-04.md` at its correction commit, for the trailing blank line that review 03 recorded. The
+sealed text is not edited. The new requirement gets a registered refusal ablation, and implementation 04 states that
+the candidate check passes under this recorded accommodation.
+
+### 8.4 Controls, mutants and measurement
+
+**End-to-end census controls,** from the real tracer:
+- **review 03's options probe:** a production helper returning `Object.create({fd})` for a decoy-path stream is
+  refused;
+- **the shell-child inherited-descriptor probe:** the member is never preserved;
+- **own-property controls:**
+  - `{encoding}` is admitted;
+  - an options object made with `Object.create(null)` that sets `encoding` is admitted;
+  - own `{fd}` is refused;
+- **review 03's path probe:** an alternate-case read of a tracked fixture, with two successive edits, is never
+  preserved. On a case-insensitive host rule P refuses it. On a case-sensitive host the read fails and its leaf does
+  not pass;
+- **exact-spelling positive controls:** exact-case reads stay preserved, and each edit invalidates them.
+
+**Mutants,** each removing one rule:
+- rule P, killed by a host-independent unit control in which an untracked on-disk alias stands for the case variant;
+- rule O, killed by a unit control with a recorded `other` prototype.
+
+**Measure first.** A dry-run regenerate in a fresh clone lists every member whose status changes. If a real member
+loses credit, the implementer stops and asks the owner before C6.
