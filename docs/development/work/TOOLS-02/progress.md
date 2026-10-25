@@ -2,7 +2,9 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS. [Owner choice 04](owner-choice-04.md) picks 006's refined finishable claim: an explicit
+- **Phase:** IN_PROGRESS. Range 1 round 3 is at H with [implementation 03](implementation-03.md) over C5, waiting for
+  review 03 (Codex GPT-6). CI run 40162436361 at C5 passed (owner report, 2026-10-25).
+- [Owner choice 04](owner-choice-04.md) picks 006's refined finishable claim: an explicit
   supported matrix, refusing any traced call outside it and any recursive listing that crosses a symlink.
   [Design 05](design-05.md) states the matrix. GPT-6's [design check 05](design-check-05.md) (`8ab1607b`): APPROVED WITH
   REQUIRED CHANGES (D05-CHK-1 descriptor and option admission, -2 path walk before normalization, -3 pin-side
@@ -16,8 +18,7 @@ The resume point for any session continuing this packet. Newest facts first with
   - Fresh clone at C5 before dispatch (quiet gate): regenerate `table_current` (311 s); `corpus` `revalidation_complete`
     (356 s); tool tests 664 OK (767 s); `mutations.json` 138 killed (671 s); `value-cost.json` 238 killed (1,064 s);
     full verify, all 18 checks passed (3,921 s).
-  - Next: if CI run 40162436361 passes, H with `implementation-03.md` (drafted in the scratchpad), push, stop for
-    review 03.
+  - Next: review 03 of H. After range 1 integrates, ranges 2–4 in design 01 §9's order; range 3 under design 03 §6.
   - [Review 02](review-02.md) (GPT-6, 2026-10-24) of H `7791cda6` over C4: CHANGES REQUIRED.
     - T2-R2-READ-01: Node 26.10's recursive `readdir` (sync and promise) descends symlinked directories, and
       `tree_listings` follows only git subtrees. Design 04's claim that Node does not descend them was untested
