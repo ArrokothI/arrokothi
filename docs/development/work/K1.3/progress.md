@@ -2,18 +2,12 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS, build (stopped at a usage limit, 2026-10-25). Range 1 and range 2 code and tests are
-  committed and pushed; the full kernel suite and conformance pass locally under Node v26.10.0; the K13-9 search
-  (`node --experimental-strip-types packages/kernel/tests/race-search/run.ts`) passes 456,976 exhaustive runs, 20,000
-  supplementary words and 20 classes in about 48 s. 12 K1.3 registry mutants (`k13.*`, probe
-  `tests/tooling/k13-probe.mjs`, fixture `k13-controls.json`) were each killed in a local trial; the registry runner
-  itself has not run them yet. **Left before the dispatch:** Layer 3 (creation.md deadline rows; rewrite-index §3/§4
-  rows and the K1.3 schedule row; operations.md done; waits.md explanation done); BASELINE; 017 (narrow L-15; new
-  limits with IDs after checking TOOLS-02's); `verification.json` (add a `race-search` check, preserve rows);
-  regenerate `adoption.json` with TOOLS-02's `regenerate` in a fresh clone; run the refusal census, value-cost checks,
-  poison sweep, builder docs; tool-tests (a run was started; check result); both mutation registries and the full verify
-  in a fresh clone; then `gh workflow run packet-verify.yml -f revision=<full C> -f spec=docs/development/work/K1.3/verification.json`,
-  report the run ID, and on CI pass write implementation-01.md as H.
+- **Phase:** WAITING_FOR_REVIEW (2026-10-26). Payload C `db0d0fee95466edc7a527ef234a2170fb6fedebb`; H is the commit
+  of [implementation report 01](implementation-01.md). Packet verify CI run `40387031804` at C: `checks_passed`,
+  19/19. The earlier run `40280293990` at `7d9be1bc` failed only on the kernel-sweeps time limit, which
+  [owner choice 02](owner-choice-02.md) resolved. Next: the independent review of H. The implementer stops here.
+- Work clones (2026-10-26): the first scratchpad worktree was lost; the session's scratchpad holds `wt-k13` and
+  `fresh-k13`, cloned from GitHub, never the main checkout.
 - Design 01 in brief: injected `KernelClock`; host entries `pendingTimers()` and `fireTimer(key)` (a fire is a hint
   resolved against the Kernel's clock and state); wait capture in `outcome.ts`, pure eligibility and selection in
   `waits.ts`; four new plan variants (expiry, cancellation, losing outcome, timer discard) and three extended ones;
