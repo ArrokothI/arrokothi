@@ -29719,7 +29719,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/ambient-reads.test.ts:160:3",
+          "key": "packages/kernel/tests/ambient-reads.test.ts:170:3",
           "matched": [
             "V-ENV"
           ],
@@ -29729,7 +29729,7 @@
           "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
         },
         {
-          "key": "packages/kernel/tests/ambient-reads.test.ts:300:3",
+          "key": "packages/kernel/tests/ambient-reads.test.ts:310:3",
           "matched": [
             "V-ENV"
           ],
@@ -29739,7 +29739,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/ambient-reads.test.ts:306:5",
+          "key": "packages/kernel/tests/ambient-reads.test.ts:316:5",
           "matched": [
             "V-ENV"
           ],
@@ -29749,7 +29749,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/ambient-reads.test.ts:318:3",
+          "key": "packages/kernel/tests/ambient-reads.test.ts:328:3",
           "matched": [
             "V-ENV"
           ],
@@ -29759,7 +29759,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/ambient-reads.test.ts:325:3",
+          "key": "packages/kernel/tests/ambient-reads.test.ts:335:3",
           "matched": [
             "V-ENV"
           ],
@@ -31021,7 +31021,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:151:1",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:159:1",
           "matched": [
             "V-ENV"
           ],
@@ -31031,7 +31031,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:163:1",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:171:1",
           "matched": [
             "V-ENV"
           ],
@@ -31041,7 +31041,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:177:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:185:3",
           "matched": [
             "V-ENV"
           ],
@@ -31051,7 +31051,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:187:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:195:3",
           "matched": [
             "V-ENV"
           ],
@@ -31061,7 +31061,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:200:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:208:3",
           "matched": [
             "V-ENV"
           ],
@@ -31071,7 +31071,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:250:9",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:258:9",
           "matched": [
             "V-ENV"
           ],
@@ -31081,7 +31081,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:254:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:262:3",
           "matched": [
             "V-ENV"
           ],
@@ -31091,7 +31091,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:284:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:292:3",
           "matched": [
             "V-ENV"
           ],
@@ -31101,7 +31101,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:285:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:293:3",
           "matched": [
             "V-ENV"
           ],
@@ -31111,7 +31111,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:298:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:308:3",
           "matched": [
             "V-ENV"
           ],
@@ -31121,7 +31121,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:300:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:310:3",
           "matched": [
             "V-ENV"
           ],
@@ -31131,17 +31131,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:302:3",
-          "matched": [
-            "V-ENV"
-          ],
-          "classification": "held",
-          "claim": "V-ENV",
-          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
-          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
-        },
-        {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:304:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:312:3",
           "matched": [
             "V-ENV"
           ],
@@ -31161,7 +31151,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:320:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:338:3",
           "matched": [
             "V-ENV"
           ],
@@ -31171,7 +31161,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:322:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:340:3",
           "matched": [
             "V-ENV"
           ],
@@ -31181,7 +31171,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:329:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:347:3",
           "matched": [
             "V-ENV"
           ],
@@ -31191,7 +31181,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:335:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:353:3",
           "matched": [
             "V-ENV"
           ],
@@ -31201,7 +31191,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:342:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:360:3",
           "matched": [
             "V-ENV"
           ],
@@ -31211,7 +31201,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:350:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:368:3",
           "matched": [
             "V-ENV"
           ],
@@ -31221,7 +31211,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:352:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:370:3",
           "matched": [
             "V-ENV"
           ],
@@ -31231,17 +31221,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:354:3",
-          "matched": [
-            "V-ENV"
-          ],
-          "classification": "held",
-          "claim": "V-ENV",
-          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
-          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
-        },
-        {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:371:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:389:3",
           "matched": [
             "V-ENV"
           ],
@@ -31261,7 +31241,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:373:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:391:3",
           "matched": [
             "V-ENV"
           ],
@@ -31271,7 +31251,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:375:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:393:3",
           "matched": [
             "V-ENV"
           ],
@@ -31281,7 +31261,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:376:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:394:3",
           "matched": [
             "V-ENV"
           ],
@@ -31291,7 +31271,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:377:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:395:3",
           "matched": [
             "V-ENV"
           ],
@@ -31301,7 +31281,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:383:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:401:3",
           "matched": [
             "V-ENV"
           ],
@@ -31311,7 +31291,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:385:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:403:3",
           "matched": [
             "V-ENV"
           ],
@@ -31321,7 +31301,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:386:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:404:3",
           "matched": [
             "V-ENV"
           ],
@@ -31331,7 +31311,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:388:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:406:3",
           "matched": [
             "V-ENV"
           ],
@@ -31351,7 +31331,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:392:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:410:3",
           "matched": [
             "V-ENV"
           ],
@@ -31361,7 +31341,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:407:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:425:3",
           "matched": [
             "V-ENV"
           ],
@@ -31371,7 +31351,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:412:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:430:3",
           "matched": [
             "V-ENV"
           ],
@@ -31381,7 +31361,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:416:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:434:3",
           "matched": [
             "V-ENV"
           ],
@@ -31391,7 +31371,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/fault-oracle.test.ts:420:3",
+          "key": "packages/kernel/tests/fault-oracle.test.ts:438:3",
           "matched": [
             "V-ENV"
           ],
@@ -31399,6 +31379,36 @@
           "claim": "V-ENV",
           "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds child-process in its run set; per-test classification is BINDING-01's."
+        },
+        {
+          "key": "packages/kernel/tests/fault-oracle.test.ts:314:3",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "K1.3 mechanical census: conservatively held at the relocated/changed witness; reclassification stays with TOOLS-02."
+        },
+        {
+          "key": "packages/kernel/tests/fault-oracle.test.ts:324:3",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "K1.3 mechanical census: conservatively held at the relocated/changed witness; reclassification stays with TOOLS-02."
+        },
+        {
+          "key": "packages/kernel/tests/fault-oracle.test.ts:408:3",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "K1.3 mechanical census: conservatively held at the relocated/changed witness; reclassification stays with TOOLS-02."
         },
         {
           "key": "packages/kernel/tests/fault-sweep.test.ts:49:1",
@@ -32593,7 +32603,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/outcome-acceptance.test.ts:650:3",
+          "key": "packages/kernel/tests/outcome-acceptance.test.ts:653:3",
           "matched": [
             "V-ENV"
           ],
@@ -33016,7 +33026,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/poison-catalog.test.ts:287:5",
+          "key": "packages/kernel/tests/poison-catalog.test.ts:340:5",
           "matched": [
             "Proxy",
             "V-ENV",
@@ -33028,7 +33038,7 @@
           "decision": "docs/development/work/TOOLS-01/owner-choice-08.md"
         },
         {
-          "key": "packages/kernel/tests/poison-catalog.test.ts:308:3",
+          "key": "packages/kernel/tests/poison-catalog.test.ts:361:3",
           "matched": [
             "V-ENV"
           ],
@@ -33038,7 +33048,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds escape in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/poison-catalog.test.ts:313:3",
+          "key": "packages/kernel/tests/poison-catalog.test.ts:366:3",
           "matched": [
             "V-ENV"
           ],
@@ -33700,24 +33710,14 @@
           "reason": "BINDING-01 mechanical census: conservatively held at the relocated/changed witness; reclassification stays with TOOLS-02."
         },
         {
-          "key": "packages/kernel/tests/refusals.test.ts:44:3",
+          "key": "packages/kernel/tests/refusals.test.ts:38:3",
           "matched": [
             "V-ENV"
           ],
           "classification": "held",
           "claim": "V-ENV",
           "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
-          "reason": "BINDING-01 mechanical census: conservatively held at the relocated/changed witness; reclassification stays with TOOLS-02."
-        },
-        {
-          "key": "packages/kernel/tests/refusals.test.ts:61:3",
-          "matched": [
-            "V-ENV"
-          ],
-          "classification": "held",
-          "claim": "V-ENV",
-          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
-          "reason": "BINDING-01 mechanical census: conservatively held at the relocated/changed witness; reclassification stays with TOOLS-02."
+          "reason": "K1.3 mechanical census: conservatively held at the relocated/changed witness; reclassification stays with TOOLS-02."
         },
         {
           "key": "packages/kernel/tests/review-11-probes.test.ts:24:5",
@@ -37343,8 +37343,150 @@
           "reason": "Registry case attributed mechanism_witness to COORD-REFACTOR-01: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The bypass-mutant family is a structural mechanism check of the state owner; it earns no conformance or correction credit. Its run set's text also matches re-prototyped-built-in; held under V-ENV by owner choice 08 rule 1."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1011:3",
+          "key": "case:k13.cancellation-acknowledges",
           "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+        },
+        {
+          "key": "case:k13.cancellation-readiness",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+        },
+        {
+          "key": "case:k13.deadline-terminal",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+        },
+        {
+          "key": "case:k13.dispatch-readiness",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+        },
+        {
+          "key": "case:k13.fire-duplicate",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+        },
+        {
+          "key": "case:k13.fire-generation",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+        },
+        {
+          "key": "case:k13.input-wake",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+        },
+        {
+          "key": "case:k13.losing-retry",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+        },
+        {
+          "key": "case:k13.registration-order",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+        },
+        {
+          "key": "case:k13.registration-step2",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+        },
+        {
+          "key": "case:k13.selection-eligibility",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+        },
+        {
+          "key": "case:k13.selection-timeout",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit."
+        },
+        {
+          "key": "case:oracle.losingWindowAt",
+          "matched": [
+            "V-ENV"
+          ],
+          "classification": "held",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+          "reason": "Registry case attributed mechanism_witness to K1.3: Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit."
+        },
+        {
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1014:3",
+          "matched": [
             "V-ENV"
           ],
           "classification": "held",
@@ -37353,7 +37495,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1035:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1038:3",
           "matched": [
             "V-ENV"
           ],
@@ -37363,7 +37505,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1058:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1061:3",
           "matched": [
             "V-ENV"
           ],
@@ -37373,7 +37515,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1086:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1089:3",
           "matched": [
             "V-ENV"
           ],
@@ -37383,7 +37525,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1189:11",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1192:11",
           "matched": [
             "V-ENV"
           ],
@@ -37393,7 +37535,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1213:9",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1216:9",
           "matched": [
             "V-ENV"
           ],
@@ -37403,7 +37545,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1229:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1232:5",
           "matched": [
             "V-ENV"
           ],
@@ -37413,7 +37555,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1250:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1253:5",
           "matched": [
             "V-ENV"
           ],
@@ -37423,7 +37565,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1296:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1299:5",
           "matched": [
             "V-ENV"
           ],
@@ -37433,7 +37575,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1317:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1320:5",
           "matched": [
             "V-ENV"
           ],
@@ -37443,7 +37585,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1342:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1345:5",
           "matched": [
             "V-ENV"
           ],
@@ -37453,7 +37595,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1376:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1379:5",
           "matched": [
             "V-ENV"
           ],
@@ -37463,7 +37605,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1392:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1395:5",
           "matched": [
             "V-ENV"
           ],
@@ -37473,7 +37615,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1408:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1411:5",
           "matched": [
             "V-ENV"
           ],
@@ -37483,7 +37625,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1424:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1427:5",
           "matched": [
             "V-ENV"
           ],
@@ -37493,7 +37635,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1435:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1438:5",
           "matched": [
             "V-ENV"
           ],
@@ -37503,7 +37645,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1448:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1451:5",
           "matched": [
             "V-ENV"
           ],
@@ -37513,7 +37655,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1458:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1461:5",
           "matched": [
             "V-ENV"
           ],
@@ -37523,7 +37665,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1476:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1479:5",
           "matched": [
             "V-ENV"
           ],
@@ -37533,7 +37675,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1493:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1496:5",
           "matched": [
             "V-ENV"
           ],
@@ -37543,7 +37685,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1515:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1518:5",
           "matched": [
             "V-ENV"
           ],
@@ -37553,7 +37695,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1534:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1537:5",
           "matched": [
             "V-ENV"
           ],
@@ -37563,7 +37705,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1568:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1571:5",
           "matched": [
             "V-ENV"
           ],
@@ -37573,7 +37715,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1576:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1579:5",
           "matched": [
             "V-ENV"
           ],
@@ -37583,7 +37725,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1584:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1587:5",
           "matched": [
             "V-ENV"
           ],
@@ -37593,7 +37735,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1592:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1595:5",
           "matched": [
             "V-ENV"
           ],
@@ -37603,7 +37745,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1605:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1608:5",
           "matched": [
             "V-ENV"
           ],
@@ -37613,7 +37755,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1614:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1617:5",
           "matched": [
             "V-ENV"
           ],
@@ -37623,7 +37765,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1623:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1626:5",
           "matched": [
             "V-ENV"
           ],
@@ -37633,7 +37775,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1636:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1639:5",
           "matched": [
             "V-ENV"
           ],
@@ -37643,7 +37785,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1649:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1652:5",
           "matched": [
             "V-ENV"
           ],
@@ -37653,7 +37795,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1660:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1663:5",
           "matched": [
             "V-ENV"
           ],
@@ -37663,7 +37805,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1690:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1693:5",
           "matched": [
             "V-ENV"
           ],
@@ -37673,7 +37815,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1706:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1709:5",
           "matched": [
             "V-ENV"
           ],
@@ -37683,7 +37825,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1722:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1725:5",
           "matched": [
             "V-ENV"
           ],
@@ -37693,7 +37835,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1740:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1743:5",
           "matched": [
             "V-ENV"
           ],
@@ -37703,7 +37845,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1756:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1759:5",
           "matched": [
             "V-ENV"
           ],
@@ -37713,7 +37855,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1772:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1775:5",
           "matched": [
             "V-ENV"
           ],
@@ -37723,7 +37865,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1792:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1795:5",
           "matched": [
             "V-ENV"
           ],
@@ -37733,7 +37875,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1819:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1822:5",
           "matched": [
             "V-ENV"
           ],
@@ -37743,7 +37885,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1835:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1838:5",
           "matched": [
             "V-ENV"
           ],
@@ -37753,7 +37895,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1848:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1851:5",
           "matched": [
             "V-ENV"
           ],
@@ -37763,7 +37905,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1878:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1881:5",
           "matched": [
             "V-ENV"
           ],
@@ -37773,7 +37915,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:187:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:190:3",
           "matched": [
             "V-ENV"
           ],
@@ -37783,7 +37925,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1896:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1899:5",
           "matched": [
             "V-ENV"
           ],
@@ -37793,7 +37935,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1911:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1914:5",
           "matched": [
             "V-ENV"
           ],
@@ -37803,7 +37945,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1924:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1927:5",
           "matched": [
             "V-ENV"
           ],
@@ -37813,7 +37955,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1943:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1946:5",
           "matched": [
             "V-ENV"
           ],
@@ -37823,7 +37965,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1958:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1961:5",
           "matched": [
             "V-ENV"
           ],
@@ -37833,7 +37975,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1971:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1974:5",
           "matched": [
             "V-ENV"
           ],
@@ -37843,7 +37985,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1987:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:1990:5",
           "matched": [
             "V-ENV"
           ],
@@ -37853,7 +37995,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2002:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2005:5",
           "matched": [
             "V-ENV"
           ],
@@ -37863,7 +38005,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2031:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2034:5",
           "matched": [
             "V-ENV"
           ],
@@ -37873,7 +38015,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2044:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2047:5",
           "matched": [
             "V-ENV"
           ],
@@ -37883,7 +38025,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2057:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2060:5",
           "matched": [
             "V-ENV"
           ],
@@ -37893,7 +38035,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2074:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2077:5",
           "matched": [
             "V-ENV"
           ],
@@ -37903,7 +38045,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2095:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2098:5",
           "matched": [
             "V-ENV"
           ],
@@ -37913,7 +38055,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2108:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2111:5",
           "matched": [
             "V-ENV"
           ],
@@ -37923,7 +38065,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2121:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2124:5",
           "matched": [
             "V-ENV"
           ],
@@ -37933,7 +38075,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2138:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2141:5",
           "matched": [
             "V-ENV"
           ],
@@ -37943,7 +38085,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2165:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2168:5",
           "matched": [
             "V-ENV"
           ],
@@ -37953,7 +38095,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2190:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2193:5",
           "matched": [
             "V-ENV"
           ],
@@ -37963,7 +38105,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2219:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2222:5",
           "matched": [
             "V-ENV"
           ],
@@ -37973,7 +38115,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2241:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2244:3",
           "matched": [
             "V-ENV"
           ],
@@ -37983,7 +38125,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:226:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:229:3",
           "matched": [
             "V-ENV"
           ],
@@ -37993,7 +38135,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2297:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2300:5",
           "matched": [
             "V-ENV"
           ],
@@ -38003,7 +38145,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2307:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2310:5",
           "matched": [
             "V-ENV"
           ],
@@ -38013,7 +38155,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2317:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2320:5",
           "matched": [
             "V-ENV"
           ],
@@ -38023,7 +38165,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2335:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2338:5",
           "matched": [
             "V-ENV"
           ],
@@ -38033,7 +38175,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2343:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2346:5",
           "matched": [
             "V-ENV"
           ],
@@ -38043,7 +38185,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:234:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:237:3",
           "matched": [
             "V-ENV"
           ],
@@ -38053,7 +38195,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2361:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2364:5",
           "matched": [
             "V-ENV"
           ],
@@ -38063,7 +38205,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2382:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2385:5",
           "matched": [
             "V-ENV"
           ],
@@ -38073,7 +38215,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2401:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2404:5",
           "matched": [
             "V-ENV"
           ],
@@ -38083,7 +38225,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:243:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:246:3",
           "matched": [
             "V-ENV"
           ],
@@ -38093,7 +38235,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2454:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2457:5",
           "matched": [
             "V-ENV"
           ],
@@ -38103,7 +38245,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2479:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2482:5",
           "matched": [
             "V-ENV"
           ],
@@ -38113,7 +38255,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2497:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2500:5",
           "matched": [
             "V-ENV"
           ],
@@ -38123,7 +38265,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2513:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2516:5",
           "matched": [
             "V-ENV"
           ],
@@ -38133,7 +38275,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:251:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:254:3",
           "matched": [
             "V-ENV"
           ],
@@ -38143,7 +38285,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2539:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2542:5",
           "matched": [
             "V-ENV"
           ],
@@ -38153,7 +38295,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2566:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2569:5",
           "matched": [
             "V-ENV"
           ],
@@ -38163,7 +38305,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2580:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2583:5",
           "matched": [
             "V-ENV"
           ],
@@ -38173,7 +38315,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:259:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:262:3",
           "matched": [
             "V-ENV"
           ],
@@ -38183,7 +38325,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2665:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2668:5",
           "matched": [
             "V-ENV"
           ],
@@ -38193,7 +38335,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:267:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:270:3",
           "matched": [
             "V-ENV"
           ],
@@ -38203,7 +38345,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2683:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2686:5",
           "matched": [
             "V-ENV"
           ],
@@ -38213,7 +38355,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2701:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2704:5",
           "matched": [
             "V-ENV"
           ],
@@ -38223,7 +38365,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2717:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2720:5",
           "matched": [
             "V-ENV"
           ],
@@ -38233,7 +38375,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2739:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2742:5",
           "matched": [
             "V-ENV"
           ],
@@ -38243,7 +38385,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2766:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2769:5",
           "matched": [
             "V-ENV"
           ],
@@ -38253,7 +38395,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2785:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2788:5",
           "matched": [
             "V-ENV"
           ],
@@ -38263,7 +38405,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2804:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2807:5",
           "matched": [
             "V-ENV"
           ],
@@ -38273,7 +38415,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:281:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:284:3",
           "matched": [
             "V-ENV"
           ],
@@ -38283,7 +38425,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2836:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2839:5",
           "matched": [
             "V-ENV"
           ],
@@ -38293,7 +38435,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2869:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2872:5",
           "matched": [
             "V-ENV"
           ],
@@ -38303,7 +38445,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2890:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2893:5",
           "matched": [
             "V-ENV"
           ],
@@ -38313,7 +38455,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2907:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2910:5",
           "matched": [
             "V-ENV"
           ],
@@ -38323,7 +38465,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2924:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2927:5",
           "matched": [
             "V-ENV"
           ],
@@ -38333,7 +38475,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2945:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:2948:5",
           "matched": [
             "V-ENV"
           ],
@@ -38343,7 +38485,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:300:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:303:3",
           "matched": [
             "V-ENV"
           ],
@@ -38353,7 +38495,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3012:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3015:5",
           "matched": [
             "V-ENV"
           ],
@@ -38363,7 +38505,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3033:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3036:5",
           "matched": [
             "V-ENV"
           ],
@@ -38373,7 +38515,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3049:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3052:5",
           "matched": [
             "V-ENV"
           ],
@@ -38383,7 +38525,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3064:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3067:5",
           "matched": [
             "V-ENV"
           ],
@@ -38393,7 +38535,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3095:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3098:5",
           "matched": [
             "V-ENV"
           ],
@@ -38403,7 +38545,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3112:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3115:5",
           "matched": [
             "V-ENV"
           ],
@@ -38413,7 +38555,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3151:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3154:5",
           "matched": [
             "V-ENV"
           ],
@@ -38423,7 +38565,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:315:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:318:3",
           "matched": [
             "V-ENV"
           ],
@@ -38433,7 +38575,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3164:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3167:5",
           "matched": [
             "V-ENV"
           ],
@@ -38443,7 +38585,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3201:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3204:5",
           "matched": [
             "V-ENV"
           ],
@@ -38453,7 +38595,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3218:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3221:5",
           "matched": [
             "V-ENV"
           ],
@@ -38463,7 +38605,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:323:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:326:3",
           "matched": [
             "V-ENV"
           ],
@@ -38473,7 +38615,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3243:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3246:5",
           "matched": [
             "V-ENV"
           ],
@@ -38483,7 +38625,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3267:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3270:5",
           "matched": [
             "V-ENV"
           ],
@@ -38493,7 +38635,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3289:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3292:5",
           "matched": [
             "V-ENV"
           ],
@@ -38503,7 +38645,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3317:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3320:5",
           "matched": [
             "V-ENV"
           ],
@@ -38513,7 +38655,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3389:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3392:5",
           "matched": [
             "V-ENV"
           ],
@@ -38523,7 +38665,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:341:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:344:3",
           "matched": [
             "V-ENV"
           ],
@@ -38533,7 +38675,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3431:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3434:5",
           "matched": [
             "V-ENV"
           ],
@@ -38543,7 +38685,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3488:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3491:5",
           "matched": [
             "V-ENV"
           ],
@@ -38553,7 +38695,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:351:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:354:3",
           "matched": [
             "V-ENV"
           ],
@@ -38563,7 +38705,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3529:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3532:5",
           "matched": [
             "V-ENV"
           ],
@@ -38573,7 +38715,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3574:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3577:5",
           "matched": [
             "V-ENV"
           ],
@@ -38583,7 +38725,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3609:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3612:5",
           "matched": [
             "V-ENV"
           ],
@@ -38593,7 +38735,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:362:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:365:3",
           "matched": [
             "V-ENV"
           ],
@@ -38603,7 +38745,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3636:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3639:5",
           "matched": [
             "V-ENV"
           ],
@@ -38613,7 +38755,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:370:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:373:3",
           "matched": [
             "V-ENV"
           ],
@@ -38623,7 +38765,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3733:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3736:5",
           "matched": [
             "V-ENV"
           ],
@@ -38633,7 +38775,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3761:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3764:5",
           "matched": [
             "V-ENV"
           ],
@@ -38643,7 +38785,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3778:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3781:5",
           "matched": [
             "V-ENV"
           ],
@@ -38653,7 +38795,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:379:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:382:3",
           "matched": [
             "V-ENV"
           ],
@@ -38663,7 +38805,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3806:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3809:5",
           "matched": [
             "V-ENV"
           ],
@@ -38673,7 +38815,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3833:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3836:5",
           "matched": [
             "V-ENV"
           ],
@@ -38683,7 +38825,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3868:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3871:5",
           "matched": [
             "V-ENV"
           ],
@@ -38693,7 +38835,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3892:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3895:5",
           "matched": [
             "V-ENV"
           ],
@@ -38703,7 +38845,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:390:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:393:3",
           "matched": [
             "V-ENV"
           ],
@@ -38713,7 +38855,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3950:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3953:5",
           "matched": [
             "V-ENV"
           ],
@@ -38723,7 +38865,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3972:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:3975:5",
           "matched": [
             "V-ENV"
           ],
@@ -38733,7 +38875,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:399:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:402:3",
           "matched": [
             "V-ENV"
           ],
@@ -38743,7 +38885,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4005:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4008:5",
           "matched": [
             "V-ENV"
           ],
@@ -38753,7 +38895,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4016:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4019:5",
           "matched": [
             "V-ENV"
           ],
@@ -38763,7 +38905,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4029:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4032:5",
           "matched": [
             "V-ENV"
           ],
@@ -38773,7 +38915,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4040:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4043:5",
           "matched": [
             "V-ENV"
           ],
@@ -38783,7 +38925,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4053:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4056:5",
           "matched": [
             "V-ENV"
           ],
@@ -38793,7 +38935,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4064:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4067:5",
           "matched": [
             "V-ENV"
           ],
@@ -38803,7 +38945,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:407:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:410:3",
           "matched": [
             "V-ENV"
           ],
@@ -38813,7 +38955,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4086:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4089:5",
           "matched": [
             "V-ENV"
           ],
@@ -38823,7 +38965,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4096:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4099:5",
           "matched": [
             "V-ENV"
           ],
@@ -38833,7 +38975,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4127:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4130:5",
           "matched": [
             "V-ENV"
           ],
@@ -38843,7 +38985,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4138:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4141:5",
           "matched": [
             "V-ENV"
           ],
@@ -38853,7 +38995,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4151:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4154:5",
           "matched": [
             "V-ENV"
           ],
@@ -38863,7 +39005,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:415:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:418:3",
           "matched": [
             "V-ENV"
           ],
@@ -38873,7 +39015,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4168:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4171:5",
           "matched": [
             "V-ENV"
           ],
@@ -38883,7 +39025,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4207:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4210:5",
           "matched": [
             "V-ENV"
           ],
@@ -38893,7 +39035,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4220:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4223:5",
           "matched": [
             "V-ENV"
           ],
@@ -38903,7 +39045,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4236:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4239:5",
           "matched": [
             "V-ENV"
           ],
@@ -38913,7 +39055,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:424:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:427:3",
           "matched": [
             "V-ENV"
           ],
@@ -38923,7 +39065,7 @@
           "reason": "BINDING-01 mechanical census: conservatively held at the relocated/changed witness; reclassification stays with TOOLS-02."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4275:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4278:5",
           "matched": [
             "V-ENV"
           ],
@@ -38933,7 +39075,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:432:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:435:3",
           "matched": [
             "V-ENV"
           ],
@@ -38943,7 +39085,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4345:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4348:5",
           "matched": [
             "V-ENV"
           ],
@@ -38953,7 +39095,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4361:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4364:5",
           "matched": [
             "V-ENV"
           ],
@@ -38963,7 +39105,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4381:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4384:5",
           "matched": [
             "V-ENV"
           ],
@@ -38973,7 +39115,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4394:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4397:5",
           "matched": [
             "V-ENV"
           ],
@@ -38983,7 +39125,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:440:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:443:3",
           "matched": [
             "V-ENV"
           ],
@@ -38993,7 +39135,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4412:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4415:5",
           "matched": [
             "V-ENV"
           ],
@@ -39003,7 +39145,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4431:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4434:5",
           "matched": [
             "V-ENV"
           ],
@@ -39013,7 +39155,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4446:5",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4449:5",
           "matched": [
             "V-ENV"
           ],
@@ -39023,7 +39165,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:448:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:451:3",
           "matched": [
             "V-ENV"
           ],
@@ -39033,7 +39175,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4497:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:4500:3",
           "matched": [
             "V-ENV"
           ],
@@ -39043,7 +39185,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:465:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:468:3",
           "matched": [
             "V-ENV"
           ],
@@ -39053,7 +39195,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:478:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:481:3",
           "matched": [
             "V-ENV"
           ],
@@ -39063,7 +39205,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:495:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:498:3",
           "matched": [
             "V-ENV"
           ],
@@ -39073,7 +39215,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:535:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:538:3",
           "matched": [
             "V-ENV"
           ],
@@ -39083,7 +39225,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:552:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:555:3",
           "matched": [
             "V-ENV"
           ],
@@ -39093,7 +39235,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:614:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:617:3",
           "matched": [
             "V-ENV"
           ],
@@ -39103,7 +39245,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:623:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:626:3",
           "matched": [
             "V-ENV"
           ],
@@ -39113,7 +39255,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:632:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:635:3",
           "matched": [
             "V-ENV"
           ],
@@ -39123,7 +39265,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:771:7",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:774:7",
           "matched": [
             "V-ENV"
           ],
@@ -39133,7 +39275,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:834:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:837:3",
           "matched": [
             "V-ENV"
           ],
@@ -39143,7 +39285,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:868:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:871:3",
           "matched": [
             "V-ENV"
           ],
@@ -39153,7 +39295,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:893:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:896:3",
           "matched": [
             "V-ENV"
           ],
@@ -39163,7 +39305,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:903:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:906:3",
           "matched": [
             "V-ENV"
           ],
@@ -39173,7 +39315,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:932:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:935:3",
           "matched": [
             "V-ENV"
           ],
@@ -39183,7 +39325,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:949:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:952:3",
           "matched": [
             "V-ENV"
           ],
@@ -39193,7 +39335,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:981:3",
+          "key": "tests/conformance/architecture/kernel-landing-zone.test.ts:984:3",
           "matched": [
             "V-ENV"
           ],
@@ -39203,7 +39345,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/control-commits.test.ts:230:3",
+          "key": "packages/kernel/tests/control-commits.test.ts:305:3",
           "matched": [
             "V-ENV"
           ],
@@ -39213,7 +39355,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/control-commits.test.ts:245:5",
+          "key": "packages/kernel/tests/control-commits.test.ts:320:5",
           "matched": [
             "V-ENV"
           ],
@@ -39223,7 +39365,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/control-commits.test.ts:252:3",
+          "key": "packages/kernel/tests/control-commits.test.ts:327:3",
           "matched": [
             "V-ENV"
           ],
@@ -39233,7 +39375,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/control-commits.test.ts:265:3",
+          "key": "packages/kernel/tests/control-commits.test.ts:340:3",
           "matched": [
             "V-ENV"
           ],
@@ -39243,7 +39385,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/control-commits.test.ts:275:3",
+          "key": "packages/kernel/tests/control-commits.test.ts:353:3",
           "matched": [
             "V-ENV"
           ],
@@ -39253,7 +39395,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/control-commits.test.ts:285:3",
+          "key": "packages/kernel/tests/control-commits.test.ts:363:3",
           "matched": [
             "V-ENV"
           ],
@@ -39263,7 +39405,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/control-commits.test.ts:307:5",
+          "key": "packages/kernel/tests/control-commits.test.ts:385:5",
           "matched": [
             "V-ENV"
           ],
@@ -39273,7 +39415,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/control-commits.test.ts:316:3",
+          "key": "packages/kernel/tests/control-commits.test.ts:394:3",
           "matched": [
             "V-ENV"
           ],
@@ -39283,7 +39425,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/control-commits.test.ts:325:3",
+          "key": "packages/kernel/tests/control-commits.test.ts:403:3",
           "matched": [
             "V-ENV"
           ],
@@ -39293,7 +39435,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/control-commits.test.ts:412:3",
+          "key": "packages/kernel/tests/control-commits.test.ts:490:3",
           "matched": [
             "V-ENV"
           ],
@@ -39303,7 +39445,7 @@
           "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
-          "key": "packages/kernel/tests/control-commits.test.ts:417:5",
+          "key": "packages/kernel/tests/control-commits.test.ts:495:5",
           "matched": [
             "V-ENV"
           ],
