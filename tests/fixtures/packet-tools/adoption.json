@@ -23579,7 +23579,7 @@
         "the zone refuses unimplemented surfaces rather than answering with a no-op"
       ],
       "declaration": {
-        "line": 187,
+        "line": 190,
         "column": 3
       },
       "input_anchors": [
@@ -23639,7 +23639,7 @@
         "a malformed keyed dependency row fails closed in either position (K10-R4-01)"
       ],
       "declaration": {
-        "line": 868,
+        "line": 871,
         "column": 3
       },
       "input_anchors": [
@@ -23683,7 +23683,7 @@
         "a dependency row with no recognisable key fails closed (K10-R4-01)"
       ],
       "declaration": {
-        "line": 893,
+        "line": 896,
         "column": 3
       },
       "input_anchors": [
@@ -23727,7 +23727,7 @@
         "duplicate cross-boundary dependency rows fail closed (K10-R3-01)"
       ],
       "declaration": {
-        "line": 932,
+        "line": 935,
         "column": 3
       },
       "input_anchors": [
@@ -23767,7 +23767,7 @@
         "contradictory zone rows with omitted edge pipes fail closed in either position (K10-R5-01)"
       ],
       "declaration": {
-        "line": 949,
+        "line": 952,
         "column": 3
       },
       "input_anchors": [
@@ -23827,7 +23827,7 @@
         "contradictory dependency rows with omitted edge pipes fail closed in either position (K10-R5-01)"
       ],
       "declaration": {
-        "line": 1035,
+        "line": 1038,
         "column": 3
       },
       "input_anchors": [
@@ -23887,7 +23887,7 @@
         "a pipe-less contradictory row inside the table block fails closed (K1.0-SELF-11)"
       ],
       "declaration": {
-        "line": 1058,
+        "line": 1061,
         "column": 3
       },
       "input_anchors": [
@@ -23931,7 +23931,7 @@
         "GFM delimiter and header variants do not hide the table (K1.0-SELF-11)"
       ],
       "declaration": {
-        "line": 1086,
+        "line": 1089,
         "column": 3
       },
       "input_anchors": [
@@ -23992,7 +23992,7 @@
         "a Dependency body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
       ],
       "declaration": {
-        "line": 1208,
+        "line": 1211,
         "column": 9
       },
       "input_anchors": [
@@ -24109,7 +24109,7 @@
         "a Dependency body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
       ],
       "declaration": {
-        "line": 1208,
+        "line": 1211,
         "column": 9
       },
       "input_anchors": [
@@ -24226,7 +24226,7 @@
         "a Dependency body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
       ],
       "declaration": {
-        "line": 1208,
+        "line": 1211,
         "column": 9
       },
       "input_anchors": [
@@ -24343,7 +24343,7 @@
         "a Dependency body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
       ],
       "declaration": {
-        "line": 1208,
+        "line": 1211,
         "column": 9
       },
       "input_anchors": [
@@ -24460,7 +24460,7 @@
         "the cleanup's four counterexamples are reported, not equated with the measured row"
       ],
       "declaration": {
-        "line": 3012,
+        "line": 3015,
         "column": 5
       },
       "input_anchors": [
@@ -24561,7 +24561,7 @@
         "each empty sentinel is accepted only in the column whose grammar names it"
       ],
       "declaration": {
-        "line": 3095,
+        "line": 3098,
         "column": 5
       },
       "input_anchors": [
@@ -24606,7 +24606,7 @@
         "a widened dependency header cannot authorize an unread fifth body cell"
       ],
       "declaration": {
-        "line": 3389,
+        "line": 3392,
         "column": 5
       },
       "input_anchors": [
@@ -24687,7 +24687,7 @@
         "a header that renames or reorders a non-first position is reported"
       ],
       "declaration": {
-        "line": 3529,
+        "line": 3532,
         "column": 5
       },
       "input_anchors": [
@@ -24768,7 +24768,7 @@
         "a narrowed or widened header cannot change what a schema-correct body means"
       ],
       "declaration": {
-        "line": 3574,
+        "line": 3577,
         "column": 5
       },
       "input_anchors": [
