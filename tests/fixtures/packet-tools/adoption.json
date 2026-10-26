@@ -4471,10 +4471,6 @@
         "links": [
           {
             "kind": "counterexample",
-            "id": "witness.ambient-reads.160.3.4a94f4ea0361"
-          },
-          {
-            "kind": "counterexample",
             "id": "witness.ambient-reads.46.3.4a94f4ea0361"
           },
           {
@@ -4492,10 +4488,6 @@
           {
             "kind": "counterexample",
             "id": "witness.ambient-reads.79.3.4a94f4ea0361"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ambient-reads.138.3.4a94f4ea0361"
           },
           {
             "kind": "counterexample",
@@ -5487,10 +5479,6 @@
           },
           {
             "kind": "counterexample",
-            "id": "witness.ambient-reads.138.3.4a94f4ea0361"
-          },
-          {
-            "kind": "counterexample",
             "id": "witness.ambient-reads.298.3.4a94f4ea0361"
           },
           {
@@ -5590,10 +5578,6 @@
           {
             "kind": "counterexample",
             "id": "witness.ambient-reads.79.3.4a94f4ea0361"
-          },
-          {
-            "kind": "counterexample",
-            "id": "witness.ambient-reads.138.3.4a94f4ea0361"
           },
           {
             "kind": "counterexample",
@@ -15163,18 +15147,6 @@
       ]
     },
     {
-      "id": "witness.ambient-reads.160.3.4a94f4ea0361",
-      "kind": "held_witness",
-      "claim": "V-ENV",
-      "origins": [
-        "artifact-21fb34d9cd3ad15575371064"
-      ],
-      "members": [
-        "packages/kernel/tests/ambient-reads.test.ts:160:3@4a94f4ea0361"
-      ],
-      "required_result": "Held for BINDING-01 under V-ENV: Matched only by the CONT-05 V-ENV recipe: the registration or a helper it calls writes a member of a built-in intrinsic while it runs. Not reviewed per test, so held conservatively; invalidation-03 holds V-ENV for BINDING-01. Test: an accessor installed on Error.prototype.name receives nothing, and the error still names itself"
-    },
-    {
       "id": "witness.dispatch.673.3.5a8d958ffdab",
       "kind": "held_witness",
       "claim": "V-ENV",
@@ -16077,18 +16049,6 @@
         "packages/kernel/tests/ambient-reads.test.ts:79:3@4a94f4ea0361"
       ],
       "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: every bounded index read sits in a loop that keeps its index below the list's own length"
-    },
-    {
-      "id": "witness.ambient-reads.138.3.4a94f4ea0361",
-      "kind": "held_witness",
-      "claim": "V-ENV",
-      "origins": [
-        "artifact-21fb34d9cd3ad15575371064"
-      ],
-      "members": [
-        "packages/kernel/tests/ambient-reads.test.ts:138:3@4a94f4ea0361"
-      ],
-      "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: every hostMember call names an optional member of its holder's declared type"
     },
     {
       "id": "witness.ambient-reads.298.3.4a94f4ea0361",
