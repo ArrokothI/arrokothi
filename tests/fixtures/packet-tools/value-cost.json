@@ -1386,8 +1386,8 @@
         {
           "id": "mutation-57c323583982e8e65bc36137185cc24408c5aa0a6ef846b76ebfd0156da1274e",
           "path": "packages/kernel/src/state.ts",
-          "before": "    payload: entry.payload.value,",
-          "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,",
+          "before": "    payload: (entry.payload as CanonicalValue).value,\n    sourceCategory: \"application_input\",",
+          "after": "    payload: PrimordialObjectFreeze({ ...((entry.payload as CanonicalValue).value as object) }) as BoundaryValue,\n    sourceCategory: \"application_input\",",
           "operator": "c1-ablation",
           "name": "C-ACTIVATION-PAYLOAD-COPY (C1: killed by the creation converted tests at B and at C)"
         },
@@ -1410,8 +1410,8 @@
         {
           "id": "mutation-7608de310b05f470a8e396b4f55a5e900dfcdf10e0c2b8a66d410ed3a61edccc",
           "path": "packages/kernel/src/state.ts",
-          "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload.value,",
-          "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,",
+          "before": "    inputId: { ...(entry.inputId as InputId) },\n    kind: entry.kind,\n    payload: (entry.payload as CanonicalValue).value,",
+          "after": "    inputId: { ...(entry.inputId as InputId) },\n    kind: entry.kind,\n    payload: PrimordialObjectFreeze({ ...((entry.payload as CanonicalValue).value as object) }) as BoundaryValue,",
           "operator": "c1-ablation",
           "name": "C-VIEW-PAYLOAD-COPY (C1: killed by the creation converted tests at B and at C)"
         },
@@ -1545,16 +1545,16 @@
         {
           "id": "mutation-57c323583982e8e65bc36137185cc24408c5aa0a6ef846b76ebfd0156da1274e",
           "path": "packages/kernel/src/state.ts",
-          "before": "    payload: entry.payload.value,",
-          "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,",
+          "before": "    payload: (entry.payload as CanonicalValue).value,\n    sourceCategory: \"application_input\",",
+          "after": "    payload: PrimordialObjectFreeze({ ...((entry.payload as CanonicalValue).value as object) }) as BoundaryValue,\n    sourceCategory: \"application_input\",",
           "operator": "c1-ablation",
           "name": "C-ACTIVATION-PAYLOAD-COPY (C1: killed by the dispatch converted tests at B and at C)"
         },
         {
           "id": "mutation-7608de310b05f470a8e396b4f55a5e900dfcdf10e0c2b8a66d410ed3a61edccc",
           "path": "packages/kernel/src/state.ts",
-          "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload.value,",
-          "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,",
+          "before": "    inputId: { ...(entry.inputId as InputId) },\n    kind: entry.kind,\n    payload: (entry.payload as CanonicalValue).value,",
+          "after": "    inputId: { ...(entry.inputId as InputId) },\n    kind: entry.kind,\n    payload: PrimordialObjectFreeze({ ...((entry.payload as CanonicalValue).value as object) }) as BoundaryValue,",
           "operator": "c1-ablation",
           "name": "C-VIEW-PAYLOAD-COPY (C1: killed by the dispatch converted tests at B and at C)"
         },
@@ -1619,8 +1619,8 @@
         {
           "id": "mutation-00f410e88769bb3aa2385091f5268bed18b04ddd6f4352d0c401c6c30dc0b855",
           "path": "packages/kernel/src/state.ts",
-          "before": "    appendOwn(record.mailbox, entry);",
-          "after": "    record.mailbox.push(entry);",
+          "before": "    appendOwn(record.mailbox, entry);\n    mapSet(record.byInputId, inputIdKey(inputId), entry);",
+          "after": "    record.mailbox.push(entry);\n    mapSet(record.byInputId, inputIdKey(inputId), entry);",
           "operator": "c1-ablation",
           "name": "C-MAILBOX-PUSH (C1: killed by the ingress converted tests at B and at C)"
         },

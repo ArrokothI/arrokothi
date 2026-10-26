@@ -859,9 +859,9 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-3ae6bf7274e4b6afa1cc1bbe59f594d63c8030dc7c5ded4ec3dd473845190b6d",
+          "id": "mutation-40ae8772a6418c4075f90644852db88a6983a053b4f89729811ba554372fc8d7",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
-          "before": "referenceRefusal: (context: Context): boolean => {\n    const returned = context.reference.returned;\n    if (returned.kind !== \"err\") return false;\n    const base = context.callback?.state ?? context.s0;\n    return CHECKS.refusalPosition(returned.refusal, base) && CHECKS.refusalExecution(returned.refusal, context.executionId) &&\n      decided({ returned, state: withRefusal(base, returned.refusal) }, context.reference);\n  }",
+          "before": "referenceRefusal: (context: Context): boolean => {\n    const returned = context.reference.returned;\n    if (returned.kind !== \"err\") return false;\n    const base = context.callback?.state ?? context.s0;\n    return CHECKS.refusalPosition(returned.refusal, base) && CHECKS.refusalExecution(returned.refusal, context.executionId) &&\n      decided({ returned, state: withRefusal(base, returned.refusal, context.losing) }, context.reference);\n  }",
           "after": "referenceRefusal: () => true",
           "name": "oracle.disable-referenceRefusal",
           "operator": "remove-check"
@@ -1093,9 +1093,9 @@
       "failure_exit": 17,
       "mutants": [
         {
-          "id": "mutation-3c61b2ffbeb9adcdcd6aab9d03c0af845a2aa1aa148dc75aaddef2591b54fd65",
+          "id": "mutation-a22ae8ed4eda569f9c26c5cab3f8fe2268cac40e0cdfbc5dcf3e50dbc4d3deee",
           "path": "packages/kernel/tests/sweep/fault-oracle.ts",
-          "before": "outcomeAnswer: (context: Context, decision: Observation): boolean => {\n    if (decision.returned.kind !== \"ok\") return false;\n    const answer = decision.returned.value as {\n      receipt: { position: number };\n      activationId: string;\n      nextState: string;\n      progressRevision: number;\n      acknowledged: readonly string[];\n      emissionIds: readonly string[];\n      resultId: string | null;\n      terminalDispositions: readonly string[];\n      replayed: boolean;\n    };\n    const before = context.s0.view;\n    const after = decision.state.view;\n    const added = (list: readonly string[], base: readonly string[]): string[] => list.filter((id) => !base.includes(id));\n    if (before.activation === null || typeof context.s0.nextAcceptance !== \"number\") return false;\n    return answer.replayed === false && answer.activationId === before.activation.activationId &&\n      after.receipts.length === before.receipts.length + 1 && isDeepStrictEqual(answer.receipt, after.receipts.at(-1)) &&\n      answer.receipt.position === context.s0.nextAcceptance &&\n      answer.nextState === after.state && answer.progressRevision === after.progressRevision && after.progressRevision === before.progressRevision + 1 &&\n      isDeepStrictEqual([...answer.acknowledged], added(after.acknowledged, before.acknowledged)) &&\n      isDeepStrictEqual([...answer.acknowledged], [...before.activation.batch]) &&\n      isDeepStrictEqual([...answer.emissionIds], after.emissions.slice(before.emissions.length).map((emission) => emission.emissionId)) &&\n      answer.resultId === (after.result === null ? null : after.result.resultId) &&\n      isDeepStrictEqual([...answer.terminalDispositions], added(after.terminalDispositions, before.terminalDispositions)) &&\n      after.activation === null && decision.state.nextRefusal === context.s0.nextRefusal &&\n      decision.state.nextAcceptance === (after.state === \"READY\" ? context.s0.nextAcceptance + 1 : \"terminal_destination\") &&\n      decision.state.setupGrant === \"duplicate_conflict\";\n  }",
+          "before": "outcomeAnswer: (context: Context, decision: Observation): boolean => {\n    if (decision.returned.kind !== \"ok\") return false;\n    const answer = decision.returned.value as {\n      receipt: { position: number };\n      activationId: string;\n      nextState: string;\n      progressRevision: number;\n      acknowledged: readonly string[];\n      emissionIds: readonly string[];\n      resultId: string | null;\n      terminalDispositions: readonly string[];\n      replayed: boolean;\n      wait: { generation: number; result: string; timeoutEventId: string | null } | null;\n    };\n    const before = context.s0.view;\n    const after = decision.state.view;\n    // K1.3: an `await`'s registration result agrees with the wait state it left; any other step leaves none.\n    const wait = answer.wait;\n    const lastRetired = after.retiredWaits.at(-1);\n    const readiness = after.waitEndedReadiness;\n    const waitAgrees =\n      wait === null\n        ? after.wait === null && readiness === null && after.retiredWaits.length === before.retiredWaits.length\n        : wait.result === \"waiting\"\n          ? after.wait !== null && after.wait.generation === wait.generation && readiness === null && wait.timeoutEventId === null\n          : after.wait === null && lastRetired !== undefined && lastRetired.generation === wait.generation && readiness !== null &&\n            readiness.generation === wait.generation && readiness.timeoutEventId === wait.timeoutEventId &&\n            (wait.result === \"expired\" ? lastRetired.retiredBy === \"deadline\" && lastRetired.endingEventId === wait.timeoutEventId : lastRetired.retiredBy === \"event\");\n    const added = (list: readonly string[], base: readonly string[]): string[] => list.filter((id) => !base.includes(id));\n    if (before.activation === null || typeof context.s0.nextAcceptance !== \"number\") return false;\n    return answer.replayed === false && answer.activationId === before.activation.activationId &&\n      after.receipts.length === before.receipts.length + 1 && isDeepStrictEqual(answer.receipt, after.receipts.at(-1)) &&\n      answer.receipt.position === context.s0.nextAcceptance &&\n      answer.nextState === after.state && answer.progressRevision === after.progressRevision && after.progressRevision === before.progressRevision + 1 &&\n      isDeepStrictEqual([...answer.acknowledged], added(after.acknowledged, before.acknowledged)) &&\n      isDeepStrictEqual([...answer.acknowledged], [...before.activation.batch]) &&\n      isDeepStrictEqual([...answer.emissionIds], after.emissions.slice(before.emissions.length).map((emission) => emission.emissionId)) &&\n      answer.resultId === (after.result === null ? null : after.result.resultId) &&\n      isDeepStrictEqual([...answer.terminalDispositions], added(after.terminalDispositions, before.terminalDispositions)) &&\n      after.activation === null && decision.state.nextRefusal === context.s0.nextRefusal &&\n      decision.state.nextAcceptance === (after.state === \"READY\" || after.state === \"WAITING\" ? context.s0.nextAcceptance + 1 : \"terminal_destination\") &&\n      decision.state.setupGrant === \"duplicate_conflict\" && waitAgrees;\n  }",
           "after": "outcomeAnswer: () => true",
           "name": "oracle.disable-outcomeAnswer",
           "operator": "remove-check"
@@ -5594,11 +5594,11 @@
             },
             {
               "path": "packages/kernel/src/state.ts",
-              "before": "    const refusal = plan.refusal;\n",
-              "after": "    const refusal = plan.refusal;\n    (plan as unknown as { readonly notify: () => void }).notify();\n"
+              "before": "    const refusal = plan.refusal;\n    const position = refusal.position;\n",
+              "after": "    const refusal = plan.refusal;\n    (plan as unknown as { readonly notify: () => void }).notify();\n    const position = refusal.position;\n"
             }
           ],
-          "id": "mutation-59e828ca682abeb0b005a85e0cf79405fd710e446dee34e2f1a7d8dd5340a165"
+          "id": "mutation-e057c7c6b7eea3c153cac160b8d0a406ac58867bedfd32b0c6e7e2578f425d1f"
         },
         {
           "name": "CR1-4c the owner imports caller observation and runs it in an arm",
@@ -5611,11 +5611,11 @@
             },
             {
               "path": "packages/kernel/src/state.ts",
-              "before": "    const refusal = plan.refusal;\n",
-              "after": "    const refusal = plan.refusal;\n    const probe = hostMember(plan, \"refusal\");\n"
+              "before": "    const refusal = plan.refusal;\n    const position = refusal.position;\n",
+              "after": "    const refusal = plan.refusal;\n    const probe = hostMember(plan, \"refusal\");\n    const position = refusal.position;\n"
             }
           ],
-          "id": "mutation-05224643a6842115c906adb0b72e1421d803fef13f46930f62f86bf00d340a3c"
+          "id": "mutation-d216b9ae922ef69c11cf508e47522b488244753d25ec86c132fd574e28e3e9b1"
         }
       ]
     },

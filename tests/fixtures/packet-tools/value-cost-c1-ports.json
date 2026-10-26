@@ -1712,8 +1712,8 @@
     "at_c": [
       {
         "path": "packages/kernel/src/state.ts",
-        "before": "    appendOwn(record.mailbox, entry);",
-        "after": "    record.mailbox.push(entry);"
+        "before": "    appendOwn(record.mailbox, entry);\n    mapSet(record.byInputId, inputIdKey(inputId), entry);",
+        "after": "    record.mailbox.push(entry);\n    mapSet(record.byInputId, inputIdKey(inputId), entry);"
       }
     ],
     "original_at_c": {
@@ -1778,8 +1778,8 @@
     "at_c": [
       {
         "path": "packages/kernel/src/state.ts",
-        "before": "    payload: entry.payload.value,",
-        "after": "    payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,"
+        "before": "    payload: (entry.payload as CanonicalValue).value,\n    sourceCategory: \"application_input\",",
+        "after": "    payload: PrimordialObjectFreeze({ ...((entry.payload as CanonicalValue).value as object) }) as BoundaryValue,\n    sourceCategory: \"application_input\","
       }
     ],
     "original_at_c": {
@@ -1800,8 +1800,8 @@
     "at_c": [
       {
         "path": "packages/kernel/src/state.ts",
-        "before": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: entry.payload.value,",
-        "after": "  inputId: { ...entry.inputId },\n  kind: entry.kind,\n  payload: PrimordialObjectFreeze({ ...(entry.payload.value as object) }) as BoundaryValue,"
+        "before": "    inputId: { ...(entry.inputId as InputId) },\n    kind: entry.kind,\n    payload: (entry.payload as CanonicalValue).value,",
+        "after": "    inputId: { ...(entry.inputId as InputId) },\n    kind: entry.kind,\n    payload: PrimordialObjectFreeze({ ...((entry.payload as CanonicalValue).value as object) }) as BoundaryValue,"
       }
     ],
     "original_at_c": {
