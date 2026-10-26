@@ -8,7 +8,8 @@
     "work-charge",
     "tool-result",
     "held-capture",
-    "state-owner-bypass"
+    "state-owner-bypass",
+    "k13-semantic"
   ],
   "families": [
     {
@@ -63,7 +64,8 @@
           "outcomeAnswer",
           "declaredExit",
           "attributed",
-          "exitReached"
+          "exitReached",
+          "losingWindowAt"
         ],
         "environment": [
           "ordinary"
@@ -301,6 +303,14 @@
           "case": "oracle.exitReached",
           "values": {
             "comparison": "exitReached",
+            "environment": "ordinary",
+            "stage": "decision-validation"
+          }
+        },
+        {
+          "case": "oracle.losingWindowAt",
+          "values": {
+            "comparison": "losingWindowAt",
             "environment": "ordinary",
             "stage": "decision-validation"
           }
@@ -1496,6 +1506,129 @@
             "bypass": "view-aliases-state",
             "environment": "ordinary",
             "stage": "state-owner"
+          }
+        }
+      ]
+    },
+    {
+      "id": "k13",
+      "domains": {
+        "site": [
+          "fire-generation",
+          "fire-duplicate",
+          "registration-step2",
+          "registration-order",
+          "input-wake",
+          "selection-eligibility",
+          "selection-timeout",
+          "dispatch-readiness",
+          "cancellation-acknowledges",
+          "cancellation-readiness",
+          "losing-retry",
+          "deadline-terminal"
+        ],
+        "environment": [
+          "ordinary"
+        ],
+        "stage": [
+          "k13-semantic"
+        ]
+      },
+      "cases": [
+        {
+          "case": "k13.fire-generation",
+          "values": {
+            "site": "fire-generation",
+            "environment": "ordinary",
+            "stage": "k13-semantic"
+          }
+        },
+        {
+          "case": "k13.fire-duplicate",
+          "values": {
+            "site": "fire-duplicate",
+            "environment": "ordinary",
+            "stage": "k13-semantic"
+          }
+        },
+        {
+          "case": "k13.registration-step2",
+          "values": {
+            "site": "registration-step2",
+            "environment": "ordinary",
+            "stage": "k13-semantic"
+          }
+        },
+        {
+          "case": "k13.registration-order",
+          "values": {
+            "site": "registration-order",
+            "environment": "ordinary",
+            "stage": "k13-semantic"
+          }
+        },
+        {
+          "case": "k13.input-wake",
+          "values": {
+            "site": "input-wake",
+            "environment": "ordinary",
+            "stage": "k13-semantic"
+          }
+        },
+        {
+          "case": "k13.selection-eligibility",
+          "values": {
+            "site": "selection-eligibility",
+            "environment": "ordinary",
+            "stage": "k13-semantic"
+          }
+        },
+        {
+          "case": "k13.selection-timeout",
+          "values": {
+            "site": "selection-timeout",
+            "environment": "ordinary",
+            "stage": "k13-semantic"
+          }
+        },
+        {
+          "case": "k13.dispatch-readiness",
+          "values": {
+            "site": "dispatch-readiness",
+            "environment": "ordinary",
+            "stage": "k13-semantic"
+          }
+        },
+        {
+          "case": "k13.cancellation-acknowledges",
+          "values": {
+            "site": "cancellation-acknowledges",
+            "environment": "ordinary",
+            "stage": "k13-semantic"
+          }
+        },
+        {
+          "case": "k13.cancellation-readiness",
+          "values": {
+            "site": "cancellation-readiness",
+            "environment": "ordinary",
+            "stage": "k13-semantic"
+          }
+        },
+        {
+          "case": "k13.losing-retry",
+          "values": {
+            "site": "losing-retry",
+            "environment": "ordinary",
+            "stage": "k13-semantic"
+          }
+        },
+        {
+          "case": "k13.deadline-terminal",
+          "values": {
+            "site": "deadline-terminal",
+            "environment": "ordinary",
+            "stage": "k13-semantic"
           }
         }
       ]
