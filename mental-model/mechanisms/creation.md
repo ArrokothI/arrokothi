@@ -27,16 +27,17 @@ Creation answers two questions, in a fixed order: who is asking, and what exactl
 
 **Who is asking** is settled before anything else. The Kernel authenticates the caller at a trusted ingress path and checks that the caller may create Executions in the authority scope the request names. Nothing inside the request can stand in for that check. An Execution ID the caller happens to know does not count. Neither does a `user_id` field in the input, or an identity a model wrote into its output. If the caller is not entitled to that scope, the request is refused and nothing is created.
 
-**What is being created** is six facts, accepted as one decision:
+**What is being created** is six facts, and one optional seventh, accepted as one decision:
 
 - the new Execution's ID;
 - the [Definition](../concepts/core.md#definition) revision, which fixes which program runs;
 - the [Runtime contract](../concepts/core.md#runtime-contract) revision, which fixes how the Driver reads each exchange;
 - the [progress codec](../concepts/values.md#codec) version, which fixes the format the Execution's progress will be stored and read back in;
 - the authority context, which bounds what this Execution may do through [mediated](../concepts/actions.md#exposure-and-mediation) actions;
-- the initial input, which becomes the Execution's first Event.
+- the initial input, which becomes the Execution's first Event;
+- optionally, the [Execution deadline](../concepts/operations.md#three-clocks), which bounds how long the logical Execution may live.
 
-The [Definition entry](../concepts/core.md#definition) in the core vocabulary explains why these belong in one decision rather than several: an Execution must never exist without an accepted answer to who may act for it and which code reads its progress. The codec is among them although no progress exists yet. Every Activation pins the codec its progress is read with, the codec is a [separate pin](../concepts/core.md#runtime-contract) from the Runtime contract, and nothing accepted before the first dispatch could supply it without guessing. This page adds a view of where each fact goes next, because every mechanism after this one reads from this decision.
+The [Definition entry](../concepts/core.md#definition) in the core vocabulary explains why these belong in one decision rather than several: an Execution must never exist without an accepted answer to who may act for it and which code reads its progress. The codec is among them although no progress exists yet. Every Activation pins the codec its progress is read with, the codec is a [separate pin](../concepts/core.md#runtime-contract) from the Runtime contract, and nothing accepted before the first dispatch could supply it without guessing. The Execution deadline, when the request sets one, is creation content like the others: nothing accepted later can add, remove or change it, and a retry that does is a different request. This page adds a view of where each fact goes next, because every mechanism after this one reads from this decision.
 
 | Accepted at creation | Read later by |
 |---|---|
@@ -44,6 +45,7 @@ The [Definition entry](../concepts/core.md#definition) in the core vocabulary ex
 | Definition and Runtime contract revisions, progress codec version | [Dispatch](execution-cycle.md#before-sending), which pins them into every Activation, and [recovery](recovery.md#compatibility-and-migration), which checks them before restored progress runs |
 | Authority context | [Authority](authority.md), whenever this Execution asks for a mediated action |
 | Initial input | [Batch selection](waits.md#selecting-the-batch), because it sits in the mailbox as the first candidate for the first Activation |
+| Execution deadline, when set | The Execution's deadline timer, whose accepted expiry runs the same [cancellation](lifecycle.md#cancellation-order) as an explicit request |
 
 The initial input is not sent separately after the Execution exists. It is accepted inside the creation decision itself, and the Event it becomes keeps that origin: its provenance is creation, and the receipt that covers it is the creation receipt. An Execution therefore never exists, even briefly, with an empty mailbox and nothing to do.
 
@@ -138,9 +140,9 @@ For a reader who comes back to look something up:
 | Situation | The Kernel's answer |
 |---|---|
 | Caller not authenticated, or not entitled to the selected authority scope, even on a retry | Refuse; create nothing |
-| New Creation request ID, valid content | Accept one decision binding the Execution ID, the Definition and Runtime contract revisions, the progress codec version, the authority context and the initial input; the Execution is `READY` |
+| New Creation request ID, valid content | Accept one decision binding the Execution ID, the Definition and Runtime contract revisions, the progress codec version, the authority context, the initial input and any Execution deadline; the Execution is `READY` |
 | Same Creation request ID, equal content | Return the same Execution and the original creation receipt |
-| Same Creation request ID, different content | Refuse as a conflict; change nothing already accepted |
+| Same Creation request ID, different content (an Execution deadline added, removed or changed included) | Refuse as a conflict; change nothing already accepted |
 | Same content, fresh creation key | A second, independent Execution |
 | Same key text from another producer | A different Creation request ID; no interaction |
 | New Input ID to a reachable, live Execution with room | Accept content, provenance, mailbox entry and any readiness together |

@@ -214,6 +214,8 @@ owner pages' own scope statements and correct whichever is wrong, in the same co
 | K1.0 structural boundary; inventory agreement; fail-closed reading | `mechanisms/evidence.md#structural-evidence`, `docs/development/015-structural-evidence-rules.md` | `work/K1.0/*`, `K1.0-correction-01`, `K1.0-correction-02/review-01.md` |
 | K1.0-corr-02 set identity in comparison | `015-structural-evidence-rules.md` ("Comparing a set is not comparing a string"), `concepts/values.md#what-these-rules-do-not-cover` | `work/K1.0-correction-02/contract.md` |
 | K1.1 progress codec bound at creation (K1.1-C1), adopted as creation's sixth fact by owner decision 2026-09-24 | `mechanisms/creation.md#one-atomic-creation`; `concepts/state.md#progress` points to it | `work/K1.1/contract.md` C1 (codec among the bound facts) and C4 (dispatch never infers it); WS PC-4 required the pin but not where the first one comes from |
+| K1.3 Execution deadline as an optional creation field in canonical content, immutable (owner decision 1); fire-only Execution-deadline enforcement in the in-process binding (owner choice 01, D01-CHK-07) | `mechanisms/creation.md#one-atomic-creation`, `concepts/operations.md#three-clocks`; the enforcement policy is the binding's, recorded in BASELINE `#waits-timers-and-cancellation-api` | `docs/development/work/K1.3/brief-01.md` (owner answers), `work/K1.3/owner-choice-01.md`, `work/K1.3/design-check-01.md` |
+| K1.3 Driver cancellation request: optional, Execution-scoped, after the cancellation commits (owner choice 01, D01-CHK-06) | `mechanisms/lifecycle.md#cancellation-order` (CX-1's request); the in-process member is recorded in BASELINE `#waits-timers-and-cancellation-api` | `work/K1.3/owner-choice-01.md`, `work/K1.3/design-check-01.md` |
 | K1.1 creation/ingress domain separation (`KC1-DEC-1`) | `concepts/identity.md#request-key-and-input-id`, `mechanisms/creation.md#later-input-has-a-destination` | `work/K1.1/review-15.md` `K11-R15-ID-01`; `K1.1-correction-01/contract.md`; `K1.1-reference-01` REF-1 |
 | K1.1 in-process value capture (C3, `KC1-DEC-3`), and its distinction from request-envelope own-field observation (`KC1-DEC-6`) | `concepts/values.md#in-process-value-capture` | `work/K1.1/contract.md` C3; `K1.1-correction-01` review-08 C3; `K1.1-reference-01` REF-2, and its review-02 row "Envelope ≠ value capture" |
 | K1.1 delivery reporting (`KC1-ARCH-1`) | `mechanisms/execution-cycle.md#delivery-reporting-boundary` (+ link from `mechanisms/integration.md`) | `work/K1.1-correction-01/decision-01.md` incl. its superseding note; `review-08.md`; roadmap §K1.1-correction-01 |
@@ -297,16 +299,28 @@ naming an `OPEN(...)` marker claim that one exists.
   dead — `OPEN(K3.2)` in `mechanisms/execution-cycle.md#submission-authority`. The in-process binding
   has no restart.
 - Wait generation representation; declared-input-subscription spelling — `mechanisms/waits.md#declare-what-can-wake-the-execution`,
-  WS W-9/§5. WS assigns the subscription spelling to K1.3.
+  WS W-9/§5. WS assigns the subscription spelling to K1.3. The in-process binding's choice, recorded
+  in BASELINE `#waits-timers-and-cancellation-api`: a per-Execution integer from 1, one per accepted
+  `await` (including a generation retired at registration), compared by equality; a subscription is
+  `{ subscriptionClass }`, matching application input whose producer-declared class is equal.
 - Timeout Event wire kind token, discriminant, encoded schema, storage layout and timer
-  mechanism — WS W-9 "Left open", which says K1.3 chooses them.
+  mechanism — WS W-9 "Left open", which says K1.3 chooses them. The in-process binding's choice,
+  recorded in BASELINE `#waits-timers-and-cancellation-api`: kind `kernel.wait.timeout`, source
+  category `kernel_timeout`, payload `null`, an ID packed from the Execution ID and generation, and a
+  host-pumped timer port (`pendingTimers`, `fireTimer`) whose fire is a hint the Kernel resolves.
 - Per-entry batch disposition storage, and how a wait-ended readiness is stored — WS §3 "Left
   open" (after B-8); `mechanisms/waits.md`. The in-process binding's choice for disposition storage,
   recorded in BASELINE `#outcome-acceptance-api`: each mailbox entry holds its own frozen disposition.
-  Wait-ended readiness storage stays K1.3's.
+  Wait-ended readiness storage: the in-process binding keeps one owner field (species, generation, the
+  retired selector, and the timeout Event for the deadline species), re-evaluated at reservation and
+  consumed by it; recorded in BASELINE `#waits-timers-and-cancellation-api`.
 - Cancellation-request storage, rejection encoding and physical interruption mechanics — WS §6
   "Left open"; `mechanisms/lifecycle.md#cancellation-order`. A pending/applied marker may not
-  change the acceptance order.
+  change the acceptance order. The in-process binding's choice, recorded in BASELINE
+  `#waits-timers-and-cancellation-api`: request acceptance and the terminal transition are one
+  decision, with one frozen cancellation record per Execution; a losing Outcome is a retained refusal
+  indexed by Activation and canonical content identity; physical interruption is at most a request
+  through an optional Driver member, never awaited.
 - The Outcome-acceptance transaction mechanism (a DB transaction, an append-only log, an
   in-memory compare-and-swap) — WS §7 "Left open", which accepts any of them only if the atomicity
   is real; `mechanisms/execution-cycle.md#atomic-decisions-across-the-system`. The in-process
@@ -330,7 +344,11 @@ naming an `OPEN(...)` marker claim that one exists.
   fake/compatibility Drivers and says K1 itself needs only inline form (a). `concepts/state.md#progress`
   and the Progress row of `mechanisms/integration.md#support-record` make it a per-Driver declaration.
 - Clock units, precision, instant source, and whether lease expiry uses heartbeat renewal or a
-  fixed TTL — `OPEN(implementation)` in `concepts/operations.md#three-clocks`; WS §4 "Left open".
+  fixed TTL — `OPEN(implementation)` in `concepts/operations.md#three-clocks`; WS §4 "Left open". The
+  in-process binding's choice, recorded at that marker and in BASELINE
+  `#waits-timers-and-cancellation-api`: safe integers of at least 0 on a host-chosen scale
+  (milliseconds recommended) from an injected clock, no monotonicity assumed, deadlines enforced when
+  the host fires them; no lease model yet (K3).
 - Batch maximum (only "finite, ≥ 1" is fixed) — `concepts/core.md#batch-reservation-and-acknowledgment`.
 - **The exact form a Definition and its pinned revision take** — one `OPEN(unassigned)` covering both,
   in `concepts/core.md#definition`.

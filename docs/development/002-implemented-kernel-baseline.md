@@ -15,8 +15,10 @@ atomic creation with initial input, post-creation ingress under the Input ID tri
 receipts, batch reservation, asynchronous Driver dispatch, ordinary redelivery and scoped inspection;
 and Outcome acceptance with replay and conflict, whole-batch acknowledgment, progress, Emissions,
 `continue`/`complete`/`fail`, terminal disposition of unprocessed input, authorized takeover and
-inspectable recovery holds ([Outcome acceptance API](#outcome-acceptance-api)). It refuses new
-ordinary input to a terminal destination. BINDING-01 changes every value root to canonical
+inspectable recovery holds ([Outcome acceptance API](#outcome-acceptance-api)); and waits with
+deadlines, an injected clock, host-pumped timers, wait-ended batch selection, out-of-band
+cancellation and the Execution deadline ([Waits, timers and cancellation API](#waits-timers-and-cancellation-api)).
+It refuses new ordinary input to a terminal destination. BINDING-01 changes every value root to canonical
 `Uint8Array` input, copied before strict validation. The project-written core parser/encoder checks
 UTF-8, duplicates, exact JCS spelling and all four limits. Its intrinsics are captured at module load.
 Readers receive deeply frozen values parsed from the owned bytes; the private owned record retains
@@ -33,10 +35,9 @@ future transports must cap accumulation/decompression themselves. Decoder meteri
 reports delivery through the per-delivery Kernel-owned `DeliverySettlement` capability while carrying the per-attempt `SubmissionGrant`; the Kernel never observes a Driver-returned
 Promise. The settlement lifetime is one physical delivery; the submission lifetime is one Runtime attempt, as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) owns.
 
-Out-of-band cancellation and its terminal disposition, waits and deadlines belong to K1.3; Effects to
-K2. Those unimplemented surfaces refuse by name, and an Outcome proposing an Effect or a wait is
-refused whole. No supported SDK consumer is routed through the private target package yet; K1.4 owns
-that bridge.
+Effects belong to K2: an Outcome proposing an Effect is refused whole, and a surface a later packet
+owns refuses by name. No supported SDK consumer is routed through the private target package yet;
+K1.4 owns that bridge.
 
 ## Value refusal diagnostics
 
@@ -232,8 +233,8 @@ its own expired-key policy before enabling expiry (`mechanisms/evidence.md#reten
 `ExecutionCoordinator.submitOutcome(caller, envelope, submission)` takes an `OutcomeEnvelope`:
 `executionId`, `activationId`, `writerEpoch`, `baseProgressRevision`, `progress`, optional
 `emissions` (each `{ emissionKey, value }`), optional `effects` and `next` (`{ step: "continue" }`,
-`{ step: "complete", result }`, `{ step: "fail", error }`; `{ step: "await", wait }` is refused until
-K1.3), plus the attempt-bound `SubmissionGrant` the Kernel handed to the Driver with the current
+`{ step: "complete", result }`, `{ step: "fail", error }`, `{ step: "await", wait }`, which registers
+a wait as [below](#waits-timers-and-cancellation-api)), plus the attempt-bound `SubmissionGrant` the Kernel handed to the Driver with the current
 attempt. The envelope names the exchange and the attempt it answers; nothing is defaulted from the
 current exchange. Every field is read once from the envelope's own data, and each value root
 (progress, each Emission value, the result or error) is captured once and measured on its own. An own
@@ -465,6 +466,124 @@ These are this in-process binding's choices where the architecture leaves the re
   duplicates append nothing; no seventh receipt.
 - **Retention**: accepted-Outcome records, resolved exchanges, Emissions and results are kept for the
   coordinator's lifetime, so an exact Outcome replay is answered for as long as the coordinator lives.
+
+## Waits, timers and cancellation API
+
+K1.3 implements [waits](../../mental-model/mechanisms/waits.md), the
+[three clocks'](../../mental-model/concepts/operations.md#three-clocks) wait and Execution deadlines,
+and [cancellation](../../mental-model/mechanisms/lifecycle.md#cancellation-order) in the in-process
+binding ([design 01 and its addendum](work/K1.3/design-01.md), [owner choice 01](work/K1.3/owner-choice-01.md)).
+Each choice below is this binding's, not architecture ([rewrite-index §4](../../mental-model/rewrite-index.md#4-explicitly-undecided--implementation-owned)).
+
+- **Clock.** `CoordinatorOptions.clock` is a `KernelClock { now(): number }`, a trusted host object
+  checked at construction: its own chain, never a built-in prototype, must supply a callable `now`
+  (`RangeError` otherwise). A reading is a safe integer of at least 0 on a host-chosen scale
+  (milliseconds recommended), from that clock only; no monotonicity is assumed, so a reading that goes
+  back only delays an expiry. The Kernel reads it at exactly two points: once per `submitOutcome` whose
+  complete capture is an `await` with a deadline (after capture, before the replay lookup and every
+  state check, so a reentrant clock is ordered before the decision), and once per `fireTimer` key that
+  names an Execution. A reading that throws or is not such an integer is unusable: it refuses an Outcome
+  as `clock_unavailable` only when W-2 step 3 decides it, and records a `clock_unavailable` fire.
+  Without a clock no deadline is honoured: a wait deadline is refused as `deadline_unsupported`
+  (`malformed_envelope`), an Execution deadline likewise at creation (`malformed_value`). The zone reads
+  no ambient time; `ambient-time.test.ts` is a bounded syntactic census plus poisoned runtime windows
+  ([017](017-known-limitations.md) L-26).
+- **Wait declaration** (W-1). `{ step: "await", wait: { dependencies?, subscriptions?, deadline? } }`;
+  an alternative is `{ eventIdentity?, kinds?, correlation? }` (AND within, ANY-OF across; one kind is a
+  one-element `kinds`), a subscription `{ subscriptionClass }`. Read once at capture. Refused whole as
+  `malformed_envelope` with codes `empty_wait` (both lists empty, even with a deadline),
+  `empty_alternative`, `empty_kind_set`, `unknown_field`, `unsupported_form` (including a deadline that
+  is not a safe integer of at least 0), `missing_field`, the identity-text codes, `deadline_unsupported`
+  and `too_many_selectors` (more than 256 selector strings across all lists; each list's length is read
+  before its elements). Duplicates, empty-string text and alternatives nothing can match are accepted.
+  The Outcome's content identity packs the wait; absent and empty lists pack alike. A wait issue is a
+  content issue: it decides a refusal only after the exchange checks and submission authority pass.
+- **Eligibility** (W-7). By the trusted source category first: `application_input` matches a
+  subscription with an equal producer-declared `subscriptionClass`; `kernel_timeout` matches nothing.
+  Dependency alternatives are accepted and retained but no live category reaches them before K2 (L-21);
+  `waits.ts` checks their grammar on synthetic facts.
+- **Registration** (W-2, in the Outcome decision). Acknowledge the batch; generation g = the
+  Execution's accepted-`await` count + 1; a queued Event outside the batch that is eligible retires g at
+  once (Event readiness, `READY`); otherwise a due deadline (`now >= deadline`) retires g with its one
+  timeout Event at the Outcome's own acceptance position (deadline readiness, `READY`); otherwise
+  `WAITING`. `OutcomeAccepted.wait` is `{ generation, result: "waiting" | "woken" | "expired",
+  timeoutEventId }` or `null`, retained for replay.
+- **Wake** (B-6 path B). An eligible input accepted while `WAITING` retires the live generation in its
+  own ingress decision with Event readiness. Input accepted in `READY` or `RUNNING` creates no readiness.
+- **Batch selection.** `dispatch` refuses `WAITING` as `not_ready`. With wait-ended readiness it selects
+  from the Events queued at reservation by the retired selector: the mandatory member (the earliest
+  eligible Event, or the exact timeout Event) first, then the earliest other eligible Events up to the
+  bound, presented in acceptance order. The dispatch consumes readiness; redelivery and takeover keep the
+  pinned batch. Readiness is one owner field: species, generation, retired selector, timeout Event.
+- **Timeout Event.** ID `timeout-` plus the packed Execution ID and decimal generation; kind
+  `kernel.wait.timeout`; `sourceCategory: "kernel_timeout"`; payload `null`; `waitGeneration` and
+  `deadline`; no Input ID, subscription class or receipt. Minting is never refused by mailbox capacity.
+- **Timers.** The host owns firing: the Kernel has no scheduler, so a deadline takes effect only when
+  `fireTimer` is called and resolves it (owner choice 01; no instant enforcement, L-22).
+  `pendingTimers()` lists `{ executionId, kind: "wait_deadline", generation, deadline }` for each
+  `WAITING` Execution whose live wait has a deadline and `{ …, kind: "execution_deadline", generation:
+  null, deadline }` for each nonterminal Execution with one, in creation order. `fireTimer(key)` reads
+  only the key's own `executionId`, `kind` and `generation`; a descriptive `deadline` is ignored, the
+  persisted deadline alone decides. A malformed key or an unknown Execution answers `unknown` and records
+  nothing. Otherwise, after one clock reading: a generation never issued, or without a deadline, is
+  `stale`; an expired generation answers `duplicate` naming its timeout Event; the live generation of a
+  `WAITING` Execution is `clock_unavailable`, `not_due` or `expired` (timeout Event at the next
+  acceptance position, no receipt, deadline readiness, `READY`); anything else is `stale`. The
+  Execution key is `stale` (none set, or another terminal state), `duplicate` (this deadline already
+  cancelled it), `clock_unavailable`, `not_due` or `cancelled`. Every answer but `unknown` appends a
+  `timerFires` record. A generation that expired at registration is never listed: its key is formed from
+  the accepted decision's `wait.generation`. The entries take no caller (L-25).
+- **Cancellation.** `cancelExecution(caller, executionId)`: an invisible Execution answers
+  `unknown_destination`; the separate cancel power `AuthenticatedCaller.cancelScopes` must hold the
+  Execution's scope, else a scoped `unauthorized_control` (neither `controlScopes` nor a submission grant
+  cancels); `COMPLETED`/`FAILED`/`CANCELLED` answer `{ changed: false, state, cancellation, result }`.
+  Otherwise one cancellation plan: every queued Event, the reserved batch and any timeout included, takes
+  the B-5 terminal disposition (`Execution ended as CANCELLED before this Event was acknowledged`); the open
+  exchange ends unacknowledged and keeps its delivery log, so a late report settles its own row; a live
+  wait retires as `cancellation`; readiness is discarded; each hold gets an `ended_by_cancellation`
+  history record with authority `cancellation`; `CANCELLED` at the next acceptance position with no
+  receipt. Request acceptance and the terminal transition are one decision.
+- **Driver cancellation request** (owner choice 01). After the plan commits, from `READY`, `RUNNING` or
+  `WAITING`, for either cause, the Kernel calls the Driver's optional `requestCancellation({ executionId,
+  cause, attempt })` once, `attempt` naming the open exchange's current attempt or `null`. It is resolved
+  on the Driver's own chain and called with the load-time `Reflect.apply`; its return value is never read
+  and a throw from the lookup or the call is contained. A repeated cancellation requests nothing. It is a
+  request, never a physical stop (L-20).
+- **Execution deadline** (owner decision 1). `CreateExecutionRequest.executionDeadline`, a safe integer
+  of at least 0, joins creation content: the creation identity gains a seventh part only when present, so
+  identities without one are unchanged, and an added, removed or changed deadline conflicts. Creation
+  never reads the clock; a deadline already past still creates a `READY` Execution. An accepted fire
+  forms the same cancellation plan with cause `execution_deadline`, the creating producer's namespace and
+  the Execution's scope as actor, and the reason `Execution ended as CANCELLED (its Execution deadline
+  expired) before this Event was acknowledged`; history authority `execution_deadline`. It mints no
+  timeout Event and admits no further Activation; an Outcome or dispatch accepted before the fire wins.
+- **Losing Outcomes** (CX-6). After the replay lookup, a proposal on a `CANCELLED` Execution is refused
+  as `cancellation_terminal_conflict` with the exact reason `cancellation accepted before Outcome
+  acceptance`, whatever its step, epoch, grant or content. A proposal with a usable Activation identity
+  and complete content is retained in `losingOutcomes` (Activation, epoch, base, refusal) and indexed by
+  Activation and content identity, so an exact retry, even a fresh equal object, returns the same refusal
+  object; one without gets an unindexed refusal. `COMPLETED`/`FAILED` keep `terminal_destination`.
+- **Other controls after cancellation.** Redelivery answers `no_unresolved_exchange`, as after
+  `COMPLETED`/`FAILED`; dispatch, takeover, recovery declaration and protocol-failure report answer
+  `terminal_destination`; new input is refused as `terminal_destination` and an exact input retry still
+  replays.
+- **Inspection.** `ExecutionView` adds `wait`, `waitEndedReadiness`, `retiredWaits` (generation,
+  registering Activation, declaration, deadline, `retiredBy`, ending Event), `timerFires`,
+  `executionDeadline`, `cancellation` (its facts and the ended exchange's delivery rows) and
+  `losingOutcomes`. `MailboxEntryView` and `ActivationEvent` are unions on `sourceCategory`; a timeout
+  member has `null` Input ID, subscription class and receipt.
+- **State owner.** The plan union grows to thirteen variants (`expiry`, `timer_discard`, `cancellation`,
+  `losing_outcome`, with waits added to the Outcome, input and dispatch plans). The owner refuses a plan
+  that breaks S1 (a terminal Execution never reopens; dispatch needs `READY`, an Outcome `RUNNING`), S2 (a
+  terminal decision disposes every queued Event), S3 (`WAITING` exactly while one generation is live), S4
+  (one timeout per generation) or S5 (readiness only over none). These are owner guards; eligibility,
+  selection and which plan an operation forms stay semantic and test-checked (L-15).
+- **Retention.** Retired waits, timer fires and losing proposals are kept for the coordinator's lifetime,
+  like refusals (L-24); nothing survives the process (L-19).
+- **Evidence.** K13-1 to K13-8 are deterministic Kernel suites. K13-9 is a declared bounded search
+  (`packages/kernel/tests/race-search/`): every four-letter word over a 13-letter alphabet from 8 seeds at
+  bounds 1 and 2, 456,976 runs compared step by step with a reference model and twelve invariants, plus a
+  20,000-word supplementary walk outside the claim (L-26).
 
 ## 1. Execution and Harness
 
