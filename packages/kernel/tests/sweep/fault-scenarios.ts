@@ -297,18 +297,33 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
     const view = harness.accepted(env.kernel.inspect(env.who, env.executionId));
     const refusal = env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "probe-refusal", kind: 42 as never, payload: bytes(null) });
     if (refusal.ok) throw new Error("the refusal probe was accepted");
-    const acceptance = env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "probe-acceptance", kind: "probe", payload: bytes(null) });
+    const acceptance = ownerRefused(() => env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "probe-acceptance", kind: "probe", payload: bytes(null) }));
     let grantAnswer = "no setup grant";
     if (setupGrant !== undefined) {
-      const answer = env.kernel.submitOutcome(env.who, outcome(env, { progress: { probe: true } }), setupGrant);
-      grantAnswer = answer.ok ? `accepted at ${answer.value.receipt.position}` : answer.error.classification;
+      const answer = ownerRefused(() => env.kernel.submitOutcome(env.who, outcome(env, { progress: { probe: true } }), setupGrant));
+      grantAnswer = typeof answer === "string" ? answer : answer.ok ? `accepted at ${answer.value.receipt.position}` : answer.error.classification;
     }
     return {
       view,
       nextRefusal: refusal.error.position,
-      nextAcceptance: acceptance.ok ? acceptance.value.receipt.position : acceptance.error.classification,
+      nextAcceptance: typeof acceptance === "string" ? acceptance : acceptance.ok ? acceptance.value.receipt.position : acceptance.error.classification,
       setupGrant: grantAnswer,
     };
+  };
+
+  /**
+   * K1.3, L-28 (owner choice 06): a probe the state owner refuses, because the record a fault left
+   * inside the Outcome apply window breaks the post-state predicate, is observed as that refusal and the
+   * rule it names. Any other exception is not an observation.
+   */
+  const ownerRefused = <T>(probe: () => T): T | string => {
+    try {
+      return probe();
+    } catch (error) {
+      const named = error instanceof Error ? /^plan refused: .*\(([PT][0-9]), S[1-5]:/.exec(error.message) : null;
+      if (named === null) throw error;
+      return `owner refused (${named[1]})`;
+    }
   };
 
   /** The grant the Driver received with the setup exchange's first attempt. */

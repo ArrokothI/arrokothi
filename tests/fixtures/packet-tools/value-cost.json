@@ -1619,8 +1619,8 @@
         {
           "id": "mutation-00f410e88769bb3aa2385091f5268bed18b04ddd6f4352d0c401c6c30dc0b855",
           "path": "packages/kernel/src/state.ts",
-          "before": "    appendOwn(record.mailbox, entry);\n    mapSet(record.byInputId, inputIdKey(inputId), entry);",
-          "after": "    record.mailbox.push(entry);\n    mapSet(record.byInputId, inputIdKey(inputId), entry);",
+          "before": "    if (appended !== null) appendOwn(record.mailbox, appended);\n    mapSet(record.byInputId, inputIdKey(inputId), entry);",
+          "after": "    if (appended !== null) record.mailbox.push(appended);\n    mapSet(record.byInputId, inputIdKey(inputId), entry);",
           "operator": "c1-ablation",
           "name": "C-MAILBOX-PUSH (C1: killed by the ingress converted tests at B and at C)"
         },

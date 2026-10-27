@@ -583,23 +583,40 @@ Each choice below is this binding's, not architecture ([rewrite-index §4](../..
   `losingOutcomes`. `MailboxEntryView` and `ActivationEvent` are unions on `sourceCategory`; a timeout
   member has `null` Input ID, subscription class and receipt.
 - **State owner.** The plan union grows to thirteen variants (`expiry`, `timer_discard`, `cancellation`,
-  `losing_outcome`, with waits added to the Outcome, input and dispatch plans). Each owner guard is a
-  predicate the owner checks before writing anything, in every arm that could break it:
-  - **S1:** every arm that writes lifecycle, mailbox, wait, readiness, exchange or progress fields refuses
-    a terminal record; dispatch needs `READY` and an Outcome `RUNNING`.
-  - **S2:** a terminal decision's acknowledged and ended positions are an exact cover of the queued
-    Events: each is queued, none is named twice within or across the lists, and all are named.
-  - **S3:** `WAITING` exactly while one generation is live. A wake, expiry or cancellation retires the
-    live generation with its own registration facts and its arm's cause. An Outcome never carries both a
-    live and a retired wait.
-  - **S4:** each generation is registered once and expires at most once. An Outcome that creates a
-    registration, whether live, woken or expired at once, takes the next count; one that creates none
-    keeps it. A timeout is minted exactly for a deadline retirement, and agrees with it.
-  - **S5:** readiness is set only over none, only with its own retirement: the same generation, cause,
-    selector and timeout Event.
+  `losing_outcome`, with waits added to the Outcome, input and dispatch plans). The **governed fields** are the
+  lifecycle state, the registration count, the live wait, readiness, the open-exchange pointer, the
+  cancellation record, the retired waits, and the mailbox's entries and their dispositions. Each arm that
+  changes one (input, dispatch, Outcome, expiry, cancellation) first builds its **successor**: the record it is
+  about to commit, the old record with this decision's governed changes laid over it. It admits the successor
+  before its first write, then commits exactly the successor's values; a static rule checks both over the
+  source. Creation admits its fresh record before either index publishes it. Admission is evaluated in full on
+  every decision. A plan it refuses writes nothing. The successor must satisfy, over the whole next record
+  including any entry the decision appends:
+  - a terminal state has no queued entry, live wait, readiness or open exchange;
+  - `WAITING` iff a live wait, `RUNNING` iff an open exchange, `CANCELLED` iff a cancellation record;
+  - terminal dispositions only in a terminal state;
+  - the retired and live generations are exactly 1…count, each with its declaration's deadline;
+  - timeout entries match deadline retirements one to one;
+  - each retirement ends as its cause says;
+  - readiness only in `READY`, belonging to the last retirement, whose ending Event is still queued.
 
-  Whether a wait wakes, expires or stays live, eligibility, selection, the positions a non-terminal
-  Outcome acknowledges, and which plan an operation forms stay semantic and test-checked (L-15).
+  Against the old record:
+  - the governed fields of a terminal record never change, and each arm starts from its own states and
+    changes only its own fields;
+  - a disposition is written once, over a queued entry, never as `queued`;
+  - only the Outcome that resolves an exchange acknowledges, only that exchange's batch, and it leaves the
+    whole batch acknowledged by its Activation;
+  - a retirement keeps its wait's registration facts and takes its arm's cause;
+  - an Event or deadline retirement installs readiness, which lasts until dispatch consumes it or
+    cancellation discards it;
+  - the count rises by one exactly when a registration is created.
+
+  Delivery, takeover and control refuse a terminal record. Settlement, refusals, losing Outcomes and discarded
+  timer fires write operational evidence only, and still run on terminal records. These rules relate the
+  governed fields to each other. They establish nothing about result, receipt, timeout-ID or cancellation-fact
+  content. A commit that a host fault interrupts is outside them (L-28). Which plan an operation forms,
+  eligibility, whether a wait wakes, expires or stays live, which Event wakes it, batch selection, positions,
+  IDs and refusal precedence stay semantic and test-checked (L-15).
 - **Retention.** Retired waits, timer fires and losing proposals are kept for the coordinator's lifetime,
   like refusals (L-24); nothing survives the process (L-19).
 - **Evidence.** K13-1 to K13-8 are deterministic Kernel suites. K13-9 is a declared bounded search

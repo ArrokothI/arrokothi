@@ -11,7 +11,8 @@
  *
  * Each plan kind has one arm with two phases. **Prepare** resolves the Execution, checks that it is
  * still at the version the plan was formed against (`basis`), resolves positions and builds the owner's
- * mutable containers from plan data; nothing that existed before changes. **Commit** then appends the
+ * mutable containers from plan data; an arm that changes a governed field builds and admits its successor
+ * there too (*The successor check*, below). Nothing that existed before changes. **Commit** then appends the
  * prepared values and makes plain writes, in the order the accepted transactions fix (K1.2-DEC-10,
  * correction DEC-9). No caller, host or Driver code runs anywhere in `apply`: a plan holds no function,
  * and this module reaches none of the modules that observe caller state or hold the Driver.
@@ -73,7 +74,6 @@ import {
   type SettlementPlan,
   type StoredHold,
   type TakeoverPlan,
-  type TimeoutFacts,
   type TimerDiscardPlan,
 } from "./plan.ts";
 import type { RefusalRecord } from "./refusal.ts";
@@ -105,33 +105,45 @@ const mapSet = <K, V>(map: Map<K, V>, key: K, value: V): void => {
 const STALE_PLAN = "plan refused: its Execution changed after the plan was formed, or does not hold what the plan names";
 
 /**
- * The owner's structural checks (K1.3, design 01 § 12, addendum 01 § A7 and design 02). Each is a
- * predicate over the record and the plan, checked in the prepare phase of every arm that could break it,
- * so a refused plan writes nothing. Each names the rule it guards:
+ * The successor check (K1.3: design 03 and its revision; owner choices 04 and 05).
  *
- * - S1: every arm that writes lifecycle, mailbox, wait, readiness, exchange or progress fields refuses a
- *   terminal record; dispatch needs `READY` and an Outcome `RUNNING`.
- * - S2: a terminal decision's position lists are an exact cover of the queued entries: each names queued
- *   entries, no position twice within or across the lists, and every queued entry once (`coversQueuedOnce`).
- * - S3: `WAITING` exactly when one generation is live. A plan that retires the live generation carries
- *   that wait's own registration facts and its arm's cause; an Outcome never carries both a live and a
- *   retired wait.
- * - S4: each generation is registered once and expires at most once. An Outcome that creates a
- *   registration (live, woken or expired at once) takes the next count as its generation, and one that
- *   creates none keeps the count; a timeout is minted exactly for a deadline retirement of a fresh or the
- *   live generation, and agrees with it.
- * - S5: readiness is set only over none, only with a retirement in the same plan, and belongs to it:
- *   generation, cause, selector and timeout Event.
+ * The **governed fields** are the lifecycle state, the registration count, the live wait, readiness,
+ * the open-exchange pointer (`ExecutionRecord.activation`, not the exchange's own fields), the
+ * cancellation record, the retired waits, the mailbox's entries and their dispositions. Every arm that
+ * changes one builds, in its prepare phase, the record it is about to commit: its **successor**, the old
+ * record with this decision's governed changes laid over it (`successor`). It then **admits** it
+ * (`admit`): the transition rules T1–T6 against the old record, then the post-state predicate P1–P9
+ * over the whole next record, including the entry this decision appends. Both are evaluated in full on
+ * every decision; neither assumes the old record satisfied them. Only then does the commit write, and
+ * each governed write commits the successor's own value (`control-commits.test.ts` checks that over the
+ * source). A refused plan writes nothing.
  *
- * These are owner guards, not semantic closure: whether a wait wakes, expires or stays live, which
- * Events are eligible, which batch is selected, which positions a non-terminal Outcome acknowledges and
- * which plan an operation forms stay the coordinator's, checked by the tests (L-15).
+ * Creation admits its fresh record with P alone, before either index publishes it. Delivery, takeover
+ * and control edit only the open exchange's own fields and refuse a terminal record directly (T1).
+ * Settlement, refusals, losing Outcomes and discarded timer fires write operational evidence only and
+ * also run on terminal records.
+ *
+ * Each clause names the guard it belongs to (S1–S5). P and T state relations among the governed
+ * fields only. What they leave open stays the coordinator's, checked by the tests (L-15): which plan an
+ * operation forms, eligibility, whether a wait wakes, expires or stays live, which Event wakes it, batch
+ * selection, positions, IDs, refusal precedence, and the content of results, receipts and cancellation
+ * facts.
  */
-const S1 = "S1 a terminal Execution never reopens";
-const S2 = "S2 a terminal decision disposes every queued Event exactly once";
-const S3 = "S3 WAITING exactly when one generation is live";
-const S4 = "S4 each generation is registered once and expires at most once";
-const S5 = "S5 readiness only over none, by its retirement";
+const P1 = "P1, S2: a terminal record holds no queued Event, live wait, readiness or open exchange";
+const P2 = "P2, S3: WAITING exactly when a wait is live";
+const P3 = "P3, S1: RUNNING exactly when an exchange is open";
+const P4 = "P4, S1: CANCELLED exactly when a cancellation is recorded";
+const P5 = "P5, S2: an Event is terminally disposed only in a terminal state";
+const P6 = "P6, S4: the retired and live generations are exactly 1 to the count, each with its declaration's deadline";
+const P7 = "P7, S4: one timeout Event for each deadline retirement, matching it, and no other";
+const P8 = "P8, S3: each retirement ends as its cause says";
+const P9 = "P9, S5: readiness only while READY, belonging to the last retirement, whose ending Event is still queued";
+const T1 = "T1, S1: a terminal Execution never reopens, and each decision starts from its own states and changes only its own fields";
+const T2 = "T2, S2: a disposition is written once, over a queued Event, never as queued, and an appended Event is queued";
+const T3 = "T3, S2: only the resolving Outcome acknowledges, and it leaves its whole batch acknowledged by its Activation";
+const T4 = "T4, S3: a retirement keeps its wait's registration facts and takes its decision's cause";
+const T5 = "T5, S5: readiness is installed with its Event or deadline retirement and kept until dispatch or cancellation";
+const T6 = "T6, S4: the count rises by one exactly when a registration is created, and a decision creates at most one";
 
 // -- Readers ------------------------------------------------------------------
 
@@ -464,6 +476,16 @@ export class KernelState {
     return row === undefined ? null : row.status;
   }
 
+  /**
+   * The first post-state clause (P1–P9) the Execution's committed record breaks, or `null` (design 03's
+   * runtime witness). Evidence only: `admit` checks each successor before its commit, and this checks
+   * the record the commit left, so the tests can compare the two. The Kernel never calls it.
+   */
+  postStateViolation(executionId: string): string | null {
+    const record = mapGet(this.#executions, executionId);
+    return record === undefined ? null : postStateViolation(record, unchanged(record));
+  }
+
   /** Applies one plan: the only way accepted state changes. */
   apply(plan: Plan): void {
     if (plan.kind === "creation") {
@@ -553,7 +575,7 @@ export class KernelState {
       receipt: initial.receipt,
       disposition: QUEUED,
     };
-    const record: ExecutionRecord = {
+    const fresh: ExecutionRecord = {
       executionId,
       scope: plan.scope,
       creationRequestId,
@@ -593,6 +615,8 @@ export class KernelState {
       losingIndex: new PrimordialMap<string, LosingOutcomeView>(),
       version: plan.basis + 1,
     };
+    // The base case: the fresh record satisfies the post-state predicate before either index publishes it.
+    const record = admitCreated(fresh);
     mapSet(this.#executions, executionId, record);
     mapSet(this.#byCreationRequestId, creationRequestIdKey(creationRequestId), record);
   }
@@ -604,12 +628,6 @@ export class KernelState {
     const receipt = facts.receipt;
     const position = receipt.position;
     const woken = plan.woken;
-    const readiness = plan.readiness;
-    const live = record.wait;
-    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
-    if ((woken === null) !== (readiness === null)) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
-    if (woken !== null && (record.state !== "WAITING" || live === null || !retiresLive(woken, live, "event", facts.eventId))) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if (readiness !== null && (record.readiness !== null || !belongsTo(readiness, woken as RetiredWait, null))) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
     const entry: MailboxEntry = {
       eventId: facts.eventId,
       sourceCategory: "application_input",
@@ -625,21 +643,43 @@ export class KernelState {
       receipt,
       disposition: QUEUED,
     };
+    // A wake retires the live generation, with its readiness and READY; any other input only queues.
+    const next = admit(
+      record,
+      "input",
+      successor(record, {
+        state: woken === null ? record.state : "READY",
+        registrations: record.registrations,
+        wait: woken === null ? record.wait : null,
+        readiness: plan.readiness === null ? record.readiness : plan.readiness,
+        activation: record.activation,
+        cancellation: record.cancellation,
+        retired: woken,
+        appended: entry,
+        acknowledgeAt: NO_POSITIONS,
+        acknowledgment: QUEUED,
+        endAt: NO_POSITIONS,
+        ending: QUEUED,
+      }),
+    );
+    const appended = next.appended;
+    const retired = next.retired;
+    const wait = next.wait;
+    const readiness = next.readiness;
+    const state = next.state;
     record.version = plan.basis + 1;
     record.nextAcceptancePosition = position + 1;
-    appendOwn(record.mailbox, entry);
+    if (appended !== null) appendOwn(record.mailbox, appended);
     mapSet(record.byInputId, inputIdKey(inputId), entry);
     appendOwn(record.receipts, receipt);
-    if (woken !== null) appendOwn(record.retiredWaits, woken);
-    if (woken !== null) record.wait = null;
-    if (readiness !== null) record.readiness = readiness;
-    if (woken !== null) record.state = "READY";
+    if (retired !== null) appendOwn(record.retiredWaits, retired);
+    record.wait = wait;
+    record.readiness = readiness;
+    record.state = state;
   }
 
   #applyDispatch(plan: DispatchPlan): void {
     const record = this.#resolve(plan.executionId, plan.basis);
-    if (record.activation !== null) throw new PrimordialError(STALE_PLAN);
-    if (record.state !== "READY") throw new PrimordialError(`${STALE_PLAN} (${S1})`);
     const receipt = plan.receipt;
     const position = receipt.position;
     const activationsMinted = plan.activationsMinted;
@@ -652,19 +692,41 @@ export class KernelState {
       codeHold: null,
       protocolFailureHold: null,
     };
+    // The exchange opens from READY, and consumes wait-ended readiness: it lives for one reservation.
+    const next = admit(
+      record,
+      "dispatch",
+      successor(record, {
+        state: "RUNNING",
+        registrations: record.registrations,
+        wait: record.wait,
+        readiness: null,
+        activation: intent,
+        cancellation: record.cancellation,
+        retired: null,
+        appended: null,
+        acknowledgeAt: NO_POSITIONS,
+        acknowledgment: QUEUED,
+        endAt: NO_POSITIONS,
+        ending: QUEUED,
+      }),
+    );
+    const activation = next.activation;
+    const state = next.state;
+    const readiness = next.readiness;
     record.version = plan.basis + 1;
     record.activationsMinted = activationsMinted;
     record.nextAcceptancePosition = position + 1;
-    record.activation = intent;
-    record.state = "RUNNING";
+    record.activation = activation;
+    record.state = state;
     appendOwn(record.receipts, receipt);
-    record.readiness = null;
+    record.readiness = readiness;
   }
 
   #applyDelivery(plan: DeliveryPlan): void {
     const record = this.#resolve(plan.executionId, plan.basis);
     const exchange = record.activation;
-    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
+    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${T1})`);
     if (exchange === null || exchange.activation.activationId !== plan.activationId || exchange.deliveries.length + 1 !== plan.attempt) {
       throw new PrimordialError(STALE_PLAN);
     }
@@ -696,25 +758,8 @@ export class KernelState {
     const intent = record.activation;
     const facts = plan.resolved;
     if (intent === null || intent.activation.activationId !== facts.activationId) throw new PrimordialError(STALE_PLAN);
-    if (record.state !== "RUNNING") throw new PrimordialError(`${STALE_PLAN} (${S1})`);
-    const registrations = plan.registrations;
-    const liveWait = plan.liveWait;
-    const retired = plan.retired;
-    const readiness = plan.readiness;
     const timeout = plan.timeout;
-    // An Outcome runs on a RUNNING Execution, which has no live wait, so a live or retired wait it carries
-    // is the registration it creates (design 02, Q2).
-    const creates = liveWait !== null || retired !== null;
-    const timeoutEventId = timeout === null ? null : timeout.eventId;
-    if ((plan.nextState === "WAITING") !== (liveWait !== null) || (liveWait !== null && retired !== null)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if (registrations !== record.registrations + (creates ? 1 : 0)) throw new PrimordialError(`${STALE_PLAN} (${S4})`);
-    if (liveWait !== null && (liveWait.generation !== registrations || !registeredBy(liveWait, facts.activationId) || record.wait !== null)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if (retired !== null && (retired.generation !== registrations || !registeredBy(retired, facts.activationId) || retired.retiredBy === "cancellation")) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if ((retired !== null && retired.retiredBy === "deadline") !== (timeout !== null)) throw new PrimordialError(`${STALE_PLAN} (${S4})`);
-    if (timeout !== null && !expiresAs(timeout, retired as RetiredWait)) throw new PrimordialError(`${STALE_PLAN} (${S4})`);
-    if ((retired === null) !== (readiness === null) || (readiness !== null && (record.readiness !== null || !belongsTo(readiness, retired as RetiredWait, timeoutEventId)))) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
-    if (isTerminal(plan.nextState) && !coversQueuedOnce(record.mailbox, plan.acknowledgeAt, plan.endAt)) throw new PrimordialError(`${STALE_PLAN} (${S2})`);
-    const timeoutEntry: MailboxEntry | null =
+    const minted: MailboxEntry | null =
       timeout === null
         ? null
         : {
@@ -732,14 +777,37 @@ export class KernelState {
             receipt: null,
             disposition: QUEUED,
           };
-    const toAcknowledge: MailboxEntry[] = [];
-    for (let index = 0; index < plan.acknowledgeAt.length; index += 1) {
-      appendOwn(toAcknowledge, readAt(record.mailbox, readAt(plan.acknowledgeAt, index) as number) as MailboxEntry);
-    }
-    const toEnd: MailboxEntry[] = [];
-    for (let index = 0; index < plan.endAt.length; index += 1) {
-      appendOwn(toEnd, readAt(record.mailbox, readAt(plan.endAt, index) as number) as MailboxEntry);
-    }
+    // The Outcome resolves its exchange: it acknowledges the batch, ends the backlog at a terminal step,
+    // and registers at most one generation, live or retired at once with its timeout.
+    const next = admit(
+      record,
+      "outcome",
+      successor(record, {
+        state: plan.nextState,
+        registrations: plan.registrations,
+        wait: plan.liveWait,
+        readiness: plan.readiness,
+        activation: null,
+        cancellation: record.cancellation,
+        retired: plan.retired,
+        appended: minted,
+        acknowledgeAt: plan.acknowledgeAt,
+        acknowledgment: plan.acknowledgment,
+        endAt: plan.endAt,
+        ending: plan.ending,
+      }),
+    );
+    const toAcknowledge = next.acknowledged;
+    const acknowledgment = next.acknowledgment;
+    const toEnd = next.ended;
+    const ending = next.ending;
+    const timeoutEntry = next.appended;
+    const retired = next.retired;
+    const registrations = next.registrations;
+    const liveWait = next.wait;
+    const readiness = next.readiness;
+    const activation = next.activation;
+    const nextState = next.state;
     const resolved: ResolvedExchange = PrimordialObjectFreeze({
       activationId: facts.activationId,
       writerEpoch: facts.writerEpoch,
@@ -752,8 +820,6 @@ export class KernelState {
     });
     const receipt = plan.receipt;
     const acceptancePosition = receipt.position;
-    const acknowledgment = plan.acknowledgment;
-    const ending = plan.ending;
     const stored = plan.stored;
     const outcome = stored.content;
     const progressRevision = plan.progressRevision;
@@ -761,7 +827,6 @@ export class KernelState {
     const result = plan.result;
     const activationId = facts.activationId;
     const historyToAppend = plan.history;
-    const nextState = plan.nextState;
     // The commit: nothing below can refuse, reads caller state or builds a record. The acceptance index
     // advances here, with the rest of the decision (K1.2-DEC-10).
     record.version = plan.basis + 1;
@@ -781,14 +846,14 @@ export class KernelState {
     record.registrations = registrations;
     record.wait = liveWait;
     record.readiness = readiness;
-    record.activation = null;
+    record.activation = activation;
     record.state = nextState;
   }
 
   #applyTakeover(plan: TakeoverPlan): void {
     const record = this.#resolve(plan.executionId, plan.basis);
     const exchange = record.activation;
-    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
+    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${T1})`);
     if (exchange === null || exchange.activation.activationId !== plan.activation.activationId) throw new PrimordialError(STALE_PLAN);
     const receipt = plan.receipt;
     const cleared = plan.cleared;
@@ -810,7 +875,7 @@ export class KernelState {
   #applyControl(plan: ControlPlan): void {
     const record = this.#resolve(plan.executionId, plan.basis);
     const exchange = record.activation;
-    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
+    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${T1})`);
     if (exchange === null) throw new PrimordialError(STALE_PLAN);
     const stored = plan.history;
     const codeHold = plan.codeHold;
@@ -826,14 +891,7 @@ export class KernelState {
   #applyExpiry(plan: ExpiryPlan): void {
     const record = this.#resolve(plan.executionId, plan.basis);
     const timeout = plan.timeout;
-    const retired = plan.retired;
-    const readiness = plan.readiness;
     const fire = plan.fire;
-    const live = record.wait;
-    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
-    if (record.state !== "WAITING" || live === null || !retiresLive(retired, live, "deadline", timeout.eventId)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if (!expiresAs(timeout, retired)) throw new PrimordialError(`${STALE_PLAN} (${S4})`);
-    if (record.readiness !== null || !belongsTo(readiness, retired, timeout.eventId)) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
     const entry: MailboxEntry = {
       eventId: timeout.eventId,
       sourceCategory: "kernel_timeout",
@@ -849,16 +907,40 @@ export class KernelState {
       receipt: null,
       disposition: QUEUED,
     };
+    // The live generation retires by its deadline, with its one timeout Event, deadline readiness and READY.
+    const next = admit(
+      record,
+      "expiry",
+      successor(record, {
+        state: "READY",
+        registrations: record.registrations,
+        wait: null,
+        readiness: plan.readiness,
+        activation: record.activation,
+        cancellation: record.cancellation,
+        retired: plan.retired,
+        appended: entry,
+        acknowledgeAt: NO_POSITIONS,
+        acknowledgment: QUEUED,
+        endAt: NO_POSITIONS,
+        ending: QUEUED,
+      }),
+    );
+    const appended = next.appended;
+    const retired = next.retired;
+    const wait = next.wait;
+    const readiness = next.readiness;
+    const state = next.state;
     // A timeout takes the next acceptance position and mints no receipt (identity.md: timeout
     // acceptance is Kernel-internal, not a seventh receipt boundary).
     record.version = plan.basis + 1;
     record.nextAcceptancePosition = timeout.acceptancePosition + 1;
-    appendOwn(record.mailbox, entry);
-    appendOwn(record.retiredWaits, retired);
+    if (appended !== null) appendOwn(record.mailbox, appended);
+    if (retired !== null) appendOwn(record.retiredWaits, retired);
     appendOwn(record.timerFires, fire);
-    record.wait = null;
+    record.wait = wait;
     record.readiness = readiness;
-    record.state = "READY";
+    record.state = state;
   }
 
   #applyTimerDiscard(plan: TimerDiscardPlan): void {
@@ -872,25 +954,43 @@ export class KernelState {
   #applyCancellation(plan: CancellationPlan): void {
     const record = this.#resolve(plan.executionId, plan.basis);
     const facts = plan.record;
-    const retired = plan.retired;
     const history = plan.history;
     const fire = plan.fire;
-    const ending = plan.ending;
-    const live = record.wait;
     const intent = record.activation;
-    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
-    if (retired === null ? live !== null : live === null || !retiresLive(retired, live, "cancellation", null)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if (!coversQueuedOnce(record.mailbox, NO_POSITIONS, plan.endAt)) throw new PrimordialError(`${STALE_PLAN} (${S2})`);
     if ((intent === null) !== (facts.endedExchange === null) || (intent !== null && facts.endedExchange !== null && intent.activation.activationId !== facts.endedExchange.activationId)) {
       throw new PrimordialError(STALE_PLAN);
     }
-    const toEnd: MailboxEntry[] = [];
-    for (let index = 0; index < plan.endAt.length; index += 1) {
-      appendOwn(toEnd, readAt(record.mailbox, readAt(plan.endAt, index) as number) as MailboxEntry);
-    }
     // The ended exchange's delivery log stays the one the capabilities write into, as for a resolved
     // exchange, so a late report still settles its original row; the frozen facts never hold it.
-    const cancellation: CancellationRecord = PrimordialObjectFreeze({ facts, deliveries: intent === null ? null : intent.deliveries });
+    const ended: CancellationRecord = PrimordialObjectFreeze({ facts, deliveries: intent === null ? null : intent.deliveries });
+    // Every queued Event ends, nothing is acknowledged, the live generation retires by cancellation, and
+    // the wait, readiness and exchange are cleared.
+    const next = admit(
+      record,
+      "cancellation",
+      successor(record, {
+        state: "CANCELLED",
+        registrations: record.registrations,
+        wait: null,
+        readiness: null,
+        activation: null,
+        cancellation: ended,
+        retired: plan.retired,
+        appended: null,
+        acknowledgeAt: NO_POSITIONS,
+        acknowledgment: QUEUED,
+        endAt: plan.endAt,
+        ending: plan.ending,
+      }),
+    );
+    const toEnd = next.ended;
+    const ending = next.ending;
+    const retired = next.retired;
+    const cancellation = next.cancellation;
+    const wait = next.wait;
+    const readiness = next.readiness;
+    const activation = next.activation;
+    const state = next.state;
     const position = facts.position;
     // A cancellation takes an acceptance position and mints no receipt (identity.md's six boundaries).
     record.version = plan.basis + 1;
@@ -900,10 +1000,10 @@ export class KernelState {
     appendAllOwn(record.recoveryHistory, history);
     if (fire !== null) appendOwn(record.timerFires, fire);
     record.cancellation = cancellation;
-    record.wait = null;
-    record.readiness = null;
-    record.activation = null;
-    record.state = "CANCELLED";
+    record.wait = wait;
+    record.readiness = readiness;
+    record.activation = activation;
+    record.state = state;
   }
 
   #applyLosingOutcome(plan: LosingOutcomePlan): void {
@@ -948,42 +1048,276 @@ const deliveriesOf = (record: ExecutionRecord, activationId: string): DeliveryAt
   return null;
 };
 
-/** No positions: the cancellation acknowledges nothing. */
+// -- The successor check ------------------------------------------------------
+
+/** No positions: a decision that writes no disposition. */
 const NO_POSITIONS: readonly number[] = PrimordialObjectFreeze([]);
 
-/**
- * S2: whether two position lists are an exact cover of the queued entries of `mailbox`. Every named
- * position is a queued entry, no position is named twice within or across the lists, and the distinct
- * positions named are as many as the queued entries, so they are all of them. A terminal decision must
- * leave nothing queued (B-5); equal length alone would let a repeated position stand in for one left
- * queued (K13-R01-S2-01). Positions are keyed as `readAt` resolves them.
- */
-const coversQueuedOnce = (mailbox: readonly MailboxEntry[], first: readonly number[], second: readonly number[]): boolean => {
-  let queued = 0;
-  for (let index = 0; index < mailbox.length; index += 1) {
-    if ((readAt(mailbox, index) as MailboxEntry).disposition.kind === "queued") queued += 1;
-  }
-  const seen = new PrimordialMap<string, true>();
-  let named = 0;
-  const distinctQueued = (list: readonly number[]): boolean => {
-    for (let index = 0; index < list.length; index += 1) {
-      const position = readAt(list, index) as number;
-      const key = `${position}`;
-      const entry = readAt(mailbox, position);
-      if (entry === undefined || entry.disposition.kind !== "queued" || mapGet(seen, key) !== undefined) return false;
-      mapSet(seen, key, true);
-      named += 1;
-    }
-    return true;
-  };
-  return distinctQueued(first) && distinctQueued(second) && named === queued;
+/** Throws the owner's refusal of a plan that breaks `clause`. */
+const refuse = (clause: string): never => {
+  throw new PrimordialError(`${STALE_PLAN} (${clause})`);
 };
 
-/** S3: whether a wait carries the registration facts of the Activation that registered it. */
-const registeredBy = (wait: LiveWait | RetiredWait, activationId: string): boolean =>
-  wait.registeredBy === activationId && wait.deadline === wait.declaration.deadline;
+/**
+ * One decision's governed changes, every member given. A member the decision leaves alone is the
+ * record's own value, `null` (no retirement, no appended entry) or `NO_POSITIONS` (no dispositions).
+ */
+interface Change {
+  readonly state: ExecutionState;
+  readonly registrations: number;
+  readonly wait: LiveWait | null;
+  readonly readiness: Readiness | null;
+  readonly activation: ActivationRecord | null;
+  readonly cancellation: CancellationRecord | null;
+  /** The generation this decision retires, appended to the retired waits, or `null`. */
+  readonly retired: RetiredWait | null;
+  /** The one entry this decision appends to the mailbox, or `null`. */
+  readonly appended: MailboxEntry | null;
+  readonly acknowledgeAt: readonly number[];
+  readonly acknowledgment: MailboxDisposition;
+  readonly endAt: readonly number[];
+  readonly ending: MailboxDisposition;
+}
 
-/** S3: whether `retired` retires the live wait `live` as it is, by `cause`, ended by `endingEventId`. */
+/**
+ * The record one decision is about to commit (design 03 Q1): its governed fields, laid over the old
+ * record's lists. The next mailbox is the old entries, each with its written disposition if it has
+ * one, followed by `appended`; the next retired waits are the old ones followed by `retired`. Frozen,
+ * and never written: the commit only reads it.
+ */
+interface Successor {
+  readonly state: ExecutionState;
+  readonly registrations: number;
+  readonly wait: LiveWait | null;
+  readonly readiness: Readiness | null;
+  readonly activation: ActivationRecord | null;
+  readonly cancellation: CancellationRecord | null;
+  readonly retired: RetiredWait | null;
+  readonly appended: MailboxEntry | null;
+  /** The old entries `acknowledgeAt` names, in its order. */
+  readonly acknowledged: readonly MailboxEntry[];
+  readonly acknowledgment: MailboxDisposition;
+  /** The old entries `endAt` names, in its order. */
+  readonly ended: readonly MailboxEntry[];
+  readonly ending: MailboxDisposition;
+  /** Each written entry's next disposition, keyed by the entry. */
+  readonly written: Map<MailboxEntry, MailboxDisposition>;
+}
+
+/** The arms that build a successor. Creation admits its fresh record with P alone. */
+type SuccessorArm = "input" | "dispatch" | "outcome" | "expiry" | "cancellation";
+
+/**
+ * Builds one decision's successor of a record that is not terminal (T1). Each position resolves as
+ * `readAt` resolves it, so `-0` names entry 0, and one that names no entry, or an entry this decision
+ * already writes, is refused (T2). Nothing that existed before changes.
+ */
+const successor = (record: ExecutionRecord, change: Change): Successor => {
+  if (isTerminal(record.state)) refuse(T1);
+  const written = new PrimordialMap<MailboxEntry, MailboxDisposition>();
+  const acknowledged = resolveWrites(record, change.acknowledgeAt, change.acknowledgment, written);
+  const ended = resolveWrites(record, change.endAt, change.ending, written);
+  return PrimordialObjectFreeze({
+    state: change.state,
+    registrations: change.registrations,
+    wait: change.wait,
+    readiness: change.readiness,
+    activation: change.activation,
+    cancellation: change.cancellation,
+    retired: change.retired,
+    appended: change.appended,
+    acknowledged,
+    acknowledgment: change.acknowledgment,
+    ended,
+    ending: change.ending,
+    written,
+  });
+};
+
+/** The entries `positions` names in `record`'s mailbox, each recorded in `written` with `disposition`. */
+const resolveWrites = (record: ExecutionRecord, positions: readonly number[], disposition: MailboxDisposition, written: Map<MailboxEntry, MailboxDisposition>): readonly MailboxEntry[] => {
+  const entries: MailboxEntry[] = [];
+  for (let index = 0; index < positions.length; index += 1) {
+    const entry = readAt(record.mailbox, readAt(positions, index) as number);
+    if (entry === undefined || mapGet(written, entry) !== undefined) refuse(T2);
+    mapSet(written, entry as MailboxEntry, disposition);
+    appendOwn(entries, entry as MailboxEntry);
+  }
+  return PrimordialObjectFreeze(entries);
+};
+
+/** A record as its own successor: the change that changes nothing. */
+const unchanged = (record: ExecutionRecord): Successor =>
+  PrimordialObjectFreeze({
+    state: record.state,
+    registrations: record.registrations,
+    wait: record.wait,
+    readiness: record.readiness,
+    activation: record.activation,
+    cancellation: record.cancellation,
+    retired: null,
+    appended: null,
+    acknowledged: NO_ENTRIES,
+    acknowledgment: QUEUED,
+    ended: NO_ENTRIES,
+    ending: QUEUED,
+    written: new PrimordialMap<MailboxEntry, MailboxDisposition>(),
+  });
+
+const NO_ENTRIES: readonly MailboxEntry[] = PrimordialObjectFreeze([]);
+
+/** Admits one arm's successor of `record`: T1–T6, then P1–P9, each in full. Returns it, or refuses. */
+const admit = (record: ExecutionRecord, arm: SuccessorArm, next: Successor): Successor => {
+  const transition = transitionViolation(record, arm, next);
+  if (transition !== null) refuse(transition);
+  const post = postStateViolation(record, next);
+  if (post !== null) refuse(post);
+  return next;
+};
+
+/** Admits a fresh record before it is published: P1–P9 over the record as it is. */
+const admitCreated = (record: ExecutionRecord): ExecutionRecord => {
+  const post = postStateViolation(record, unchanged(record));
+  if (post !== null) refuse(post);
+  return record;
+};
+
+// -- T: the transition rules --------------------------------------------------
+
+/** T1–T6 for one arm's successor of `record`, in that order: the first rule it breaks, or `null`. */
+const transitionViolation = (record: ExecutionRecord, arm: SuccessorArm, next: Successor): string | null => {
+  if (!startsAndChangesAsItMay(record, arm, next)) return T1;
+  const appended = next.appended;
+  if (!writesOverQueued(next.acknowledged, next.acknowledgment) || !writesOverQueued(next.ended, next.ending) || (appended !== null && appended.disposition.kind !== "queued")) return T2;
+  if (!acknowledgesAsItMay(record, arm, next)) return T3;
+  if (!retiresAsItMay(record, arm, next)) return T4;
+  if (!keepsReadinessAsItMay(record, arm, next)) return T5;
+  const creates = record.wait === null && (next.wait !== null || next.retired !== null);
+  if ((next.wait !== null && next.retired !== null) || next.registrations !== record.registrations + (creates ? 1 : 0)) return T6;
+  return null;
+};
+
+/**
+ * T1: the record is not terminal, and each arm starts from its own states, ends in its own, and leaves
+ * every governed field it does not decide as it was (D03-CHK-04). Input queues one application Event
+ * and may wake the live wait; dispatch opens an exchange from READY; an Outcome resolves its own open
+ * exchange; expiry retires the live wait with one timeout; cancellation ends everything.
+ */
+const startsAndChangesAsItMay = (record: ExecutionRecord, arm: SuccessorArm, next: Successor): boolean => {
+  const state = record.state;
+  const appended = next.appended;
+  if (isTerminal(state)) return false;
+  const keepsExchange = next.activation === record.activation && next.cancellation === record.cancellation;
+  if (arm === "input") {
+    const wakes = next.retired !== null;
+    const own = wakes ? state === "WAITING" && next.state === "READY" && next.wait === null : next.state === state && next.wait === record.wait;
+    return own && keepsExchange && next.ended.length === 0 && appended !== null && appended.sourceCategory === "application_input";
+  }
+  if (arm === "dispatch") {
+    return (
+      state === "READY" &&
+      record.activation === null &&
+      next.state === "RUNNING" &&
+      next.activation !== null &&
+      next.cancellation === record.cancellation &&
+      next.wait === record.wait &&
+      next.retired === null &&
+      appended === null &&
+      next.ended.length === 0
+    );
+  }
+  if (arm === "outcome") {
+    const ends = next.state === "READY" || next.state === "WAITING" || next.state === "COMPLETED" || next.state === "FAILED";
+    return state === "RUNNING" && record.activation !== null && next.activation === null && next.cancellation === record.cancellation && ends && (appended === null || appended.sourceCategory === "kernel_timeout");
+  }
+  if (arm === "expiry") {
+    return (
+      state === "WAITING" &&
+      record.wait !== null &&
+      next.state === "READY" &&
+      next.wait === null &&
+      keepsExchange &&
+      next.retired !== null &&
+      next.ended.length === 0 &&
+      appended !== null &&
+      appended.sourceCategory === "kernel_timeout"
+    );
+  }
+  return next.state === "CANCELLED" && next.cancellation !== null && next.cancellation !== record.cancellation && next.wait === null && next.readiness === null && next.activation === null && appended === null;
+};
+
+/** T2: every written entry is queued in the old record, and the value written over it is not `queued`. */
+const writesOverQueued = (entries: readonly MailboxEntry[], disposition: MailboxDisposition): boolean => {
+  if (entries.length === 0) return true;
+  if (disposition.kind === "queued") return false;
+  for (let index = 0; index < entries.length; index += 1) {
+    if ((readAt(entries, index) as MailboxEntry).disposition.kind !== "queued") return false;
+  }
+  return true;
+};
+
+/**
+ * T3: only the Outcome that resolves an exchange acknowledges (D03-CHK-04: an input while RUNNING
+ * acknowledges nothing), and an ending is never an acknowledgment. That Outcome acknowledges only its
+ * batch, by its Activation, and leaves every batch entry acknowledged by it: written now, or already, by
+ * an earlier commit of this exchange's Outcome that a host fault interrupted (L-28). Without such a
+ * fault the batch is still queued, so the writes are exactly the batch.
+ */
+const acknowledgesAsItMay = (record: ExecutionRecord, arm: SuccessorArm, next: Successor): boolean => {
+  const acknowledged = next.acknowledged;
+  if (next.ended.length > 0 && next.ending.kind === "acknowledged") return false;
+  const open = record.activation;
+  if (arm !== "outcome" || open === null) return acknowledged.length === 0;
+  const batch = open.batch;
+  const activationId = open.activation.activationId;
+  const disposition = next.acknowledgment;
+  if (acknowledged.length > 0 && (disposition.kind !== "acknowledged" || disposition.activationId !== activationId)) return false;
+  for (let index = 0; index < acknowledged.length; index += 1) {
+    if (!batchHolds(batch, (readAt(acknowledged, index) as MailboxEntry).eventId)) return false;
+  }
+  for (let index = 0; index < batch.length; index += 1) {
+    const entry = entryNamed(record, readAt(batch, index) as string);
+    if (entry === undefined) return false;
+    const after = dispositionIn(next, entry);
+    if (after.kind !== "acknowledged" || after.activationId !== activationId) return false;
+  }
+  return true;
+};
+
+/** The first entry of `record`'s mailbox with this Event ID, or `undefined`. */
+const entryNamed = (record: ExecutionRecord, eventId: string): MailboxEntry | undefined => {
+  for (let index = 0; index < record.mailbox.length; index += 1) {
+    const entry = readAt(record.mailbox, index) as MailboxEntry;
+    if (entry.eventId === eventId) return entry;
+  }
+  return undefined;
+};
+
+const batchHolds = (batch: readonly string[], eventId: string): boolean => {
+  for (let index = 0; index < batch.length; index += 1) if ((readAt(batch, index) as string) === eventId) return true;
+  return false;
+};
+
+/**
+ * T4: retiring the live generation copies its registration facts and takes the arm's cause and ending
+ * Event: an input wake ends at the appended Event, an expiry at its timeout, a cancellation at nothing.
+ * A registration an Outcome creates names the resolving Activation and is not retired by cancellation.
+ */
+const retiresAsItMay = (record: ExecutionRecord, arm: SuccessorArm, next: Successor): boolean => {
+  const live = record.wait;
+  const retired = next.retired;
+  const appended = next.appended;
+  if (arm === "input") return retired === null || (live !== null && appended !== null && retiresLive(retired, live, "event", appended.eventId));
+  if (arm === "expiry") return live !== null && retired !== null && appended !== null && retiresLive(retired, live, "deadline", appended.eventId);
+  if (arm === "cancellation") return live === null ? retired === null : retired !== null && retiresLive(retired, live, "cancellation", null);
+  if (arm === "dispatch") return retired === null;
+  const open = record.activation;
+  const resolver = open === null ? null : open.activation.activationId;
+  const wait = next.wait;
+  return (wait === null || wait.registeredBy === resolver) && (retired === null || (retired.registeredBy === resolver && retired.retiredBy !== "cancellation"));
+};
+
+/** Whether `retired` retires the live wait `live` as it is, by `cause`, ended by `endingEventId`. */
 const retiresLive = (retired: RetiredWait, live: LiveWait, cause: RetiredWait["retiredBy"], endingEventId: string | null): boolean =>
   retired.generation === live.generation &&
   retired.registeredBy === live.registeredBy &&
@@ -992,19 +1326,103 @@ const retiresLive = (retired: RetiredWait, live: LiveWait, cause: RetiredWait["r
   retired.retiredBy === cause &&
   retired.endingEventId === endingEventId;
 
-/** S4: whether a timeout Event is the one a deadline retirement makes: its generation, Event and deadline. */
-const expiresAs = (timeout: TimeoutFacts, retired: RetiredWait): boolean =>
-  retired.retiredBy === "deadline" &&
-  timeout.generation === retired.generation &&
-  timeout.eventId === retired.endingEventId &&
-  timeout.deadline === retired.deadline;
+/**
+ * T5 (D03-CHK-03): an Event or deadline retirement installs readiness, which P9 then ties to it;
+ * dispatch consumes readiness and cancellation discards it; every other decision keeps it as it was.
+ */
+const keepsReadinessAsItMay = (record: ExecutionRecord, arm: SuccessorArm, next: Successor): boolean => {
+  const retired = next.retired;
+  if (retired !== null && retired.retiredBy !== "cancellation") return next.readiness !== null;
+  if (arm === "dispatch" || arm === "cancellation") return next.readiness === null;
+  return next.readiness === record.readiness;
+};
 
-/** S5: whether readiness belongs to `retired`: its generation, cause, selector and timeout Event. */
-const belongsTo = (readiness: Readiness, retired: RetiredWait, timeoutEventId: string | null): boolean =>
-  readiness.generation === retired.generation &&
-  readiness.species === retired.retiredBy &&
-  readiness.selector === retired.declaration &&
-  readiness.timeoutEventId === timeoutEventId;
+// -- P: the post-state predicate ----------------------------------------------
+
+/** The next record's retired wait at `index`, or `undefined` past the last. */
+const retiredIn = (record: ExecutionRecord, next: Successor, index: number): RetiredWait | undefined => {
+  const old = record.retiredWaits.length;
+  if (index < old) return readAt(record.retiredWaits, index);
+  return index === old && next.retired !== null ? next.retired : undefined;
+};
+
+/** One entry's disposition in the next record. */
+const dispositionIn = (next: Successor, entry: MailboxEntry): MailboxDisposition => {
+  const written = mapGet(next.written, entry);
+  return written === undefined ? entry.disposition : written;
+};
+
+/** The next mailbox's entry at `position`, the appended entry last. */
+const entryIn = (record: ExecutionRecord, next: Successor, position: number): MailboxEntry =>
+  position < record.mailbox.length ? (readAt(record.mailbox, position) as MailboxEntry) : (next.appended as MailboxEntry);
+
+/**
+ * P1–P9 over the whole next record, in that order: the first clause it breaks, or `null` (design 03
+ * Q2, revised: every clause in full on every decision, owner choice 05).
+ */
+const postStateViolation = (record: ExecutionRecord, next: Successor): string | null => {
+  const state = next.state;
+  const terminal = isTerminal(state);
+  if (terminal && (next.wait !== null || next.readiness !== null || next.activation !== null)) return P1;
+  if ((state === "WAITING") !== (next.wait !== null)) return P2;
+  if ((state === "RUNNING") !== (next.activation !== null)) return P3;
+  if ((state === "CANCELLED") !== (next.cancellation !== null)) return P4;
+  const length = record.mailbox.length + (next.appended === null ? 0 : 1);
+  for (let position = 0; position < length; position += 1) {
+    const kind = dispositionIn(next, entryIn(record, next, position)).kind;
+    if (terminal && kind === "queued") return P1;
+    if (!terminal && kind === "terminal") return P5;
+  }
+  // P6: the generation ledger, and each wait's deadline equation (D03-CHK-02).
+  const retiredCount = record.retiredWaits.length + (next.retired === null ? 0 : 1);
+  const wait = next.wait;
+  if (retiredCount + (wait === null ? 0 : 1) !== next.registrations) return P6;
+  let deadlines = 0;
+  for (let index = 0; index < retiredCount; index += 1) {
+    const retired = retiredIn(record, next, index) as RetiredWait;
+    if (retired.generation !== index + 1 || retired.deadline !== retired.declaration.deadline) return P6;
+    if (retired.retiredBy === "deadline") deadlines += 1;
+  }
+  if (wait !== null && (wait.generation !== retiredCount + 1 || wait.deadline !== wait.declaration.deadline)) return P6;
+  // P7: the timeout Events and the deadline retirements, one to one.
+  const timedOut = new PrimordialMap<number, true>();
+  let timeouts = 0;
+  const byEventId = new PrimordialMap<string, MailboxEntry>();
+  for (let position = 0; position < length; position += 1) {
+    const entry = entryIn(record, next, position);
+    if (mapGet(byEventId, entry.eventId) === undefined) mapSet(byEventId, entry.eventId, entry);
+    if (entry.sourceCategory !== "kernel_timeout") continue;
+    timeouts += 1;
+    const generation = entry.waitGeneration as number;
+    const retired = retiredIn(record, next, generation - 1);
+    if (mapGet(timedOut, generation) !== undefined || retired === undefined || retired.generation !== generation || retired.retiredBy !== "deadline" || retired.endingEventId !== entry.eventId || retired.deadline !== entry.deadline) return P7;
+    mapSet(timedOut, generation, true);
+  }
+  if (timeouts !== deadlines) return P7;
+  // P8: each retirement's cause. A deadline retirement's ending is its timeout (P7).
+  for (let index = 0; index < retiredCount; index += 1) {
+    const retired = retiredIn(record, next, index) as RetiredWait;
+    if (retired.retiredBy === "cancellation") {
+      if (index !== retiredCount - 1 || state !== "CANCELLED" || retired.endingEventId !== null) return P8;
+    } else if (retired.retiredBy === "event") {
+      const ending = retired.endingEventId === null ? undefined : mapGet(byEventId, retired.endingEventId);
+      if (ending === undefined || ending.sourceCategory === "kernel_timeout") return P8;
+    } else if (retired.retiredBy !== "deadline") {
+      return P8;
+    }
+  }
+  // P9: readiness belongs to the last retirement, whose ending Event is still queued.
+  const readiness = next.readiness;
+  if (readiness !== null) {
+    const last = retiredIn(record, next, retiredCount - 1);
+    if (state !== "READY" || last === undefined) return P9;
+    const timeoutEventId = last.retiredBy === "deadline" ? last.endingEventId : null;
+    if (readiness.generation !== last.generation || readiness.species !== last.retiredBy || readiness.selector !== last.declaration || readiness.timeoutEventId !== timeoutEventId) return P9;
+    const ending = last.endingEventId === null ? undefined : mapGet(byEventId, last.endingEventId);
+    if (ending === undefined || dispositionIn(next, ending).kind !== "queued") return P9;
+  }
+  return null;
+};
 
 // -- View construction -------------------------------------------------------
 

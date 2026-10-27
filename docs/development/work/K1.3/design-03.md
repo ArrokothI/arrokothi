@@ -6,6 +6,9 @@ answers that choice's six questions.
 - **What it keeps:** design 02's S4 freshness and three-path clock results, which review 02 passed. Owner choices
   [01](owner-choice-01.md) and [02](owner-choice-02.md) stay in force.
 - **Not yet:** no code changes until the bounded design check approves this note.
+- **Revised:** [revision 1](#revision-1--owner-choice-05-and-design-check-03) applies
+  [owner choice 05](owner-choice-05.md) and [design check 03](design-check-03.md). Where they differ, it
+  supersedes the text above it.
 - **Author and base:** the K1.3 implementer's Claude Code session (`claude-opus-5-5`), 2026-10-27, at
   `2ee779a5` (review 02 on `claude/k1.3`). The candidate it would replace is C `2454e8b7` / H `87db3c40`.
 
@@ -348,3 +351,141 @@ carry. The review counterexamples are all inside it.
   coordinator already satisfies it. Confirm that moving it out of L-15 is in scope.
 - **D3 — the `endingAt` hint.** P9 needs the position of an existing waking Event. The proposal is a verified plan
   hint. The alternative is a mailbox scan on immediate-wake Outcomes only.
+
+## Revision 1 — owner choice 05 and design check 03
+
+[Owner choice 05](owner-choice-05.md) answered D1, and [design check 03](design-check-03.md) required
+D03-CHK-01 to -06. This revision records what changed; everything above that it does not mention stands.
+- **Author and base:** the same session, 2026-10-27, at `5605beb7` (design check 03).
+- **What it implements:** the build follows this revision.
+
+**Owner choice 06.** The build found that full evaluation changes what the fault sweep observes after a fault
+inside the Outcome apply window, so the owner was asked; [owner choice 06](owner-choice-06.md) records the
+answer. Two consequences follow, described under D03-CHK-04 and D03-CHK-06.
+
+**D1, owner choice 05: full evaluation.** `admit` evaluates T1–T6 against the old record, then P1–P9 over the
+whole next record, on every decision. The incremental forms and the induction over held records (Q2,
+*Evaluation is exact and incremental*) are withdrawn. P6, P7 and P8 scan every retirement, and P1, P5, P7 and
+P9 scan every mailbox entry through the overlay. The cost is O(mailbox + retired waits) per decision.
+`postStateViolation` runs the same P on a committed record and stays as evidence. D3's `endingAt` hint is
+dropped: P9 finds the ending Event in the mailbox it already scans, so the plan shape is unchanged. D2 stands,
+scoped as in D03-CHK-04.
+
+**D03-CHK-01, exact commits.**
+- *The successor.* `successor(record, change)` takes a change literal that names every governed member. A
+  member left alone is in its no-change form: `record.<field>` for a scalar, `null` for `retired` and
+  `appended`, `NO_POSITIONS` for a position list. The successor and its two entry lists are frozen. The commit
+  never writes through it.
+- *Admission.* Each successor arm binds `const next = admit(record, "<kind>", successor(record, {…}))` exactly
+  once, in its prepare phase. `record` is the arm's resolved record. The existing prepare → commit grammar
+  places every commit statement after that binding, so admission comes before the first write, including
+  `version` and the indices.
+- *Exact values.* Every governed commit takes the matching successor member through `const` aliases only, with
+  no arithmetic, conditional or rebuilt value.
+  - A scalar write is unconditional: `record.<scalar> = next.<scalar>`.
+  - An append is `if (v !== null) appendOwn(record.<list>, v)`, guarded by that same `v`.
+  - Each disposition loop is exactly `for (let i = 0; i < l.length; i += 1) (readAt(l, i) as MailboxEntry).disposition = d`.
+    Here `l` is `next.acknowledged` or `next.ended` and `d` is its disposition. The Outcome arm applies the
+    acknowledged list, then the ended list, keeping the fault ladder's `acknowledge`/`end` order. Cancellation
+    applies its one ended list.
+- *Completeness.* Each changed component is committed exactly once, and no unchanged one is committed.
+  `checkSuccessorArm` in `zone-analysis.ts` checks all of this, and `SUCCESSOR_ARMS` pins each arm's changed
+  set.
+- *Writers.* `qualifiedWriters` names each governed field by the interface that declares it. This tells
+  `ExecutionRecord.activation` from takeover's `ActivationRecord.activation`, and `GOVERNED_WRITERS` pins the
+  successor arms as the only writers of the former.
+- *Creation.* Creation has no old record. It builds the fresh record whole in prepare and admits it with P
+  alone (`admitCreated`). Both indices publish only the record that admission returned
+  (`checkCreationAdmission`).
+- *Controls.* `control-commits.test.ts` holds the static negative controls:
+  - `next.registrations + 1`;
+  - a successor never admitted, and an admission after the first write;
+  - an omitted scalar write, and a change literal member the commit does not apply;
+  - a disposition loop starting at 1;
+  - a duplicated timeout append;
+  - a plan-derived conditional over a scalar and over an append;
+  - a takeover writing the open-exchange pointer;
+  - creation publishing its record unadmitted.
+
+  The positive controls are the six arms and takeover's `ActivationRecord.activation` write. The analyser is
+  not otherwise widened.
+
+**D03-CHK-02, the deadline equation.** Full P6 checks `deadline === declaration.deadline` for every retired and
+live wait, so every new live wait and every appended retirement is covered. The controls are:
+- a live wait at 6 under a declaration of 5;
+- an immediate expiry whose retirement and timeout both move to 1, agreeing with each other but not the
+  declaration (P6);
+- a timeout alone moved (P7);
+- an immediate wake whose retirement moves (P6);
+- an expiry whose retirement and timeout move together (T4).
+
+Each is refused before any write, and the independent reference names the same rule.
+
+**D03-CHK-03 and -04, the transition rules by arm.** T1 now states each arm's start states, end states and
+the governed fields it may change:
+
+| Arm | Starts from | Ends in | May change |
+|---|---|---|---|
+| input | any non-terminal state | the same state; `READY` from `WAITING` on a wake | appends one application Event; on a wake, the wait, readiness and one retirement |
+| dispatch | `READY` with no open exchange | `RUNNING` with a new exchange | the exchange pointer, and readiness (cleared) |
+| Outcome | `RUNNING` with its own open exchange | `READY`, `WAITING`, `COMPLETED` or `FAILED`, exchange cleared | dispositions, at most one timeout, the count, the wait, readiness, one retirement |
+| expiry | `WAITING` | `READY` | one timeout, the wait, readiness, one retirement |
+| cancellation | any non-terminal state | `CANCELLED`, nothing live | dispositions, the cancellation record, the wait, readiness, the exchange pointer, one retirement |
+
+- **T3:** only the Outcome that resolves an exchange acknowledges. No other arm acknowledges, and no ending is
+  an acknowledgment. An input while `RUNNING` with a reserved batch is accepted, and a redispatch on `RUNNING`
+  with an empty batch is refused (T1).
+  - *Stated over the batch's next dispositions.* That Outcome acknowledges only batch entries, by its
+    Activation, and leaves every batch entry acknowledged by it. In a record no fault touched the batch is
+    still queued, so the writes are exactly the batch, as design 03 said.
+  - *Why the restatement.* After a fault that stopped an Outcome's commit past its acknowledge loop, the batch
+    is already acknowledged, and the coordinator's retry acknowledges "the whole reserved batch still queued",
+    which is nothing. The fault sweep found that design 03's literal "exactly the batch" refused that retry,
+    though the record still satisfied P and K1.2's apply window permits it.
+- **T4:** keeps design 02's facts check (`retiresLive`) for the wake, expiry and cancellation causes.
+- **T5:** an Event or deadline retirement installs readiness. Dispatch clears readiness, cancellation discards
+  it, and every other decision keeps the record's own.
+- **P9:** with T5, readiness can no longer be dropped beside its retirement, the case design check 03 found
+  passing full P.
+
+The controls are `owner-guards.test.ts` D03-CHK-03 and -04, with their positive sequences.
+
+**D03-CHK-05, the declared search.** Q6's domain is replaced by the families of
+`owner-successor-search.test.ts`, frozen with exact sizes and verdicts in `owner-successor-search.json`:
+
+| Family | Seeds and bases | What it varies |
+|---|---|---|
+| **OA** | `R1` continue and complete; `R2` continue | the registration as one correlated shape: mode, generation, count, deadline shift and next state, and on `R2` the reuse of the prior timeout Event (review 01's coordinated case) |
+| **OB** | `R1` and `R2` | one field off from a genuine live, woken or expired registration |
+| **OD** | `R1` and `R1e` | the two dispositions against every next state |
+| **OP** | `R1` complete and fail | design 03's position alphabet |
+| **R02 position matrix** | `R1` complete | review 02's 2,257 words, unchanged; the accepted count is now 2, not 12, under whole-batch acknowledgment |
+| **IN** | six input bases | the wake against its readiness |
+| **EX** | `W` expiry | the retirement × readiness × timeout product |
+| **CA** | six cancellation bases | positions × ending × retirement |
+| **RT** | every seed | six genuine plan kinds retargeted with the seed's current basis |
+
+- *Seeds.* `R1e` is `RUNNING` with an empty batch. `R2` is `RUNNING` after a prior expiry.
+- *Templates.* A null field takes its values from a genuine plan of the same seed, or from the `W` seed's wake
+  and cancellation retirement.
+- *The oracle.* For each variant, the independent reference in `successor-reference.ts` must agree with the
+  owner, naming the same first rule on a refusal. A refusal must leave the record unchanged. On an acceptance:
+  - the governed fields equal the reference's;
+  - the committed record passes both P evaluations;
+  - every guard `preservationViolations` restates from design 02 holds. This oracle shares no predicate with
+    the reference.
+- *Seeds and named controls.* Every seed is checked against both P evaluations first. Review 02's 15-case
+  generation matrix and review 01's coordinated reuse stay as named controls in `owner-guards.test.ts`. The
+  historical probes are not edited.
+
+**D03-CHK-06, the claims.** BASELINE "State owner" and 017 L-15 now claim exactly the enumerated relations
+among governed fields. "A terminal record is never written again" becomes "the governed fields of a terminal
+record never change". Operational-evidence writes on terminal records are named as allowed. Result, receipt,
+timeout-ID and cancellation-fact content is named as outside the predicate. L-28 states that a commit a host
+fault interrupts can leave a record outside P, with no rollback, inside the sweep's declared windows or
+outside them. Every later decision is still admitted in full, so no successor that breaks P is committed;
+the evidence arms do not evaluate P. Under owner choice 06:
+- a call that would commit a successor still breaking P throws the owner's refusal;
+- the fault sweep observes that refusal, as `owner refused (P<n>)`, in exactly the Outcome apply-window
+  prefixes that break P (`ownerRefusalIn` in `fault-oracle.ts`);
+- `fault-oracle.test.ts` pins it with the `outcome: fail` example and two controls.

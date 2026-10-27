@@ -20,6 +20,11 @@
  *   callback after it before the hand-over. Every refusal ends the request.
  * - **Owner arms** (`KernelState`'s `#apply<Kind>`): a prepare phase that changes nothing, then exactly
  *   the declared commit statements, in order, each naming the plan field it commits (`COMMITS`).
+ * - **Successor arms** (K1.3, design 03 revised for D03-CHK-01): each arm that changes a governed field
+ *   admits one successor of its own record before its first write, and commits exactly the components
+ *   its change literal changes, each once, each the successor's own value (`SUCCESSOR_ARMS`). Creation
+ *   publishes only the fresh record its admission returned. The governed fields are written by those
+ *   arms alone, told apart by the interface that declares them (`GOVERNED_WRITERS`).
  * - **Writers**: each record field is written only by its declared arms (`ARM_WRITERS`), and nothing
  *   in the coordinator changes accepted state except by handing a plan over.
  * - **Foreign code**: the inventory of calls outside the zone is exact, and nothing in the owner, its
@@ -41,13 +46,16 @@ import {
   basisArgumentViolations,
   buildZone,
   checkArm,
+  checkCreationAdmission,
   checkPlanner,
+  checkSuccessorArm,
   findConstFunction,
   findMethod,
   foreignCallKey,
   isApplyCall,
   mutationsOutsideHandOver,
   ownNodes,
+  qualifiedWriters,
   refusalHelperViolations,
   refusalsWithoutExit,
   SOURCE_ROOT,
@@ -105,30 +113,30 @@ const COMMITS: Readonly<Record<string, readonly string[]>> = {
   "#applyInput": [
     "write version ← basis",
     "write nextAcceptancePosition ← entry",
-    "append mailbox ← {QUEUED+entry}",
+    "append? mailbox ← next.appended",
     "insert byInputId ← {QUEUED+entry}",
     "append receipts ← entry",
-    "append? retiredWaits ← woken",
-    "write? wait ← null",
-    "write? readiness ← readiness",
-    'write? state ← "READY"',
+    "append? retiredWaits ← next.retired",
+    "write wait ← next.wait",
+    "write readiness ← next.readiness",
+    "write state ← next.state",
   ],
   "#applyDispatch": [
     "write version ← basis",
     "write activationsMinted ← activationsMinted",
     "write nextAcceptancePosition ← receipt",
-    "write activation ← {activation+batch+receipt+submission}",
-    'write state ← "RUNNING"',
+    "write activation ← next.activation",
+    "write state ← next.state",
     "append receipts ← receipt",
-    "write readiness ← null",
+    "write readiness ← next.readiness",
   ],
   "#applyDelivery": ["write version ← basis", "append deliveries ← {activationId+attempt+writerEpoch}"],
   "#applySettlement": ["write version ← basis", "write status ← status", "write failure ← failure"],
   "#applyOutcome": [
     "write version ← basis",
     "write nextAcceptancePosition ← receipt",
-    "each disposition ← acknowledgment",
-    "each disposition ← ending",
+    "each disposition ← next.acknowledgment",
+    "each disposition ← next.ending",
     "write acceptedProgress ← stored",
     "write progressRevision ← progressRevision",
     "append emissions ← emissions",
@@ -137,13 +145,13 @@ const COMMITS: Readonly<Record<string, readonly string[]>> = {
     "insert acceptedOutcomes ← stored",
     "append receipts ← receipt",
     "append recoveryHistory ← history",
-    "append? mailbox ← {QUEUED+TIMEOUT_KIND+timeout}",
-    "append? retiredWaits ← retired",
-    "write registrations ← registrations",
-    "write wait ← liveWait",
-    "write readiness ← readiness",
-    "write activation ← null",
-    "write state ← nextState",
+    "append? mailbox ← next.appended",
+    "append? retiredWaits ← next.retired",
+    "write registrations ← next.registrations",
+    "write wait ← next.wait",
+    "write readiness ← next.readiness",
+    "write activation ← next.activation",
+    "write state ← next.state",
   ],
   "#applyTakeover": [
     "write version ← basis",
@@ -160,26 +168,26 @@ const COMMITS: Readonly<Record<string, readonly string[]>> = {
   "#applyExpiry": [
     "write version ← basis",
     "write nextAcceptancePosition ← timeout",
-    "append mailbox ← {QUEUED+TIMEOUT_KIND+timeout}",
-    "append retiredWaits ← retired",
+    "append? mailbox ← next.appended",
+    "append? retiredWaits ← next.retired",
     "append timerFires ← fire",
-    "write wait ← null",
-    "write readiness ← readiness",
-    'write state ← "READY"',
+    "write wait ← next.wait",
+    "write readiness ← next.readiness",
+    "write state ← next.state",
   ],
   "#applyTimerDiscard": ["write version ← basis", "append timerFires ← fire"],
   "#applyCancellation": [
     "write version ← basis",
     "write nextAcceptancePosition ← record",
-    "each disposition ← ending",
-    "append? retiredWaits ← retired",
+    "each disposition ← next.ending",
+    "append? retiredWaits ← next.retired",
     "append recoveryHistory ← history",
     "append? timerFires ← fire",
-    "write cancellation ← {record+state}",
-    "write wait ← null",
-    "write readiness ← null",
-    "write activation ← null",
-    'write state ← "CANCELLED"',
+    "write cancellation ← next.cancellation",
+    "write wait ← next.wait",
+    "write readiness ← next.readiness",
+    "write activation ← next.activation",
+    "write state ← next.state",
   ],
   "#applyLosingOutcome": ["write version ← basis", "append refusals ← refusal", "write nextRefusalPosition ← refusal", "insert losingIndex ← losing"],
 };
@@ -238,6 +246,42 @@ const ARM_WRITERS: Readonly<Record<string, readonly string[]>> = {
   ],
 };
 
+/**
+ * K1.3 (design 03 Q4, revised for D03-CHK-01): each arm that changes a governed field, and the
+ * successor components its change literal changes, which its commit applies exactly once.
+ */
+const SUCCESSOR_ARMS: Readonly<Record<string, { readonly kind: string; readonly changes: readonly string[] }>> = {
+  "#applyInput": { kind: "input", changes: ["appended", "readiness", "retired", "state", "wait"] },
+  "#applyDispatch": { kind: "dispatch", changes: ["activation", "readiness", "state"] },
+  "#applyOutcome": { kind: "outcome", changes: ["acknowledged", "activation", "appended", "ended", "readiness", "registrations", "retired", "state", "wait"] },
+  "#applyExpiry": { kind: "expiry", changes: ["appended", "readiness", "retired", "state", "wait"] },
+  "#applyCancellation": { kind: "cancellation", changes: ["activation", "cancellation", "ended", "readiness", "retired", "state", "wait"] },
+};
+
+/**
+ * The governed fields' writers, each field named by the interface that declares it: the successor arms
+ * only. `ActivationRecord.activation`, the attempt a takeover replaces inside the open exchange, is not
+ * governed; the name-only `ARM_WRITERS.activation` above lists both.
+ */
+const GOVERNED_WRITERS: Readonly<Record<string, readonly string[]>> = {
+  "ExecutionRecord.state": ["#applyCancellation", "#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  "ExecutionRecord.registrations": ["#applyOutcome"],
+  "ExecutionRecord.wait": ["#applyCancellation", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  "ExecutionRecord.readiness": ["#applyCancellation", "#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  "ExecutionRecord.activation": ["#applyCancellation", "#applyDispatch", "#applyOutcome"],
+  "ExecutionRecord.cancellation": ["#applyCancellation"],
+  "ExecutionRecord.retiredWaits": ["#applyCancellation", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  "ExecutionRecord.mailbox": ["#applyExpiry", "#applyInput", "#applyOutcome"],
+  "MailboxEntry.disposition": ["#applyCancellation", "#applyOutcome"],
+};
+
+/** The component each governed field is committed from, for comparing `GOVERNED_WRITERS` with `SUCCESSOR_ARMS`. */
+const COMPONENT_OF: Readonly<Record<string, readonly string[]>> = {
+  "ExecutionRecord.retiredWaits": ["retired"],
+  "ExecutionRecord.mailbox": ["appended"],
+  "MailboxEntry.disposition": ["acknowledged", "ended"],
+};
+
 const OWNER_FILES = new Set(["state.ts", "state-records.ts", "plan.ts"]);
 
 const analyse = (zone: Zone): EffectAnalysis => analyseEffects(zone, { foreignCalls: new Set(FOREIGN_CALLS.keys()), overrides: EFFECT_OVERRIDES, getterReads: getterReads() });
@@ -290,6 +334,21 @@ function violations(zone: Zone, analysis: EffectAnalysis): string[] {
     const expected = [...(ARM_WRITERS[field] ?? [])].sort();
     const actual = [...found].sort();
     if (JSON.stringify(actual) !== JSON.stringify(expected)) out.push(`${field} written by ${actual.join(", ") || "nothing"}; expected ${expected.join(", ") || "nothing"}`);
+  }
+  for (const [arm, { kind, changes }] of Object.entries(SUCCESSOR_ARMS)) {
+    const method = findMethod(zone, "KernelState", arm);
+    if (method === undefined) continue;
+    const check = checkSuccessorArm(zone, method, kind);
+    out.push(...check.violations);
+    if (JSON.stringify(check.changed) !== JSON.stringify(changes)) out.push(`${arm}: changes ${check.changed.join(", ")}; declared ${changes.join(", ")}`);
+  }
+  const creation = findMethod(zone, "KernelState", "#applyCreation");
+  if (creation !== undefined) out.push(...checkCreationAdmission(zone, creation));
+  const governed = qualifiedWriters(zone, analysis, Object.keys(GOVERNED_WRITERS), "state.ts");
+  for (const [member, found] of governed) {
+    const actual = [...found].sort();
+    const expected = [...(GOVERNED_WRITERS[member] ?? [])].sort();
+    if (JSON.stringify(actual) !== JSON.stringify(expected)) out.push(`${member} written by ${actual.join(", ") || "nothing"}; expected ${expected.join(", ") || "nothing"}`);
   }
   out.push(...mutationsOutsideHandOver(zone, analysis, "coordinator.ts"));
   for (const [fn, summary] of analysis.effects) {
@@ -400,6 +459,35 @@ describe("correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole 
     assert.deepEqual(mutationsOutsideHandOver(zone, analysis, "coordinator.ts"), []);
   });
 
+  for (const [arm, { kind, changes }] of Object.entries(SUCCESSOR_ARMS)) {
+    test(`${arm}: admits one successor of its own record before any write, and commits exactly its changes from it`, () => {
+      const method = findMethod(zone, "KernelState", arm);
+      assert.ok(method !== undefined);
+      const check = checkSuccessorArm(zone, method, kind);
+      assert.deepEqual(check.violations, []);
+      assert.deepEqual(check.changed, changes);
+    });
+  }
+
+  test("#applyCreation: publishes only the fresh record its admission returned", () => {
+    const method = findMethod(zone, "KernelState", "#applyCreation");
+    assert.ok(method !== undefined);
+    assert.deepEqual(checkCreationAdmission(zone, method), []);
+  });
+
+  test("the governed fields are written by the successor arms alone; the open-exchange pointer is told from the attempt a takeover replaces", () => {
+    const governed = qualifiedWriters(zone, analysis, [...Object.keys(GOVERNED_WRITERS), "ActivationRecord.activation"], "state.ts");
+    for (const [member, arms] of Object.entries(GOVERNED_WRITERS)) {
+      assert.deepEqual([...governed.get(member)!].sort(), [...arms].sort(), member);
+      const components = COMPONENT_OF[member] ?? [member.slice(member.indexOf(".") + 1)];
+      const declared = Object.entries(SUCCESSOR_ARMS).filter(([, { changes }]) => changes.some((component) => components.includes(component))).map(([name]) => name);
+      assert.deepEqual([...arms].sort(), declared.sort(), `${member}: its writers are the arms whose successor changes it`);
+    }
+    // Positive control: a takeover edits the open exchange's own attempt, never the pointer to it.
+    assert.deepEqual([...governed.get("ActivationRecord.activation")!], ["#applyTakeover"]);
+    assert.ok(ARM_WRITERS.activation!.includes("#applyTakeover"), "the name-only writer table conflates the two");
+  });
+
   test("the effect summaries do not depend on the order functions are analysed in", () => {
     // A cycle-cut binding result was once cached as if complete, which made a mutation's target look
     // fresh depending on traversal order; this pins the fix for the whole zone.
@@ -483,6 +571,23 @@ const MUTANTS: readonly { readonly name: string; readonly edits: readonly (reado
   // D01-CHK-2: getters.
   { name: "a reader getter that writes its record", edits: [at(STATE, "  get version(): number {\n    return this.#record.version;\n  }", "  get version(): number {\n    this.#record.version = this.#record.version;\n    return this.#record.version;\n  }")], reason: "version written by" },
   { name: "a changing getter read by a planner before its hand-over", edits: [at(STATE, "  get mailboxLength(): number {\n    return this.#record.mailbox.length;\n  }", "  get mailboxLength(): number {\n    appendAllOwn(this.#record.mailbox, []);\n    return this.#record.mailbox.length;\n  }")], reason: "submitInput: mutates before its hand-over: record.mailboxLength" },
+  // D03-CHK-01: the successor rule's negative controls. Each is valid TypeScript that changes what is
+  // committed away from the admitted successor, or commits before admitting it.
+  { name: "D03-CHK-01 a governed commit computed from the successor (next.registrations + 1)", edits: [at(STATE, "    const registrations = next.registrations;", "    const registrations = next.registrations + 1;")], reason: "#applyOutcome: governed write registrations does not commit the successor's registrations exactly" },
+  {
+    name: "D03-CHK-01 a successor built but never admitted",
+    edits: [at(STATE, '    const next = admit(\n      record,\n      "outcome",\n      successor(record, {', "    const next = (\n      successor(record, {"), at(STATE, "      }),\n    );\n    const toAcknowledge", "      })\n    );\n    const toAcknowledge")],
+    reason: "#applyOutcome: admits no successor",
+  },
+  { name: "D03-CHK-01 an admission after the first write", edits: [at(STATE, "    // A wake retires the live generation, with its readiness and READY; any other input only queues.\n", "    record.version = plan.basis + 1;\n")], reason: "#applyInput: statement outside the prepare → commit grammar" },
+  { name: "D03-CHK-01 an omitted scalar write (the live wait)", edits: [at(STATE, "    const liveWait = next.wait;\n", ""), at(STATE, "    record.wait = liveWait;\n", "")], reason: "#applyOutcome: the successor's wait is not committed" },
+  { name: "D03-CHK-01 a skipped disposition (the loop starts at 1)", edits: [at(STATE, "    for (let index = 0; index < toEnd.length; index += 1) (readAt(toEnd, index) as MailboxEntry).disposition = ending;\n    record.acceptedProgress", "    for (let index = 1; index < toEnd.length; index += 1) (readAt(toEnd, index) as MailboxEntry).disposition = ending;\n    record.acceptedProgress")], reason: "#applyOutcome: a disposition loop does not apply the successor's ended exactly" },
+  { name: "D03-CHK-01 a duplicated append (the timeout twice)", edits: [at(STATE, "    if (timeoutEntry !== null) appendOwn(record.mailbox, timeoutEntry);\n", "    if (timeoutEntry !== null) appendOwn(record.mailbox, timeoutEntry);\n    if (timeoutEntry !== null) appendOwn(record.mailbox, timeoutEntry);\n")], reason: "#applyOutcome: the successor's appended is committed 2 times" },
+  { name: "D03-CHK-01 a plan-derived conditional that suppresses a checked change (a scalar)", edits: [at(STATE, "    record.wait = liveWait;", "    if (plan.liveWait !== null) record.wait = liveWait;")], reason: "#applyOutcome: governed write wait is conditional" },
+  { name: "D03-CHK-01 a plan-derived conditional that suppresses a checked change (an append)", edits: [at(STATE, "    if (timeoutEntry !== null) appendOwn(record.mailbox, timeoutEntry);", "    if (timeout !== null) appendOwn(record.mailbox, timeoutEntry as MailboxEntry);")], reason: "#applyOutcome: governed append mailbox is conditional on something other than its own value" },
+  { name: "D03-CHK-01 a change the commit does not apply (input clears the cancellation record)", edits: [at(STATE, "        cancellation: record.cancellation,\n        retired: woken,", "        cancellation: woken === null ? record.cancellation : null,\n        retired: woken,")], reason: "#applyInput: the successor's cancellation is not committed" },
+  { name: "D03-CHK-01 a takeover that writes the open-exchange pointer", edits: [at(STATE, "    exchange.protocolFailureHold = null;\n  }", "    exchange.protocolFailureHold = null;\n    record.activation = exchange;\n  }")], reason: "ExecutionRecord.activation written by #applyCancellation, #applyDispatch, #applyOutcome, #applyTakeover" },
+  { name: "D03-CHK-01 creation publishing its fresh record unadmitted", edits: [at(STATE, "    const record = admitCreated(fresh);", "    const record = fresh;")], reason: "#applyCreation: publishes a record its admission did not return" },
   { name: "a getter that returns a live record list, which a planner changes", edits: [at(STATE, "  get mailboxLength(): number {", "  get liveRefusals(): RefusalRecord[] {\n    return this.#record.refusals;\n  }\n\n  get mailboxLength(): number {"), at(COORDINATOR, '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n', '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n    appendAllOwn(record.liveRefusals, []);\n')], reason: "submitInput: mutates before its hand-over: appendAllOwn(record.liveRefusals, [])" },
 ];
 
@@ -501,7 +606,7 @@ describe("correction DEC-9 negative controls: every forbidden shape is reported"
       }
       const changed = new Map([...texts].filter(([file, text]) => text !== SOURCES[file]));
       const mutated = buildZone(zoneFiles(), changed, zone);
-      assert.deepEqual(typeErrors(mutated).filter((error) => !/'(probe|late|early|applied|grantsMinted)' is declared but/.test(error)), [], "the mutant is valid TypeScript, so only the rule can reject it");
+      assert.deepEqual(typeErrors(mutated).filter((error) => !/'(probe|late|early|applied|grantsMinted|admitCreated)' is declared but/.test(error)), [], "the mutant is valid TypeScript, so only the rule can reject it");
       const found = violations(mutated, analyse(mutated));
       assert.ok(found.some((violation) => violation.includes(mutant.reason)), `expected "${mutant.reason}"; reported: ${found.join(" | ") || "nothing"}`);
     });

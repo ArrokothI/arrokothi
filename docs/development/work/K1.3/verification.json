@@ -4,7 +4,7 @@
   "require_direct_parent": false,
   "administrative_files": [
     "docs/development/007-work-packets.md",
-    "docs/development/work/K1.3/implementation-02.md",
+    "docs/development/work/K1.3/implementation-03.md",
     "docs/development/work/K1.3/progress.md"
   ],
   "preserve": [
@@ -171,6 +171,38 @@
     {
       "revision": "72e6f5ec51a83476967623b263365fb682a1ead6",
       "path": "docs/development/work/K1.3/brief-02.md"
+    },
+    {
+      "revision": "87db3c40c379d0d2186b16cfee9cc2b16d989a73",
+      "path": "docs/development/work/K1.3/owner-choice-03.md"
+    },
+    {
+      "revision": "87db3c40c379d0d2186b16cfee9cc2b16d989a73",
+      "path": "docs/development/work/K1.3/design-02.md"
+    },
+    {
+      "revision": "87db3c40c379d0d2186b16cfee9cc2b16d989a73",
+      "path": "docs/development/work/K1.3/implementation-02.md"
+    },
+    {
+      "revision": "2ee779a5c89d93091fe3a3ee87f3acfa67dba3e1",
+      "path": "docs/development/work/K1.3/review-02.md"
+    },
+    {
+      "revision": "2ee779a5c89d93091fe3a3ee87f3acfa67dba3e1",
+      "path": "docs/development/work/K1.3/review-02"
+    },
+    {
+      "revision": "2a587122c928d14dda083166e7fd9cb6ca036744",
+      "path": "docs/development/work/K1.3/owner-choice-04.md"
+    },
+    {
+      "revision": "5605beb7f99b8938f300f1e4266cb94abe3b2023",
+      "path": "docs/development/work/K1.3/design-check-03.md"
+    },
+    {
+      "revision": "5605beb7f99b8938f300f1e4266cb94abe3b2023",
+      "path": "docs/development/work/K1.3/design-check-03"
     }
   ],
   "whitespace_exceptions": [
@@ -424,7 +456,7 @@
         "todo": "^[#ℹ] todo (\\d+)$"
       },
       "minimum_counts": {
-        "tests": 4675
+        "tests": 4750
       },
       "exact_counts": {
         "fail": 0,
@@ -653,6 +685,8 @@
     "K1.3 payload (both ranges; owner release 01, owner choice 01): waits with wait deadlines, an injected clock, host-pumped timers, wait-ended batch selection, out-of-band cancellation with the Driver cancellation request, the Execution deadline set at creation and the CX-6 losing-Outcome fence in the in-process Kernel binding, with tests, Layer 3, BASELINE and 017.",
     "K13-9 is the declared bounded search in the race-search check: 13^4 words x 8 seeds x bounds 1 and 2 = 456,976 runs against a reference model and invariants INV-1 to INV-12, every (letter, state) transition exercised, plus a 20,000-word supplementary walk outside the claim (017 L-26).",
     "The fault sweep gains six submitOutcome scenarios (the three registration outcomes, the clock refusal and two CX-6 losers) and a declared losing-proposal apply window; cancelExecution and fireTimer are not sweep controls (017 L-27). The adoption manifest's preserved table is regenerated mechanically by TOOLS-02's regenerate in a fresh clone; no new credit.",
-    "Fresh-clone local composed verification runs before the one CI dispatch; the CI run is the handoff evidence. No prior results reused; acceptance is not evaluated."
+    "Fresh-clone local composed verification runs before the one CI dispatch; the CI run is the handoff evidence. No prior results reused; acceptance is not evaluated.",
+    "Round 3 (design 03 and its revision; owner choices 04, 05 and 06): the owner admits a successor of every governed decision, T1-T6 then P1-P9 in full. The declared successor search (owner-successor-search.test.ts) covers exactly the families frozen in owner-successor-search.json; nothing outside them is claimed.",
+    "The fault sweep observes an owner refusal in an Outcome apply-window prefix that breaks the post-state predicate as 'owner refused (P<n>)' (017 L-28, owner choice 06); every other permitted decision is unchanged. The K13-9 search and the plan witnesses also evaluate the post-state predicate on every committed record."
   ]
 }

@@ -14,6 +14,9 @@
  *   has no recipe for fails, so a new reader member must be classified here.
  * - **Inspection witness.** Every container of a returned view is edited, and the next view must equal
  *   the one before the edits.
+ * - **Post-state witness** (K1.3, design 03). After every plan the owner accepts in this file, the
+ *   owner's full post-state predicate is evaluated again on the record the commit actually left
+ *   (`postStateViolation`), so a commit that differed from the successor it admitted would show here.
  *
  * The recording inside `apply` runs inside poison windows when the poisoned-prototype sweep runs this
  * file, so it uses load-time references and own-data writes only; every check runs after the call.
@@ -32,6 +35,7 @@ const defineProperty = Object.defineProperty;
 const create = Object.create;
 const originalApply = KernelState.prototype.apply;
 const find = KernelState.prototype.find;
+const postStateViolation = KernelState.prototype.postStateViolation;
 
 interface Applied {
   readonly plan: Plan;
@@ -50,10 +54,25 @@ const recordApplied = (entry: Applied): void => {
   defineProperty(applied, `${applied.length}`, descriptor);
 };
 
+/** What the post-state witness found: one line per accepted plan whose committed record breaks P. */
+const witnessed: string[] = [];
+let witnessedPlans = 0;
+const recordWitnessed = (line: string): void => {
+  const descriptor = create(null) as PropertyDescriptor;
+  descriptor.value = line;
+  descriptor.writable = true;
+  descriptor.enumerable = true;
+  descriptor.configurable = true;
+  defineProperty(witnessed, `${witnessed.length}`, descriptor);
+};
+
 KernelState.prototype.apply = function (this: KernelState, plan: Plan): void {
   const reader = plan.kind === "creation" ? null : (ReflectApply(find, this, [plan.executionId]) as ReturnType<KernelState["find"]>);
   recordApplied({ plan, before: reader === null ? null : reader.inspection(), state: this });
   ReflectApply(originalApply, this, [plan]);
+  witnessedPlans += 1;
+  const violation = ReflectApply(postStateViolation, this, [plan.executionId]) as string | null;
+  if (violation !== null) recordWitnessed(`${plan.kind} on ${plan.executionId}: ${violation}`);
 };
 
 /** Runs one operation and returns the plans it applied. */
@@ -443,6 +462,7 @@ describe("CR1-2: the owner's views alias nothing it holds", () => {
         visibleExecutionIds: () => state.visibleExecutionIds(author),
         deliveryStatus: () => state.deliveryStatus(executionId, first.activationId, 1),
         executionIds: () => state.executionIds(),
+        postStateViolation: () => state.postStateViolation(executionId),
       },
       ExecutionReader: {
         entryAt: () => execution.entryAt(1),
@@ -502,5 +522,12 @@ describe("CR1-2: the owner's views alias nothing it holds", () => {
     assert.throws(() => {
       (reader as unknown as { state: string }).state = "COMPLETED";
     }, TypeError, "a reader member cannot be written");
+  });
+});
+
+describe("K1.3 design 03: the post-state witness", () => {
+  test("every record an accepted plan in this file left satisfies the post-state predicate", () => {
+    assert.ok(witnessedPlans > 100, `the witness ran after ${witnessedPlans} accepted plans`);
+    assert.deepEqual(witnessed, []);
   });
 });

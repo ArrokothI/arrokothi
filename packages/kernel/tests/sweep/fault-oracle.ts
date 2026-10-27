@@ -56,7 +56,12 @@
  *   the Outcome commit's statements. Expected: that fault, and a state that is a prefix of the declared
  *   apply sequence `OUTCOME_APPLY` ending inside that statement. The sweep checks that the sequence
  *   matches the source (`CHECKS.applySequence`) and, from the reference decision, that applying it
- *   whole reproduces the reference state (`CHECKS.applyModel`).
+ *   whole reproduces the reference state (`CHECKS.applyModel`). K1.3 (017 L-28, owner choice 06): a
+ *   prefix can break the state owner's post-state predicate, for example terminal dispositions while
+ *   still `RUNNING`, or a timeout appended before its retirement. The owner then refuses every later
+ *   decision that carries the violation, so in such a prefix the two probes that reach it, the next
+ *   accepted input and (until the accepted-Outcome index holds the Activation) the setup grant's
+ *   Outcome, are observed as `owner refused (P<n>)` (`ownerRefusalIn`).
  *
  * Since COORD-REFACTOR-01 the two commits are applied by the state owner: the Outcome commit is the end
  * of `KernelState`'s `#applyOutcome` and the takeover's appends and writes are the end of
@@ -204,7 +209,7 @@ export const OUTCOME_APPLY = [
   ["registrations", "record.registrations = registrations;"],
   ["wait", "record.wait = liveWait;"],
   ["readiness", "record.readiness = readiness;"],
-  ["activation", "record.activation = null;"],
+  ["activation", "record.activation = activation;"],
   ["state", "record.state = nextState;"],
 ] as const;
 export type OutcomeStep = (typeof OUTCOME_APPLY)[number][0];
@@ -614,6 +619,15 @@ export function outcomeLadder(context: Context): { readonly step: OutcomeStep; r
   const s1 = context.reference.state;
   const ladder: { step: OutcomeStep; states: State[] }[] = [];
   let state = s0;
+  let registrations = countOf(s0.view);
+  let indexed = false;
+  const observed = (current: State): State => {
+    const clause = ownerRefusalIn(current.view, registrations);
+    if (clause === null) return current;
+    const refused = `owner refused (${clause})`;
+    // An input probe always reaches the owner; the setup grant's Outcome does until the index holds it.
+    return { ...current, nextAcceptance: refused, setupGrant: indexed ? current.setupGrant : refused };
+  };
   const changedTo = (kind: string): number[] =>
     s1.view.mailbox.flatMap((entry, index) => (s0.view.mailbox[index]?.disposition.kind === "queued" && entry.disposition.kind === kind ? [index] : []));
   for (const [step] of OUTCOME_APPLY) {
@@ -695,14 +709,56 @@ export function outcomeLadder(context: Context): { readonly step: OutcomeStep; r
         elements.push((current) => ({ ...withView(current, { state: s1.view.state }), nextAcceptance: s1.nextAcceptance }));
         break;
     }
-    const states: State[] = [state];
+    // What the probes observe of each state: the state itself, unless it breaks the post-state predicate.
+    const states: State[] = [observed(state)];
     for (const element of elements) {
       state = element(state);
-      states.push(state);
+      states.push(observed(state));
     }
     ladder.push({ step, states });
+    if (step === "registrations") registrations = countOf(s1.view);
+    if (step === "acceptedOutcomes") indexed = true;
   }
   return ladder;
+}
+
+/** The registration count of a state the owner admitted: its retired and live generations. */
+const countOf = (view: ExecutionView): number => view.retiredWaits.length + (view.wait === null ? 0 : 1);
+
+/**
+ * K1.3 (L-28): the first post-state clause a state breaks, as the state owner names it, over what a view
+ * shows and the registration count, which no view holds. A view does not show readiness's selector, so
+ * P9's selector term is not checked; no apply-sequence state changes readiness apart from its retirement.
+ */
+export function ownerRefusalIn(view: ExecutionView, registrations: number): string | null {
+  const terminal = view.state === "COMPLETED" || view.state === "FAILED" || view.state === "CANCELLED";
+  const readiness = view.waitEndedReadiness;
+  if (terminal && (view.wait !== null || readiness !== null || view.activation !== null)) return "P1";
+  if ((view.state === "WAITING") !== (view.wait !== null)) return "P2";
+  if ((view.state === "RUNNING") !== (view.activation !== null)) return "P3";
+  if ((view.state === "CANCELLED") !== (view.cancellation !== null)) return "P4";
+  for (const entry of view.mailbox) {
+    if (terminal && entry.disposition.kind === "queued") return "P1";
+    if (!terminal && entry.disposition.kind === "terminal") return "P5";
+  }
+  const retired = view.retiredWaits;
+  const ledger = view.wait === null ? retired : [...retired, view.wait];
+  if (ledger.length !== registrations || ledger.some((wait, index) => wait.generation !== index + 1 || wait.deadline !== wait.declaration.deadline)) return "P6";
+  const timeouts = view.mailbox.flatMap((entry) => (entry.sourceCategory === "kernel_timeout" ? [entry] : []));
+  const deadlines = retired.filter((wait) => wait.retiredBy === "deadline");
+  const matches = (wait: (typeof retired)[number], entry: (typeof timeouts)[number]): boolean => wait.endingEventId === entry.eventId && wait.generation === entry.waitGeneration && wait.deadline === entry.deadline;
+  if (timeouts.length !== deadlines.length || !timeouts.every((entry) => deadlines.filter((wait) => matches(wait, entry)).length === 1) || !deadlines.every((wait) => timeouts.filter((entry) => matches(wait, entry)).length === 1)) return "P7";
+  for (const [index, wait] of retired.entries()) {
+    if (wait.retiredBy === "cancellation" && !(index === retired.length - 1 && view.state === "CANCELLED" && wait.endingEventId === null)) return "P8";
+    if (wait.retiredBy === "event" && !view.mailbox.some((entry) => entry.eventId === wait.endingEventId && entry.sourceCategory !== "kernel_timeout")) return "P8";
+  }
+  if (readiness !== null) {
+    const last = retired.at(-1);
+    if (view.state !== "READY" || last === undefined || readiness.generation !== last.generation || readiness.species !== last.retiredBy) return "P9";
+    if (readiness.timeoutEventId !== (last.retiredBy === "deadline" ? last.endingEventId : null)) return "P9";
+    if (view.mailbox.find((entry) => entry.eventId === last.endingEventId)?.disposition.kind !== "queued") return "P9";
+  }
+  return null;
 }
 
 // -- Classification -----------------------------------------------------------------------------

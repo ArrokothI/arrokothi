@@ -82,11 +82,12 @@
         "packages/kernel/tests/waits-selection.test.ts",
         "packages/kernel/tests/control-commits.test.ts"
       ],
-      "test_count": 97,
+      "test_count": 115,
       "killers": [
         "Event wake, bound 1, U/E1/E2 present",
         "#applyDispatch: prepares without changing anything, then commits exactly its declared statements"
-      ]
+      ],
+      "guard": "T5"
     },
     "cancellation-acknowledges": {
       "files": [
@@ -97,14 +98,15 @@
       "killers": [
         "RUNNING, with an outside-batch input",
         "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant"
-      ]
+      ],
+      "guard": "T3"
     },
     "cancellation-readiness": {
       "files": [
         "packages/kernel/tests/cancellation.test.ts",
         "packages/kernel/tests/control-commits.test.ts"
       ],
-      "test_count": 120,
+      "test_count": 138,
       "killers": [
         "READY with Event readiness",
         "#applyCancellation: prepares without changing anything, then commits exactly its declared statements"

@@ -6085,9 +6085,9 @@
           "name": "B-8 dispatch does not consume wait-ended readiness",
           "operator": "drop-commit",
           "path": "packages/kernel/src/state.ts",
-          "before": "    appendOwn(record.receipts, receipt);\n    record.readiness = null;\n  }",
+          "before": "    appendOwn(record.receipts, receipt);\n    record.readiness = readiness;\n  }",
           "after": "    appendOwn(record.receipts, receipt);\n  }",
-          "id": "mutation-de1632040f1a50af1c69270bd682fd514bec1f77685a13f5e9ca73bf12749364"
+          "id": "mutation-0c78e38d592e57d728e5c9a0ee380a3a0eb5507335a71ceed3b63ccfd70d0dd7"
         }
       ]
     },
@@ -6189,9 +6189,9 @@
           "name": "K13-6 cancellation leaves wait-ended readiness behind",
           "operator": "drop-commit",
           "path": "packages/kernel/src/state.ts",
-          "before": "    record.cancellation = cancellation;\n    record.wait = null;\n    record.readiness = null;\n",
-          "after": "    record.cancellation = cancellation;\n    record.wait = null;\n",
-          "id": "mutation-37f0c3b1db8b7346952ce3a8717253946458028e5cbc93a5b7a5dc9b6613bfe4"
+          "before": "    record.cancellation = cancellation;\n    record.wait = wait;\n    record.readiness = readiness;\n",
+          "after": "    record.cancellation = cancellation;\n    record.wait = wait;\n",
+          "id": "mutation-8c92b668d7c5fa6e55c2eb884444b1c61ca61b44bb07d156f615a0b083d486ee"
         }
       ]
     },

@@ -1,13 +1,18 @@
 /**
- * K1.3 correction (design 02): the owner's S1–S5 predicates, with review 01's counterexamples under
- * their stable IDs (K13-R01-S2-01, K13-R01-S4-02, K13-R01-CLOCK-03) and the positive controls that keep
- * every valid plan working.
+ * K1.3: the owner's successor check (design 03, revised for design check 03 and owner choice 05), with
+ * the reviews' counterexamples under their stable IDs (K13-R01-S2-01, K13-R01-S4-02, K13-R01-CLOCK-03,
+ * K13-R02-S2-01, K13-R02-S2-02), the design check's required controls (D03-CHK-02, -03 and -04) and the
+ * positive controls that keep every valid plan working.
  *
  * A guard case forms a real plan through the public coordinator and alters it at the owner's one entry,
  * `KernelState.prototype.apply`, as review 01's probe and `state-plans.test.ts` do. The altered plan is
  * internally consistent where the case says so: these are negative controls of structural guarantees,
  * not public-call schedules the coordinator produces. A refused plan must also leave inspection
- * unchanged, because every predicate is checked before the owner writes anything.
+ * unchanged, because the owner admits every successor before it writes anything. Where a case names the
+ * rule (`refusedAt`), the independent reference (`successor-reference.ts`) must name the same one.
+ *
+ * Every plan the owner accepts in this file is followed by the post-state witness: the owner's full
+ * predicate evaluated again on the record the commit left (`postStateViolation`).
  *
  * The recording and rewriting inside `apply` run inside poison windows when the poisoned-prototype sweep
  * runs this file, so they use load-time references and own-data writes only.
@@ -19,25 +24,119 @@ import assert from "node:assert/strict";
 import type { Plan } from "../src/plan.ts";
 import { KernelState } from "../src/state.ts";
 import { accepted, createRequest, recordOwn } from "./harness.ts";
-import { author, created, dispatch, input, manualClock, submitAwait, submitNext, view, waitKey, waitOn, type Exchange, type Opened } from "./waits-kit.ts";
+import { referenceDecision, referenceRecord, refusalClause } from "./successor-reference.ts";
+import { author, created, dispatch, input, keepingDriver, manualClock, submitAwait, submitNext, view, waitKey, waitOn, type Exchange, type Opened } from "./waits-kit.ts";
 
 const ReflectApply = Reflect.apply;
 const freeze = Object.freeze;
 const originalApply = KernelState.prototype.apply;
 const find = KernelState.prototype.find;
+const postStateViolation = KernelState.prototype.postStateViolation;
 
 type PlanOf<K extends Plan["kind"]> = Extract<Plan, { kind: K }>;
 
-/** Runs `run` with every plan of `kind` replaced by `rewrite(plan)` at the owner's entry. */
-function rewriting<K extends Plan["kind"], T>(kind: K, rewrite: (plan: PlanOf<K>) => object, run: () => T): T {
-  KernelState.prototype.apply = function (this: KernelState, plan: Plan): unknown {
-    return ReflectApply(originalApply, this, [plan.kind === kind ? freeze(rewrite(plan as PlanOf<K>)) : plan]);
-  } as KernelState["apply"];
+/** While set, rewrites each plan handed to the owner. */
+let rewrite: ((plan: Plan, owner: KernelState) => Plan) | null = null;
+/** While `recording`, every plan handed to the owner, as handed. */
+const handed: { plan: Plan; state: KernelState }[] = [];
+let recording = false;
+/** What the post-state witness found after an accepted plan, and how many it checked. */
+const witnessed: string[] = [];
+let witnessedPlans = 0;
+
+KernelState.prototype.apply = function (this: KernelState, plan: Plan): void {
+  const applied = rewrite === null ? plan : rewrite(plan, this);
+  if (recording) recordOwn(handed, { plan: applied, state: this });
+  ReflectApply(originalApply, this, [applied]);
+  witnessedPlans += 1;
+  const violation = ReflectApply(postStateViolation, this, [applied.executionId]) as string | null;
+  if (violation !== null) recordOwn(witnessed, `${applied.kind}: ${violation}`);
+};
+
+const CAPTURED = freeze({ captured: true });
+
+/** Runs `run` with every plan of `kind` replaced by `alter(plan)` at the owner's entry. */
+function rewriting<K extends Plan["kind"], T>(kind: K, alter: (plan: PlanOf<K>) => object, run: () => T): T {
+  rewrite = (plan: Plan): Plan => (plan.kind === kind ? (freeze(alter(plan as PlanOf<K>)) as Plan) : plan);
   try {
     return run();
   } finally {
-    KernelState.prototype.apply = originalApply;
+    rewrite = null;
   }
+}
+
+/**
+ * The owner of one opened Execution: the state an input it submits is handed to, captured before the
+ * owner is reached. (Every `created()` Execution has the same ID, so an ID alone does not name one.)
+ */
+const owned = new WeakMap<Opened, KernelState>();
+function ownerOf(opened: Opened): KernelState {
+  const known = owned.get(opened);
+  if (known !== undefined) return known;
+  let owner: KernelState | null = null;
+  rewrite = (_plan: Plan, state: KernelState): Plan => {
+    owner = state;
+    throw CAPTURED;
+  };
+  try {
+    opened.kernel.submitInput(author, { destination: opened.executionId, requestKey: "owner-probe", kind: "application.note", payload: 1 });
+  } catch (error) {
+    if (error !== CAPTURED) throw error;
+  } finally {
+    rewrite = null;
+  }
+  assert.ok(owner !== null, "an input reaches the owner");
+  owned.set(opened, owner);
+  return owner;
+}
+const readerOf = (opened: Opened) => ReflectApply(find, ownerOf(opened), [opened.executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
+
+/**
+ * Asserts that the rewritten operation is refused by the owner naming rule `clause` (`P1`–`P9`,
+ * `T1`–`T6`, or `stale`), that the independent reference names the same rule for the plan the owner
+ * was handed, and that nothing changed.
+ */
+function refusedAt<K extends Plan["kind"]>(opened: Opened, clause: string, kind: K, alter: (plan: PlanOf<K>) => object, run: () => unknown): void {
+  const before = view(opened);
+  const reading = referenceRecord(readerOf(opened));
+  handed.length = 0;
+  recording = true;
+  let thrown: unknown = null;
+  try {
+    rewriting(kind, alter, run);
+  } catch (error) {
+    thrown = error;
+  } finally {
+    recording = false;
+  }
+  assert.notEqual(thrown, null, "the owner refused the plan");
+  assert.equal(refusalClause(thrown), clause, String(thrown));
+  const plan = handed.at(-1)!.plan;
+  const reference = referenceDecision(reading, plan);
+  assert.equal(reference.accepted ? "accepted" : reference.clause, clause, "the independent reference names the same rule");
+  assert.deepEqual(view(opened), before, "the refused plan changed nothing");
+}
+
+/** Applies `plan` to its Execution's owner directly, at the owner's entry, with the current basis. */
+function retargeted(target: Opened, plan: Plan): Plan {
+  return freeze({ ...plan, executionId: target.executionId, basis: readerOf(target).version }) as Plan;
+}
+
+/** The plans an operation hands the owner, captured without applying them: the owner is never reached. */
+function planned<T>(run: () => T): Plan[] {
+  const out: Plan[] = [];
+  rewrite = (plan: Plan): Plan => {
+    recordOwn(out, plan);
+    throw CAPTURED;
+  };
+  try {
+    run();
+  } catch (error) {
+    if (error !== CAPTURED) throw error;
+  } finally {
+    rewrite = null;
+  }
+  return out;
 }
 
 /** Asserts that the rewritten operation is refused by the owner naming `guard`, and changed nothing. */
@@ -188,21 +287,19 @@ describe("K13-R01-S4-02 every Outcome that creates a registration takes a fresh 
 
 describe("design 02 audit: the S1, S3, S4 and S5 predicates beyond review 01's cases", () => {
   test("S1: a delivery, takeover or control plan on a terminal record is refused by that rule", () => {
-    const recorded: { plan: Plan; state: KernelState }[] = [];
     const opened = created();
     const ended = accepted(opened.kernel.createExecution(author, createRequest({ creationKey: "s1-ended" })));
-    KernelState.prototype.apply = function (this: KernelState, plan: Plan): unknown {
-      recordOwn(recorded, { plan, state: this });
-      return ReflectApply(originalApply, this, [plan]);
-    } as KernelState["apply"];
+    handed.length = 0;
+    recording = true;
     let exchange: Exchange;
     try {
       exchange = dispatch(opened);
       accepted(opened.kernel.reportProtocolFailure(author, opened.executionId, { activationId: exchange.activationId, writerEpoch: 1, diagnostic: "garbled" }));
       accepted(opened.kernel.requestTakeover(author, opened.executionId, { activationId: exchange.activationId, writerEpoch: 1 }));
     } finally {
-      KernelState.prototype.apply = originalApply;
+      recording = false;
     }
+    const recorded = [...handed];
     const target = { ...opened, executionId: ended.executionId };
     const endedExchange = dispatch(target);
     accepted(submitNext(target, endedExchange, { step: "complete", result: null }));
@@ -215,10 +312,13 @@ describe("design 02 audit: the S1, S3, S4 and S5 predicates beyond review 01's c
     }
   });
 
-  test("S3: an Outcome carrying both a live and a retired wait is refused", () => {
+  test("T6: an Outcome carrying both a live and a retired wait, with the retirement's readiness, is refused", () => {
     const opened = created();
-    const exchange = dispatch(opened);
-    refusedWithoutChange(opened, /S3/, "outcome", (plan) => ({ ...plan, retired: freeze({ ...plan.liveWait!, retiredBy: "event", endingEventId: "event-forged" }) }), () => submitAwait(opened, exchange, waitOn("s")));
+    input(opened, "s");
+    const exchange = dispatch(opened, 1);
+    const [woken] = planned(() => submitAwait(opened, exchange, waitOn("s"))) as PlanOf<"outcome">[];
+    // The woken template's retirement and readiness, carried beside a live wait registered by the same Outcome.
+    refusedAt(opened, "T6", "outcome", (plan) => ({ ...plan, nextState: "WAITING", liveWait: freeze({ generation: woken!.retired!.generation, registeredBy: woken!.retired!.registeredBy, declaration: woken!.retired!.declaration, deadline: woken!.retired!.deadline }), retired: woken!.retired, readiness: woken!.readiness }), () => submitAwait(opened, exchange, waitOn("s")));
   });
 
   test("S3: a wake, expiry or cancellation that names the live generation but rewrites what it retires is refused", () => {
@@ -291,3 +391,294 @@ describe("K13-R01-CLOCK-03 three deadline paths: due at registration, live wait,
     assert.equal(view(fired).state, "CANCELLED");
   });
 });
+
+describe("K13-R02-S2-01 and K13-R02-S2-02: review 02's owner counterexamples, as named controls", () => {
+  for (const cause of ["explicit", "execution_deadline"] as const) {
+    test(`K13-R02-S2-01 a cancellation writing queued over every queued position is refused (${cause})`, () => {
+      const opened = created(cause === "explicit" ? {} : { executionDeadline: 5 });
+      input(opened, "s");
+      opened.clock.set(5);
+      const run = () => (cause === "explicit" ? cancel(opened) : opened.kernel.fireTimer(executionKey(opened.executionId)));
+      refusedAt(opened, "T2", "cancellation", (plan) => ({ ...plan, ending: freeze({ kind: "queued" }) }), run);
+    });
+  }
+
+  for (const [step, next] of [["complete", { step: "complete", result: true }], ["fail", { step: "fail", error: { reason: "x" } }]] as const) {
+    for (const field of ["acknowledgment", "ending"] as const) {
+      test(`K13-R02-S2-01 a ${step} Outcome writing queued as its ${field} over an exact cover is refused`, () => {
+        const opened = created();
+        input(opened, "s");
+        const exchange = dispatch(opened, 1);
+        refusedAt(opened, "T2", "outcome", (plan) => ({ ...plan, [field]: freeze({ kind: "queued" }) }), () => submitNext(opened, exchange, next));
+      });
+    }
+
+    test(`K13-R02-S2-02 a ${step} decision that registers an immediately expired wait, appending its queued timeout and readiness, is refused`, () => {
+      const opened = created();
+      const exchange = dispatch(opened);
+      refusedAt(opened, "P1", "outcome", (plan) => ({ ...plan, nextState: step === "complete" ? "COMPLETED" : "FAILED" }), () => submitAwait(opened, exchange, waitOn("s", 0)));
+    });
+  }
+
+  test("positive controls: an exact cover with its genuine dispositions completes and fails, and a non-terminal immediate expiry stays", () => {
+    for (const next of [{ step: "complete", result: true }, { step: "fail", error: { reason: "x" } }]) {
+      const opened = created();
+      input(opened, "s");
+      accepted(submitNext(opened, dispatch(opened, 1), next));
+      assert.deepEqual(view(opened).queued, []);
+    }
+    const opened = created();
+    accepted(submitAwait(opened, dispatch(opened), waitOn("s", 0)));
+    assert.deepEqual([view(opened).state, view(opened).queued.length], ["READY", 1]);
+  });
+
+  test("review 02's generation matrix: only the fresh generation 2 is accepted, for live, immediate wake and immediate expiry", () => {
+    const verdicts: string[] = [];
+    for (const mode of ["live", "event", "deadline"] as const) {
+      for (const generation of [0, 1, 2, 3, 4]) {
+        const opened = created();
+        accepted(submitAwait(opened, dispatch(opened), waitOn("s", 0)));
+        const exchange = dispatch(opened);
+        if (mode === "event") input(opened, "s");
+        const alter = (plan: PlanOf<"outcome">) => ({
+          ...plan,
+          registrations: generation,
+          liveWait: plan.liveWait === null ? null : freeze({ ...plan.liveWait, generation }),
+          retired: plan.retired === null ? null : freeze({ ...plan.retired, generation }),
+          readiness: plan.readiness === null ? null : freeze({ ...plan.readiness, generation }),
+          timeout: plan.timeout === null ? null : freeze({ ...plan.timeout, generation }),
+        });
+        const run = () => submitAwait(opened, exchange, waitOn("s", mode === "deadline" ? 0 : 10));
+        if (generation === 2) {
+          accepted(rewriting("outcome", alter, run));
+          verdicts.push(`${mode}/${generation}: accepted`);
+        } else {
+          refusedAt(opened, "T6", "outcome", alter, run);
+          verdicts.push(`${mode}/${generation}: T6`);
+        }
+      }
+    }
+    assert.equal(verdicts.filter((verdict) => verdict.endsWith("accepted")).length, 3);
+    assert.equal(verdicts.length, 15);
+  });
+});
+
+describe("D03-CHK-02 every new wait and retirement keeps its declaration's deadline", () => {
+  test("a live registration whose deadline is not its declaration's is refused", () => {
+    const opened = created();
+    const exchange = dispatch(opened);
+    refusedAt(opened, "P6", "outcome", (plan) => ({ ...plan, liveWait: freeze({ ...plan.liveWait!, deadline: 6 }) }), () => submitAwait(opened, exchange, waitOn("s", 5)));
+  });
+
+  test("an immediate expiry whose retirement and timeout agree with each other but not with the declaration is refused", () => {
+    const opened = created();
+    const exchange = dispatch(opened);
+    refusedAt(opened, "P6", "outcome", (plan) => ({
+      ...plan,
+      retired: freeze({ ...plan.retired!, deadline: 1 }),
+      timeout: freeze({ ...plan.timeout!, deadline: 1 }),
+    }), () => submitAwait(opened, exchange, waitOn("s", 0)));
+  });
+
+  test("an immediate expiry whose timeout alone moves its deadline is refused", () => {
+    const opened = created();
+    const exchange = dispatch(opened);
+    refusedAt(opened, "P7", "outcome", (plan) => ({ ...plan, timeout: freeze({ ...plan.timeout!, deadline: 1 }) }), () => submitAwait(opened, exchange, waitOn("s", 0)));
+  });
+
+  test("an immediate wake whose retirement moves its deadline is refused", () => {
+    const opened = created();
+    input(opened, "s");
+    const exchange = dispatch(opened, 1);
+    refusedAt(opened, "P6", "outcome", (plan) => ({ ...plan, retired: freeze({ ...plan.retired!, deadline: 9 }) }), () => submitAwait(opened, exchange, waitOn("s", 5)));
+  });
+
+  test("a live wait's expiry whose retirement and timeout move the deadline together is refused", () => {
+    const opened = created();
+    accepted(submitAwait(opened, dispatch(opened), waitOn("s", 5)));
+    opened.clock.set(5);
+    refusedAt(opened, "T4", "expiry", (plan) => ({
+      ...plan,
+      retired: freeze({ ...plan.retired, deadline: 6 }),
+      timeout: freeze({ ...plan.timeout, deadline: 6 }),
+    }), () => opened.kernel.fireTimer(waitKey(opened.executionId, 1)));
+  });
+
+  test("positive controls: live, immediately woken and immediately expired registrations keep their declared deadlines", () => {
+    const live = created();
+    accepted(submitAwait(live, dispatch(live), waitOn("s", 5)));
+    assert.deepEqual([view(live).wait?.deadline, view(live).wait?.declaration.deadline], [5, 5]);
+    const woken = created();
+    input(woken, "s");
+    accepted(submitAwait(woken, dispatch(woken, 1), waitOn("s", 5)));
+    assert.deepEqual([view(woken).retiredWaits[0]?.deadline, view(woken).retiredWaits[0]?.declaration.deadline], [5, 5]);
+    const expired = created();
+    accepted(submitAwait(expired, dispatch(expired), waitOn("s", 0)));
+    const timeout = view(expired).mailbox.find((entry) => entry.sourceCategory === "kernel_timeout")!;
+    assert.deepEqual([view(expired).retiredWaits[0]?.deadline, timeout.sourceCategory === "kernel_timeout" ? timeout.deadline : null], [0, 0]);
+  });
+});
+
+describe("D03-CHK-03 readiness comes with its retirement and lasts until dispatch or cancellation", () => {
+  test("an immediate Event wake without its readiness is refused", () => {
+    const opened = created();
+    input(opened, "s");
+    const exchange = dispatch(opened, 1);
+    refusedAt(opened, "T5", "outcome", (plan) => ({ ...plan, readiness: null }), () => submitAwait(opened, exchange, waitOn("s")));
+  });
+
+  test("an immediate deadline expiry without its readiness is refused", () => {
+    const opened = created();
+    const exchange = dispatch(opened);
+    refusedAt(opened, "T5", "outcome", (plan) => ({ ...plan, readiness: null }), () => submitAwait(opened, exchange, waitOn("s", 0)));
+  });
+
+  test("an input wake without its readiness, and an expiry without its readiness, are refused", () => {
+    const opened = created();
+    accepted(submitAwait(opened, dispatch(opened), waitOn("s", 5)));
+    refusedAt(opened, "T5", "input", (plan) => ({ ...plan, readiness: null }), () => input(opened, "s"));
+    opened.clock.set(5);
+    refusedAt(opened, "T5", "expiry", (plan) => ({ ...plan, readiness: null }), () => opened.kernel.fireTimer(waitKey(opened.executionId, 1)));
+  });
+
+  test("an input that installs readiness without a wake, or drops the readiness it found, is refused", () => {
+    const waiting = created();
+    accepted(submitAwait(waiting, dispatch(waiting), waitOn("s", 5)));
+    const [wake] = planned(() => input(waiting, "s")) as PlanOf<"input">[];
+    refusedAt(waiting, "T5", "input", (plan) => ({ ...plan, readiness: wake!.readiness }), () => input(waiting, "x"));
+    input(waiting, "s");
+    assert.equal(view(waiting).waitEndedReadiness?.species, "event");
+    // READY with Event readiness: a later input keeps it; a plan that drops it is not a way to clear it.
+    const [later] = planned(() => input(waiting, "x")) as PlanOf<"input">[];
+    assert.equal(later!.readiness, null, "an ordinary input names no readiness");
+    accepted(waiting.kernel.submitInput(author, { destination: waiting.executionId, requestKey: "kept", kind: "application.note", payload: 1 }));
+    assert.equal(view(waiting).waitEndedReadiness?.species, "event", "an input keeps readiness");
+  });
+
+  test("positive controls: readiness lasts from its retirement until dispatch consumes it or cancellation discards it", () => {
+    const consumed = created();
+    accepted(submitAwait(consumed, dispatch(consumed), waitOn("s", 5)));
+    input(consumed, "s");
+    assert.equal(view(consumed).waitEndedReadiness?.species, "event");
+    input(consumed, "x");
+    assert.equal(view(consumed).waitEndedReadiness?.species, "event", "kept across an input");
+    dispatch(consumed, 1);
+    assert.equal(view(consumed).waitEndedReadiness, null, "consumed by the next reservation");
+    const discarded = created();
+    accepted(submitAwait(discarded, dispatch(discarded), waitOn("s", 0)));
+    assert.equal(view(discarded).waitEndedReadiness?.species, "deadline");
+    accepted(cancel(discarded));
+    assert.deepEqual([view(discarded).state, view(discarded).waitEndedReadiness], ["CANCELLED", null], "discarded by cancellation");
+  });
+});
+
+describe("D03-CHK-04 each decision starts from its own states, and only the resolving Outcome acknowledges", () => {
+  test("positive control: an input while RUNNING with a reserved batch acknowledges nothing and keeps the exchange", () => {
+    const opened = created();
+    input(opened, "s");
+    const exchange = dispatch(opened, 2);
+    assert.equal(exchange.batch.length, 2);
+    input(opened, "x");
+    const after = view(opened);
+    assert.deepEqual([after.state, after.activation?.activationId, after.acknowledged], ["RUNNING", exchange.activationId, []]);
+    assert.equal(after.queued.length, 3);
+  });
+
+  test("a second dispatch on RUNNING with an empty reserved batch is refused", () => {
+    const running = created();
+    accepted(submitNext(running, dispatch(running, 1)));
+    const empty = dispatch(running, 1);
+    assert.deepEqual(empty.batch, [], "an ordinary dispatch with nothing queued reserves an empty batch");
+    const donor = created();
+    const [template] = planned(() => dispatch(donor, 1));
+    const before = view(running);
+    const plan = retargeted(running, template!);
+    assert.equal(refusalClause(captureThrow(() => ReflectApply(originalApply, ownerOf(running), [plan]))), "T1");
+    const reference = referenceDecision(referenceRecord(readerOf(running)), plan);
+    assert.equal(reference.accepted ? "accepted" : reference.clause, "T1");
+    assert.deepEqual(view(running), before);
+  });
+
+  test("an Outcome for another exchange, and one acknowledging by another Activation, are refused", () => {
+    const opened = created();
+    input(opened, "s");
+    const first = dispatch(opened, 1);
+    const [stale] = planned(() => submitNext(opened, first)) as PlanOf<"outcome">[];
+    accepted(submitNext(opened, first));
+    const second = dispatch(opened, 1);
+    refusedAt(opened, "stale", "outcome", () => ({ ...stale!, basis: readerOf(opened).version }), () => submitNext(opened, second));
+    refusedAt(opened, "T3", "outcome", (plan) => ({ ...plan, acknowledgment: freeze({ kind: "acknowledged", activationId: first.activationId }) }), () => submitNext(opened, second));
+  });
+
+  test("an expiry of a generation that is no longer live is refused", () => {
+    const opened = created();
+    accepted(submitAwait(opened, dispatch(opened), waitOn("s", 5)));
+    opened.clock.set(5);
+    const [first] = planned(() => opened.kernel.fireTimer(waitKey(opened.executionId, 1))) as PlanOf<"expiry">[];
+    opened.clock.set(0);
+    input(opened, "s");
+    accepted(submitAwait(opened, dispatch(opened, 1), waitOn("s", 9)));
+    assert.equal(view(opened).wait?.generation, 2);
+    opened.clock.set(9);
+    refusedAt(opened, "T4", "expiry", () => ({ ...first!, basis: readerOf(opened).version }), () => opened.kernel.fireTimer(waitKey(opened.executionId, 2)));
+  });
+
+  test("terminal controls: input, dispatch, expiry and cancellation never reopen a COMPLETED record; an Outcome finds no exchange", () => {
+    const donor = created();
+    accepted(submitAwait(donor, dispatch(donor), waitOn("s", 5)));
+    const [inputPlan] = planned(() => input(donor, "s"));
+    donor.clock.set(5);
+    const [expiryPlan] = planned(() => donor.kernel.fireTimer(waitKey(donor.executionId, 1)));
+    const [cancellationPlan] = planned(() => cancel(donor));
+    const ready = created();
+    const [dispatchPlan] = planned(() => dispatch(ready, 1));
+    const readyExchange = dispatch(ready, 1);
+    const [outcomePlan] = planned(() => submitNext(ready, readyExchange));
+    const ended = created();
+    accepted(submitNext(ended, dispatch(ended, 1), { step: "complete", result: null }));
+    const before = view(ended);
+    for (const [plan, clause] of [[inputPlan, "T1"], [dispatchPlan, "T1"], [expiryPlan, "T1"], [cancellationPlan, "T1"], [outcomePlan, "stale"]] as const) {
+      const moved = retargeted(ended, plan!);
+      assert.equal(refusalClause(captureThrow(() => ReflectApply(originalApply, ownerOf(ended), [moved]))), clause, plan!.kind);
+      const reference = referenceDecision(referenceRecord(readerOf(ended)), moved);
+      assert.equal(reference.accepted ? "accepted" : reference.clause, clause, `${plan!.kind}: the reference agrees`);
+    }
+    assert.deepEqual(view(ended), before);
+  });
+
+  test("positive controls: settlement, refusals, losing Outcomes and discarded fires still run on terminal records", () => {
+    const driver = keepingDriver();
+    const completing = created({ driver, executionDeadline: 5 });
+    accepted(submitNext(completing, dispatch(completing, 1), { step: "complete", result: null }));
+    driver.settlements[0]!.delivered();
+    assert.equal(view(completing).exchanges[0]?.deliveries[0]?.status, "delivered", "a late report settles");
+    const refused = completing.kernel.submitInput(author, { destination: completing.executionId, requestKey: "late", kind: "application.note", payload: 1 });
+    assert.equal(refused.ok, false);
+    assert.equal(view(completing).refusals.length, 1, "a refusal is recorded");
+    completing.clock.set(5);
+    assert.equal(completing.kernel.fireTimer(executionKey(completing.executionId)).result, "stale", "a fire is discarded");
+    const cancelling = created();
+    const exchange = dispatch(cancelling, 1);
+    accepted(cancel(cancelling));
+    assert.equal(submitNext(cancelling, exchange).ok, false, "a proposal loses to the cancellation");
+    assert.equal(view(cancelling).losingOutcomes.length, 1);
+    for (const opened of [completing, cancelling]) assert.equal(ownerOf(opened).postStateViolation(opened.executionId), null);
+  });
+});
+
+describe("design 03's post-state witness", () => {
+  test("every record an accepted plan in this file left satisfies the post-state predicate", () => {
+    assert.ok(witnessedPlans > 200, `the witness ran after ${witnessedPlans} accepted plans`);
+    assert.deepEqual(witnessed, []);
+  });
+});
+
+/** The value `run` throws; fails when it returns. */
+function captureThrow(run: () => unknown): unknown {
+  try {
+    run();
+  } catch (error) {
+    return error;
+  }
+  assert.fail("expected a refusal");
+}

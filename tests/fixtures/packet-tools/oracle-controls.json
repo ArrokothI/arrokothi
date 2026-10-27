@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "test_count": 293,
+  "test_count": 320,
   "controls": {
     "returned": [
       "report: enter a protocol hold / completed / returned value"

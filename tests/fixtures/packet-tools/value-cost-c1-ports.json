@@ -1712,8 +1712,8 @@
     "at_c": [
       {
         "path": "packages/kernel/src/state.ts",
-        "before": "    appendOwn(record.mailbox, entry);\n    mapSet(record.byInputId, inputIdKey(inputId), entry);",
-        "after": "    record.mailbox.push(entry);\n    mapSet(record.byInputId, inputIdKey(inputId), entry);"
+        "before": "    if (appended !== null) appendOwn(record.mailbox, appended);\n    mapSet(record.byInputId, inputIdKey(inputId), entry);",
+        "after": "    if (appended !== null) record.mailbox.push(appended);\n    mapSet(record.byInputId, inputIdKey(inputId), entry);"
       }
     ],
     "original_at_c": {

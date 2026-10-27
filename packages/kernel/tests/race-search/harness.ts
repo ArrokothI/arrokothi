@@ -12,7 +12,9 @@
  * - the pending-timer listing, against the model's own derivation;
  * - every Activation the Driver received, its carried Events and their payloads;
  * - the Driver cancellation requests;
- * - invariants INV-1–INV-12, checked on the observed view alone.
+ * - invariants INV-1–INV-12, checked on the observed view alone;
+ * - design 03's post-state witness: after every plan the owner accepts, its full post-state predicate on
+ *   the record the commit left (K1.3, owner choice 05).
  *
  * It drives the core coordinator with canonical bytes, not the live-value facade, so the search spends
  * its time in the Kernel. A failure is a string naming the step and the mismatch.
@@ -29,6 +31,8 @@ import {
   type RefusalRecord,
   type SubmissionGrant,
 } from "../../src/index.ts";
+import type { Plan } from "../../src/plan.ts";
+import { KernelState } from "../../src/state.ts";
 import {
   ALPHABET,
   eligible,
@@ -47,6 +51,17 @@ import {
   type Model,
   type Proposal,
 } from "./model.ts";
+
+/** The first post-state violation an accepted plan's committed record showed in the current run, or `null`. */
+let witnessed: string | null = null;
+const originalApply = KernelState.prototype.apply;
+const postStateViolation = KernelState.prototype.postStateViolation;
+KernelState.prototype.apply = function (this: KernelState, plan: Plan): void {
+  Reflect.apply(originalApply, this, [plan]);
+  if (witnessed !== null) return;
+  const violation = Reflect.apply(postStateViolation, this, [plan.executionId]) as string | null;
+  if (violation !== null) witnessed = `${plan.kind}: ${violation}`;
+};
 
 const encoder = new TextEncoder();
 const bytes = (json: string): Uint8Array => encoder.encode(json);
@@ -106,6 +121,7 @@ export function runWord(seed: Seed, word: readonly Letter[], bound: number, corr
   const kept: Kept[] = [];
   const requests: { cause: string; attempt: string | null }[] = [];
   let reading = 0;
+  witnessed = null;
   const kernel = new ExecutionCoordinator({
     driver: {
       driverId: "race-search",
@@ -297,6 +313,7 @@ export function runWord(seed: Seed, word: readonly Letter[], bound: number, corr
     if (JSON.stringify(named) !== JSON.stringify(model.requests)) return { failure: `${where}: cancellation requests ${JSON.stringify(named)}, expected ${JSON.stringify(model.requests)}`, steps, view: null, name: mapped };
     const invariant = invariants(view, previous, letter, observed, bound, mapped);
     if (invariant !== null) return { failure: `${where}: ${invariant}`, steps, view: null, name: mapped };
+    if (witnessed !== null) return { failure: `${where}: the post-state witness finds ${witnessed}`, steps, view: null, name: mapped };
     if (index === seed.prefix.length - 1) {
       const seedProblem = seed.check(view, model);
       if (seedProblem !== null) return { failure: `${where}: seed prefix invalid: ${seedProblem}`, steps, view: null, name: mapped };
