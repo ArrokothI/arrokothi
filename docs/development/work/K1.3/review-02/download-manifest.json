@@ -1,0 +1,27 @@
+{
+  "run_id": 40456276499,
+  "revision": "2454e8b702ea1bb2b12d9e0fe0f8b83f0f5e0d7c",
+  "artifact": "packet-verify-2454e8b702ea1bb2b12d9e0fe0f8b83f0f5e0d7c",
+  "files": [
+    {
+      "file": "run.txt",
+      "bytes": 287,
+      "sha256": "18199b297071da5f49b200c19fa28005bbf3df73d01b56a6c7878368ca06979e"
+    },
+    {
+      "file": "summary.json",
+      "bytes": 2560,
+      "sha256": "ef43073c1291fb875cdc3cf3a0dc4012dadb97a998b51d9809683e007f1e468e"
+    },
+    {
+      "file": "verify.json",
+      "bytes": 12793886,
+      "sha256": "8ba14f36ffbdfab9d7a4ff4009ca7cc393587126665f7b5d5a831b3276a03ab7"
+    },
+    {
+      "file": "verify.stderr.log",
+      "bytes": 20302,
+      "sha256": "b1a69ec1bff6c7817cf74207037fa6062d8cfabfadbd098dc584c037d37cef8f"
+    }
+  ]
+}

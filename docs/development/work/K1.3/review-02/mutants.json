@@ -1,0 +1,527 @@
+{
+  "operation": "mutations",
+  "revision": "87db3c40c379d0d2186b16cfee9cc2b16d989a73",
+  "registry": "tests/fixtures/packet-tools/mutations.json",
+  "result": "selected_cases_passed",
+  "counts": {
+    "killed": 12
+  },
+  "cases": [
+    {
+      "case": "k13.fire-generation",
+      "content_key": "case-6f66ca51898c52c22edc9e733c9379fada4b56aafe669f9718ef62b7da490635",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k13.fire-generation\",\"assertion\":\"k13.fire-generation.killed\",\"reached\":true,\"passed\":true,\"failures\":[],\"tests\":31,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-539a788c2a0f9c05aeee1820ccefe043133fae9943b8f0af0c675bdd9764edc7",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k13.fire-generation\",\"assertion\":\"k13.fire-generation.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant\",\"W-9 case 2: a stale fire of generation 1 while generation 2 is live leaves generation 2 untouched\"],\"tests\":31,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant",
+          "content_key": "mutation-539a788c2a0f9c05aeee1820ccefe043133fae9943b8f0af0c675bdd9764edc7"
+        }
+      ]
+    },
+    {
+      "case": "k13.fire-duplicate",
+      "content_key": "case-d6a98efb5116094b41a6530627bacd75ef17964291ecb3bcd3960796bda3873b",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k13.fire-duplicate\",\"assertion\":\"k13.fire-duplicate.killed\",\"reached\":true,\"passed\":true,\"failures\":[],\"tests\":31,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-9229eb7c01f488f1cc6eee53c77e0121c7584f4e9d9bece74607baf1761fc7ee",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k13.fire-duplicate\",\"assertion\":\"k13.fire-duplicate.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant\",\"K13-A13 a repeated expiry fire is a duplicate naming the one timeout: before and after reservation, after the next Outcome, during the next generation\"],\"tests\":31,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant",
+          "content_key": "mutation-9229eb7c01f488f1cc6eee53c77e0121c7584f4e9d9bece74607baf1761fc7ee"
+        }
+      ]
+    },
+    {
+      "case": "k13.registration-step2",
+      "content_key": "case-59aa7ba0770ebe0cd6290fea10c366c41abe371a9c7e5a905593a3240443cabd",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k13.registration-step2\",\"assertion\":\"k13.registration-step2.killed\",\"reached\":true,\"passed\":true,\"failures\":[],\"tests\":34,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-1081dee915aa55f00ee7008de4be3344ff0cf4ef6f26193c93ec42f892a55ac2",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k13.registration-step2\",\"assertion\":\"k13.registration-step2.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant\",\"an eligible Event already queued retires the generation at registration: READY, Event readiness, no timeout\"],\"tests\":34,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant",
+          "content_key": "mutation-1081dee915aa55f00ee7008de4be3344ff0cf4ef6f26193c93ec42f892a55ac2"
+        }
+      ]
+    },
+    {
+      "case": "k13.registration-order",
+      "content_key": "case-2883332fc5f5c8abfe053982ec18d75d8908bbff4016937a1ff092ed872514d1",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k13.registration-order\",\"assertion\":\"k13.registration-order.killed\",\"reached\":true,\"passed\":true,\"failures\":[],\"tests\":23,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-92b31c0247fad939c0724ab2720531a06d02b488f374c5f0b69a0b6a49263869",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k13.registration-order\",\"assertion\":\"k13.registration-order.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"eligible and due at once: the Event wins and no timeout exists (the tie)\"],\"tests\":23,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "eligible and due at once: the Event wins and no timeout exists (the tie)",
+          "content_key": "mutation-92b31c0247fad939c0724ab2720531a06d02b488f374c5f0b69a0b6a49263869"
+        }
+      ]
+    },
+    {
+      "case": "k13.input-wake",
+      "content_key": "case-e489e6643e28891b16ca760a0e63a672acc1d83a60a7a5b95862adaca8c3920f",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k13.input-wake\",\"assertion\":\"k13.input-wake.killed\",\"reached\":true,\"passed\":true,\"failures\":[],\"tests\":17,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-598c0e5655e5865127b80bdd6dee7b2e7602dd5e398d47aabc77695bc0aefc4b",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k13.input-wake\",\"assertion\":\"k13.input-wake.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant\",\"kind, Event ID and correlation imitations stay queued; only the subscription class wakes\"],\"tests\":17,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant",
+          "content_key": "mutation-598c0e5655e5865127b80bdd6dee7b2e7602dd5e398d47aabc77695bc0aefc4b"
+        }
+      ]
+    },
+    {
+      "case": "k13.selection-eligibility",
+      "content_key": "case-82589c873d7059ae6732dfe8f47e87a4f7821ea1c81f5225652511b17f973635",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k13.selection-eligibility\",\"assertion\":\"k13.selection-eligibility.killed\",\"reached\":true,\"passed\":true,\"failures\":[],\"tests\":17,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-b5ed89355792618b91807a9ef82e4f42f6daed38fcb52698a40b0f41cf45099e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k13.selection-eligibility\",\"assertion\":\"k13.selection-eligibility.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"Event wake, bound 3, U/E1 present (spare capacity)\",\"the same expiry; bound 2\"],\"tests\":17,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "Event wake, bound 3, U/E1 present (spare capacity)",
+          "content_key": "mutation-b5ed89355792618b91807a9ef82e4f42f6daed38fcb52698a40b0f41cf45099e"
+        }
+      ]
+    },
+    {
+      "case": "k13.selection-timeout",
+      "content_key": "case-4cc37082757a9eba07f93d16f280bf81330222ae32a62595b12fcf6d6d48039e",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k13.selection-timeout\",\"assertion\":\"k13.selection-timeout.killed\",\"reached\":true,\"passed\":true,\"failures\":[],\"tests\":17,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-6933151eadbb304e2951582fc121a289bcf10db9a1d37b1ae1408ebabaa21bce",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k13.selection-timeout\",\"assertion\":\"k13.selection-timeout.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"expiry T accepted, eligible R follows; bound 1\",\"the same expiry; bound 2\"],\"tests\":17,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "expiry T accepted, eligible R follows; bound 1",
+          "content_key": "mutation-6933151eadbb304e2951582fc121a289bcf10db9a1d37b1ae1408ebabaa21bce"
+        }
+      ]
+    },
+    {
+      "case": "k13.dispatch-readiness",
+      "content_key": "case-99c4b73474ed39062ef9d54eec8830ab777ebd4bfb168ca51e756edbf031eb59",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k13.dispatch-readiness\",\"assertion\":\"k13.dispatch-readiness.killed\",\"reached\":true,\"passed\":true,\"failures\":[],\"tests\":97,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-de1632040f1a50af1c69270bd682fd514bec1f77685a13f5e9ca73bf12749364",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k13.dispatch-readiness\",\"assertion\":\"k13.dispatch-readiness.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"#applyDispatch: prepares without changing anything, then commits exactly its declared statements\",\"Event wake, bound 1, U/E1/E2 present\"],\"tests\":97,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "#applyDispatch: prepares without changing anything, then commits exactly its declared statements",
+          "content_key": "mutation-de1632040f1a50af1c69270bd682fd514bec1f77685a13f5e9ca73bf12749364"
+        }
+      ]
+    },
+    {
+      "case": "k13.cancellation-acknowledges",
+      "content_key": "case-8c25f3362574eada6e4b1ee6a13bbdd52bd01b62d6a947fd605aed462e6d90d8",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k13.cancellation-acknowledges\",\"assertion\":\"k13.cancellation-acknowledges.killed\",\"reached\":true,\"passed\":true,\"failures\":[],\"tests\":51,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-6da647ef0f817c177e69a3df269ee036198135cecf2a4bb35292382cf4333068",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k13.cancellation-acknowledges\",\"assertion\":\"k13.cancellation-acknowledges.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"RUNNING, with an outside-batch input\",\"every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant\"],\"tests\":51,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "RUNNING, with an outside-batch input",
+          "content_key": "mutation-6da647ef0f817c177e69a3df269ee036198135cecf2a4bb35292382cf4333068"
+        }
+      ]
+    },
+    {
+      "case": "k13.cancellation-readiness",
+      "content_key": "case-7a2f66abfef4ce0d4eee62d2d3ad13105f8560c9e44b9b40a1b229f14e91f16b",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k13.cancellation-readiness\",\"assertion\":\"k13.cancellation-readiness.killed\",\"reached\":true,\"passed\":true,\"failures\":[],\"tests\":120,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-37f0c3b1db8b7346952ce3a8717253946458028e5cbc93a5b7a5dc9b6613bfe4",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k13.cancellation-readiness\",\"assertion\":\"k13.cancellation-readiness.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"READY with Event readiness\",\"#applyCancellation: prepares without changing anything, then commits exactly its declared statements\"],\"tests\":120,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "READY with Event readiness",
+          "content_key": "mutation-37f0c3b1db8b7346952ce3a8717253946458028e5cbc93a5b7a5dc9b6613bfe4"
+        }
+      ]
+    },
+    {
+      "case": "k13.losing-retry",
+      "content_key": "case-c6b9cd670338f0d8b24d72717f602a20a0cb317b55fe44ef9ea49cbf6b4e8448",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k13.losing-retry\",\"assertion\":\"k13.losing-retry.killed\",\"reached\":true,\"passed\":true,\"failures\":[],\"tests\":11,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-3299d600d1e145b4f906650c8d90c2c43fa0bd62a452376214768af94188392d",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k13.losing-retry\",\"assertion\":\"k13.losing-retry.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"loser, fresh equal loser, another loser, then the original again\"],\"tests\":11,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "loser, fresh equal loser, another loser, then the original again",
+          "content_key": "mutation-3299d600d1e145b4f906650c8d90c2c43fa0bd62a452376214768af94188392d"
+        }
+      ]
+    },
+    {
+      "case": "k13.deadline-terminal",
+      "content_key": "case-e4d9bd8d920c48d8a6190cec80231a7e2bcd3792b9991173c6caee8f0a9367c3",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k13.deadline-terminal\",\"assertion\":\"k13.deadline-terminal.killed\",\"reached\":true,\"passed\":true,\"failures\":[],\"tests\":23,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-79c8843c3c0f46c3d635bf03de724d0dca297e129430e02e114ef8d5acc406f1",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k13.deadline-terminal\",\"assertion\":\"k13.deadline-terminal.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"an Outcome accepted before the fire wins; the later fire is stale on COMPLETED\"],\"tests\":23,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "an Outcome accepted before the fire wins; the later fire is stale on COMPLETED",
+          "content_key": "mutation-79c8843c3c0f46c3d635bf03de724d0dca297e129430e02e114ef8d5acc406f1"
+        }
+      ]
+    }
+  ],
+  "determinism_sample": [],
+  "environment": {
+    "passed": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "unset_in_parent": [],
+    "set": {
+      "LANG": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "inputs": [],
+    "absent": [],
+    "inherited_values_recorded": false
+  },
+  "acceptance": "not evaluated",
+  "witnesses": [
+    {
+      "case": "k13.fire-generation",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k13.fire-duplicate",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k13.registration-step2",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k13.registration-order",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k13.input-wake",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k13.selection-eligibility",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k13.selection-timeout",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k13.dispatch-readiness",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k13.cancellation-acknowledges",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k13.cancellation-readiness",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k13.losing-retry",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k13.deadline-terminal",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The family is a K1.3 semantic mutant kill by named Kernel tests or a named owner guard; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    }
+  ],
+  "limits": [
+    "Only the listed cases and mutations were executed",
+    "Structured witnesses rely on reviewed independent fixtures; no universal causal proof",
+    "Trusted repository commands run without containment; temporary copies protect source files"
+  ]
+}
