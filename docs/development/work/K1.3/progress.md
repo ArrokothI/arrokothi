@@ -2,10 +2,13 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** WAITING_FOR_REVIEW (2026-10-26). Payload C `db0d0fee95466edc7a527ef234a2170fb6fedebb`; H is the commit
-  of [implementation report 01](implementation-01.md). Packet verify CI run `40387031804` at C: `checks_passed`,
-  19/19. The earlier run `40280293990` at `7d9be1bc` failed only on the kernel-sweeps time limit, which
-  [owner choice 02](owner-choice-02.md) resolved. Next: the independent review of H. The implementer stops here.
+- **Phase:** WAITING_FOR_REVIEW (2026-10-27), correction round 1. [Review 01](review-01.md) asked for changes
+  (K13-R01-S2-01, -S4-02, -CLOCK-03); [owner choice 03](owner-choice-03.md); [design 02](design-02.md). Correction C
+  `2454e8b702ea1bb2b12d9e0fe0f8b83f0f5e0d7c`; H is the commit of [implementation report 02](implementation-02.md).
+  Packet verify CI run `40456276499` at C: `checks_passed`, 19/19. Next: independent review 02, which also checks
+  design 02. The implementer stops here.
+- Round 1: H `d05af347` ([implementation report 01](implementation-01.md)), CI `40387031804`; the earlier run
+  `40280293990` failed only on the kernel-sweeps time limit ([owner choice 02](owner-choice-02.md)).
 - Work clones (2026-10-26): the first scratchpad worktree was lost; the session's scratchpad holds `wt-k13` and
   `fresh-k13`, cloned from GitHub, never the main checkout.
 - Design 01 in brief: injected `KernelClock`; host entries `pendingTimers()` and `fireTimer(key)` (a fire is a hint
