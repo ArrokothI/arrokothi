@@ -1,0 +1,14 @@
+{
+  "controls": "genuine live and expired successors satisfy P/T",
+  "deadlineMismatch": "live and mutually shifted expiry: incremental P6 and T pass; full P refuses P6",
+  "missingReadiness": "full P and T pass",
+  "runningInput": "full P passes; literal global T3 refuses",
+  "runningRedispatch": "full P and T pass on an empty reserved batch",
+  "terminalTimeout": "full P refuses P1 and P9",
+  "cancellationMetadata": "full P and T do not validate retiredGeneration or terminalDispositions",
+  "positionMatrix": {
+    "words": 2257,
+    "exactCovers": 12,
+    "wholeBatchAccepted": 2
+  }
+}
