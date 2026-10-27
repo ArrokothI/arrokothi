@@ -357,8 +357,10 @@ export interface CoordinatorOptions {
    *
    * A trusted host object like the Driver. Validated at construction: its own chain, never a built-in
    * prototype, must supply a callable `now`. Without a clock the coordinator honours no deadline: an
-   * Outcome whose wait has a deadline is refused (`deadline_unsupported`). The host also owns firing
-   * timers: the Kernel has no scheduler, so a deadline takes effect only when `fireTimer` is called.
+   * Outcome whose wait has a deadline is refused (`deadline_unsupported`). The Kernel has no scheduler:
+   * a wait already due when it registers expires in that Outcome's decision (W-2), while a live wait's
+   * deadline and the Execution deadline take effect only when the host calls `fireTimer` and the fire
+   * is accepted.
    */
   readonly clock?: KernelClock;
 }

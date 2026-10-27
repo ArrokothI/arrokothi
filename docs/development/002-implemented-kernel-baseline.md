@@ -518,8 +518,18 @@ Each choice below is this binding's, not architecture ([rewrite-index §4](../..
 - **Timeout Event.** ID `timeout-` plus the packed Execution ID and decimal generation; kind
   `kernel.wait.timeout`; `sourceCategory: "kernel_timeout"`; payload `null`; `waitGeneration` and
   `deadline`; no Input ID, subscription class or receipt. Minting is never refused by mailbox capacity.
-- **Timers.** The host owns firing: the Kernel has no scheduler, so a deadline takes effect only when
-  `fireTimer` is called and resolves it (owner choice 01; no instant enforcement, L-22).
+- **Timers.** A deadline takes effect by one of three paths:
+  1. **Due at registration.** An accepted `await` whose deadline is already due at the Outcome's one
+     clock reading, with no eligible queued Event, expires inside that decision (W-2). It gets its timeout
+     Event and deadline readiness, with no host fire.
+  2. **Live wait.** A wait left `WAITING` expires only when the host calls `fireTimer` for its key and the
+     fire is accepted. An eligible input may wake it first.
+  3. **Execution deadline.** Fire-only (owner choice 01): creation never reads the clock, and an Outcome
+     or dispatch accepted before the fire wins.
+
+  The Kernel has no scheduler, so the host owns firing: it must pump `pendingTimers`/`fireTimer`, and
+  paths 2 and 3 have no instant enforcement (L-22). Without a clock, a deadline is refused as
+  `deadline_unsupported`.
   `pendingTimers()` lists `{ executionId, kind: "wait_deadline", generation, deadline }` for each
   `WAITING` Execution whose live wait has a deadline and `{ …, kind: "execution_deadline", generation:
   null, deadline }` for each nonterminal Execution with one, in creation order. `fireTimer(key)` reads
@@ -573,11 +583,23 @@ Each choice below is this binding's, not architecture ([rewrite-index §4](../..
   `losingOutcomes`. `MailboxEntryView` and `ActivationEvent` are unions on `sourceCategory`; a timeout
   member has `null` Input ID, subscription class and receipt.
 - **State owner.** The plan union grows to thirteen variants (`expiry`, `timer_discard`, `cancellation`,
-  `losing_outcome`, with waits added to the Outcome, input and dispatch plans). The owner refuses a plan
-  that breaks S1 (a terminal Execution never reopens; dispatch needs `READY`, an Outcome `RUNNING`), S2 (a
-  terminal decision disposes every queued Event), S3 (`WAITING` exactly while one generation is live), S4
-  (one timeout per generation) or S5 (readiness only over none). These are owner guards; eligibility,
-  selection and which plan an operation forms stay semantic and test-checked (L-15).
+  `losing_outcome`, with waits added to the Outcome, input and dispatch plans). Each owner guard is a
+  predicate the owner checks before writing anything, in every arm that could break it:
+  - **S1:** every arm that writes lifecycle, mailbox, wait, readiness, exchange or progress fields refuses
+    a terminal record; dispatch needs `READY` and an Outcome `RUNNING`.
+  - **S2:** a terminal decision's acknowledged and ended positions are an exact cover of the queued
+    Events: each is queued, none is named twice within or across the lists, and all are named.
+  - **S3:** `WAITING` exactly while one generation is live. A wake, expiry or cancellation retires the
+    live generation with its own registration facts and its arm's cause. An Outcome never carries both a
+    live and a retired wait.
+  - **S4:** each generation is registered once and expires at most once. An Outcome that creates a
+    registration, whether live, woken or expired at once, takes the next count; one that creates none
+    keeps it. A timeout is minted exactly for a deadline retirement, and agrees with it.
+  - **S5:** readiness is set only over none, only with its own retirement: the same generation, cause,
+    selector and timeout Event.
+
+  Whether a wait wakes, expires or stays live, eligibility, selection, the positions a non-terminal
+  Outcome acknowledges, and which plan an operation forms stay semantic and test-checked (L-15).
 - **Retention.** Retired waits, timer fires and losing proposals are kept for the coordinator's lifetime,
   like refusals (L-24); nothing survives the process (L-19).
 - **Evidence.** K13-1 to K13-8 are deterministic Kernel suites. K13-9 is a declared bounded search

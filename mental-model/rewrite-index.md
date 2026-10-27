@@ -347,8 +347,9 @@ naming an `OPEN(...)` marker claim that one exists.
   fixed TTL — `OPEN(implementation)` in `concepts/operations.md#three-clocks`; WS §4 "Left open". The
   in-process binding's choice, recorded at that marker and in BASELINE
   `#waits-timers-and-cancellation-api`: safe integers of at least 0 on a host-chosen scale
-  (milliseconds recommended) from an injected clock, no monotonicity assumed, deadlines enforced when
-  the host fires them; no lease model yet (K3).
+  (milliseconds recommended) from an injected clock, no monotonicity assumed; a wait due when it
+  registers expires in that decision, and a live wait's deadline or an Execution deadline when the host
+  fires it; no lease model yet (K3).
 - Batch maximum (only "finite, ≥ 1" is fixed) — `concepts/core.md#batch-reservation-and-acknowledgment`.
 - **The exact form a Definition and its pinned revision take** — one `OPEN(unassigned)` covering both,
   in `concepts/core.md#definition`.

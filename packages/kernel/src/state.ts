@@ -73,6 +73,7 @@ import {
   type SettlementPlan,
   type StoredHold,
   type TakeoverPlan,
+  type TimeoutFacts,
   type TimerDiscardPlan,
 } from "./plan.ts";
 import type { RefusalRecord } from "./refusal.ts";
@@ -104,25 +105,33 @@ const mapSet = <K, V>(map: Map<K, V>, key: K, value: V): void => {
 const STALE_PLAN = "plan refused: its Execution changed after the plan was formed, or does not hold what the plan names";
 
 /**
- * The owner's structural checks (K1.3, design 01 § 12 and addendum 01 § A7). Each refuses a plan that
- * would break one rule whatever the coordinator decided, and names the rule it guards:
+ * The owner's structural checks (K1.3, design 01 § 12, addendum 01 § A7 and design 02). Each is a
+ * predicate over the record and the plan, checked in the prepare phase of every arm that could break it,
+ * so a refused plan writes nothing. Each names the rule it guards:
  *
- * - S1: a terminal Execution never reopens; dispatch needs `READY` and an Outcome `RUNNING`.
- * - S2: a plan whose next state is terminal disposes every queued Event: acknowledged or ended. It
- *   does not by itself prove that a cancellation acknowledges nothing; the cancellation plan carries
- *   no acknowledgment to apply.
- * - S3: `WAITING` exactly when one generation is live; a plan that retires a generation names the live one.
- * - S4: at most one timeout Event per generation: only the live generation expires, once.
- * - S5: readiness is set only over none, and only by a retirement.
+ * - S1: every arm that writes lifecycle, mailbox, wait, readiness, exchange or progress fields refuses a
+ *   terminal record; dispatch needs `READY` and an Outcome `RUNNING`.
+ * - S2: a terminal decision's position lists are an exact cover of the queued entries: each names queued
+ *   entries, no position twice within or across the lists, and every queued entry once (`coversQueuedOnce`).
+ * - S3: `WAITING` exactly when one generation is live. A plan that retires the live generation carries
+ *   that wait's own registration facts and its arm's cause; an Outcome never carries both a live and a
+ *   retired wait.
+ * - S4: each generation is registered once and expires at most once. An Outcome that creates a
+ *   registration (live, woken or expired at once) takes the next count as its generation, and one that
+ *   creates none keeps the count; a timeout is minted exactly for a deadline retirement of a fresh or the
+ *   live generation, and agrees with it.
+ * - S5: readiness is set only over none, only with a retirement in the same plan, and belongs to it:
+ *   generation, cause, selector and timeout Event.
  *
- * These are owner guards, not semantic closure: which Events are eligible, which batch is selected and
+ * These are owner guards, not semantic closure: whether a wait wakes, expires or stays live, which
+ * Events are eligible, which batch is selected, which positions a non-terminal Outcome acknowledges and
  * which plan an operation forms stay the coordinator's, checked by the tests (L-15).
  */
 const S1 = "S1 a terminal Execution never reopens";
-const S2 = "S2 a terminal decision disposes every queued Event";
+const S2 = "S2 a terminal decision disposes every queued Event exactly once";
 const S3 = "S3 WAITING exactly when one generation is live";
-const S4 = "S4 at most one timeout Event per generation";
-const S5 = "S5 readiness only over none, by a retirement";
+const S4 = "S4 each generation is registered once and expires at most once";
+const S5 = "S5 readiness only over none, by its retirement";
 
 // -- Readers ------------------------------------------------------------------
 
@@ -599,8 +608,8 @@ export class KernelState {
     const live = record.wait;
     if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
     if ((woken === null) !== (readiness === null)) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
-    if (woken !== null && (record.state !== "WAITING" || live === null || live.generation !== woken.generation)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if (readiness !== null && record.readiness !== null) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
+    if (woken !== null && (record.state !== "WAITING" || live === null || !retiresLive(woken, live, "event", facts.eventId))) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if (readiness !== null && (record.readiness !== null || !belongsTo(readiness, woken as RetiredWait, null))) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
     const entry: MailboxEntry = {
       eventId: facts.eventId,
       sourceCategory: "application_input",
@@ -655,6 +664,7 @@ export class KernelState {
   #applyDelivery(plan: DeliveryPlan): void {
     const record = this.#resolve(plan.executionId, plan.basis);
     const exchange = record.activation;
+    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
     if (exchange === null || exchange.activation.activationId !== plan.activationId || exchange.deliveries.length + 1 !== plan.attempt) {
       throw new PrimordialError(STALE_PLAN);
     }
@@ -692,13 +702,18 @@ export class KernelState {
     const retired = plan.retired;
     const readiness = plan.readiness;
     const timeout = plan.timeout;
-    if ((plan.nextState === "WAITING") !== (liveWait !== null)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if (registrations !== record.registrations && registrations !== record.registrations + 1) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if (liveWait !== null && (liveWait.generation !== registrations || record.wait !== null)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if (retired !== null && retired.generation !== registrations) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if (timeout !== null && (retired === null || retired.retiredBy !== "deadline" || timeout.generation !== retired.generation)) throw new PrimordialError(`${STALE_PLAN} (${S4})`);
-    if ((retired === null) !== (readiness === null) || (readiness !== null && record.readiness !== null)) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
-    if (isTerminal(plan.nextState) && !disposesEveryQueued(record.mailbox, plan.acknowledgeAt, plan.endAt)) throw new PrimordialError(`${STALE_PLAN} (${S2})`);
+    // An Outcome runs on a RUNNING Execution, which has no live wait, so a live or retired wait it carries
+    // is the registration it creates (design 02, Q2).
+    const creates = liveWait !== null || retired !== null;
+    const timeoutEventId = timeout === null ? null : timeout.eventId;
+    if ((plan.nextState === "WAITING") !== (liveWait !== null) || (liveWait !== null && retired !== null)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if (registrations !== record.registrations + (creates ? 1 : 0)) throw new PrimordialError(`${STALE_PLAN} (${S4})`);
+    if (liveWait !== null && (liveWait.generation !== registrations || !registeredBy(liveWait, facts.activationId) || record.wait !== null)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if (retired !== null && (retired.generation !== registrations || !registeredBy(retired, facts.activationId) || retired.retiredBy === "cancellation")) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if ((retired !== null && retired.retiredBy === "deadline") !== (timeout !== null)) throw new PrimordialError(`${STALE_PLAN} (${S4})`);
+    if (timeout !== null && !expiresAs(timeout, retired as RetiredWait)) throw new PrimordialError(`${STALE_PLAN} (${S4})`);
+    if ((retired === null) !== (readiness === null) || (readiness !== null && (record.readiness !== null || !belongsTo(readiness, retired as RetiredWait, timeoutEventId)))) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
+    if (isTerminal(plan.nextState) && !coversQueuedOnce(record.mailbox, plan.acknowledgeAt, plan.endAt)) throw new PrimordialError(`${STALE_PLAN} (${S2})`);
     const timeoutEntry: MailboxEntry | null =
       timeout === null
         ? null
@@ -773,6 +788,7 @@ export class KernelState {
   #applyTakeover(plan: TakeoverPlan): void {
     const record = this.#resolve(plan.executionId, plan.basis);
     const exchange = record.activation;
+    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
     if (exchange === null || exchange.activation.activationId !== plan.activation.activationId) throw new PrimordialError(STALE_PLAN);
     const receipt = plan.receipt;
     const cleared = plan.cleared;
@@ -794,6 +810,7 @@ export class KernelState {
   #applyControl(plan: ControlPlan): void {
     const record = this.#resolve(plan.executionId, plan.basis);
     const exchange = record.activation;
+    if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
     if (exchange === null) throw new PrimordialError(STALE_PLAN);
     const stored = plan.history;
     const codeHold = plan.codeHold;
@@ -814,9 +831,9 @@ export class KernelState {
     const fire = plan.fire;
     const live = record.wait;
     if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
-    if (record.state !== "WAITING" || live === null || live.generation !== retired.generation) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if (timeout.generation !== live.generation || retired.retiredBy !== "deadline") throw new PrimordialError(`${STALE_PLAN} (${S4})`);
-    if (record.readiness !== null || readiness.generation !== live.generation) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
+    if (record.state !== "WAITING" || live === null || !retiresLive(retired, live, "deadline", timeout.eventId)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if (!expiresAs(timeout, retired)) throw new PrimordialError(`${STALE_PLAN} (${S4})`);
+    if (record.readiness !== null || !belongsTo(readiness, retired, timeout.eventId)) throw new PrimordialError(`${STALE_PLAN} (${S5})`);
     const entry: MailboxEntry = {
       eventId: timeout.eventId,
       sourceCategory: "kernel_timeout",
@@ -862,8 +879,8 @@ export class KernelState {
     const live = record.wait;
     const intent = record.activation;
     if (isTerminal(record.state)) throw new PrimordialError(`${STALE_PLAN} (${S1})`);
-    if (retired === null ? live !== null : live === null || live.generation !== retired.generation || retired.retiredBy !== "cancellation") throw new PrimordialError(`${STALE_PLAN} (${S3})`);
-    if (!disposesEveryQueued(record.mailbox, NO_POSITIONS, plan.endAt)) throw new PrimordialError(`${STALE_PLAN} (${S2})`);
+    if (retired === null ? live !== null : live === null || !retiresLive(retired, live, "cancellation", null)) throw new PrimordialError(`${STALE_PLAN} (${S3})`);
+    if (!coversQueuedOnce(record.mailbox, NO_POSITIONS, plan.endAt)) throw new PrimordialError(`${STALE_PLAN} (${S2})`);
     if ((intent === null) !== (facts.endedExchange === null) || (intent !== null && facts.endedExchange !== null && intent.activation.activationId !== facts.endedExchange.activationId)) {
       throw new PrimordialError(STALE_PLAN);
     }
@@ -935,24 +952,59 @@ const deliveriesOf = (record: ExecutionRecord, activationId: string): DeliveryAt
 const NO_POSITIONS: readonly number[] = PrimordialObjectFreeze([]);
 
 /**
- * S2: whether two position lists together name every queued entry of `mailbox` exactly once, and only
- * queued ones. A terminal decision must leave nothing queued (B-5).
+ * S2: whether two position lists are an exact cover of the queued entries of `mailbox`. Every named
+ * position is a queued entry, no position is named twice within or across the lists, and the distinct
+ * positions named are as many as the queued entries, so they are all of them. A terminal decision must
+ * leave nothing queued (B-5); equal length alone would let a repeated position stand in for one left
+ * queued (K13-R01-S2-01). Positions are keyed as `readAt` resolves them.
  */
-const disposesEveryQueued = (mailbox: readonly MailboxEntry[], first: readonly number[], second: readonly number[]): boolean => {
+const coversQueuedOnce = (mailbox: readonly MailboxEntry[], first: readonly number[], second: readonly number[]): boolean => {
   let queued = 0;
   for (let index = 0; index < mailbox.length; index += 1) {
     if ((readAt(mailbox, index) as MailboxEntry).disposition.kind === "queued") queued += 1;
   }
-  if (first.length + second.length !== queued) return false;
-  const named = (list: readonly number[]): boolean => {
+  const seen = new PrimordialMap<string, true>();
+  let named = 0;
+  const distinctQueued = (list: readonly number[]): boolean => {
     for (let index = 0; index < list.length; index += 1) {
-      const entry = readAt(mailbox, readAt(list, index) as number);
-      if (entry === undefined || entry.disposition.kind !== "queued") return false;
+      const position = readAt(list, index) as number;
+      const key = `${position}`;
+      const entry = readAt(mailbox, position);
+      if (entry === undefined || entry.disposition.kind !== "queued" || mapGet(seen, key) !== undefined) return false;
+      mapSet(seen, key, true);
+      named += 1;
     }
     return true;
   };
-  return named(first) && named(second);
+  return distinctQueued(first) && distinctQueued(second) && named === queued;
 };
+
+/** S3: whether a wait carries the registration facts of the Activation that registered it. */
+const registeredBy = (wait: LiveWait | RetiredWait, activationId: string): boolean =>
+  wait.registeredBy === activationId && wait.deadline === wait.declaration.deadline;
+
+/** S3: whether `retired` retires the live wait `live` as it is, by `cause`, ended by `endingEventId`. */
+const retiresLive = (retired: RetiredWait, live: LiveWait, cause: RetiredWait["retiredBy"], endingEventId: string | null): boolean =>
+  retired.generation === live.generation &&
+  retired.registeredBy === live.registeredBy &&
+  retired.declaration === live.declaration &&
+  retired.deadline === live.deadline &&
+  retired.retiredBy === cause &&
+  retired.endingEventId === endingEventId;
+
+/** S4: whether a timeout Event is the one a deadline retirement makes: its generation, Event and deadline. */
+const expiresAs = (timeout: TimeoutFacts, retired: RetiredWait): boolean =>
+  retired.retiredBy === "deadline" &&
+  timeout.generation === retired.generation &&
+  timeout.eventId === retired.endingEventId &&
+  timeout.deadline === retired.deadline;
+
+/** S5: whether readiness belongs to `retired`: its generation, cause, selector and timeout Event. */
+const belongsTo = (readiness: Readiness, retired: RetiredWait, timeoutEventId: string | null): boolean =>
+  readiness.generation === retired.generation &&
+  readiness.species === retired.retiredBy &&
+  readiness.selector === retired.declaration &&
+  readiness.timeoutEventId === timeoutEventId;
 
 // -- View construction -------------------------------------------------------
 
