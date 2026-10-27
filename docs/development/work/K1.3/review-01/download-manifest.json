@@ -1,0 +1,18 @@
+{
+  "run.txt": {
+    "bytes": 287,
+    "sha256": "97799eb6028bf9f1e4d70e8872d760a2b0e50be90990fa200e01f59fd4fa168c"
+  },
+  "summary.json": {
+    "bytes": 2560,
+    "sha256": "ab6cdbb4c16f7ac6c344a56999826bf82ee06c365e28ecda826d9ee133900bf3"
+  },
+  "verify.json": {
+    "bytes": 12790935,
+    "sha256": "0fcd90fcf5218eb88c41f89a603c928573a329c9098784648f09b9943e933373"
+  },
+  "verify.stderr.log": {
+    "bytes": 20302,
+    "sha256": "b1a69ec1bff6c7817cf74207037fa6062d8cfabfadbd098dc584c037d37cef8f"
+  }
+}

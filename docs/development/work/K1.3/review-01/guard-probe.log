@@ -1,0 +1,74 @@
+✔ control: normal cancellation disposes both queued Events (5.259ms)
+✖ S2 must reject duplicated cancellation positions, even when the length equals queued count (1.436ms)
+ℹ {"state":"CANCELLED","queued":["event-5:app-a38:execution-5:app-a8:tenant-a9:report-177:input-4"],"mailbox":[{"eventId":"event-creation-5:app-a8:tenant-a9:report-17","kind":"terminal","generation":null},{"eventId":"event-5:app-a38:execution-5:app-a8:tenant-a9:report-177:input-4","kind":"queued","generation":null}],"retired":[],"timerFires":0}
+✖ S2 must reject an Outcome acknowledging and terminal-disposing the same position (1.995084ms)
+ℹ {"state":"COMPLETED","queued":["event-5:app-a38:execution-5:app-a8:tenant-a9:report-177:input-6"],"mailbox":[{"eventId":"event-creation-5:app-a8:tenant-a9:report-17","kind":"terminal","generation":null},{"eventId":"event-5:app-a38:execution-5:app-a8:tenant-a9:report-177:input-6","kind":"queued","generation":null}],"retired":[],"timerFires":0}
+✔ control: two immediate expiries mint distinct generations (1.4185ms)
+✖ S4 must reject reusing an already-expired generation in the Outcome arm (0.778541ms)
+ℹ {"state":"READY","queued":["timeout-38:execution-5:app-a8:tenant-a9:report-171:1"],"mailbox":[{"eventId":"event-creation-5:app-a8:tenant-a9:report-17","kind":"acknowledged","generation":null},{"eventId":"timeout-38:execution-5:app-a8:tenant-a9:report-171:1","kind":"acknowledged","generation":1},{"eventId":"timeout-38:execution-5:app-a8:tenant-a9:report-171:1","kind":"queued","generation":1}],"retired":[1,1],"timerFires":0}
+✔ due-at-registration wait expiry needs no host fire (L-22 counterexample) (0.526084ms)
+ℹ {"state":"READY","queued":["timeout-38:execution-5:app-a8:tenant-a9:report-171:1"],"mailbox":[{"eventId":"event-creation-5:app-a8:tenant-a9:report-17","kind":"acknowledged","generation":null},{"eventId":"timeout-38:execution-5:app-a8:tenant-a9:report-171:1","kind":"queued","generation":1}],"retired":[1],"timerFires":0}
+ℹ tests 6
+ℹ suites 0
+ℹ pass 3
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 183.609125
+
+✖ failing tests:
+
+test at ../../../../../../private/tmp/k13-review-01-evidence/guard-probe.test.mjs:24:1
+✖ S2 must reject duplicated cancellation positions, even when the length equals queued count (1.436ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///private/tmp/k13-review-01-evidence/guard-probe.test.mjs:26:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /S2/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at ../../../../../../private/tmp/k13-review-01-evidence/guard-probe.test.mjs:30:1
+✖ S2 must reject an Outcome acknowledging and terminal-disposing the same position (1.995084ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///private/tmp/k13-review-01-evidence/guard-probe.test.mjs:32:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /S2/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at ../../../../../../private/tmp/k13-review-01-evidence/guard-probe.test.mjs:42:1
+✖ S4 must reject reusing an already-expired generation in the Outcome arm (0.778541ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///private/tmp/k13-review-01-evidence/guard-probe.test.mjs:46:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /S3|S4/,
+    operator: 'throws',
+    diff: 'simple'
+  }
