@@ -594,10 +594,10 @@ describe("K1.3 design 03 Q6: the declared bounded search of the owner's successo
     const observed = Object.fromEntries(FAMILIES.map((family) => [family.name, { seed: family.seed, dimensions: family.dimensions, size: tallies[family.name]!.size, verdicts: Object.fromEntries(Object.entries(tallies[family.name]!.verdicts).sort()) }]));
     const total = Object.values(tallies).reduce((sum, tally) => sum + tally.size, 0);
     console.log(JSON.stringify({ variants: total, milliseconds: Math.round(milliseconds), accepted: Object.values(tallies).reduce((sum, tally) => sum + (tally.verdicts.accepted ?? 0), 0) }));
-    if (process.env.OWNER_SEARCH_MANIFEST === "print") console.log(JSON.stringify({ families: observed, total }, null, 2));
     assert.deepEqual(seedProblems, [], "every seed satisfies the post-state predicate, by the owner and by the reference");
     assert.deepEqual(mismatches, []);
-    assert.deepEqual(observed, MANIFEST.families, "the generators and the verdicts are the frozen manifest's");
+    // On a deliberate change, the message carries the observed families for review against the manifest.
+    assert.deepEqual(observed, MANIFEST.families, `the generators and the verdicts are the frozen manifest's; observed: ${JSON.stringify(observed)}`);
     assert.equal(total, MANIFEST.total);
   });
 });
