@@ -4,7 +4,7 @@
   "require_direct_parent": false,
   "administrative_files": [
     "docs/development/007-work-packets.md",
-    "docs/development/work/K1.3/implementation-01.md",
+    "docs/development/work/K1.3/implementation-02.md",
     "docs/development/work/K1.3/progress.md"
   ],
   "preserve": [
@@ -143,6 +143,41 @@
     {
       "revision": "136d6199eedc2f634cf33e8abe8c4e2e33634e87",
       "path": "docs/development/work/K1.3/brief-01.md"
+    },
+    {
+      "revision": "db0d0fee95466edc7a527ef234a2170fb6fedebb",
+      "path": "docs/development/work/K1.3/owner-choice-02.md"
+    },
+    {
+      "revision": "db0d0fee95466edc7a527ef234a2170fb6fedebb",
+      "path": "docs/development/work/K1.3/owner-choice-02"
+    },
+    {
+      "revision": "d05af3476b1523dadee0858373c0713610103419",
+      "path": "docs/development/work/K1.3/implementation-01.md"
+    },
+    {
+      "revision": "72e6f5ec51a83476967623b263365fb682a1ead6",
+      "path": "docs/development/work/K1.3/review-01.md"
+    },
+    {
+      "revision": "72e6f5ec51a83476967623b263365fb682a1ead6",
+      "path": "docs/development/work/K1.3/review-01"
+    },
+    {
+      "revision": "72e6f5ec51a83476967623b263365fb682a1ead6",
+      "path": "docs/development/work/K1.3/review-01/coverage-comparison.log"
+    },
+    {
+      "revision": "72e6f5ec51a83476967623b263365fb682a1ead6",
+      "path": "docs/development/work/K1.3/brief-02.md"
+    }
+  ],
+  "whitespace_exceptions": [
+    {
+      "path": "docs/development/work/K1.3/review-01/coverage-comparison.log",
+      "revision": "72e6f5ec51a83476967623b263365fb682a1ead6",
+      "reason": "Review 01's raw coverage-comparison output, committed by the reviewer, keeps two source excerpts that end in spaces; the sealed review evidence is preserved byte for byte instead of edited."
     }
   ],
   "evidence": [],
@@ -389,7 +424,7 @@
         "todo": "^[#ℹ] todo (\\d+)$"
       },
       "minimum_counts": {
-        "tests": 4653
+        "tests": 4675
       },
       "exact_counts": {
         "fail": 0,
