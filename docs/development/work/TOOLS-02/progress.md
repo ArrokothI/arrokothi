@@ -2,6 +2,40 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 range 2 build checkpoint:** T2-3 implemented. Target files run in separate
+  direct-script processes with the reporter beside the error object; source policy covers the copied
+  production set; assertion witnesses bind file/fullName and the control refuses duplicate joined names.
+  Real/helper assertions can earn kills; forged shapes/frames, cross-leaf rethrows, hooks and excluded
+  assertions cannot. Reach is collected separately on a passing uninstrumented control to retain
+  original V8 offsets. No adoption fixture regenerated yet.
+  - Node v26.10.0; `npm ci` completed. `test_runner_targets` plus `test_value_cost_probe`:
+    41 tests passed in 57.296 s. Target refusal/anchor checks: 2 passed. Refusal census: 331/331.
+  - Selected target classification/provenance mutations and the unique-invocation refusal ablation:
+    ten passing controls, ten killed mutants (local temporary trees); final fresh-clone registries
+    remain required. Full verify and CI have not run for this payload.
+  - Next: range 3 under design 03 §6; no new design decision identified in range 2.
+- **2026-10-28 resume:** IN_PROGRESS, range 2 (T2-3), followed by ranges 3 and 4.
+  Range 1 integrated at `4015599e6178202541e0091f99b6196adaff0430`; see
+  [integration 01](integration-01.md). Current branch is `codex/tools-02`, isolated at
+  `/Users/linzhenglin/Desktop/ArrokothAI/codex-tools-02`, based on
+  `335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b`. Design branch
+  `c71818c83e26c7ba93a8d4f64f39cc579c614ae8` has been merged without conflicts.
+  [Owner choice 06](owner-choice-06.md) now assigns implementation to this Codex GPT-6
+  session and separate design checks/reviews to Claude Opus. Earlier role records below
+  are historical. Node: `/Users/linzhenglin/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin`.
+  Required initial readings completed; no range-2–4 validation or final C/H yet.
+- **Coverage before build (012):** T2-3 traces source-policy admission, assertion object
+  identity, invocation binding, target selection and kill reporting, with real/helper,
+  forged shape/frames, cross-leaf, duplicate-name, hook and non-assertion controls.
+  T2-4 traces released claims through register, census, witnesses, closures, registry
+  attribution, target refusal and C2-LIMIT, requiring unchanged credit and exact limited
+  member identities. T2-5 checks each disposition's pointer and executable closure,
+  reads the declared minimum context by source packet, estimates after 300 origins,
+  performs extraction/P3 builds, then freezes and self-audits the retired population.
+  Methods: deterministic execution, normative consistency, process identity and the
+  declared bounded triage search. Runtime races, deployment and live-provider methods
+  are excluded because this work changes evidence tooling only.
+
 - **Phase:** IN_PROGRESS. **Range 1 (T2-1, T2-2) ACCEPTED** by GPT-6's [review 04](review-04.md) at exact H
   `34ab91a5de23beb4997cdd2ae209a3b67aac50a0` (C6 `5d0f1cc49eb9cb534ad2818a8f8d38253438418d`, CI run 40181329943); no new
   findings. Next: range 1's owner cleanup and integration on main (owner choice 01), then ranges 2–4 in design 01 §9's

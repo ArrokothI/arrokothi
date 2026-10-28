@@ -5053,7 +5053,7 @@
       "id": "result.target-wrong-kill",
       "assertion": "test_runner_targets.TargetSetRunnerTests.test_target_set_outcomes",
       "category": "tool-result",
-      "source": "TOOLS-01 R1-04 (owner choice 09): the target-set route reports observations and never returns killed (F3)",
+      "source": "TOOLS-02 T2-3, retaining TOOLS-01 R1-04: nonqualifying target observations never earn kills",
       "input": {
         "test": "test_runner_targets.TargetSetRunnerTests.test_target_set_outcomes"
       },
@@ -5115,11 +5115,11 @@
     },
     {
       "id": "result.target-never-kills",
-      "assertion": "test_runner_targets.TargetSetRunnerTests.test_no_observed_outcome_becomes_a_kill",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_only_qualified_target_failures_become_kills",
       "category": "tool-result",
-      "source": "TOOLS-01 R1-04 (owner choice 09): the target-set route reports observations and never returns killed (F3)",
+      "source": "TOOLS-02 T2-3, retaining TOOLS-01 R1-04: nonqualifying target observations never earn kills",
       "input": {
-        "test": "test_runner_targets.TargetSetRunnerTests.test_no_observed_outcome_becomes_a_kill"
+        "test": "test_runner_targets.TargetSetRunnerTests.test_only_qualified_target_failures_become_kills"
       },
       "files": [
         "tests/fixtures/packet-tools/mutations.json"
@@ -5137,8 +5137,8 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "    return {'status': 'observed', 'targets': observed, 'failures': len(failed), 'kill': 'none (owner choice 09)'}",
-          "after": "    return {'status': 'killed', 'killed_by': observed[0]['target'], 'failures': len(failed)}",
+          "before": "    return {'status': 'observed', 'targets': observed, 'failures': len(failed), 'kill': 'no qualifying target witness'}",
+          "after": "    return {'status': 'killed', 'killed_by': observed[0]['target'], 'targets': observed, 'failures': len(failed)}",
           "operator": "remove-result-classification",
           "name": "result.target-never-kills",
           "id": "mutation-036e128fd3c05252e18949e4acbf3f118b3d64127d589b4f72cf0d7e7570447a"
@@ -5147,11 +5147,11 @@
     },
     {
       "id": "result.target-absent",
-      "assertion": "test_runner_targets.TargetSetRunnerTests.test_no_observed_outcome_becomes_a_kill",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_only_qualified_target_failures_become_kills",
       "category": "tool-result",
-      "source": "TOOLS-01 R1-04 (owner choice 09): the target-set route reports observations and never returns killed (F3)",
+      "source": "TOOLS-02 T2-3, retaining TOOLS-01 R1-04: nonqualifying target observations never earn kills",
       "input": {
-        "test": "test_runner_targets.TargetSetRunnerTests.test_no_observed_outcome_becomes_a_kill"
+        "test": "test_runner_targets.TargetSetRunnerTests.test_only_qualified_target_failures_become_kills"
       },
       "files": [
         "tests/fixtures/packet-tools/mutations.json"
@@ -5181,7 +5181,7 @@
       "id": "result.target-malformed",
       "assertion": "test_runner_targets.TargetSetRunnerTests.test_run_level_categories_stay_distinct",
       "category": "tool-result",
-      "source": "TOOLS-01 R1-04 (owner choice 09): the target-set route reports observations and never returns killed (F3)",
+      "source": "TOOLS-02 T2-3, retaining TOOLS-01 R1-04: nonqualifying target observations never earn kills",
       "input": {
         "test": "test_runner_targets.TargetSetRunnerTests.test_run_level_categories_stay_distinct"
       },
@@ -5211,11 +5211,11 @@
     },
     {
       "id": "result.target-assertion-shape",
-      "assertion": "test_runner_targets.TargetSetRunnerTests.test_no_observed_outcome_becomes_a_kill",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_only_qualified_target_failures_become_kills",
       "category": "tool-result",
-      "source": "TOOLS-01 R1-04 (owner choice 09): the target-set route reports observations and never returns killed (F3)",
+      "source": "TOOLS-02 T2-3, retaining TOOLS-01 R1-04: nonqualifying target observations never earn kills",
       "input": {
-        "test": "test_runner_targets.TargetSetRunnerTests.test_no_observed_outcome_becomes_a_kill"
+        "test": "test_runner_targets.TargetSetRunnerTests.test_only_qualified_target_failures_become_kills"
       },
       "files": [
         "tests/fixtures/packet-tools/mutations.json"
@@ -5679,7 +5679,7 @@
     },
     {
       "id": "k13.fire-generation",
-      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 \u00a7\u00a7 A1, A3; design check 01 D01-CHK-01/-03",
       "assertion": "k13.fire-generation.killed",
       "files": [
         "tsconfig.json",
@@ -5732,7 +5732,7 @@
     },
     {
       "id": "k13.fire-duplicate",
-      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 \u00a7\u00a7 A1, A3; design check 01 D01-CHK-01/-03",
       "assertion": "k13.fire-duplicate.killed",
       "files": [
         "tsconfig.json",
@@ -5784,7 +5784,7 @@
     },
     {
       "id": "k13.registration-step2",
-      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 \u00a7\u00a7 A1, A3; design check 01 D01-CHK-01/-03",
       "assertion": "k13.registration-step2.killed",
       "files": [
         "tsconfig.json",
@@ -5836,7 +5836,7 @@
     },
     {
       "id": "k13.registration-order",
-      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 \u00a7\u00a7 A1, A3; design check 01 D01-CHK-01/-03",
       "assertion": "k13.registration-order.killed",
       "files": [
         "tsconfig.json",
@@ -5886,7 +5886,7 @@
     },
     {
       "id": "k13.input-wake",
-      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 \u00a7\u00a7 A1, A3; design check 01 D01-CHK-01/-03",
       "assertion": "k13.input-wake.killed",
       "files": [
         "tsconfig.json",
@@ -5938,7 +5938,7 @@
     },
     {
       "id": "k13.selection-eligibility",
-      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 \u00a7\u00a7 A1, A3; design check 01 D01-CHK-01/-03",
       "assertion": "k13.selection-eligibility.killed",
       "files": [
         "tsconfig.json",
@@ -5989,7 +5989,7 @@
     },
     {
       "id": "k13.selection-timeout",
-      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 \u00a7\u00a7 A1, A3; design check 01 D01-CHK-01/-03",
       "assertion": "k13.selection-timeout.killed",
       "files": [
         "tsconfig.json",
@@ -6041,7 +6041,7 @@
     },
     {
       "id": "k13.dispatch-readiness",
-      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 \u00a7\u00a7 A1, A3; design check 01 D01-CHK-01/-03",
       "assertion": "k13.dispatch-readiness.killed",
       "files": [
         "tsconfig.json",
@@ -6093,7 +6093,7 @@
     },
     {
       "id": "k13.cancellation-acknowledges",
-      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 \u00a7\u00a7 A1, A3; design check 01 D01-CHK-01/-03",
       "assertion": "k13.cancellation-acknowledges.killed",
       "files": [
         "tsconfig.json",
@@ -6145,7 +6145,7 @@
     },
     {
       "id": "k13.cancellation-readiness",
-      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 \u00a7\u00a7 A1, A3; design check 01 D01-CHK-01/-03",
       "assertion": "k13.cancellation-readiness.killed",
       "files": [
         "tsconfig.json",
@@ -6197,7 +6197,7 @@
     },
     {
       "id": "k13.losing-retry",
-      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 \u00a7\u00a7 A1, A3; design check 01 D01-CHK-01/-03",
       "assertion": "k13.losing-retry.killed",
       "files": [
         "tsconfig.json",
@@ -6248,7 +6248,7 @@
     },
     {
       "id": "k13.deadline-terminal",
-      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 §§ A1, A3; design check 01 D01-CHK-01/-03",
+      "source": "K1.3 design 01 (K13-9 mutant list) and addendum 01 \u00a7\u00a7 A1, A3; design check 01 D01-CHK-01/-03",
       "assertion": "k13.deadline-terminal.killed",
       "files": [
         "tsconfig.json",
@@ -6301,7 +6301,7 @@
       "id": "result.read-form.named-only",
       "assertion": "test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged",
       "category": "tool-result",
-      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 §1, D02-CHK-01): unrelated additions under a walk become named reads",
+      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 \u00a71, D02-CHK-01): unrelated additions under a walk become named reads",
       "input": {
         "test": "test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged"
       },
@@ -6333,7 +6333,7 @@
       "id": "result.read-form.walk-root-named",
       "assertion": "test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged",
       "category": "tool-result",
-      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 §1, D02-CHK-01): a non-fixture walk-root listing records its entries (D02-CHK-01)",
+      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 \u00a71, D02-CHK-01): a non-fixture walk-root listing records its entries (D02-CHK-01)",
       "input": {
         "test": "test_read_form.ReadFormTests.test_unrelated_additions_leave_the_walk_form_unchanged"
       },
@@ -6365,7 +6365,7 @@
       "id": "result.read-form.named-dropped",
       "assertion": "test_read_form.ReadFormTests.test_every_edit_of_a_named_read_changes_the_form",
       "category": "tool-result",
-      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 §1, D02-CHK-01): a named read is recorded by path only",
+      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 \u00a71, D02-CHK-01): a named read is recorded by path only",
       "input": {
         "test": "test_read_form.ReadFormTests.test_every_edit_of_a_named_read_changes_the_form"
       },
@@ -6397,7 +6397,7 @@
       "id": "result.read-form.identity-free",
       "assertion": "test_read_form.ReadFormTests.test_every_entry_change_of_a_fixture_walk_root_listing_changes_the_form",
       "category": "tool-result",
-      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 §1, D02-CHK-01): reads lose their identity at C, so a second edit is invisible",
+      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 \u00a71, D02-CHK-01): reads lose their identity at C, so a second edit is invisible",
       "input": {
         "test": "test_read_form.ReadFormTests.test_every_entry_change_of_a_fixture_walk_root_listing_changes_the_form"
       },
@@ -6429,7 +6429,7 @@
       "id": "result.read-form.fixtures-dropped",
       "assertion": "test_read_form.ReadFormTests.test_every_edit_of_an_enumerated_fixture_changes_the_form",
       "category": "tool-result",
-      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 §1, D02-CHK-01): an enumerated fixture read loses its identity",
+      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 \u00a71, D02-CHK-01): an enumerated fixture read loses its identity",
       "input": {
         "test": "test_read_form.ReadFormTests.test_every_edit_of_an_enumerated_fixture_changes_the_form"
       },
@@ -6461,7 +6461,7 @@
       "id": "result.fixture-read.directory",
       "assertion": "test_read_form.ReadFormTests.test_a_directory_existence_read_follows_the_listing_rule",
       "category": "tool-result",
-      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 §1, D02-CHK-01): a directory existence read takes the file rule again (D01-CHK-02)",
+      "source": "TOOLS-02 T2-1 (owner choice 01; design 02 \u00a71, D02-CHK-01): a directory existence read takes the file rule again (D01-CHK-02)",
       "input": {
         "test": "test_read_form.ReadFormTests.test_a_directory_existence_read_follows_the_listing_rule"
       },
@@ -6493,7 +6493,7 @@
       "id": "result.read-form.recursion-ignored",
       "assertion": "test_read_form.ReadFormTests.test_a_recursive_listing_is_a_tree_read",
       "category": "tool-result",
-      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 §4): a recursive listing is read as its root only (T2-R1-READ-01)",
+      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 \u00a74): a recursive listing is read as its root only (T2-R1-READ-01)",
       "input": {
         "test": "test_read_form.ReadFormTests.test_a_recursive_listing_is_a_tree_read"
       },
@@ -6525,7 +6525,7 @@
       "id": "result.read-form.tree-unexpanded",
       "assertion": "test_read_form.ReadFormTests.test_every_nested_change_under_a_recursive_fixture_listing_changes_the_form",
       "category": "tool-result",
-      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 §4): a tree read records none of its implied listings (T2-R1-READ-01)",
+      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 \u00a74): a tree read records none of its implied listings (T2-R1-READ-01)",
       "input": {
         "test": "test_read_form.ReadFormTests.test_every_nested_change_under_a_recursive_fixture_listing_changes_the_form"
       },
@@ -6557,7 +6557,7 @@
       "id": "result.read-form.pin-unexpanded",
       "assertion": "test_read_form.ReadFormTests.test_a_fixture_subtree_present_only_at_the_pin_still_changes",
       "category": "tool-result",
-      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 §4): a tree read expands over C's directories only, so a fixture subtree present only at the pin is missed",
+      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 \u00a74): a tree read expands over C's directories only, so a fixture subtree present only at the pin is missed",
       "input": {
         "test": "test_read_form.ReadFormTests.test_a_fixture_subtree_present_only_at_the_pin_still_changes"
       },
@@ -6621,7 +6621,7 @@
       "id": "result.read-form.types-dropped",
       "assertion": "test_read_form.ReadFormTests.test_a_same_name_type_change_changes_a_fixture_listing",
       "category": "tool-result",
-      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 §4): listing identities lose their entry types, so a same-name file/directory change is missed",
+      "source": "TOOLS-02 T2-1 (review 01 T2-R1-READ-01; design 04 \u00a74): listing identities lose their entry types, so a same-name file/directory change is missed",
       "input": {
         "test": "test_read_form.ReadFormTests.test_a_same_name_type_change_changes_a_fixture_listing"
       },
@@ -6966,6 +6966,102 @@
           "operator": "weaken-read-form",
           "name": "result.read-matrix.rule-o",
           "id": "mutation-f5977b91564e5990aa7cbfb653f28aa053e4a939baf93bd14d7428085b3c9d4d"
+        }
+      ]
+    },
+    {
+      "id": "result.target-invocation",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_forged_shape_nested_and_cross_leaf_failures_are_uncredited",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-3: invocation-bound assertion provenance",
+      "input": {
+        "test": "test_runner_targets.TargetSetRunnerTests.test_forged_shape_nested_and_cross_leaf_failures_are_uncredited"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.target-invocation",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "witness.get('anchor') and test_module and invocation == {'file': name, 'fullName': ' > '.join(path)}",
+          "after": "witness.get('anchor') and test_module and (True or 'tools02-ignore-invocation')",
+          "operator": "remove-result-classification",
+          "name": "result.target-invocation",
+          "id": "mutation-72a83f681164629e8280268e9d79341498ffe2dd28d665575895bfcc6470d64f"
+        }
+      ]
+    },
+    {
+      "id": "result.target-policy",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_policy_failure_cannot_credit_a_real_assertion",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-3: invocation-bound assertion provenance",
+      "input": {
+        "test": "test_runner_targets.TargetSetRunnerTests.test_policy_failure_cannot_credit_a_real_assertion"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.target-policy",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "if certificate is None or not certificate.get('ok'):",
+          "after": "if certificate is None:  # tools02-ignore-policy",
+          "operator": "remove-result-classification",
+          "name": "result.target-policy",
+          "id": "mutation-7bb05f5cd871ef81014a087426ace8afd9f73ecc1c68b2d1ab5ad38300296c01"
+        }
+      ]
+    },
+    {
+      "id": "result.target-witness",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_forged_shape_nested_and_cross_leaf_failures_are_uncredited",
+      "category": "tool-result",
+      "source": "TOOLS-02 T2-3: invocation-bound assertion provenance",
+      "input": {
+        "test": "test_runner_targets.TargetSetRunnerTests.test_forged_shape_nested_and_cross_leaf_failures_are_uncredited"
+      },
+      "files": [
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "result.target-witness",
+        "tests/fixtures/packet-tools/mutations.json"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "witness.get('anchor') and test_module and invocation == {'file': name, 'fullName': ' > '.join(path)}",
+          "after": "(True or 'tools02-ignore-witness')",
+          "operator": "remove-result-classification",
+          "name": "result.target-witness",
+          "id": "mutation-7527eac76917ad66599913cbcf3b3df0648da236924de3ed93d8e2c80a35e772"
         }
       ]
     }

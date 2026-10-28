@@ -42,6 +42,9 @@ CATALOG_REPORTER = 'tests/tooling/catalog-reporter.mjs'
 # Design 05 §4 source facts and reach: parsed with the pinned TypeScript subset, counted from raw V8 coverage.
 SOURCE_FACTS = 'tests/tooling/source-facts.mjs'
 REACH_COVERAGE = 'tests/tooling/reach-coverage.mjs'
+TARGET_WITNESS = 'tests/tooling/value-cost-witness.mjs'
+TARGET_POLICY = 'tests/tooling/value-cost-source-policy.mjs'
+TARGET_FILES = (CATALOG_REPORTER, REACH_COVERAGE, TARGET_WITNESS, TARGET_POLICY)
 # Design 05 §2.3 rule 5: the reads-phase preload, and how each fs operation is compared at pin and C.
 # TOOLS-02 design 04 §1: a recursive listing is a `tree` read. Design 05 §1 admits each row through READ_ARGUMENTS;
 # glob and cp have no represented dependency identity (kind `pattern`), so admission refuses them.
@@ -106,7 +109,7 @@ AREA_ROOT_FILE = re.compile(r'(?<![\w/.-])(AGENTS\.md|CLAUDE\.md|README\.md|pack
 SUMMARY_LABELS = ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')
 # R1-04 (owner choice 09): what the catalog reporter forwards about a failing result, kept on its leaf.
 FAILURE_FIELDS = (('type', 'failure_type'), ('cause_name', 'cause_name'), ('cause_code', 'cause_code'),
-                  ('stack', 'cause_stack'))
+                  ('stack', 'cause_stack'), ('witnessed', 'witnessed'))
 TARGET_FAILURES = {'testCodeFailure': 'error', 'cancelledByParent': 'cancelled', 'testTimeoutFailure': 'timeout',
                    'hookFailed': 'hook'}
 # Adoption format 2 (design 04, design 05 §4): origin states and the tables every manifest carries.
@@ -1154,19 +1157,64 @@ def run_targets(files, case, environment, mutant=None, offsets=None):
             refused = apply_edits(directory, mutation_edits(mutant))
             if refused is not None:
                 return {'status': 'not_applicable', 'exit': None, 'output': '', **refused}
-        events = Path(side) / 'events.jsonl'
+        # Source policy covers the entire copied production tree, including non-packages trees.
+        production = sorted(name for name in files if re.search(r'\.(?:[cm]?[jt]sx?)$', name) and
+                            not {'tests', 'node_modules', '.git'} & set(PurePosixPath(name).parts) and
+                            not re.search(r'\.test\.(?:[cm]?[jt]sx?)$', name))
+        policy_script = ('import {sourcePolicy} from "./' + TARGET_POLICY + '"; '
+                         'console.log(JSON.stringify(sourcePolicy(process.cwd(), ' + json.dumps(production) + ', true)));')
+        policy = command(['node', '--input-type=module', '-e', policy_script], directory,
+                         case['timeout_seconds'], case['output_limit_bytes'], environment)
+        try:
+            certificate = json.loads(policy['output']) if policy['status'] == 'finished' and policy['exit'] == 0 else None
+        except ValueError:
+            certificate = None
+        if certificate is None or not certificate.get('ok'):
+            return {'status': 'setup_error', 'exit': policy['exit'], 'output': policy['output'],
+                    'source_policy': certificate, 'tree': None}
         coverage = Path(side) / 'coverage'
         coverage.mkdir()
-        argv = ['node', *flags, '--test-reporter=' + str(directory / CATALOG_REPORTER),
-                '--test-reporter-destination=' + str(events), *selected]
-        run_environment = environment if offsets is None else dict(environment, NODE_V8_COVERAGE=str(coverage))
-        run = command(argv, directory, case['timeout_seconds'], case['output_limit_bytes'], run_environment)
-        try:
-            rows = [json.loads(line) for line in events.read_text().splitlines()] if events.exists() else None
-            tree = None if rows is None else catalog_tree(rows, directory, selected)
-        except (ValueError, CheckError):
-            tree = None
+        run_environment = dict(environment, ARROKOTHI_TARGET_WITNESS='1')
+        trees, runs = [], []
+        for index, selected_file in enumerate(selected):
+            events = Path(side) / ('events-' + str(index) + '.jsonl')
+            # Direct script entry keeps the reporter and exact error object in the same process.
+            argv = ['node', *(flag for flag in flags if flag != '--test'), '--import', './' + TARGET_WITNESS,
+                    '--test-reporter=' + str(directory / CATALOG_REPORTER),
+                    '--test-reporter-destination=' + str(events), selected_file]
+            current = command(argv, directory, case['timeout_seconds'], case['output_limit_bytes'], run_environment)
+            runs.append(current)
+            try:
+                rows = [json.loads(line) for line in events.read_text().splitlines()] if events.exists() else None
+                current_tree = None if rows is None else catalog_tree(rows, directory, [selected_file])
+                if current_tree is not None:
+                    for facts in current_tree['files'].values():
+                        for pair in facts['pairs']:
+                            witness = (pair.get('failure') or {}).get('witnessed')
+                            if witness:
+                                module = witness.get('module', '')
+                                witness['module'] = os.path.relpath(unquote(module[7:]), directory) if module.startswith('file://') else module
+                                invocation = witness.get('invocation')
+                                if invocation:
+                                    invocation['file'] = os.path.relpath(invocation['file'], directory)
+                trees.append(current_tree)
+            except (ValueError, CheckError):
+                trees.append(None)
+        run = next((item for item in runs if item['status'] != 'finished'), None) or {
+            'status': 'finished', 'exit': next((item['exit'] for item in runs if item['exit'] != 0), 0),
+            'output': ''.join(item['output'] for item in runs)}
+        run['source_policy'] = certificate
+        tree = None if any(item is None for item in trees) else {
+            'valid': all(item['valid'] for item in trees),
+            'refused': {key: value for item in trees for key, value in item['refused'].items()},
+            'files': {key: value for item in trees for key, value in item['files'].items()}}
         if offsets is not None and run['status'] == 'finished':
+            # Reach uses the original source coordinates. Instrumentation inserts text in test
+            # modules, so collect this control separately without the witness and require it to pass.
+            reach_control = command(['node', *flags, *selected], directory, case['timeout_seconds'],
+                                    case['output_limit_bytes'], dict(environment, NODE_V8_COVERAGE=str(coverage)))
+            if reach_control['status'] != 'finished' or reach_control['exit'] != 0:
+                return {**reach_control, 'tree': tree, 'source_policy': certificate}
             sites = [(path, offset) for path, offset in offsets if offset is not None]
             request = Path(side) / 'request.json'
             request.write_text(json.dumps([{'file': str(directory / path), 'offsets': [offset], 'processes': 'any'}
@@ -1218,10 +1266,10 @@ def target_observation(pair):
 
 
 def target_outcome(run, mutant, reached):
-    """F3 under owner choice 09: the target-set route reports what it observed and never returns `killed`.
+    """TOOLS-02 T2-3: only an eligible assertion bound to each expected invocation earns a kill.
     `survived`: every leaf passed; `wrong_kill`: every expected target passed and another leaf did not;
     otherwise `observed`, with one outcome per expected target. The run-level categories (timeout,
-    output_limit, not_applicable, setup_error, malformed, uncovered) stay distinct. None of them is credit."""
+    output_limit, not_applicable, setup_error, malformed, uncovered) stay distinct and uncredited."""
     if run['status'] != 'finished':
         return dict(status=run['status'], matches=run.get('matches'))
     leaves = target_leaves(run)
@@ -1241,7 +1289,21 @@ def target_outcome(run, mutant, reached):
              for pair in facts['pairs'] if pair['leaf']}
     observed = [dict(target=name + ' > ' + ' > '.join(path), **target_observation(pairs.get((name, path))))
                 for name, path in sorted(expected)]
-    return {'status': 'observed', 'targets': observed, 'failures': len(failed), 'kill': 'none (owner choice 09)'}
+    killers = []
+    for name, path in sorted(expected):
+        pair = pairs.get((name, path)) or {}
+        failure = pair.get('failure') or {}
+        witness = failure.get('witnessed') or {}
+        invocation = witness.get('invocation') or {}
+        module = witness.get('module', '')
+        test_module = (not PurePosixPath(module).is_absolute() and '..' not in PurePosixPath(module).parts and
+                       ('tests' in PurePosixPath(module).parts or re.search(r'\.test\.(?:[cm]?[jt]sx?)$', module)))
+        if (pair.get('verdict') == 'failed' and failure.get('type') == 'testCodeFailure' and
+                witness.get('anchor') and test_module and invocation == {'file': name, 'fullName': ' > '.join(path)}):
+            killers.append({'target': name + ' > ' + ' > '.join(path), 'site': witness})
+    if len(killers) == len(expected) and run.get('source_policy', {}).get('ok') is True:
+        return {'status': 'killed', 'killed_by': killers, 'targets': observed, 'failures': len(failed)}
+    return {'status': 'observed', 'targets': observed, 'failures': len(failed), 'kill': 'no qualifying target witness'}
 
 
 def target_control(files, case, environment, mutants):
@@ -1252,6 +1314,10 @@ def target_control(files, case, environment, mutants):
     leaves = target_leaves(run)
     valid = run['status'] == 'finished' and run['exit'] == 0 and leaves is not None and \
         all(verdict == 'passed' for verdict in leaves.values()) and run.get('reach') is not None
+    if leaves is not None:
+        names = [(name, ' > '.join(pair['path'])) for name, facts in run['tree']['files'].items()
+                 for pair in facts['pairs'] if pair['leaf']]
+        require(len(names) == len(set(names)), 'target leaf joined full names must be unique')
     return run, leaves, valid, run.get('reach') or {}
 
 
@@ -1266,7 +1332,7 @@ def mutations(git, revision, registry_path, *, cases_only=False):
         shared[path_name(name)] = git.blob(rev, name)
     shared.update(dependency_files(git, rev, registry.get('dependencies', [])))
     if any('targets' in case for case in registry['cases']):
-        shared.update({name: git.blob(rev, name) for name in (CATALOG_REPORTER, REACH_COVERAGE)})
+        shared.update({name: git.blob(rev, name) for name in TARGET_FILES})
     environment, environment_record = child_environment(environment_declaration(registry.get('environment')))
     case_ids, mutant_ids, results = set(), {}, []
     for case in registry['cases']:
@@ -1322,7 +1388,7 @@ def mutations(git, revision, registry_path, *, cases_only=False):
                         outcome['observation'].get('failures', [case['assertion']])[0]
                 if state == 'wrong_kill':
                     result['first_failure'] = outcome['first_failure']
-                if state == 'observed':
+                if state in ('observed', 'killed') and targeted:
                     result['targets'] = outcome['targets']
                 if case['id'] in registry.get('determinism_sample', []):
                     repeated_run = run_targets(files, case, environment, mutant) if targeted else \
@@ -1913,7 +1979,7 @@ def check_target(git, rev, target, counterexamples, registry, context):
         elif not {path for path, _, _ in mutation_edits(mutation)} & operation_files:
             refuse('the mutated file holds no cited operation anchor')
         else:
-            # Owner choice 09: no target-set mutant earns a kill in TOOLS-01, so this stays pending (TOOLS-02).
+            # This catalog check binds declarations only. The mutation runner separately establishes the kill.
             facts['credit'] = 'target_mutation_pending_execution'
     return facts
 

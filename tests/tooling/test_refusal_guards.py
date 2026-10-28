@@ -737,7 +737,7 @@ class RefusalGuardTests(base.RepositoryFixture):
 
     # Design 05 step 7: target-set and multi-edit mutants (F3).
     def target_registry(self, case_change=None, mutant=None):
-        for path in (tool.CATALOG_REPORTER, tool.REACH_COVERAGE):
+        for path in tool.TARGET_FILES:
             self.write(path, (target_tests.ROOT / path).read_text())
         self.write('src/value.mjs', runner_tests.SOURCE)
         self.write('tests/a.test.mjs', runner_tests.TESTS)
@@ -746,7 +746,14 @@ class RefusalGuardTests(base.RepositoryFixture):
                 'mutants': [mutant or runner_tests.mutant('kill', 'return n + 1;', 'return n + 2;')]}
         if case_change:
             case_change(case)
-        self.document('registry.json', {'version': 1, 'cases': [case]})
+        dependencies = [row for row in json.loads((target_tests.ROOT / 'tests/fixtures/packet-tools/mutations.json').read_text())['dependencies'] if row['path'] == 'node_modules/typescript']
+        for name, data in target_tests.pinned_toolchain().items():
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        self.write('.gitignore', 'node_modules/\n')
+        self.write('package-lock.json', (target_tests.ROOT / 'package-lock.json').read_text())
+        self.document('registry.json', {'version': 1, 'dependencies': dependencies, 'cases': [case]})
         rev = self.commit('target registry')
         return lambda: tool.mutations(self.reader, rev, 'registry.json')
 

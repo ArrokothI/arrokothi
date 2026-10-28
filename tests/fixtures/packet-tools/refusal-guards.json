@@ -9578,6 +9578,35 @@
           "id": "mutation-df3386e8f081a742eb8bce08424e06a789b94c8b5b6390cf761af54531bee9ce"
         }
       ]
+    },
+    {
+      "id": "guard.target_control.unique-invocation",
+      "assertion": "test_runner_targets.TargetSetRunnerTests.test_duplicate_joined_names_refuse_the_control",
+      "category": "tool-refusal",
+      "source": "TOOLS-02 design 02 \u00a73: unique joined invocation name",
+      "input": {
+        "test": "test_runner_targets.TargetSetRunnerTests.test_duplicate_joined_names_refuse_the_control"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.target_control.unique-invocation"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(len(names) == len(set(names)), 'target leaf joined full names must be unique')",
+          "after": "pass  # tools02-ablate-unique-invocation",
+          "operator": "remove-refusal-check",
+          "name": "guard.target_control.unique-invocation",
+          "id": "mutation-10b4515ced99f03f1dd0a4606c96a880c784887c5a68b44033816a5905159bd1"
+        }
+      ]
     }
   ],
   "determinism_sample": [

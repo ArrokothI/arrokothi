@@ -176,8 +176,8 @@ its SHA-256, and must occur exactly once in its file at C. `corpus` then checks,
   observable assertion anchor and every in-span input anchor must be reached;
 - discrimination: a reading trace gives `target_reading`; a mutation must be registered with this
   counterexample as its `obligation` and mutate a file holding a cited operation anchor; it stays
-  `target_mutation_pending_execution`, never credit, since no target-set mutant earns a kill in
-  TOOLS-01 (owner choice 09).
+  `target_mutation_pending_execution`: declaration binding alone is not an executed kill.
+  TOOLS-02 T2-3 qualifies target-set kills separately through the assertion witness.
 
 A target whose counterexample is held or superseded is refused outright (P1-H). A failed check is
 reported with its reason and counted; it never becomes credit. Summaries count anchors bound,
@@ -313,18 +313,18 @@ instead of `argv`, and runs under the catalog reporter in a temporary copy.
   must be passing leaves there.
 - The control also records V8 coverage, and a mutant whose edit sites the control never executed is
   `uncovered`.
-- Under owner choice 09 a target-set mutant is never `killed` (design 06 R1-04). It is `survived`
-  when every leaf passed, `wrong_kill` when every expected target passed and another leaf did not,
-  and otherwise `observed`, with one outcome per expected target: `passed`, `assertion` (a cause named
-  `AssertionError` or coded `ERR_ASSERTION`; its origin is not established), `error`, `skipped`,
-  `todo`, `cancelled`, `timeout`, `hook` or `absent`. The catalog reporter forwards each failure's
-  `failureType`, its cause's name and code, and the shape of its stack (type and frame count), which
-  is reported as provenance `frames`, `unusable` or `absent`. Run-level `timeout`, `output_limit`,
-  `not_applicable`, `setup_error`, `malformed` (missing or invalid catalog events), `uncovered`,
-  `invalid_baseline` and `nondeterministic` stay distinct. No observation is credit; TOOLS-02 designs
-  the evidence that a qualifying assertion executed and failed.
-- A mutant's `discovery` field (one full-suite run's first failures) is reported as metadata with
-  `credit: none`, and never decides a status.
+- TOOLS-02 T2-3 qualifies kills using the shared assertion witness. Each file runs directly in its own
+  process, with its reporter in that process. The complete copied production source set must pass
+  the source policy; test-side means a `tests` component or a test-file suffix, excluding dependencies.
+  Every expected target must fail with `testCodeFailure` and the exact escaping assertion object
+  must have a qualifying witness bound to that target's file and joined full name. The control
+  refuses duplicate joined names. `killed_by` records each target and assertion site.
+- Forged error shapes/frames, failures from hooks or other invocations, nested or otherwise excluded
+  assertions, skips, todos and cancellations earn no kill. Unqualified failures remain `observed`;
+  `wrong_kill`, `survived`, `uncovered` and run errors remain distinct.
+- Reach is measured in a separately passing uninstrumented control so inserted witness text cannot
+  shift V8 edit-site offsets. Assertion admission and invocation identity come from the witnessed run.
+  Value-cost runs retain their original roots and admission contract.
 
 **Families (P1-M, D04-CHK-03, D05-06, D05-CHK-06, D05-CHK-09).** `families` in `adoption.json` lists
 each mutation runner and mixed origin (`role`). `corpus` recomputes each member list from the

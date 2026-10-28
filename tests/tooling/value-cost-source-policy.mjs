@@ -4,7 +4,7 @@ import {resolve,relative,sep} from 'node:path';
 import {createHash} from 'node:crypto';
 import ts from 'typescript';
 
-export function sourcePolicy(root, requiredFiles) {
+export function sourcePolicy(root, requiredFiles, targetMode = false) {
   const files=[], violations=[];
   function walk(dir,inSource=false) {
     for(const entry of fs.readdirSync(dir,{withFileTypes:true})) {
@@ -12,10 +12,12 @@ export function sourcePolicy(root, requiredFiles) {
       if(entry.isDirectory()) {
         if(['node_modules','.git'].includes(entry.name))continue;
         walk(resolve(dir,entry.name),inSource||entry.name==='src');
-      } else if(inSource&&/\.(?:[cm]?[jt]sx?)$/.test(entry.name))files.push(resolve(dir,entry.name));
+      } else if(/\.(?:[cm]?[jt]sx?)$/.test(entry.name) && (targetMode
+        ? !relative(root,resolve(dir,entry.name)).split(sep).includes('tests') && !/\.test\.(?:[cm]?[jt]sx?)$/.test(entry.name)
+        : inSource))files.push(resolve(dir,entry.name));
     }
   }
-  try{walk(resolve(root,'packages'));}catch(error){return {ok:false,files:[],violations:[{reason:'missing source tree',message:String(error)}]};}
+  try{walk(targetMode ? root : resolve(root,'packages'));}catch(error){return {ok:false,files:[],violations:[{reason:'missing source tree',message:String(error)}]};}
   files.sort();
   const relativeFiles=files.map(file=>relative(root,file).split(sep).join('/'));
   if(files.length===0)violations.push({reason:'empty source tree'});
