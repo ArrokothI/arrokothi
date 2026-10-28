@@ -5,10 +5,14 @@ instructions in this chat. This records a role change, not review or acceptance.
 
 The owner's words, verbatim:
 
-> let's do tools-02 by gpt6
+> let;s do tools-02 by gpt6
 
-> GPT6 would be
-> the implementor, opus would be reviewer
+> This time GPT6 would be the implementor, opus would be reviewer
+
+On 2026-10-28 the owner handed ranges 2–4 over from the previous GPT-6
+session to this Codex GPT-6 session, resuming from remote commit
+`95c395617cf5f266f3a6bd35bd20eba82e781671`. The quotations above are
+corrected to the verbatim words supplied by the owner in the handover.
 
 The implementer is now a Codex GPT-6 session. Design checks and acceptance reviews
 are separate Claude Opus sessions. Earlier records retain their actual roles;

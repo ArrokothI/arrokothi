@@ -2,6 +2,20 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 session handover resume:** IN_PROGRESS under [owner choice 06](owner-choice-06.md).
+  Implementer: this Codex GPT-6 session, taking over from the prior GPT-6 session.
+  `git fetch origin` confirmed `origin/codex/tools-02` at
+  `95c395617cf5f266f3a6bd35bd20eba82e781671`.
+  Worktree: `/Users/rex-shih/.codex/worktrees/tools-02-gpt6-handover/arrokothi`,
+  local branch `codex/tools-02-gpt6-handover` (delivery branch `codex/tools-02`).
+  Prepend `/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin`
+  to PATH. Census, corpus, regenerate and verify run only in a fresh
+  `git clone --no-local` with `npm ci`.
+  Ranges 2–3 are built; range 4 resumes at K1.1 implementation 04 and its
+  validation manifest, then remaining source files in order. Preserve the existing
+  two-origin grouped extraction. Re-estimate after 300 origins; follow design 01 §9's
+  stop list. No final C/H, CI dispatch, self-audit or acceptance is claimed.
+
 - **2026-10-28 K1.1 implementation 03 checkpoint:** first 25 origins read in source-file
   order: 20 `covered_elsewhere`, 2 `superseded`, 1 `not_a_counterexample`, and the
   same 2 origins grouped for one extraction. Source-packet triage and the first-300
