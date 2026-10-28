@@ -4235,7 +4235,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(row['state'] != 'triaged', 'prose triage is not implemented in this format revision: ' + key)",
+          "before": "require(row['state'] == 'triaged' or 'triage' not in row, 'only a triaged origin carries retirement: ' + key)",
           "after": "pass  # tools01-ablate:07b8756e3caeb4b0",
           "operator": "remove-refusal-check",
           "name": "guard.corpus_format_2.07b8756e3caeb4b0",
@@ -8469,7 +8469,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(origins.get(row['origin'], {}).get('state') == 'pending_revalidation',\n                'a transferred origin is an open revalidation origin: ' + row['origin'])",
+          "before": "require(origins.get(row['origin'], {}).get('state') in ('pending_revalidation', 'triaged', 'complete') and\n                'legacy' in origins.get(row['origin'], {}),\n                'a transferred origin retains its revalidation provenance: ' + row['origin'])",
           "after": "pass  # tools01-ablate:1435cc6de72c6440",
           "operator": "remove-refusal-check",
           "name": "guard.transferred_origins.1435cc6de72c6440",
@@ -9779,6 +9779,325 @@
           "operator": "remove-refusal-check",
           "name": "guard.released.3ea635a5d8440b07",
           "id": "mutation-3ea635a5d8440b0709f3551fab6619e3d803afad57d33f7b6996311c76834daa"
+        }
+      ]
+    },
+    {
+      "id": "guard.triage_origin.debc8e5f88062f33",
+      "assertion": "test_triage_tools.TriageTests.test_unknown_class",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: triage_origin",
+      "input": {
+        "test": "test_triage_tools.TriageTests.test_unknown_class"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.triage_origin.debc8e5f88062f33"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(triage, dict) and triage.get('class') in TRIAGE_CLASSES,\n            'a triaged origin names a retirement class: ' + key)",
+          "after": "pass  # tools02-triage-ablate:debc8e5f88062f33",
+          "operator": "remove-refusal-check",
+          "name": "guard.triage_origin.debc8e5f88062f33",
+          "id": "mutation-f83c4cc5060c6654499f86384ae47dcfe70dd429ac38425d2aa495934141b99c"
+        }
+      ]
+    },
+    {
+      "id": "guard.triage_origin.bf7f36c12a2e3e75",
+      "assertion": "test_triage_tools.TriageTests.test_empty_rationale",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: triage_origin",
+      "input": {
+        "test": "test_triage_tools.TriageTests.test_empty_rationale"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.triage_origin.bf7f36c12a2e3e75"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(triage.get('rationale'), str) and bool(triage['rationale'].strip()),\n            'a triaged origin states its rationale: ' + key)",
+          "after": "pass  # tools02-triage-ablate:bf7f36c12a2e3e75",
+          "operator": "remove-refusal-check",
+          "name": "guard.triage_origin.bf7f36c12a2e3e75",
+          "id": "mutation-4fcdc7fc209dc8d242887a2e21eb8b6c054c2c7cf14a06104f2f19bb651eb4d3"
+        }
+      ]
+    },
+    {
+      "id": "guard.triage_origin.bfa4716f3241407b",
+      "assertion": "test_triage_tools.TriageTests.test_exact_class_pointer",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: triage_origin",
+      "input": {
+        "test": "test_triage_tools.TriageTests.test_exact_class_pointer"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.triage_origin.bfa4716f3241407b"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(triage) == {'class', 'rationale'} | ({pointer} if pointer else set()) and 'closure' not in row,\n            'a retirement carries only its class pointer and no closure: ' + key)",
+          "after": "pass  # tools02-triage-ablate:bfa4716f3241407b",
+          "operator": "remove-refusal-check",
+          "name": "guard.triage_origin.bfa4716f3241407b",
+          "id": "mutation-084c844dc6e1ca9c3dc26adc5b9bfcddc0a066e0ce4cff396ac45aeccc2a805b"
+        }
+      ]
+    },
+    {
+      "id": "guard.triage_origin.99a9c099dd613405",
+      "assertion": "test_triage_tools.TriageTests.test_unlisted_superseding_decision",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: triage_origin",
+      "input": {
+        "test": "test_triage_tools.TriageTests.test_unlisted_superseding_decision"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.triage_origin.99a9c099dd613405"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(triage['decision'] in TRIAGE_DECISIONS, 'a retirement names a listed superseding decision: ' + key)",
+          "after": "pass  # tools02-triage-ablate:99a9c099dd613405",
+          "operator": "remove-refusal-check",
+          "name": "guard.triage_origin.99a9c099dd613405",
+          "id": "mutation-5d3e2c0ba6e3986975bf05d3dcaa2c4b9dab1a223399595ce2609ad993f15a73"
+        }
+      ]
+    },
+    {
+      "id": "guard.triage_origin.2e2c4e41ce1d3902",
+      "assertion": "test_triage_tools.TriageTests.test_limit_must_be_a_current_row",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: triage_origin",
+      "input": {
+        "test": "test_triage_tools.TriageTests.test_limit_must_be_a_current_row"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.triage_origin.2e2c4e41ce1d3902"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(triage['limit'], str) and triage['limit'] in limits,\n                'a retirement names a current 017 limit: ' + key)",
+          "after": "pass  # tools02-triage-ablate:2e2c4e41ce1d3902",
+          "operator": "remove-refusal-check",
+          "name": "guard.triage_origin.2e2c4e41ce1d3902",
+          "id": "mutation-718a14a86d2c26552303924f4111e60eb64e9f500a673e5719e296857844acdd"
+        }
+      ]
+    },
+    {
+      "id": "guard.triage_origin.879d541f62f1659b",
+      "assertion": "test_triage_tools.TriageTests.test_unknown_coverage_kind",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: triage_origin",
+      "input": {
+        "test": "test_triage_tools.TriageTests.test_unknown_coverage_kind"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.triage_origin.879d541f62f1659b"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(covered, dict) and covered.get('kind') in ('leaf', 'case', 'origin'),\n                'coverage names a leaf, registry case or closed origin: ' + key)",
+          "after": "pass  # tools02-triage-ablate:879d541f62f1659b",
+          "operator": "remove-refusal-check",
+          "name": "guard.triage_origin.879d541f62f1659b",
+          "id": "mutation-45928c919a0e812db33a5db44047091a5fee91c1de44666b551cc3b6de97b40b"
+        }
+      ]
+    },
+    {
+      "id": "guard.triage_origin.b870e96c7d7b9557",
+      "assertion": "test_triage_tools.TriageTests.test_leaf_shape_and_catalog",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: triage_origin",
+      "input": {
+        "test": "test_triage_tools.TriageTests.test_leaf_shape_and_catalog"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.triage_origin.b870e96c7d7b9557"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(covered) == {'kind', 'command', 'file', 'test_path'} and\n                    isinstance(covered['command'], str) and isinstance(covered['file'], str) and\n                    isinstance(covered['test_path'], list) and bool(covered['test_path']) and\n                    all(isinstance(name, str) and bool(name) for name in covered['test_path']) and\n                    context is not None and covered['command'] in context['catalogs'],\n                    'leaf coverage names a catalog command, file and full path: ' + key)",
+          "after": "pass  # tools02-triage-ablate:b870e96c7d7b9557",
+          "operator": "remove-refusal-check",
+          "name": "guard.triage_origin.b870e96c7d7b9557",
+          "id": "mutation-2d41a136ed313e6f40041fd4441d73f61df85922b6519ca19a218d06ca4837e3"
+        }
+      ]
+    },
+    {
+      "id": "guard.triage_origin.f60e2f572945f32e",
+      "assertion": "test_triage_tools.TriageTests.test_leaf_must_exist_and_pass_uniquely",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: triage_origin",
+      "input": {
+        "test": "test_triage_tools.TriageTests.test_leaf_must_exist_and_pass_uniquely"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.triage_origin.f60e2f572945f32e"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(covered['file'] in catalog['selection'] and len(leaves) == 1 and leaves[0]['verdict'] == 'passed',\n                    'coverage names a single passing catalog leaf: ' + key)",
+          "after": "pass  # tools02-triage-ablate:f60e2f572945f32e",
+          "operator": "remove-refusal-check",
+          "name": "guard.triage_origin.f60e2f572945f32e",
+          "id": "mutation-856c92fe9c36e73c6cce0ecdbbfcca2a24632cd27d4bfd55c176f3b7cb160deb"
+        }
+      ]
+    },
+    {
+      "id": "guard.triage_origin.1a88e5094505df67",
+      "assertion": "test_triage_tools.TriageTests.test_case_must_exist",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: triage_origin",
+      "input": {
+        "test": "test_triage_tools.TriageTests.test_case_must_exist"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.triage_origin.1a88e5094505df67"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and\n                    covered['id'] in {case['id'] for case in registry['cases']},\n                    'coverage names an existing scheduled registry case: ' + key)",
+          "after": "pass  # tools02-triage-ablate:1a88e5094505df67",
+          "operator": "remove-refusal-check",
+          "name": "guard.triage_origin.1a88e5094505df67",
+          "id": "mutation-381ee2a6f86829b991d0d6ce3a16f92a14959c9ace2a1a43b1286bd699cfa127"
+        }
+      ]
+    },
+    {
+      "id": "guard.triage_origin.a7f46e9c8c8e3d9d",
+      "assertion": "test_triage_tools.TriageTests.test_origin_cannot_point_to_retirement",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: triage_origin",
+      "input": {
+        "test": "test_triage_tools.TriageTests.test_origin_cannot_point_to_retirement"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.triage_origin.a7f46e9c8c8e3d9d"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and\n                    origins.get(covered['id'], {}).get('state') == 'complete',\n                    'coverage names a complete origin, never a retired one: ' + key)",
+          "after": "pass  # tools02-triage-ablate:a7f46e9c8c8e3d9d",
+          "operator": "remove-refusal-check",
+          "name": "guard.triage_origin.a7f46e9c8c8e3d9d",
+          "id": "mutation-d2079701ade45ff9953bc0f93c8e5b782b7b56f4f18c9daf6a1fd247dd284ee5"
+        }
+      ]
+    },
+    {
+      "id": "guard.origin_closure.a5da6474e275e804",
+      "assertion": "test_closure_tools.ClosureTests.test_hollow_counterexample_cannot_close_an_origin",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: origin_closure",
+      "input": {
+        "test": "test_closure_tools.ClosureTests.test_hollow_counterexample_cannot_close_an_origin"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.origin_closure.a5da6474e275e804"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(record['kind'] in ('held_witness', 'superseded_witness', 'unread_witness') or\n                (record['kind'] in ('behavior', 'mutation') and counterexample_executable(cx, facts)),\n                'a linked counterexample reaches executable evidence: ' + cx)",
+          "after": "pass  # tools02-triage-ablate:a5da6474e275e804",
+          "operator": "remove-refusal-check",
+          "name": "guard.origin_closure.a5da6474e275e804",
+          "id": "mutation-a9eb9da92f6cc81fc8949af2aa7b6b582bcf4193d5e9cbb711abf9b96e745268"
         }
       ]
     }

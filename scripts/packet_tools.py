@@ -139,6 +139,18 @@ CATEGORY_DECISIONS = {'Proxy': ('docs/development/work/DESIGN-AUDIT-01/decision-
                       're-prototyped-built-in': ('docs/development/work/DESIGN-AUDIT-01/decision-01.md',),
                       'V-D1': ('docs/development/work/K1.2/decision-05.md', 'docs/development/work/K1.2/invalidation-02.md')}
 
+# TOOLS-02 design 01 §5.3. Further rows require an accepted decision at the packet base,
+# added with their first use and independently read in the triage audit.
+TRIAGE_DECISIONS = (
+    'docs/development/work/DESIGN-AUDIT-01/decision-01.md',
+    'docs/development/work/DESIGN-AUDIT-01/decision-02.md',
+    'docs/development/work/BINDING-01/design-01.md',
+    'docs/development/work/COORD-REFACTOR-01/design-01.md',
+    'docs/development/work/K1.2/decision-05.md',
+)
+TRIAGE_LIMITS = 'docs/development/017-known-limitations.md'
+TRIAGE_CLASSES = ('not_a_counterexample', 'covered_elsewhere', 'superseded', 'recorded_limit')
+
 
 class CheckError(Exception):
     """A declared input or checked fact is invalid."""
@@ -609,7 +621,7 @@ def transfer_lists(git, rev, rows):
 
 def transferred_origins(git, rev, rows, origins, lists):
     """P1-R under owner choices 04 and 05: revalidation origins an owner decision moved to TOOLS-02. Each
-    names its decision record at C and must still be open for revalidation; a closed one is stale. R1-03:
+    names its decision record at C and retains its original mapping after T2-5 disposition. R1-03:
     the origins transferred under a decision are exactly those its pinned list names."""
     require(isinstance(rows, list), 'transferred origins are a list')
     found = {}
@@ -617,8 +629,9 @@ def transferred_origins(git, rev, rows, origins, lists):
         require(isinstance(row, dict) and isinstance(row.get('origin'), str) and isinstance(row.get('decision'), str)
                 and row['origin'] not in found, 'a transferred origin is unique and names its owner decision')
         git.blob(rev, row['decision'])
-        require(origins.get(row['origin'], {}).get('state') == 'pending_revalidation',
-                'a transferred origin is an open revalidation origin: ' + row['origin'])
+        require(origins.get(row['origin'], {}).get('state') in ('pending_revalidation', 'triaged', 'complete') and
+                'legacy' in origins.get(row['origin'], {}),
+                'a transferred origin retains its revalidation provenance: ' + row['origin'])
         require(row['origin'] in lists.get(row['decision'], {}),
                 "a transferred origin is in its decision's pinned list: " + row['origin'])
         found[row['origin']] = row['decision']
@@ -769,8 +782,8 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             expected = {name: value for name, value in old.items() if name != 'origin'}
             require(row.get('legacy') == expected, 'migrated row differs from the format-1 source: ' + key)
             require(row['state'] != 'pending', 'a revision-2 mapping cannot return to pending')
-        # Prose triage arrives with the mentions (design 05 §6 step 11); a complete origin is checked below.
-        require(row['state'] != 'triaged', 'prose triage is not implemented in this format revision: ' + key)
+        # TOOLS-02 T2-5: retirement is checked against C below, separately from P1 closure.
+        require(row['state'] == 'triaged' or 'triage' not in row, 'only a triaged origin carries retirement: ' + key)
     area_ids, area_of, tree_paths = area_map(git, rev, spec['areas'])
     claims = holds_table(git, rev, spec['holds'])
     require(set(REGISTER_MINIMUM) <= set(claims), 'P1-H claims cannot leave the holds table')
@@ -801,7 +814,8 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
                    {target['file'] for target in targets.values() if isinstance(target.get('file'), str) and
                     blob_id(git, rev, target['file'])})
     with contextlib.ExitStack() as stack:
-        context = target_context(git, rev, spec, stack, toolchain) if targets or tested else None
+        context = target_context(git, rev, spec, stack, toolchain) if targets or tested or any(
+            row.get('triage', {}).get('covered_by', {}).get('kind') == 'leaf' for row in rows.values()) else None
         environment = child_environment(environment_declaration(None))[0] if context is None else context['environment']
         detected = {}
         register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain,
@@ -809,6 +823,8 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
         results = [check_target(git, rev, target, counterexamples, registry, context) for target in targets.values()]
         evaluations, all_earlier = preserved_census(git, rev, spec, intake, context, register) if tested else ([], None)
         _, family_counts = family_table(git, rev, spec['families'], origins, counterexamples, registry, environment, toolchain)
+        retirements = {key: triage_origin(git, rev, key, row, rows, registry, context)
+                       for key, row in rows.items() if row['state'] == 'triaged'}
     for target, result in zip(targets.values(), results):
         declaration = target.get('declaration') or {}
         entry = register.get(f"{target['file']}:{declaration.get('line')}:{declaration.get('column')}")
@@ -826,7 +842,8 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
     register_counts = Counter((row['classification'], row.get('claim')) for row in register.values())
     members = {row['member']: row for row in table}
     witness_records(counterexamples, members, claims, register)
-    facts = {'target': {key: {'refused': bool(result['refused']), 'member': targets[key].get('member')}
+    facts = {'target': {key: {'refused': bool(result['refused']), 'member': targets[key].get('member'),
+                                 'counterexample': targets[key]['counterexample']}
                         for key, result in zip(targets, results)},
              'counterexample': counterexamples, 'member': members,
              'family': unique_records(spec['families'], 'families'),
@@ -847,6 +864,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             'transferred': {'origins': len(transferred), 'by_decision': dict(Counter(transferred.values())),
                             'limited': limited},
             'origins': len(rows), 'states': dict(states), 'pending_revalidation': dict(revalidation),
+            'retirements': dict(Counter(retirements.values())),
             'closures': {'complete': len(closures), 'context_ranges': sum(row['ranges'] for row in closures.values()),
                          'context_candidates': sum(row['candidates'] for row in closures.values()),
                          'context_reasoned': sum(row['reasoned'] for row in closures.values())},
@@ -911,7 +929,8 @@ def regenerate(git, revision, spec_path, write=False, toolchain=None):
                    {target['file'] for target in targets.values() if isinstance(target.get('file'), str) and
                     blob_id(git, rev, target['file'])})
     with contextlib.ExitStack() as stack:
-        context = target_context(git, rev, spec, stack, toolchain) if targets or tested else None
+        context = target_context(git, rev, spec, stack, toolchain) if targets or tested or any(
+            row.get('triage', {}).get('covered_by', {}).get('kind') == 'leaf' for row in rows.values()) else None
         environment = child_environment(environment_declaration(None))[0] if context is None else context['environment']
         register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain,
                                  registry['cases'], spec['registry'])
@@ -3517,6 +3536,72 @@ def context_check(git, origin, closure):
     return {'ranges': len(ranges), 'candidates': len(seen) + len(candidates_seen), 'reasoned': len(used)}
 
 
+def triage_origin(git, rev, key, row, origins, registry, context):
+    """T2-5 retirement validates a resolvable pointer, never awards P1 credit or proves relevance."""
+    triage = row.get('triage')
+    require(isinstance(triage, dict) and triage.get('class') in TRIAGE_CLASSES,
+            'a triaged origin names a retirement class: ' + key)
+    require(isinstance(triage.get('rationale'), str) and bool(triage['rationale'].strip()),
+            'a triaged origin states its rationale: ' + key)
+    kind = triage['class']
+    pointer = {'covered_elsewhere': 'covered_by', 'superseded': 'decision', 'recorded_limit': 'limit'}.get(kind)
+    require(set(triage) == {'class', 'rationale'} | ({pointer} if pointer else set()) and 'closure' not in row,
+            'a retirement carries only its class pointer and no closure: ' + key)
+    if kind == 'superseded':
+        require(triage['decision'] in TRIAGE_DECISIONS, 'a retirement names a listed superseding decision: ' + key)
+        git.blob(rev, triage['decision'])
+        if triage['decision'] == 'docs/development/work/BINDING-01/design-01.md':
+            git.blob(rev, VENV_RELEASE)
+    elif kind == 'recorded_limit':
+        limits = set(re.findall(r'^\|\s*(L-[0-9]+)\s*\|', git.blob(rev, TRIAGE_LIMITS).decode(), re.M))
+        require(isinstance(triage['limit'], str) and triage['limit'] in limits,
+                'a retirement names a current 017 limit: ' + key)
+    elif kind == 'covered_elsewhere':
+        covered = triage['covered_by']
+        require(isinstance(covered, dict) and covered.get('kind') in ('leaf', 'case', 'origin'),
+                'coverage names a leaf, registry case or closed origin: ' + key)
+        if covered['kind'] == 'leaf':
+            require(set(covered) == {'kind', 'command', 'file', 'test_path'} and
+                    isinstance(covered['command'], str) and isinstance(covered['file'], str) and
+                    isinstance(covered['test_path'], list) and bool(covered['test_path']) and
+                    all(isinstance(name, str) and bool(name) for name in covered['test_path']) and
+                    context is not None and covered['command'] in context['catalogs'],
+                    'leaf coverage names a catalog command, file and full path: ' + key)
+            catalog = context['catalog'](covered['command'])
+            leaves = [pair for pair in catalog['tree']['files'].get(covered['file'], {'pairs': []})['pairs']
+                      if pair['leaf'] and pair['path'] == covered['test_path']]
+            require(covered['file'] in catalog['selection'] and len(leaves) == 1 and leaves[0]['verdict'] == 'passed',
+                    'coverage names a single passing catalog leaf: ' + key)
+        elif covered['kind'] == 'case':
+            require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and
+                    covered['id'] in {case['id'] for case in registry['cases']},
+                    'coverage names an existing scheduled registry case: ' + key)
+        else:
+            require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and
+                    origins.get(covered['id'], {}).get('state') == 'complete',
+                    'coverage names a complete origin, never a retired one: ' + key)
+    return kind
+
+
+def counterexample_executable(key, facts):
+    """T2-5: a behavior/mutation record must reach executable evidence; unread witnesses remain uncredited."""
+    cx = facts['counterexample'][key]
+    if any(row.get('counterexample') == key and not row['refused'] for row in facts['target'].values()):
+        return True
+    if any(facts['member'].get(member, {}).get('status') == 'preserved' for member in cx.get('members', [])):
+        return True
+    for link in cx.get('evidence', []):
+        if not isinstance(link, dict) or set(link) != {'kind', 'id'} or not isinstance(link['id'], str):
+            continue
+        if link['kind'] == 'case' and link['id'] in facts['case']:
+            return True
+        if link['kind'] == 'family':
+            family = facts['family'].get(link['id'])
+            if family is not None and family['members'] and all(member['route']['kind'] != 'pending' for member in family['members']):
+                return True
+    return False
+
+
 def origin_closure(git, rev, key, row, origin, facts):
     """P1-R/P1-G: a complete origin links everything it needs; each kind of origin closes by its own rule."""
     closure = row.get('closure')
@@ -3556,6 +3641,11 @@ def origin_closure(git, rev, key, row, origin, facts):
                 'a linked family still has pending members: ' + family['id'])
     require(bool(members) or non_executable is not None or any(linked.values()),
             'a closure without members, links or a non-executable reason: ' + key)
+    for cx in linked['counterexample']:
+        record = facts['counterexample'][cx]
+        require(record['kind'] in ('held_witness', 'superseded_witness', 'unread_witness') or
+                (record['kind'] in ('behavior', 'mutation') and counterexample_executable(cx, facts)),
+                'a linked counterexample reaches executable evidence: ' + cx)
     return context_check(git, origin, closure)
 
 

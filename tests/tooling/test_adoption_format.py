@@ -77,7 +77,7 @@ class FormatTwoTests(RepositoryFixture):
         def change(data):
             data.update(transferred=[{'origin': data['origins'][1]['id'], 'decision': 'decision.md'}])
             self.pin_list(data, 'decision.md', [data['origins'][1]['id']])
-        with self.assertRaisesRegex(tool.CheckError, 'a transferred origin is an open revalidation origin'):
+        with self.assertRaisesRegex(tool.CheckError, 'a transferred origin retains its revalidation provenance'):
             self.check(self.fixture(change))
 
     def test_a_transferred_origin_names_its_decision_once(self):
@@ -158,9 +158,20 @@ class FormatTwoTests(RepositoryFixture):
         with self.assertRaisesRegex(tool.CheckError, 'a named sealed record is outside the context: docs/records/note.md'):
             self.check(rev)
 
-    def test_prose_triage_waits_for_its_step(self):
+    def test_retired_transfers_keep_the_pinned_provenance(self):
+        def change(data):
+            self.transfer(data)
+            data['origins'][0].update(state='triaged', triage={
+                'class': 'not_a_counterexample', 'rationale': 'A historical status record.'})
+        result = self.check(self.fixture(change))
+        self.assertEqual(result['states'], {'triaged': 1, 'pending': 1})
+        self.assertEqual(result['transferred']['origins'], 1)
+        self.assertEqual(result['retirements'], {'not_a_counterexample': 1})
+        self.assertEqual(result['suite_credit'], {})
+
+    def test_prose_triage_needs_its_class(self):
         rev = self.fixture(lambda data: data['origins'][1].update(state='triaged'))
-        with self.assertRaisesRegex(tool.CheckError, 'prose triage is not implemented'):
+        with self.assertRaisesRegex(tool.CheckError, 'a triaged origin names a retirement class'):
             self.check(rev)
 
     def test_corpus_closes_valid_lf_context_with_embedded_separators(self):

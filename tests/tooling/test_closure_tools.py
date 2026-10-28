@@ -47,6 +47,13 @@ class ClosureTests(RepositoryFixture):
         return tool.origin_closure(self.reader, self.pin, (origin or self.test_origin)['id'], {'closure': closure},
                                    origin or self.test_origin, facts or self.facts())
 
+    def test_hollow_counterexample_cannot_close_an_origin(self):
+        facts = self.facts(member={}, counterexample={'cx': {'kind': 'behavior', 'origins': ['origin.test']}})
+        with self.assertRaisesRegex(tool.CheckError, 'reaches executable evidence'):
+            self.close(self.closure(links=[{'kind': 'counterexample', 'id': 'cx'}]), facts=facts)
+        facts['counterexample']['cx']['evidence'] = [{'kind': 'case', 'id': 'case.one'}]
+        self.assertEqual(self.close(self.closure(links=[{'kind': 'counterexample', 'id': 'cx'}]), facts=facts)['ranges'], 3)
+
     def test_a_test_file_origin_closes_with_targets_witnesses_and_its_context(self):
         result = self.close(self.closure())
         self.assertEqual(result, {'ranges': 3, 'candidates': 3, 'reasoned': 1})

@@ -559,3 +559,25 @@ CLI exit 0 means the selected facts/checks passed; 1 means attention is required
 input or failed fact checking. Closed-by-reading/waived entries require reasons and never count as
 kills. Live-provider and large-memory/timing profiles remain explicitly not run under owner choice
 01. Pending P1/P2 work is in the adoption manifest and the packet's implementation report.
+
+### TOOLS-02 origin retirement
+
+`triaged` origins carry `triage: {class, rationale, ...}`. The four classes are
+`not_a_counterexample` (no pointer), `superseded` (`decision` from `TRIAGE_DECISIONS`),
+`recorded_limit` (`limit` from current 017), and `covered_elsewhere` (`covered_by`).
+Coverage is `{kind: "leaf", command, file, test_path}`, `{kind: "case", id}`, or
+`{kind: "origin", id}`. The catalog must report one passing leaf; cases belong to the
+scheduled registry; origin pointers name a `complete` origin whose closure is checked
+in the same corpus run. Retirement earns no credit. Transfer lists and original
+revision-2 mappings remain intact after disposition.
+
+A linked behavior or mutation counterexample must reach an unrefused target, a
+preserved member, or an explicit `evidence` link (`{kind: "case" | "family", id}`).
+A family has no pending member. Witness closures retain their uncredited route.
+
+The independent reviewer records a seed after H is published, then runs:
+`python3 -B tests/tooling/triage-sample.py --revision <full-H-SHA> --seed <seed>`.
+Use `--population closed` or `extracted` with `--size 10` for relevance samples.
+New complete origins record `disposition: "closed"` or `"extracted"`; historical
+complete origins default to closed. The self-audit uses seed 20261026 and size 50;
+it is not the independent audit. A changed disposition requires a new C/H and sample.

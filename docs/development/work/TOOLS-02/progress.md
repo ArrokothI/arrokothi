@@ -2,6 +2,12 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 range 4 tooling checkpoint:** retirement pointers, executable
+  counterexample closures and the frozen-population sampler are implemented. Transfer
+  records retain their original mapping and exact pinned-list membership after triage.
+  Focused tests: 59 passed in 14.553 s; thirteen changed/new guard ablations had passing
+  controls and were killed. No source origin has been retired yet. Resume with K1.1
+  in source-file order; re-estimate extraction after the first 300 origins.
 - **2026-10-28 range 3 build checkpoint:** T2-4 implemented under design 03 §6.
   Fresh clone (`git clone --no-local`, Node v26.10.0, `npm ci`) at
   `d45c971eeb8245b00e2efad383b349fa0e8e2321`: corpus `revalidation_complete`.

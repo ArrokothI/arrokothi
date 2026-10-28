@@ -518,7 +518,7 @@ class RefusalGuardTests(base.RepositoryFixture):
         self.refuses('unknown origin state', self.format_two(lambda d: d['origins'][1].update(state='accepted')))
 
     def test_format_two_closure(self):
-        self.refuses('prose triage is not implemented', self.format_two(lambda d: d['origins'][1].update(state='triaged')))
+        self.refuses('only a triaged origin carries retirement', self.format_two(lambda d: d['origins'][1].update(triage={})))
 
     def test_format_two_empty_tables(self):
         self.refuses('the area map lists its areas', self.format_two(lambda d: d.update(areas=[])))
