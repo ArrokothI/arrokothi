@@ -156,7 +156,7 @@ class LimitTests(RepositoryFixture):
             with self.subTest(change=change):
                 self.setUp()
                 change()
-                self.refuses("an extra limited member's target passes P1-T at a rule-1 held leaf", self.limit)
+                self.refuses("an extra limited member's target passes P1-T at an unread released-V-ENV leaf", self.limit)
 
     def test_an_extra_is_a_further_member_of_its_own_origin(self):
         for extra in ({'member': 'm.other', 'target': 't.extra'}, {'member': 'm.listed', 'target': 't.extra'},

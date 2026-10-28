@@ -2,6 +2,22 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 range 3 build checkpoint:** T2-4 implemented under design 03 §6.
+  Fresh clone (`git clone --no-local`, Node v26.10.0, `npm ci`) at
+  `d45c971eeb8245b00e2efad383b349fa0e8e2321`: corpus `revalidation_complete`.
+  The supported fresh-clone `regenerate` converted exactly 1,002 held members to unread;
+  246 refused, 23 preserved and 1 superseded member remained unchanged. No credit was added.
+  Current register: 983 unread entries (909 V-ENV, 41 Proxy, 21 V-D1, 12 re-prototyped),
+  one superseded Proxy entry; 540 witness records converted without changing membership.
+  All 123 transfers remain; the four C2-LIMIT origins retain their listed and extra identities
+  (80 total listed occurrences, including the 32 V-ENV unread entries; 21 extras).
+  - Working-tree tool suite: 740 tests ran; one stale real-register expectation still said
+    `held`. Corrected it to `unread`; 11 focused checks then passed. Final released-claim,
+    witness and C2-LIMIT checks: 32 passed in 11.619 s.
+  - Refusal census: 337/337; fourteen affected/new refusal mutations had passing controls
+    and were killed. The final fresh-clone complete suites remain required.
+  - Resume at range 4: triage checks and sampler, source-packet batches with progress,
+    extraction, P3 builds and self-audit. No origin has yet been triaged in this session.
 - **2026-10-28 range 2 build checkpoint:** T2-3 implemented. Target files run in separate
   direct-script processes with the reporter beside the error object; source policy covers the copied
   production set; assertion witnesses bind file/fullName and the control refuses duplicate joined names.

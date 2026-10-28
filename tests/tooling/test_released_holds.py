@@ -57,6 +57,18 @@ class ReleasedRegisterTests(StructureTests):
         evaluation.update(register='unread', reasons=[])
         self.assertEqual(tool.preserved_table([evaluation])[0]['status'], 'unread')
 
+    def test_unread_witness_requires_the_same_status_and_claim(self):
+        row = {'kind': 'unread_witness', 'claim': 'V-ENV', 'members': ['m']}
+        members = {'m': {'status': 'unread', 'file': 'tests/p.test.mjs', 'current': [2, 1]}}
+        register = self.hold()
+        tool.witness_records({'w': row}, members, self.claims, register)
+        row['kind'] = 'held_witness'
+        with self.assertRaisesRegex(tool.CheckError, 'another status'):
+            tool.witness_records({'w': row}, members, self.claims, register)
+        row.update(kind='unread_witness', claim='Proxy')
+        with self.assertRaisesRegex(tool.CheckError, 'another claim'):
+            tool.witness_records({'w': row}, members, self.claims, register)
+
     def test_executable_limit_is_not_admitted(self):
         self.entries['venv']['classification'] = 'limit'
         self.check('register entry needs a classification')
@@ -88,10 +100,10 @@ class ReleasedLimitTests(LimitTests):
                         key = 'f.test.ts:12:3'
                         self.register[key] = {'classification': 'unread', 'claim': 'V-ENV', 'decision': tool.VENV_RELEASE}
                     self.register[key].update(change)
-                    self.refuses('limit' if route == 'listed' else 'rule-1 held leaf', self.limit)
+                    self.refuses('limit' if route == 'listed' else 'unread released-V-ENV leaf', self.limit)
 
     def test_released_claim_status_is_required_on_both_routes(self):
-        self.refuses('rule-1 held leaf', lambda: tool.limited_origins(self.reader, self.rev, self.rows, self.lists,
+        self.refuses('unread released-V-ENV leaf', lambda: tool.limited_origins(self.reader, self.rev, self.rows, self.lists,
             self.members, self.targets, self.results, self.register, {'V-ENV': {'status': 'held'}}))
 
 # These fixtures reuse setup and helpers; active-hold tests run on their original class.

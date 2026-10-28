@@ -8846,7 +8846,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(entry.get('classification') == 'unread' and entry.get('claim') == 'V-ENV' and\n                    entry.get('decision') == VENV_RELEASE and claims.get('V-ENV', {}).get('status') == 'released' and\n                    result.get('title_kind') == 'literal' and result['refused'] == [P1H_TARGET_REFUSAL.format('unread')],\n                    \"an extra limited member's target passes P1-T at a rule-1 held leaf: \" + extra['member'])",
+          "before": "require(entry.get('classification') == 'unread' and entry.get('claim') == 'V-ENV' and\n                    entry.get('decision') == VENV_RELEASE and claims.get('V-ENV', {}).get('status') == 'released' and\n                    result.get('title_kind') == 'literal' and result['refused'] == [P1H_TARGET_REFUSAL.format('unread')],\n                    \"an extra limited member's target passes P1-T at an unread released-V-ENV leaf: \" + extra['member'])",
           "after": "pass  # tools01-ablate:353802aa3a90880b",
           "operator": "remove-refusal-check",
           "name": "guard.limited_origins.353802aa3a90880b",

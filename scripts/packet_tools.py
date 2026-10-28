@@ -733,7 +733,7 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register, 
             require(entry.get('classification') == 'unread' and entry.get('claim') == 'V-ENV' and
                     entry.get('decision') == VENV_RELEASE and claims.get('V-ENV', {}).get('status') == 'released' and
                     result.get('title_kind') == 'literal' and result['refused'] == [P1H_TARGET_REFUSAL.format('unread')],
-                    "an extra limited member's target passes P1-T at a rule-1 held leaf: " + extra['member'])
+                    "an extra limited member's target passes P1-T at an unread released-V-ENV leaf: " + extra['member'])
             extras.add(extra['member'])
         unbound = {key for key in in_origin if (members[key]['status'] == 'refused' and key not in credited) or
                    (key in listed and released_venv_unread(key))}
