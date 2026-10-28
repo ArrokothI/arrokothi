@@ -148,6 +148,7 @@ TRIAGE_DECISIONS = (
     'docs/development/work/COORD-REFACTOR-01/design-01.md',
     'docs/development/work/K1.2/decision-05.md',
     'docs/development/work/K1.3/design-01.md',
+    'docs/development/work/K1.2-correction-01/integration-01.md',
 )
 TRIAGE_LIMITS = 'docs/development/017-known-limitations.md'
 TRIAGE_CLASSES = ('not_a_counterexample', 'covered_elsewhere', 'superseded', 'recorded_limit')
@@ -3549,10 +3550,13 @@ def triage_origin(git, rev, key, row, origins, registry, context):
     require(set(triage) == {'class', 'rationale'} | ({pointer} if pointer else set()) and 'closure' not in row,
             'a retirement carries only its class pointer and no closure: ' + key)
     if kind == 'superseded':
-        require(triage['decision'] in TRIAGE_DECISIONS, 'a retirement names a listed superseding decision: ' + key)
-        git.blob(rev, triage['decision'])
-        if triage['decision'] == 'docs/development/work/BINDING-01/design-01.md':
-            git.blob(rev, VENV_RELEASE)
+        decisions = triage['decision'] if isinstance(triage['decision'], list) else [triage['decision']]
+        require(bool(decisions), 'mixed supersession has at least one decision: ' + key)
+        for decision in decisions:
+            require(decision in TRIAGE_DECISIONS, 'a retirement names a listed superseding decision: ' + key)
+            git.blob(rev, decision)
+            if decision == 'docs/development/work/BINDING-01/design-01.md':
+                git.blob(rev, VENV_RELEASE)
     elif kind == 'recorded_limit':
         limits = set(re.findall(r'^\|\s*(L-[0-9]+)\s*\|', git.blob(rev, TRIAGE_LIMITS).decode(), re.M))
         require(isinstance(triage['limit'], str) and triage['limit'] in limits,

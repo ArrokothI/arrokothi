@@ -9790,51 +9790,1233 @@
     },
     {
       "id": "mention-5efc931219a0ff520ff4ac89",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Implementation-03 lines 90\u201397 name the JCS substrate probe and almost-equivalent JSON.stringify ablation as evidence. The pinned validation-03/09b log identifies key-order, array-order, equality and replay killers. Current SDK canonical-form leaves retain that ordinary-value meaning; the boundary leaf checks the exact SDK dependency pin. Method exclusions and historical command results are S1. No fresh kill or old Kernel import ownership is claimed.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "member names sort as unsigned UTF-16 code units, not code points or locale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "array order stays semantic"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "absent and explicitly null are different values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "literals are spelled exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "numbers use the shortest round-trip spelling values.md names"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "strings escape exactly the characters rule 4 names and nothing else"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "no insignificant whitespace and no byte-order mark"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "equality is over canonical bytes, so two honest spellings of one value agree"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "the SDK wrapper keeps the exact JCS dependency and the core has none"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-77592ede7e80f176dcdfed72",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Implementation-03 lines 90\u201397 name the JCS substrate probe and almost-equivalent JSON.stringify ablation as evidence. The pinned validation-03/09b log identifies key-order, array-order, equality and replay killers. Current SDK canonical-form leaves retain that ordinary-value meaning; the boundary leaf checks the exact SDK dependency pin. Method exclusions and historical command results are S1. No fresh kill or old Kernel import ownership is claimed.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "member names sort as unsigned UTF-16 code units, not code points or locale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "array order stays semantic"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "absent and explicitly null are different values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "literals are spelled exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "numbers use the shortest round-trip spelling values.md names"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "strings escape exactly the characters rule 4 names and nothing else"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "no insignificant whitespace and no byte-order mark"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "equality is over canonical bytes, so two honest spellings of one value agree"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "the SDK wrapper keeps the exact JCS dependency and the core has none"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-4b657d8c734dcf083f54df05",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Read implementation-03 lines 103\u2013107 and the named validation-03/09b members. The pre-swap 20-vector comparison is evidence for canonical byte equivalence, including own __proto__, null prototypes and nesting, not a new listing-work claim. The retained canonical-form and VAL-01 leaves cover those inputs; the unchanged ID-01 ablations cover normalized single-ID scope scans. The terminal-ingress deferral is a historical status. Existing behavior records have only refused/unread members and no executable P1 route for these requirements.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "member names sort as unsigned UTF-16 code units, not code points or locale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "array order stays semantic"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "absent and explicitly null are different values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "literals are spelled exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "numbers use the shortest round-trip spelling values.md names"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "strings escape exactly the characters rule 4 names and nothing else"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "no insignificant whitespace and no byte-order mark"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "equality is over canonical bytes, so two honest spellings of one value agree"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "the SDK wrapper keeps the exact JCS dependency and the core has none"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a valid own __proto__ member is accepted and sealed as own data, not a prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "nested and array-embedded __proto__ members survive at depth"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a null-prototype object keeps its prototype and its members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "numeric-looking non-index array members are refused, never silently dropped"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "K11-R1-ID-01 hidden and missing lookups do equal work",
+              "inspect performs the same scope work for hidden and missing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "K11-R1-ID-01 hidden and missing lookups do equal work",
+              "scope work does not depend on where the match sits"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-252f63cd5689e839506bf458",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2, mixed. The four old unlanded surfaces were submitOutcome, requestTakeover, recoverExecution and cancelExecution, all required to refuse by owner packet without state changes. The owner integration decision for cumulative K1.2 and its correction (accepted H b7191dbf, integration ed509e11, both before base 335ae7e6) replaces the first three refusal-only placeholders with Outcome/takeover/recovery behavior, as K1.2 contract scope states. Accepted K1.3 design-01 \u00a79 (review-03 H 47c0b7f1, integration 71f9b048) replaces the cancellation placeholder. This retires only the no-operation refusal requirement, not the now implemented operations.",
+        "decision": [
+          "docs/development/work/K1.2-correction-01/integration-01.md",
+          "docs/development/work/K1.3/design-01.md"
+        ]
+      }
     },
     {
       "id": "mention-b4e7e96f9033795155b4c7bc",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Read implementation-03 lines 126\u2013131 and all six labeled sections of validation-03/09b. Five current decisions retain coverage: own-property sealing, exact array-index admission, normalized hidden/missing lookup, full scope scanning and canonical JCS bytes. Their current leaves are listed. The sixth historical cancel-accept edit is S2 under accepted K1.3 design-01 \u00a79. Kernel-only import/externals placement is S2 under BINDING-01 design-01 with hold release; the exact SDK pin remains covered. These pointers are coverage, not requalification of old edits.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a valid own __proto__ member is accepted and sealed as own data, not a prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "nested and array-embedded __proto__ members survive at depth"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a null-prototype object keeps its prototype and its members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "numeric-looking non-index array members are refused, never silently dropped"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "K11-R1-ID-01 hidden and missing lookups do equal work",
+              "inspect performs the same scope work for hidden and missing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "K11-R1-ID-01 hidden and missing lookups do equal work",
+              "scope work does not depend on where the match sits"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "member names sort as unsigned UTF-16 code units, not code points or locale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "array order stays semantic"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "absent and explicitly null are different values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "literals are spelled exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "numbers use the shortest round-trip spelling values.md names"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "strings escape exactly the characters rule 4 names and nothing else"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "no insignificant whitespace and no byte-order mark"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "equality is over canonical bytes, so two honest spellings of one value agree"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "the SDK wrapper keeps the exact JCS dependency and the core has none"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-05e548a1d1544f47729dcacf",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Read implementation-03 lines 126\u2013131 and all six labeled sections of validation-03/09b. Five current decisions retain coverage: own-property sealing, exact array-index admission, normalized hidden/missing lookup, full scope scanning and canonical JCS bytes. Their current leaves are listed. The sixth historical cancel-accept edit is S2 under accepted K1.3 design-01 \u00a79. Kernel-only import/externals placement is S2 under BINDING-01 design-01 with hold release; the exact SDK pin remains covered. These pointers are coverage, not requalification of old edits.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a valid own __proto__ member is accepted and sealed as own data, not a prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "nested and array-embedded __proto__ members survive at depth"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a null-prototype object keeps its prototype and its members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "numeric-looking non-index array members are refused, never silently dropped"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "K11-R1-ID-01 hidden and missing lookups do equal work",
+              "inspect performs the same scope work for hidden and missing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "K11-R1-ID-01 hidden and missing lookups do equal work",
+              "scope work does not depend on where the match sits"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "member names sort as unsigned UTF-16 code units, not code points or locale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "array order stays semantic"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "absent and explicitly null are different values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "literals are spelled exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "numbers use the shortest round-trip spelling values.md names"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "strings escape exactly the characters rule 4 names and nothing else"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "no insignificant whitespace and no byte-order mark"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "equality is over canonical bytes, so two honest spellings of one value agree"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "the SDK wrapper keeps the exact JCS dependency and the core has none"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-e9906c31db54c7008e6bf77b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Implementation-03 lines 161\u2013183 reconstruct JCS-01: canonical byte spelling must distinguish the wrong serializer, and the approved dependency must remain exact. Read the named validation-03/09b JCS section and the current rules 1\u20136 leaves plus wrapper pin assertion. Ordinary own-property and null-prototype capture remains covered as well. BINDING-01 design-01 and hold release supersede the sole Kernel serializer/import and Kernel externals placement, not canonical behavior now owned by SDK. Historical swap procedure and re-audit status are S1.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "member names sort as unsigned UTF-16 code units, not code points or locale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "array order stays semantic"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "absent and explicitly null are different values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "literals are spelled exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "numbers use the shortest round-trip spelling values.md names"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "strings escape exactly the characters rule 4 names and nothing else"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "no insignificant whitespace and no byte-order mark"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "equality is over canonical bytes, so two honest spellings of one value agree"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "the SDK wrapper keeps the exact JCS dependency and the core has none"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a valid own __proto__ member is accepted and sealed as own data, not a prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "nested and array-embedded __proto__ members survive at depth"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a null-prototype object keeps its prototype and its members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "numeric-looking non-index array members are refused, never silently dropped"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-9f4cebacac72105c7c408b98",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Implementation-03 lines 161\u2013183 reconstruct JCS-01: canonical byte spelling must distinguish the wrong serializer, and the approved dependency must remain exact. Read the named validation-03/09b JCS section and the current rules 1\u20136 leaves plus wrapper pin assertion. Ordinary own-property and null-prototype capture remains covered as well. BINDING-01 design-01 and hold release supersede the sole Kernel serializer/import and Kernel externals placement, not canonical behavior now owned by SDK. Historical swap procedure and re-audit status are S1.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "member names sort as unsigned UTF-16 code units, not code points or locale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "array order stays semantic"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "absent and explicitly null are different values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "literals are spelled exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "numbers use the shortest round-trip spelling values.md names"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "strings escape exactly the characters rule 4 names and nothing else"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "no insignificant whitespace and no byte-order mark"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "equality is over canonical bytes, so two honest spellings of one value agree"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "the SDK wrapper keeps the exact JCS dependency and the core has none"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a valid own __proto__ member is accepted and sealed as own data, not a prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "nested and array-embedded __proto__ members survive at depth"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a null-prototype object keeps its prototype and its members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "numeric-looking non-index array members are refused, never silently dropped"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-272577ebd8fb0381b3bcff19",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Implementation-03 lines 161\u2013183 reconstruct JCS-01: canonical byte spelling must distinguish the wrong serializer, and the approved dependency must remain exact. Read the named validation-03/09b JCS section and the current rules 1\u20136 leaves plus wrapper pin assertion. Ordinary own-property and null-prototype capture remains covered as well. BINDING-01 design-01 and hold release supersede the sole Kernel serializer/import and Kernel externals placement, not canonical behavior now owned by SDK. Historical swap procedure and re-audit status are S1.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "member names sort as unsigned UTF-16 code units, not code points or locale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "array order stays semantic"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "absent and explicitly null are different values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "literals are spelled exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "numbers use the shortest round-trip spelling values.md names"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "strings escape exactly the characters rule 4 names and nothing else"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "no insignificant whitespace and no byte-order mark"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "equality is over canonical bytes, so two honest spellings of one value agree"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "the SDK wrapper keeps the exact JCS dependency and the core has none"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a valid own __proto__ member is accepted and sealed as own data, not a prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "nested and array-embedded __proto__ members survive at depth"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a null-prototype object keeps its prototype and its members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "numeric-looking non-index array members are refused, never silently dropped"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-78fc0220864aab117bb1cf34",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Implementation-03 SELF-05 (lines 219\u2013222) describes correcting an initially ineffective ablation patch and regenerating its log before C3. It states a change to the historical experiment and fail counts, not an additional input/operation/required result. The actual seal-assignment and array-regex counterexamples are read separately with the six-ablation paragraph at lines 126\u2013131."
+      }
     },
     {
       "id": "mention-d7530ee929a2edfe526cf5ab",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Implementation-03 lines 273\u2013279 cite probe, suites, substrate ablation and pin controls for C3. Current canonical-form leaves and exact wrapper dependency assertion cover that result. BINDING-01 design-01 with hold release supersedes the old Kernel import/externals placement; the cited historical C10 inventory counts are S1. The paragraph does not supply a new runtime or deployment claim, and explicitly disclaims those wider domains.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "member names sort as unsigned UTF-16 code units, not code points or locale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "array order stays semantic"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "absent and explicitly null are different values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "literals are spelled exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "numbers use the shortest round-trip spelling values.md names"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "strings escape exactly the characters rule 4 names and nothing else"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "no insignificant whitespace and no byte-order mark"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "equality is over canonical bytes, so two honest spellings of one value agree"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "the SDK wrapper keeps the exact JCS dependency and the core has none"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-043b601290a089ac7a80668e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Implementation-03 lines 273\u2013279 cite probe, suites, substrate ablation and pin controls for C3. Current canonical-form leaves and exact wrapper dependency assertion cover that result. BINDING-01 design-01 with hold release supersedes the old Kernel import/externals placement; the cited historical C10 inventory counts are S1. The paragraph does not supply a new runtime or deployment claim, and explicitly disclaims those wider domains.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "member names sort as unsigned UTF-16 code units, not code points or locale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "array order stays semantic"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "absent and explicitly null are different values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "literals are spelled exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "numbers use the shortest round-trip spelling values.md names"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "strings escape exactly the characters rule 4 names and nothing else"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "no insignificant whitespace and no byte-order mark"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "equality is over canonical bytes, so two honest spellings of one value agree"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "the SDK wrapper keeps the exact JCS dependency and the core has none"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-4a917e11fa8e38a62e084619",

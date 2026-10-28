@@ -2,6 +2,21 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 K1.1 implementation 03 checkpoint:** first 25 origins read in source-file
+  order: 20 `covered_elsewhere`, 2 `superseded`, 1 `not_a_counterexample`, and the
+  same 2 origins grouped for one extraction. Source-packet triage and the first-300
+  projection remain incomplete. Resume with implementation 04 and its validation manifest.
+  - At the owner's request, progress through `9dceb026d5f60016baac5247571d053fd71693d9`
+    was pushed to `origin/codex/tools-02`. No final candidate or CI dispatch yet.
+  - First use of another superseding-table row: K1.2-correction-01 `integration-01.md`
+    records the owner's merged-and-closed decision for cumulative K1.2 and its correction,
+    accepted at H `b7191dbf630defeff7756122a6798e15d0b73dd3` and integrated at
+    `ed509e11dc39ff24e10c1ace68189776c4270919`, before base 335ae7e6. Together with
+    K1.3 design 01 it retires the old four refusal-only placeholders. Their implemented
+    Outcome, takeover, recovery and cancellation behavior is not retired.
+  - Mixed supersession supports a nonempty decision list, with every row checked.
+    Focused tests: 15 passed; refusal census 350/350; both affected guard ablations
+    had passing controls and were killed. The derived preservation table is unchanged.
 - **2026-10-28 K1.1 batch in progress:** first 13 origins read in source-file order
   (contract, implementation 01–02): 10 `covered_elsewhere`, 1 `superseded`, and
   2 origins grouped for one extraction. See `triage-05.json`; the source packet is not

@@ -9890,7 +9890,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(triage['decision'] in TRIAGE_DECISIONS, 'a retirement names a listed superseding decision: ' + key)",
+          "before": "require(decision in TRIAGE_DECISIONS, 'a retirement names a listed superseding decision: ' + key)",
           "after": "pass  # tools02-triage-ablate:99a9c099dd613405",
           "operator": "remove-refusal-check",
           "name": "guard.triage_origin.99a9c099dd613405",
@@ -10127,6 +10127,35 @@
           "operator": "remove-refusal-check",
           "name": "guard.triage_origin.mixed-pointers",
           "id": "mutation-01625e464a66e34a8656272a47a6f51d4150ec192309cf30dcbfc652103b2bb4"
+        }
+      ]
+    },
+    {
+      "id": "guard.triage_origin.0fbb47b2bda282d4",
+      "assertion": "test_triage_tools.TriageTests.test_mixed_supersession_checks_every_decision",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: triage_origin",
+      "input": {
+        "test": "test_triage_tools.TriageTests.test_mixed_supersession_checks_every_decision"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.triage_origin.0fbb47b2bda282d4"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(decisions), 'mixed supersession has at least one decision: ' + key)",
+          "after": "pass  # tools02-triage-ablate:0fbb47b2bda282d4",
+          "operator": "remove-refusal-check",
+          "name": "guard.triage_origin.0fbb47b2bda282d4",
+          "id": "mutation-42fd8acea9e833276b5c4c6cbec57c4142aaf85f09d154287582482d7dfa11c1"
         }
       ]
     }

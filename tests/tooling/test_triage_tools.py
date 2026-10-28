@@ -46,6 +46,13 @@ class TriageTests(RepositoryFixture):
         with self.assertRaisesRegex(tool.CheckError, 'retirement class'):
             self.check('accepted')
 
+    def test_mixed_supersession_checks_every_decision(self):
+        self.check('superseded', decision=list(tool.TRIAGE_DECISIONS))
+        with self.assertRaisesRegex(tool.CheckError, 'at least one decision'):
+            self.check('superseded', decision=[])
+        with self.assertRaisesRegex(tool.CheckError, 'listed superseding decision'):
+            self.check('superseded', decision=[tool.TRIAGE_DECISIONS[0], tool.TRIAGE_LIMITS])
+
     def test_empty_rationale(self):
         with self.assertRaisesRegex(tool.CheckError, 'states its rationale'):
             self.check(rationale=' ')
