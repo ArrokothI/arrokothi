@@ -201,11 +201,11 @@ requires them to equal the recomputation exactly. A stale record fails; it never
   to every exported helper). The recipes are matched against every leaf registration in the preserved
   and target files, and against every registry case (key `case:<id>`; title its ID and assertion; body
   its stored input, argv and the text of each repository file it names or runs, except the registry).
-  The matches must equal `holds.register.entries`, each classified `held`, `superseded` or `not_held`
+  The matches must equal `holds.register.entries`, each classified `held`, `superseded`, `unread` or `not_held`
   with a reason. A held or superseded entry names its claim and turns a member into a witness record,
   never credit. A suite target on such a leaf is refused. A held or superseded case needs its own
   `held_witness` or `mechanism_witness` attribution in the registry, and every attributed case must be
-  registered held or superseded.
+  registered held, superseded or unread.
 - **V-ENV run set (design 06 R1-01; revision 5, owner choice 10 §2).** Beyond the regex minimum, a
   fixed detector in `source-facts.mjs` matches V-ENV in what a leaf runs in its process: its
   registration, the same-file and test-side helpers and module-scope variables it reaches (through
@@ -220,17 +220,17 @@ requires them to equal the recomputation exactly. A stale record fails; it never
   referenced test-side binding with no resolvable text. A case's run set is the JavaScript and
   TypeScript files it names or runs and their test-side closures. Values that never meet a recognized
   reference, production modules and native code are stated gaps.
-- **Intrinsic trace (design 06 revision 5).** `corpus` traces recognition to every credit consumer:
-  `intrinsic_trace` refuses a key with a detector site that the register leaves `not_held`, a `preserved`
-  member whose current leaf has one, and a target at such a leaf without a P1-H refusal. Closures link
-  only unrefused targets and attributed witnesses, and C2-LIMIT extras sit at rule-1 held leaves. The
-  summary reports the trace's sites, keys, cases, members and targets.
-- **Rule 1 and the structural check (owner choice 08 §2).** Every V-ENV match is held; under the
-  V-ENV claim it is `held` and names `decision: owner-choice-08.md`, which no other entry names. A
-  held or superseded entry names exactly one of its `decision` (one of its claim's decisions) or its
-  `reading` (`{facts, claim}`). Category entries keep their owners and decisions: decision-01 for Proxy
-  and re-prototyped built-ins, decision-05 or invalidation-02 for V-D1. A `not_held` entry names no
-  hold decision. An earlier per-test reading in a reason stays a note for BINDING-01.
+- **Released claims (TOOLS-02 design 03 §6).** The claims table records each released claim's fixed
+  release path and limit IDs; V-ENV is scoped to the core. A released claim cannot retain a `held`
+  entry. `unread` names its release, has no reading or per-entry limit, and earns no credit. A
+  matched `not_held` entry needs a recorded reading (`{facts, claim}`), followed by ordinary P1-P
+  or P1-T validation. An executable `limit` class is deliberately absent. Earlier notes in `reason`
+  remain history, not readings. Active future holds retain their governing-decision checks.
+- **Intrinsic trace.** Detector keys must be held, superseded, unread, or `not_held` with a reading.
+  Only the last can earn preservation or target credit. `unread_witness` preserves an existing
+  P1-H closure with the same members, required result and claim, without adding credit. Attributed
+  registry cases keep their witness attribution and may be unread. C2-LIMIT's released V-ENV
+  routes retain exact pinned-list and target checks.
 - **Run model.** `floor` names the floor record and its SHA-256. Its A10 result decides the run model.
   On v26.10.0 the order model does not hold, so every leaf counts as earlier, and so does every leaf in
   a file with a `concurrency` option. A command that does not run each file in its own process
@@ -373,9 +373,9 @@ that `corpus` checks at C (P1-R, P1 preamble). Prose triage (`triaged`) arrives 
   origin.
 - **Completeness.** Every preserved-table member of the origin is either preserved, covered by a
   linked target bound to it (`member`, at its declaration unless the relation is an authorized
-  replacement), or listed in a linked `held_witness` or `superseded_witness`. A witness names its
+  replacement), or listed in a linked `held_witness`, `superseded_witness` or `unread_witness`. A witness names its
   hold claim and its members, and the register must classify each member the same way under that
-  claim. The witness kind must match the member's held or superseded status and its provenance must
+  claim. The witness kind must match the member's held, superseded or unread status and its provenance must
   include the origin being closed; an ordinary behavior record supplies no witness closure.
   An origin with a family links it, and no family member may still be pending.
 - **Non-executable.** `non_executable` gives one of the four reasons (`policy`,
@@ -410,16 +410,15 @@ that `corpus` checks at C (P1-R, P1 preamble). Prose triage (`triaged`) arrives 
   transferred under a decision must equal its list. Origins transferred under owner choice 04 carry
   `limited`: the digest-pinned unbound-member list of continuation-stop-01 and extras
   `{member, target}` (owner choice 08 §2.4). An extra is admitted only through its target record —
-  the only suite target naming the member, at a rule-1 held leaf with a literal title, refused by P1-H
-  alone — never by title. Owner choice 11 lists one further member by name: its pinned list sits under
+  the only suite target naming the member, at an unread V-ENV leaf naming the fixed BINDING-01 release, with a literal title,
+  refused only by P1-H unread — never by title. Owner choice 11 lists one further member by name: its pinned list sits under
   `limited.listed` for that member's origin, and its admission rule is unchanged for every other extra.
   A later owner decision may list further members of a limited origin whose tests a packet changed
   (K1.1-correction-03 owner choice 01). The origin lists it under `limited.added`, one
   `{decision, members, sha256}` entry per decision, with the list of `{origin, member}` in the
   decision's attachment directory. Every origin that cites the decision cites the same list, the list names only further
   members of origins that cite it, and each named member counts as listed.
-  A listed member counts while it is refused without a credited target, or held by rule 1 (owner
-  answers to design 06 revision 4). Per origin, those members must equal the listed members plus the
+  A listed member counts while it is refused without a credited target, or unread under the released V-ENV claim (TOOLS-02 design 03 §6). Per origin, those members must equal the listed members plus the
   admitted extras, and owner choice 04's list restates each origin's member count. Which list a
   decision states remains a human review boundary.
 

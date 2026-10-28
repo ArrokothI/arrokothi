@@ -654,9 +654,9 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register, 
     """C2-LIMIT (owner choice 04 §1, amended by owner choice 08 §2.4 and owner choice 11). Each origin transferred
     under owner choice 04 carries `limited`: the pinned unbound-member list and its extras, each `{member, target}`,
     and, where owner choice 11 lists a member of that origin, its pinned list under `listed`. An extra is admitted
-    only through its target record: the only suite target naming that member, declared at a rule-1 held leaf with
-    a literal title and refused by P1-H alone. Titles are never compared. A listed member counts while it is refused
-    without a credited target or held by rule 1 (owner answers to design 06 revision 4). A later owner decision may
+    only through its target record: the only suite target naming that member, declared at an unread released-V-ENV leaf with
+    a literal title and refused by P1-H unread alone. Titles are never compared. A listed member counts while it is refused
+    without a credited target or unread under released V-ENV (TOOLS-02 design 03 §6). A later owner decision may
     list further members of a limited origin when a packet changes their tests (K1.1-correction-03 owner choice 01):
     the origin cites it under `added`, `{decision, members, sha256}`, and each such member counts as listed. Per
     origin, those members must equal its listed members plus admitted extras, and the decision's list restates the

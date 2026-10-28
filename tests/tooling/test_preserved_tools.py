@@ -375,14 +375,13 @@ class RepositoryRegisterTests(unittest.TestCase):
         """The helper-built Proxy acceptances D05-CHK-05 names, and a harness revokedProxy user.
 
         K1.1-correction-03 converted the three acceptances: their Proxies are now refused before any trap
-        (DESIGN-AUDIT-01 decision-01 item 2), so their register entries are held for Proxy, no longer
-        superseded, until that packet's acceptance. The creation case was retitled by its conversion."""
+        (DESIGN-AUDIT-01 decision-01 item 2), and TOOLS-02 records the released claims as unread, without credit. The creation case was retitled by its conversion."""
         manifest = json.loads((ROOT / 'tests/fixtures/packet-tools/adoption.json').read_text())
         entries = {row['key']: row for row in manifest['holds']['register']['entries']}
-        expected = {'packages/sdk/tests/value-capture.test.ts:1801:3': 'held',
-                    'packages/sdk/tests/value-capture.test.ts:1824:3': 'held',
-                    'packages/kernel/tests/creation.test.ts:796:3': 'held',
-                    'packages/kernel/tests/ingress.test.ts:922:3': 'held'}
+        expected = {'packages/sdk/tests/value-capture.test.ts:1801:3': 'unread',
+                    'packages/sdk/tests/value-capture.test.ts:1824:3': 'unread',
+                    'packages/kernel/tests/creation.test.ts:796:3': 'unread',
+                    'packages/kernel/tests/ingress.test.ts:922:3': 'unread'}
         self.assertEqual({key: entries[key]['classification'] for key in expected}, expected)
         self.assertEqual(manifest['holds']['register']['recipes'], tool.REGISTER_MINIMUM)
 
