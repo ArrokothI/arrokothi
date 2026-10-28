@@ -9948,7 +9948,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(isinstance(covered, dict) and covered.get('kind') in ('leaf', 'case', 'origin'),\n                'coverage names a leaf, registry case or closed origin: ' + key)",
+          "before": "require(isinstance(covered, dict) and covered.get('kind') in ('leaf', 'case', 'origin'),\n                    'coverage names a leaf, registry case or closed origin: ' + key)",
           "after": "pass  # tools02-triage-ablate:879d541f62f1659b",
           "operator": "remove-refusal-check",
           "name": "guard.triage_origin.879d541f62f1659b",
@@ -9977,7 +9977,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(set(covered) == {'kind', 'command', 'file', 'test_path'} and\n                    isinstance(covered['command'], str) and isinstance(covered['file'], str) and\n                    isinstance(covered['test_path'], list) and bool(covered['test_path']) and\n                    all(isinstance(name, str) and bool(name) for name in covered['test_path']) and\n                    context is not None and covered['command'] in context['catalogs'],\n                    'leaf coverage names a catalog command, file and full path: ' + key)",
+          "before": "require(set(covered) == {'kind', 'command', 'file', 'test_path'} and\n                        isinstance(covered['command'], str) and isinstance(covered['file'], str) and\n                        isinstance(covered['test_path'], list) and bool(covered['test_path']) and\n                        all(isinstance(name, str) and bool(name) for name in covered['test_path']) and\n                        context is not None and covered['command'] in context['catalogs'],\n                        'leaf coverage names a catalog command, file and full path: ' + key)",
           "after": "pass  # tools02-triage-ablate:b870e96c7d7b9557",
           "operator": "remove-refusal-check",
           "name": "guard.triage_origin.b870e96c7d7b9557",
@@ -10006,7 +10006,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(covered['file'] in catalog['selection'] and len(leaves) == 1 and leaves[0]['verdict'] == 'passed',\n                    'coverage names a single passing catalog leaf: ' + key)",
+          "before": "require(covered['file'] in catalog['selection'] and len(leaves) == 1 and leaves[0]['verdict'] == 'passed',\n                        'coverage names a single passing catalog leaf: ' + key)",
           "after": "pass  # tools02-triage-ablate:f60e2f572945f32e",
           "operator": "remove-refusal-check",
           "name": "guard.triage_origin.f60e2f572945f32e",
@@ -10035,7 +10035,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and\n                    covered['id'] in {case['id'] for case in registry['cases']},\n                    'coverage names an existing scheduled registry case: ' + key)",
+          "before": "require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and\n                        covered['id'] in {case['id'] for case in registry['cases']},\n                        'coverage names an existing scheduled registry case: ' + key)",
           "after": "pass  # tools02-triage-ablate:1a88e5094505df67",
           "operator": "remove-refusal-check",
           "name": "guard.triage_origin.1a88e5094505df67",
@@ -10064,7 +10064,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and\n                    origins.get(covered['id'], {}).get('state') == 'complete',\n                    'coverage names a complete origin, never a retired one: ' + key)",
+          "before": "require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and\n                        origins.get(covered['id'], {}).get('state') == 'complete',\n                        'coverage names a complete origin, never a retired one: ' + key)",
           "after": "pass  # tools02-triage-ablate:a7f46e9c8c8e3d9d",
           "operator": "remove-refusal-check",
           "name": "guard.triage_origin.a7f46e9c8c8e3d9d",
@@ -10098,6 +10098,35 @@
           "operator": "remove-refusal-check",
           "name": "guard.origin_closure.a5da6474e275e804",
           "id": "mutation-a9eb9da92f6cc81fc8949af2aa7b6b582bcf4193d5e9cbb711abf9b96e745268"
+        }
+      ]
+    },
+    {
+      "id": "guard.triage_origin.mixed-pointers",
+      "assertion": "test_triage_tools.TriageTests.test_mixed_coverage_checks_every_pointer",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: triage_origin",
+      "input": {
+        "test": "test_triage_tools.TriageTests.test_mixed_coverage_checks_every_pointer"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.triage_origin.mixed-pointers"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(bool(coverages), 'mixed coverage has at least one pointer: ' + key)",
+          "after": "pass  # tools02-mixed-pointers",
+          "operator": "remove-refusal-check",
+          "name": "guard.triage_origin.mixed-pointers",
+          "id": "mutation-01625e464a66e34a8656272a47a6f51d4150ec192309cf30dcbfc652103b2bb4"
         }
       ]
     }

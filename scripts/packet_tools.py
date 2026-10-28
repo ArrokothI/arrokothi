@@ -147,6 +147,7 @@ TRIAGE_DECISIONS = (
     'docs/development/work/BINDING-01/design-01.md',
     'docs/development/work/COORD-REFACTOR-01/design-01.md',
     'docs/development/work/K1.2/decision-05.md',
+    'docs/development/work/K1.3/design-01.md',
 )
 TRIAGE_LIMITS = 'docs/development/017-known-limitations.md'
 TRIAGE_CLASSES = ('not_a_counterexample', 'covered_elsewhere', 'superseded', 'recorded_limit')
@@ -815,7 +816,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
                     blob_id(git, rev, target['file'])})
     with contextlib.ExitStack() as stack:
         context = target_context(git, rev, spec, stack, toolchain) if targets or tested or any(
-            row.get('triage', {}).get('covered_by', {}).get('kind') == 'leaf' for row in rows.values()) else None
+            isinstance(row.get('triage'), dict) and row['triage'].get('class') == 'covered_elsewhere' for row in rows.values()) else None
         environment = child_environment(environment_declaration(None))[0] if context is None else context['environment']
         detected = {}
         register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain,
@@ -930,7 +931,7 @@ def regenerate(git, revision, spec_path, write=False, toolchain=None):
                     blob_id(git, rev, target['file'])})
     with contextlib.ExitStack() as stack:
         context = target_context(git, rev, spec, stack, toolchain) if targets or tested or any(
-            row.get('triage', {}).get('covered_by', {}).get('kind') == 'leaf' for row in rows.values()) else None
+            isinstance(row.get('triage'), dict) and row['triage'].get('class') == 'covered_elsewhere' for row in rows.values()) else None
         environment = child_environment(environment_declaration(None))[0] if context is None else context['environment']
         register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain,
                                  registry['cases'], spec['registry'])
@@ -3557,29 +3558,34 @@ def triage_origin(git, rev, key, row, origins, registry, context):
         require(isinstance(triage['limit'], str) and triage['limit'] in limits,
                 'a retirement names a current 017 limit: ' + key)
     elif kind == 'covered_elsewhere':
-        covered = triage['covered_by']
-        require(isinstance(covered, dict) and covered.get('kind') in ('leaf', 'case', 'origin'),
-                'coverage names a leaf, registry case or closed origin: ' + key)
-        if covered['kind'] == 'leaf':
-            require(set(covered) == {'kind', 'command', 'file', 'test_path'} and
-                    isinstance(covered['command'], str) and isinstance(covered['file'], str) and
-                    isinstance(covered['test_path'], list) and bool(covered['test_path']) and
-                    all(isinstance(name, str) and bool(name) for name in covered['test_path']) and
-                    context is not None and covered['command'] in context['catalogs'],
-                    'leaf coverage names a catalog command, file and full path: ' + key)
-            catalog = context['catalog'](covered['command'])
-            leaves = [pair for pair in catalog['tree']['files'].get(covered['file'], {'pairs': []})['pairs']
-                      if pair['leaf'] and pair['path'] == covered['test_path']]
-            require(covered['file'] in catalog['selection'] and len(leaves) == 1 and leaves[0]['verdict'] == 'passed',
-                    'coverage names a single passing catalog leaf: ' + key)
-        elif covered['kind'] == 'case':
-            require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and
-                    covered['id'] in {case['id'] for case in registry['cases']},
-                    'coverage names an existing scheduled registry case: ' + key)
-        else:
-            require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and
-                    origins.get(covered['id'], {}).get('state') == 'complete',
-                    'coverage names a complete origin, never a retired one: ' + key)
+        # A mixed origin can carry several S5 results. Every pointer is checked; the rationale
+        # states which result each covers (design 01 §5.4), with one retirement class throughout.
+        covered_by = triage['covered_by']
+        coverages = covered_by if isinstance(covered_by, list) else [covered_by]
+        require(bool(coverages), 'mixed coverage has at least one pointer: ' + key)
+        for covered in coverages:
+            require(isinstance(covered, dict) and covered.get('kind') in ('leaf', 'case', 'origin'),
+                    'coverage names a leaf, registry case or closed origin: ' + key)
+            if covered['kind'] == 'leaf':
+                require(set(covered) == {'kind', 'command', 'file', 'test_path'} and
+                        isinstance(covered['command'], str) and isinstance(covered['file'], str) and
+                        isinstance(covered['test_path'], list) and bool(covered['test_path']) and
+                        all(isinstance(name, str) and bool(name) for name in covered['test_path']) and
+                        context is not None and covered['command'] in context['catalogs'],
+                        'leaf coverage names a catalog command, file and full path: ' + key)
+                catalog = context['catalog'](covered['command'])
+                leaves = [pair for pair in catalog['tree']['files'].get(covered['file'], {'pairs': []})['pairs']
+                          if pair['leaf'] and pair['path'] == covered['test_path']]
+                require(covered['file'] in catalog['selection'] and len(leaves) == 1 and leaves[0]['verdict'] == 'passed',
+                        'coverage names a single passing catalog leaf: ' + key)
+            elif covered['kind'] == 'case':
+                require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and
+                        covered['id'] in {case['id'] for case in registry['cases']},
+                        'coverage names an existing scheduled registry case: ' + key)
+            else:
+                require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and
+                        origins.get(covered['id'], {}).get('state') == 'complete',
+                        'coverage names a complete origin, never a retired one: ' + key)
     return kind
 
 

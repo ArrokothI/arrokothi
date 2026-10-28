@@ -9267,39 +9267,489 @@
     },
     {
       "id": "mention-b43188cfa39f39ae809510de",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. K1.1 contract lines 166\u2013171 require ordinary callers to be unable to edit retained receipt/refusal facts. The maintained evidence ownership leaf obtains creation, ingress, dispatch, redelivery, replay and inspection evidence, then asserts each is frozen. The adjacent evidence tests attempt field writes and check replay/inspection remains original; the assertion is about ordinary mutation, not replacement of host intrinsics. No P1 link is added.",
+        "covered_by": {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/evidence.test.ts",
+          "test_path": [
+            "K11-R2-EVID-01 the ownership rule, not one call site",
+            "every evidence object any exposed path returns is immutable"
+          ]
+        }
+      }
     },
     {
       "id": "mention-6f40e8f1a46ba505eb1dc0e2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. K1.1 contract row 211 names the week-37/week-38 creation conflict. The pinned creation case and its maintained leaf submit changed content under the same key and assert duplicate_conflict, one Execution, unchanged mailbox/receipts, and a recorded refusal. These are the row\u2019s required results.",
+        "covered_by": {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/creation.test.ts",
+          "test_path": [
+            "K1.1-C1 the lost-response cases",
+            "changing the content under one key is a conflict, not an update"
+          ]
+        }
+      }
     },
     {
       "id": "mention-a1dc4b0584c0e5cecadfb9e3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Read implementation-01 lines 144\u2013152 and the linked 177-line validation-01/09b log at the pin. Its sixteen ablations concern UTF-16 key ordering; undefined and non-finite refusal; depth/scalar limits; retained content; per-root boundaries; reservation, redelivery, intent-before-send and exclusive dispatch; terminal ingress and cancellation disposition; producer-scoped input identity; injective packing; and hidden/missing refusal position. The pointers below assert those results in that order (the cancellation history leaf covers both terminal ingress and nondeletion). Capture moved to SDK; this does not retire its ordinary-value behavior. K1.3 now supplies actual cancellation coverage. These are coverage readings, not renewed kills for the historical edits.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "member names sort as unsigned UTF-16 code units, not code points or locale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "a member that is present with no value is refused, because absent and null differ"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "non-finite numbers are rejected rather than coerced"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 the four semantic limits, at the limit and one over",
+              "depth counts containers on a path, with empty containers counting"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 the four semantic limits, at the limit and one over",
+              "decoded string length counts Unicode scalar values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/inspection.test.ts",
+            "test_path": [
+              "K1.1-C9 what a reader can see",
+              "accepted content cannot be edited through the caller's own object either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/ingress.test.ts",
+            "test_path": [
+              "K1.1-C2 each field is measured as its own boundary-value root",
+              "a payload exactly at a limit is accepted, and one unit over is refused"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "reservation pins a batch and acknowledges none of it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C5 ordinary redelivery is the same exchange",
+              "identity, epoch, base revision and batch are preserved, and nothing is re-selected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 the intent is accepted before the send, and the send is not awaited",
+              "the intent is already accepted and readable by the time the Driver is called"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "one Execution has at most one Activation authorized to commit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/cancellation.test.ts",
+            "test_path": [
+              "K13-A11 accepted history survives; new input is refused, replays still replay",
+              "an older acknowledgment stands; reserved and backlog are terminal; input retries and fresh input"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/ingress.test.ts",
+            "test_path": [
+              "K1.1-C2 the triple keeps unrelated requests apart",
+              "two producers may use the same request-key text"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/creation.test.ts",
+            "test_path": [
+              "K1.1-C1 the key is scoped, and the scope comes from authentication",
+              "no packing of the creation key's three parts can make two requests collide"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/ingress.test.ts",
+            "test_path": [
+              "K1.1-C2 the triple keeps unrelated requests apart",
+              "no packing of the three parts can make two identities collide"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "refusals that name no Execution advance nothing observable"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-a01e780baafc420f980a2c55",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Read the per-root counterexample in implementation-01 lines 225\u2013237 and linked values canonical/limit rules. The ingress leaf uses depth 32 versus 33; its creation sibling accepts two independent at-limit roots. The SDK byte-limit leaf measures the 1,048,576-byte root boundary. The envelope does not become another aggregate root after binding moved to bytes.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/ingress.test.ts",
+            "test_path": [
+              "K1.1-C2 each field is measured as its own boundary-value root",
+              "a payload exactly at a limit is accepted, and one unit over is refused"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/ingress.test.ts",
+            "test_path": [
+              "K1.1-C2 each field is measured as its own boundary-value root",
+              "the same holds at creation, for the initial input and the authority context alike"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 the four semantic limits, at the limit and one over",
+              "canonical size is measured per root, at the byte"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-2a99688feb1a1c771d6648d4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Implementation-01 lines 238\u2013245 describe caller/view and Driver mutation after acceptance. The inspection leaf changes the original payload and attempts a view edit, then checks retained content; the redelivery leaf snapshots the first Activation, attempts Driver edits, and checks unchanged second delivery, batch and queued Events. No claim of hostile-host isolation is involved.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/inspection.test.ts",
+            "test_path": [
+              "K1.1-C9 what a reader can see",
+              "accepted content cannot be edited through the caller's own object either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C5 ordinary redelivery is the same exchange",
+              "identity, epoch, base revision and batch are preserved, and nothing is re-selected"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-5cb3b56886be02f0c02e2b4a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Implementation-01 lines 255\u2013261 describe two old non-discriminating oracles, with identity.md as the one-hop rule: colliding separator-rendered identity tuples and a hidden/missing refusal whose position was normalized away. Current creation/ingress tests construct actually colliding strings and assert different identities; the receipt leaf compares unmasked hidden/missing records in both orders and asserts no subsequent position gap. It supplies position/shape evidence, not a wall-clock claim.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/creation.test.ts",
+            "test_path": [
+              "K1.1-C1 the key is scoped, and the scope comes from authentication",
+              "no packing of the creation key's three parts can make two requests collide"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/ingress.test.ts",
+            "test_path": [
+              "K1.1-C2 the triple keeps unrelated requests apart",
+              "no packing of the three parts can make two identities collide"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "refusals that name no Execution advance nothing observable"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ce5a6072225711814b11f8db",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Read implementation-02 and its validation-02/09b five-ablation log. Assignment-style sealing, numeric-looking non-index acceptance, missing-ID fast paths and scope-match early exits retain coverage in the four listed leaves. The fifth ablation, accepting cancelExecution, was an old unlanded-surface refusal; S2 now applies to that part under accepted K1.3 design-01 \u00a79 (review-03 H 47c0b7f1, integrated before this packet base). No historical kill is promoted.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a valid own __proto__ member is accepted and sealed as own data, not a prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "numeric-looking non-index array members are refused, never silently dropped"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "K11-R1-ID-01 hidden and missing lookups do equal work",
+              "inspect performs the same scope work for hidden and missing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "K11-R1-ID-01 hidden and missing lookups do equal work",
+              "scope work does not depend on where the match sits"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-c148274edd2edc740627bb53",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Read implementation-02 and its validation-02/09b five-ablation log. Assignment-style sealing, numeric-looking non-index acceptance, missing-ID fast paths and scope-match early exits retain coverage in the four listed leaves. The fifth ablation, accepting cancelExecution, was an old unlanded-surface refusal; S2 now applies to that part under accepted K1.3 design-01 \u00a79 (review-03 H 47c0b7f1, integrated before this packet base). No historical kill is promoted.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a valid own __proto__ member is accepted and sealed as own data, not a prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "numeric-looking non-index array members are refused, never silently dropped"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "K11-R1-ID-01 hidden and missing lookups do equal work",
+              "inspect performs the same scope work for hidden and missing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "K11-R1-ID-01 hidden and missing lookups do equal work",
+              "scope work does not depend on where the match sits"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-61a4ae20c926f3e0efa9107d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Read the VAL-01 reconstruction and the seal-assignment/array-regex ablation labels at the pin. Ordinary own __proto__ fields must survive as own data through capture, retained mailbox, replay, inspection and Activation; numeric-looking non-index array fields must be refused. The listed SDK and Kernel leaves assert these results, with explicit own-property checks and retained-value assertions. Moving capture into SDK did not supersede these ordinary-value requirements.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a valid own __proto__ member is accepted and sealed as own data, not a prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "nested and array-embedded __proto__ members survive at depth"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a null-prototype object keeps its prototype and its members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "numeric-looking non-index array members are refused, never silently dropped"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "accessors and exotic array prototypes are refused rather than invoked or coerced"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/creation.test.ts",
+            "test_path": [
+              "K1.1-C1 the key is scoped, and the scope comes from authentication",
+              "K11-R1-VAL-01 a valid own __proto__ creation payload is retained as own data through inspection"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/ingress.test.ts",
+            "test_path": [
+              "K1.1-C2 ingress does not depend on what the Execution is doing",
+              "K11-R1-VAL-01 post-creation ingress preserves an own __proto__ through replay, mailbox and inspection"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C5 ordinary redelivery is the same exchange",
+              "K11-R1-VAL-01 Activation construction and redelivery carry the sealed structural value"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/inspection.test.ts",
+            "test_path": [
+              "K1.1-C9 what a reader can see",
+              "K11-R1-VAL-01 inspection exposes the same structural value that canonical bytes bound"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-194ad35e98b1396a9d84c97f",
@@ -9307,11 +9757,32 @@
     },
     {
       "id": "mention-8b8a2f79f5dae8bcbc2ff99c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The SCOPE-01 counterexample is cancellation being accepted while it was still an unlanded K1.3 surface. Accepted K1.3 design-01 \u00a79 implements cancellation, including terminal disposition and the fence. Review-03 accepted H 47c0b7f1 and integration 71f9b048 precede base 335ae7e6. The old always-refuse cancellation operation no longer exists; this does not retire current cancellation correctness.",
+        "decision": "docs/development/work/K1.3/design-01.md"
+      }
     },
     {
       "id": "mention-a81cc60466b20ed066422ad9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The origin lies in SELF-03: outsider-only scope probes missed an includes early exit. The maintained early-versus-late legitimate-match leaf compares read counts for equal-sized scope lists and checks both visible results. Other surrounding self-edit notes (stray token and annotations) are S1 descriptions of changes, not additional behavioral counterexamples.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/receipts.test.ts",
+            "test_path": [
+              "K1.1-C6 reads are authenticated and scoped first",
+              "K11-R1-ID-01 hidden and missing lookups do equal work",
+              "scope work does not depend on where the match sits"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-dfdc7d90f79fe93f4feeeb4b",

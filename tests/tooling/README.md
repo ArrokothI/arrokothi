@@ -565,6 +565,7 @@ kills. Live-provider and large-memory/timing profiles remain explicitly not run 
 `triaged` origins carry `triage: {class, rationale, ...}`. The four classes are
 `not_a_counterexample` (no pointer), `superseded` (`decision` from `TRIAGE_DECISIONS`),
 `recorded_limit` (`limit` from current 017), and `covered_elsewhere` (`covered_by`).
+Mixed origins may use a nonempty list of coverage pointers; every pointer is checked.
 Coverage is `{kind: "leaf", command, file, test_path}`, `{kind: "case", id}`, or
 `{kind: "origin", id}`. The catalog must report one passing leaf; cases belong to the
 scheduled registry; origin pointers name a `complete` origin whose closure is checked

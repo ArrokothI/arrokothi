@@ -2,6 +2,26 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 K1.1 batch in progress:** first 13 origins read in source-file order
+  (contract, implementation 01–02): 10 `covered_elsewhere`, 1 `superseded`, and
+  2 origins grouped for one extraction. See `triage-05.json`; the source packet is not
+  complete and the first-300 projection has not been made. All recorded leaf pointers
+  resolved to passing leaves in the fresh-clone repository catalog at `5af5bf86`.
+  - The extraction concerns listing scope-work discrimination: the existing listing
+    test checks a positive read count and visible IDs, but does not compare early,
+    late and absent matches. The single-ID tests exercise a different path. A maintained
+    listing counterexample is planned after triage, with a stop if it exposes a product defect.
+  - First use of a further superseding-table row: K1.3 `design-01.md` §9 replaces the
+    old unsupported-cancellation refusal. Its acceptance is review 03 at H
+    `47c0b7f1c089260991649a6d814ad7db22b54a2f`, integrated at
+    `71f9b0485f9bf2d71c978f3d822c72f328353b43`, before base 335ae7e6. This row
+    retires the old always-refuse surface only, not current cancellation behavior.
+  - Mixed S5 origins carry several coverage pointers; each resolves. Focused controls:
+    14 passed; refusal census 349/349. Fresh-clone corpus at 5af5bf86 retained all
+    31 existing closures under the new executable-evidence check. Final verification
+    remains outstanding; neither an independent audit nor acceptance is claimed.
+  - Resume with K1.1 implementation 03, then the remaining source files. Preserve the
+    grouped extraction and do not treat the two open origins as retired.
 - **2026-10-28 range 4 tooling checkpoint:** retirement pointers, executable
   counterexample closures and the frozen-population sampler are implemented. Transfer
   records retain their original mapping and exact pinned-list membership after triage.

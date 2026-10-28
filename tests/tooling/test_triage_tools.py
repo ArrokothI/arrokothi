@@ -35,6 +35,13 @@ class TriageTests(RepositoryFixture):
         for covered in [self.leaf(), {'kind': 'case', 'id': 'case.one'}, {'kind': 'origin', 'id': 'closed'}]:
             self.check('covered_elsewhere', covered_by=covered)
 
+    def test_mixed_coverage_checks_every_pointer(self):
+        self.check('covered_elsewhere', covered_by=[self.leaf(), {'kind': 'case', 'id': 'case.one'}])
+        with self.assertRaisesRegex(tool.CheckError, 'at least one pointer'):
+            self.check('covered_elsewhere', covered_by=[])
+        with self.assertRaisesRegex(tool.CheckError, 'existing scheduled registry case'):
+            self.check('covered_elsewhere', covered_by=[self.leaf(), {'kind': 'case', 'id': 'missing'}])
+
     def test_unknown_class(self):
         with self.assertRaisesRegex(tool.CheckError, 'retirement class'):
             self.check('accepted')
