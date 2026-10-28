@@ -1,0 +1,4 @@
+docs/development/work/K1.3/review-01/coverage-comparison.log:52: trailing whitespace.
++   L101: (issues: readonly LocatedIssue[], withMessages: boolean): string => {   let out = "";   const counts: { code: 
+docs/development/work/K1.3/review-01/coverage-comparison.log:104: trailing whitespace.
++   L231: {     const stored = intent.protocolFailureHold;     appendOwn(       holds,       PrimordialObjectFreeze({   

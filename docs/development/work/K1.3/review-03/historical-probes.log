@@ -1,0 +1,43 @@
+✔ control: normal cancellation disposes both queued Events (5.898834ms)
+✔ S2 must reject duplicated cancellation positions, even when the length equals queued count (1.302166ms)
+✔ S2 must reject an Outcome acknowledging and terminal-disposing the same position (2.206333ms)
+✔ control: two immediate expiries mint distinct generations (1.323709ms)
+✔ S4 must reject reusing an already-expired generation in the Outcome arm (1.358541ms)
+✔ due-at-registration wait expiry needs no host fire (L-22 counterexample) (0.722542ms)
+ℹ {"state":"READY","queued":["timeout-38:execution-5:app-a8:tenant-a9:report-171:1"],"mailbox":[{"eventId":"event-creation-5:app-a8:tenant-a9:report-17","kind":"acknowledged","generation":null},{"eventId":"timeout-38:execution-5:app-a8:tenant-a9:report-171:1","kind":"queued","generation":1}],"retired":[1],"timerFires":0}
+✔ K13-R02-S2-01 exact position cover with queued ending: explicit (11.891334ms)
+✔ K13-R02-S2-01 exact position cover with queued ending: execution_deadline (3.284625ms)
+✔ K13-R02-S2-01 exact position cover with queued acknowledgment: complete (7.833792ms)
+✔ K13-R02-S2-01 exact position cover with queued ending: complete (6.277166ms)
+✔ K13-R02-S2-02 terminal decision appends queued timeout: complete (3.065083ms)
+✔ K13-R02-S2-01 exact position cover with queued acknowledgment: fail (1.083333ms)
+✔ K13-R02-S2-01 exact position cover with queued ending: fail (0.683917ms)
+✔ K13-R02-S2-02 terminal decision appends queued timeout: fail (1.4235ms)
+✔ positive: exact cover, correct dispositions, and nonterminal timeout (6.258667ms)
+{"dimension":"generation-freshness","accepted":3,"refused":12}
+✖ exact-cover matrix: two queued positions, every split, numeric aliases and out-of-range positions (255.023ms)
+✔ generation matrix: mutually consistent reused/skipped/fresh generations for live, immediate wake and immediate expiry (12.378208ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 16
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 679.006417
+
+✖ failing tests:
+
+test at docs/development/work/K1.3/review-02/owner-matrix.test.mjs:16:1
+✖ exact-cover matrix: two queued positions, every split, numeric aliases and out-of-range positions (255.023ms)
+  Error: plan refused: its Execution changed after the plan was formed, or does not hold what the plan names (T3, S2: only the resolving Outcome acknowledges, and it leaves its whole batch acknowledged by its Activation)
+      at refuse (file:///Users/rex-shih/.codex/worktrees/k13-review03/arrokothi/packages/kernel/src/state.ts:1058:9)
+      at admit (file:///Users/rex-shih/.codex/worktrees/k13-review03/arrokothi/packages/kernel/src/state.ts:1172:28)
+      at #applyOutcome (file:///Users/rex-shih/.codex/worktrees/k13-review03/arrokothi/packages/kernel/src/state.ts:782:18)
+      at KernelState.apply (file:///Users/rex-shih/.codex/worktrees/k13-review03/arrokothi/packages/kernel/src/state.ts:512:25)
+      at KernelState.apply (file:///Users/rex-shih/.codex/worktrees/k13-review03/arrokothi/docs/development/work/K1.3/review-02/owner-matrix.test.mjs:9:63)
+      at #accept (file:///Users/rex-shih/.codex/worktrees/k13-review03/arrokothi/packages/kernel/src/coordinator.ts:2561:17)
+      at ExecutionCoordinator.submitOutcome (file:///Users/rex-shih/.codex/worktrees/k13-review03/arrokothi/packages/kernel/src/coordinator.ts:1758:27)
+      at file:///Users/rex-shih/.codex/worktrees/k13-review03/arrokothi/packages/kernel/tests/binding-facade.ts:111:58
+      at invoke (file:///Users/rex-shih/.codex/worktrees/k13-review03/arrokothi/packages/kernel/tests/binding-facade.ts:98:18)
+      at ExecutionCoordinator.submitOutcome (file:///Users/rex-shih/.codex/worktrees/k13-review03/arrokothi/packages/kernel/tests/binding-facade.ts:111:12)

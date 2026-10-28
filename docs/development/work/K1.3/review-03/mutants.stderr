@@ -1,0 +1,12 @@
+Case k13.fire-generation
+Case k13.fire-duplicate
+Case k13.registration-step2
+Case k13.registration-order
+Case k13.input-wake
+Case k13.selection-eligibility
+Case k13.selection-timeout
+Case k13.dispatch-readiness
+Case k13.cancellation-acknowledges
+Case k13.cancellation-readiness
+Case k13.losing-retry
+Case k13.deadline-terminal

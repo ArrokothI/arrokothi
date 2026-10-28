@@ -1,0 +1,40 @@
+{
+  "fired": 5,
+  "rows": [
+    {
+      "action": "complete",
+      "point": "exchange",
+      "probes": "P5/no mutation",
+      "repair": "retry",
+      "state": "COMPLETED"
+    },
+    {
+      "action": "complete",
+      "point": "exchange",
+      "probes": "P5/no mutation",
+      "repair": "cancel",
+      "state": "CANCELLED"
+    },
+    {
+      "action": "fail",
+      "point": "exchange",
+      "probes": "P5/no mutation",
+      "repair": "retry",
+      "state": "FAILED"
+    },
+    {
+      "action": "fail",
+      "point": "exchange",
+      "probes": "P5/no mutation",
+      "repair": "cancel",
+      "state": "CANCELLED"
+    },
+    {
+      "action": "await",
+      "point": "retirement",
+      "probes": "input and cancellation P7/no mutation; exact retry replays without repair",
+      "limit": "L-28; no automatic repair"
+    }
+  ],
+  "failures": 0
+}

@@ -1,0 +1,30 @@
+{
+  "run": 40605040929,
+  "revision": "c7abff65ceca3e3b21fd64ffee12ea2f636f5cbc",
+  "files": [
+    {
+      "downloaded_path": "packet-verify-c7abff65ceca3e3b21fd64ffee12ea2f636f5cbc/verify.json",
+      "retained_as": "ci-verify.json.gz",
+      "original_bytes": 12806957,
+      "original_sha256": "a49d991fea9174359c94f0d5438f946808129edb292edbef3e79cb8278fe2197"
+    },
+    {
+      "downloaded_path": "packet-verify-c7abff65ceca3e3b21fd64ffee12ea2f636f5cbc/verify.stderr.log",
+      "retained_as": "ci-verify.stderr.log",
+      "original_bytes": 20302,
+      "original_sha256": "b1a69ec1bff6c7817cf74207037fa6062d8cfabfadbd098dc584c037d37cef8f"
+    },
+    {
+      "downloaded_path": "packet-verify-c7abff65ceca3e3b21fd64ffee12ea2f636f5cbc/summary.json",
+      "retained_as": "ci-summary.json",
+      "original_bytes": 2560,
+      "original_sha256": "408d69631cefa5e8d07ef53e76faf362bf044da80bc15537b6a007540645e2a6"
+    },
+    {
+      "downloaded_path": "packet-verify-c7abff65ceca3e3b21fd64ffee12ea2f636f5cbc/run.txt",
+      "retained_as": "ci-run.txt",
+      "original_bytes": 287,
+      "original_sha256": "5ac0e3c2e7b934f26cc43d46eb250dd1a9df41eb55ba547b503d67275d3472ae"
+    }
+  ]
+}

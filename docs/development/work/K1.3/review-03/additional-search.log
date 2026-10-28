@@ -1,0 +1,20 @@
+{
+  "historyLengths": [
+    0,
+    1,
+    2,
+    5,
+    16
+  ],
+  "modes": [
+    "live",
+    "event",
+    "deadline"
+  ],
+  "historyCases": 120,
+  "partitionCases": 1458,
+  "refusalCases": 1615,
+  "acceptedCases": 17,
+  "publicPlansWitnessed": 13617,
+  "failures": 0
+}

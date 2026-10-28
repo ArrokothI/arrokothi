@@ -1,0 +1,76 @@
+{
+  "operation": "mutations",
+  "revision": "47c0b7f1c089260991649a6d814ad7db22b54a2f",
+  "registry": "tests/fixtures/packet-tools/mutations.json",
+  "result": "selected_cases_passed",
+  "counts": {
+    "killed": 1
+  },
+  "cases": [
+    {
+      "case": "oracle.losingWindowAt",
+      "content_key": "case-2d5cc71cd7d642251e28149b7113a679756a7766750ebc57f0791fa45d475510",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.3",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"oracle.losingWindowAt\",\"assertion\":\"oracle.losingWindowAt.negative-control\",\"reached\":true,\"passed\":true,\"calls\":12,\"failures\":[],\"tests\":320,\"skipped\":0}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-6b4fcacc9924060fc7c5c79565bc6d02eae3508d44ab30d2b1f1e1464b2be25e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"oracle.losingWindowAt\",\"assertion\":\"oracle.losingWindowAt.negative-control\",\"reached\":true,\"passed\":false,\"calls\":12,\"failures\":[\"the losing window's refusal-only state, outside the index insert\"],\"tests\":320,\"skipped\":0}\n"
+          },
+          "invalid": false,
+          "killed_by": "the losing window's refusal-only state, outside the index insert",
+          "content_key": "mutation-6b4fcacc9924060fc7c5c79565bc6d02eae3508d44ab30d2b1f1e1464b2be25e"
+        }
+      ]
+    }
+  ],
+  "determinism_sample": [],
+  "environment": {
+    "passed": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "unset_in_parent": [],
+    "set": {
+      "LANG": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "inputs": [],
+    "absent": [],
+    "inherited_values_recorded": false
+  },
+  "acceptance": "not evaluated",
+  "witnesses": [
+    {
+      "case": "oracle.losingWindowAt",
+      "kind": "mechanism_witness",
+      "owner": "K1.3",
+      "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+      "reason": "Held by owner choice 08 rule 1: its run set starts node:child_process children the V-ENV detector cannot read. The oracle control is a tooling mechanism check; per-test classification is BINDING-01's, and it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    }
+  ],
+  "limits": [
+    "Only the listed cases and mutations were executed",
+    "Structured witnesses rely on reviewed independent fixtures; no universal causal proof",
+    "Trusted repository commands run without containment; temporary copies protect source files"
+  ]
+}
