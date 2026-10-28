@@ -2,11 +2,14 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** WAITING_FOR_REVIEW (2026-10-27), correction round 1. [Review 01](review-01.md) asked for changes
-  (K13-R01-S2-01, -S4-02, -CLOCK-03); [owner choice 03](owner-choice-03.md); [design 02](design-02.md). Correction C
-  `2454e8b702ea1bb2b12d9e0fe0f8b83f0f5e0d7c`; H is the commit of [implementation report 02](implementation-02.md).
-  Packet verify CI run `40456276499` at C: `checks_passed`, 19/19. Next: independent review 02, which also checks
-  design 02. The implementer stops here.
+- **Phase:** WAITING_FOR_REVIEW (2026-10-27), correction round 2. [Review 02](review-02.md) asked for changes
+  (K13-R02-S2-01, -S2-02) with stop-and-redesign; [owner choice 04](owner-choice-04.md); [design 03](design-03.md)
+  and [design check 03](design-check-03.md) (D03-CHK-01..06); [owner choice 05](owner-choice-05.md) (full
+  evaluation); [owner choice 06](owner-choice-06.md) (fault oracle follows L-28). Correction C
+  `c7abff65ceca3e3b21fd64ffee12ea2f636f5cbc`; H is the commit of [implementation report 03](implementation-03.md).
+  Packet verify CI run `40605040929` at C: `checks_passed`, 19/19; the earlier run `40600784270` at `1ea79ca2`
+  was an invalid spec (undeclared environment read). Next: independent review 03. The implementer stops here.
+- Round 2: H `87db3c40` ([implementation report 02](implementation-02.md)), CI `40456276499`.
 - Round 1: H `d05af347` ([implementation report 01](implementation-01.md)), CI `40387031804`; the earlier run
   `40280293990` failed only on the kernel-sweeps time limit ([owner choice 02](owner-choice-02.md)).
 - Work clones (2026-10-26): the first scratchpad worktree was lost; the session's scratchpad holds `wt-k13` and
