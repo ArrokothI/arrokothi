@@ -2,6 +2,22 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 K1.1 implementation 04 checkpoint (handover session):** 34 origins
+  read in source-file order: 27 `covered_elsewhere`, 4 `superseded`,
+  1 `not_a_counterexample`, and the same 2 origins grouped for one extraction.
+  Read implementation 04 and its linked validation manifest; the nine new mappings
+  preserve current value, identity and retained-evidence obligations while retiring
+  only the obsolete refusal-only lifecycle placeholders.
+  - Fresh clone `/private/tmp/tools-02-gpt6-validation-20261028`, `git clone --no-local`,
+    Node v26.10.0 and `npm ci`: repository catalog at
+    `281c8b0a654ce4638d3fa2a61d1b48190fc4359d` passed 4,750 tests, 523 suites;
+    zero failures, cancellations, skips or todos. Every new coverage pointer resolves
+    to a passing leaf in that catalog. Derived adoption data is unchanged.
+  - Resume with implementation 05 (preliminary reading done, no dispositions recorded),
+    then the remaining source files in order. Linked validation manifests read for
+    context are not counted as separately triaged origins before their place in order.
+    Source-packet triage and the first-300 projection remain incomplete.
+
 - **2026-10-28 session handover resume:** IN_PROGRESS under [owner choice 06](owner-choice-06.md).
   Implementer: this Codex GPT-6 session, taking over from the prior GPT-6 session.
   `git fetch origin` confirmed `origin/codex/tools-02` at
