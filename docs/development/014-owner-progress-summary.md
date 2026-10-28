@@ -1,11 +1,11 @@
 # Owner progress summary
 
-Snapshot: checked 2026-10-28 against remote main `22c8c1db9958049eb8693dd5aa4d7005f2d565db`.
+Snapshot: checked 2026-10-28 against remote main `71f9b0485f9bf2d71c978f3d822c72f328353b43`.
 K1.3 is independently accepted at H `47c0b7f1c089260991649a6d814ad7db22b54a2f`, over payload C
 `c7abff65ceca3e3b21fd64ffee12ea2f636f5cbc`; review 03 is recorded at
 `3ad961d354ac551a3629b5f24e2e89085a6e5701` and its acceptance transcription A at
 `5da5ec2d0223a98e311101d7c3969339c789e716`. Its [cleanup](work/K1.3/cleanup-01.md) is complete;
-integration awaits the owner's manual merge. The benchmark checkout inspected was
+[integration](work/K1.3/integration-01.md) is recorded at `71f9b048` (PR #62); owner closure remains pending. The benchmark checkout inspected was
 `8de04779d279dba82cf834d419e465d2b677ef46`; its E1 ledger still records `BLOCKED_EXTERNAL` and no gate result.
 The [status ledger](007-work-packets.md) and linked records own acceptance, integration and release.
 
@@ -25,7 +25,7 @@ The [status ledger](007-work-packets.md) and linked records own acceptance, inte
 | TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
 | K1.1-correction-03 | Independently accepted at H `4b121d7b`; integrated at `b976f3a3` (PR #48) |
 | Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-16 and L-18–L-28) under 006 working principle 6 |
-| K1.3 | Independently accepted at H above; cleanup complete; integration pending owner merge; no successor released |
+| K1.3 | Independently accepted at H above; cleanup complete; integrated at `71f9b048` (PR #62); owner closure pending; no successor released |
 | K1 / E1 | Open; benchmark E1 is BLOCKED_EXTERNAL with NO_RESULT at the inspected revision; supported-entry fixture confirmation remains pending |
 
 ## What has been achieved
@@ -34,7 +34,7 @@ The [status ledger](007-work-packets.md) and linked records own acceptance, inte
 from the legacy runtime. On main, the private Kernel creates Executions, accepts input, reserves
 batches, dispatches asynchronous Activations and, since K1.2, rules on their Outcomes (below).
 K1.0 and the earlier K1.1 work are accepted, integrated and owner-closed. Waits and cancellation
-are now accepted in K1.3, awaiting integration; mediated Effects remain K2’s. The supported application SDK still uses
+are now accepted and integrated in K1.3; mediated Effects remain K2’s. The supported application SDK still uses
 the legacy core. [002](002-implemented-kernel-baseline.md) describes the implemented surface.
 
 **Answerable Outcome acceptance.** K1.2, completed by its cumulative correction, answered whether
@@ -69,11 +69,11 @@ shows each one is needed, and draws its list of control exits from the source ra
 scenarios.
 
 Status: K1.2 and its cumulative correction are independently accepted, integrated and owner-closed;
-K1.3’s accepted additions are described below and await integration. Limits:
+K1.3’s accepted and integrated additions are described below. Limits:
 - The Kernel is in-process and not durable. How submission authority survives a restart is open
   for K3.2.
 - Effects (K2) and output reads (K4.4) remain unimplemented. Waits, deadlines and cancellation are
-  present in the accepted K1.3 branch, pending merge.
+  integrated through K1.3.
 - Kernel fencing does not stop a superseded native attempt; the Driver must exclude it or refuse
   takeover.
 - The sweeps are finite evidence for their declared scenarios, not a proof over arbitrary future
@@ -105,7 +105,7 @@ fields missed both changed disposition values and a newly appended timeout. The 
 checks the complete successor and makes its application explicit.
 
 Status: independently accepted at H in the snapshot; [cleanup](work/K1.3/cleanup-01.md) complete;
-integration pending owner merge. Limits: this is the in-process private Kernel, not the supported SDK
+integrated at `71f9b048` (PR #62); owner closure pending. Limits: this is the in-process private Kernel, not the supported SDK
 bridge or an E1 result. It provides no persistence, physical stop, live trusted dependency-result ingress
 or automatic recovery from an interrupted commit. A later governed call whose successor still violates
 the checked relations throws; cancellation or retry does not always repair it. The bounded searches,
@@ -303,7 +303,7 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 ## The next few steps
 
 TOOLS-02 remains in progress. K1.3’s implementation, review and cleanup are complete; the owner’s merge
-and closure remain pending. No successor is released. The remaining dependencies below come from 007.
+is complete; owner closure remains pending. No successor is released. The remaining dependencies below come from 007.
 
 1. **TOOLS-02 ranges 2–4** follow range 1's integration, released with the owner's scope B
    ([release 01](work/TOOLS-02/release-01.md)): target-set kill provenance (T2-3), the hold register under current
