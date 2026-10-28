@@ -20,6 +20,11 @@
  *   callback after it before the hand-over. Every refusal ends the request.
  * - **Owner arms** (`KernelState`'s `#apply<Kind>`): a prepare phase that changes nothing, then exactly
  *   the declared commit statements, in order, each naming the plan field it commits (`COMMITS`).
+ * - **Successor arms** (K1.3, design 03 revised for D03-CHK-01): each arm that changes a governed field
+ *   admits one successor of its own record before its first write, and commits exactly the components
+ *   its change literal changes, each once, each the successor's own value (`SUCCESSOR_ARMS`). Creation
+ *   publishes only the fresh record its admission returned. The governed fields are written by those
+ *   arms alone, told apart by the interface that declares them (`GOVERNED_WRITERS`).
  * - **Writers**: each record field is written only by its declared arms (`ARM_WRITERS`), and nothing
  *   in the coordinator changes accepted state except by handing a plan over.
  * - **Foreign code**: the inventory of calls outside the zone is exact, and nothing in the owner, its
@@ -41,13 +46,16 @@ import {
   basisArgumentViolations,
   buildZone,
   checkArm,
+  checkCreationAdmission,
   checkPlanner,
+  checkSuccessorArm,
   findConstFunction,
   findMethod,
   foreignCallKey,
   isApplyCall,
   mutationsOutsideHandOver,
   ownNodes,
+  qualifiedWriters,
   refusalHelperViolations,
   refusalsWithoutExit,
   SOURCE_ROOT,
@@ -71,7 +79,10 @@ const PLANNERS: readonly (readonly [string, PlannerShape])[] = [
   ["requestTakeover", "suffix"],
   ["recoverExecution", "suffix"],
   ["reportProtocolFailure", "suffix"],
+  ["fireTimer", "suffix"],
+  ["cancelExecution", "suffix"],
   ["#accept", "suffix"],
+  ["#refuseLosing", "suffix"],
   ["#refusal", "suffix"],
   ["#deliver", "delivery"],
   ["settle", "final"],
@@ -88,22 +99,44 @@ const ARMS: Readonly<Record<string, string>> = {
   takeover: "#applyTakeover",
   control: "#applyControl",
   refusal: "#applyRefusal",
+  expiry: "#applyExpiry",
+  timer_discard: "#applyTimerDiscard",
+  cancellation: "#applyCancellation",
+  losing_outcome: "#applyLosingOutcome",
 };
 
-const CREATED = "{authorityContext+basis+creationIdentity+creationRequestId+definitionRevision+executionId+initial+progressCodec+receipt+runtimeContractRevision+scope}";
+const CREATED = "{authorityContext+basis+creationIdentity+creationRequestId+definitionRevision+executionDeadline+executionId+initial+progressCodec+receipt+runtimeContractRevision+scope}";
 
 /** Each arm's commit statements, in order: `<form> <field> ← <plan field it comes from>` (D01-CHK-4). */
 const COMMITS: Readonly<Record<string, readonly string[]>> = {
   "#applyCreation": [`insert #executions ← ${CREATED}`, `insert #byCreationRequestId ← ${CREATED}`],
-  "#applyInput": ["write version ← basis", "write nextAcceptancePosition ← entry", "append mailbox ← {QUEUED+entry}", "insert byInputId ← {QUEUED+entry}", "append receipts ← entry"],
-  "#applyDispatch": ["write version ← basis", "write activationsMinted ← activationsMinted", "write nextAcceptancePosition ← receipt", "write activation ← {activation+batch+receipt+submission}", 'write state ← "RUNNING"', "append receipts ← receipt"],
+  "#applyInput": [
+    "write version ← basis",
+    "write nextAcceptancePosition ← entry",
+    "append? mailbox ← next.appended",
+    "insert byInputId ← {QUEUED+entry}",
+    "append receipts ← entry",
+    "append? retiredWaits ← next.retired",
+    "write wait ← next.wait",
+    "write readiness ← next.readiness",
+    "write state ← next.state",
+  ],
+  "#applyDispatch": [
+    "write version ← basis",
+    "write activationsMinted ← activationsMinted",
+    "write nextAcceptancePosition ← receipt",
+    "write activation ← next.activation",
+    "write state ← next.state",
+    "append receipts ← receipt",
+    "write readiness ← next.readiness",
+  ],
   "#applyDelivery": ["write version ← basis", "append deliveries ← {activationId+attempt+writerEpoch}"],
   "#applySettlement": ["write version ← basis", "write status ← status", "write failure ← failure"],
   "#applyOutcome": [
     "write version ← basis",
     "write nextAcceptancePosition ← receipt",
-    "each disposition ← acknowledgment",
-    "each disposition ← ending",
+    "each disposition ← next.acknowledgment",
+    "each disposition ← next.ending",
     "write acceptedProgress ← stored",
     "write progressRevision ← progressRevision",
     "append emissions ← emissions",
@@ -112,8 +145,13 @@ const COMMITS: Readonly<Record<string, readonly string[]>> = {
     "insert acceptedOutcomes ← stored",
     "append receipts ← receipt",
     "append recoveryHistory ← history",
-    "write activation ← null",
-    "write state ← nextState",
+    "append? mailbox ← next.appended",
+    "append? retiredWaits ← next.retired",
+    "write registrations ← next.registrations",
+    "write wait ← next.wait",
+    "write readiness ← next.readiness",
+    "write activation ← next.activation",
+    "write state ← next.state",
   ],
   "#applyTakeover": [
     "write version ← basis",
@@ -127,6 +165,31 @@ const COMMITS: Readonly<Record<string, readonly string[]>> = {
   ],
   "#applyControl": ["write version ← basis", "append recoveryHistory ← history", "write codeHold ← codeHold", "write protocolFailureHold ← protocolFailureHold"],
   "#applyRefusal": ["write version ← basis", "append refusals ← refusal", "write nextRefusalPosition ← refusal"],
+  "#applyExpiry": [
+    "write version ← basis",
+    "write nextAcceptancePosition ← timeout",
+    "append? mailbox ← next.appended",
+    "append? retiredWaits ← next.retired",
+    "append timerFires ← fire",
+    "write wait ← next.wait",
+    "write readiness ← next.readiness",
+    "write state ← next.state",
+  ],
+  "#applyTimerDiscard": ["write version ← basis", "append timerFires ← fire"],
+  "#applyCancellation": [
+    "write version ← basis",
+    "write nextAcceptancePosition ← record",
+    "each disposition ← next.ending",
+    "append? retiredWaits ← next.retired",
+    "append recoveryHistory ← history",
+    "append? timerFires ← fire",
+    "write cancellation ← next.cancellation",
+    "write wait ← next.wait",
+    "write readiness ← next.readiness",
+    "write activation ← next.activation",
+    "write state ← next.state",
+  ],
+  "#applyLosingOutcome": ["write version ← basis", "append refusals ← refusal", "write nextRefusalPosition ← refusal", "insert losingIndex ← losing"],
 };
 
 /**
@@ -136,23 +199,23 @@ const COMMITS: Readonly<Record<string, readonly string[]>> = {
 const ARM_WRITERS: Readonly<Record<string, readonly string[]>> = {
   "#executions": ["#applyCreation"],
   "#byCreationRequestId": ["#applyCreation"],
-  mailbox: ["#applyInput"],
+  mailbox: ["#applyExpiry", "#applyInput", "#applyOutcome"],
   byInputId: ["#applyInput"],
-  refusals: ["#applyRefusal"],
-  nextRefusalPosition: ["#applyRefusal"],
+  refusals: ["#applyLosingOutcome", "#applyRefusal"],
+  nextRefusalPosition: ["#applyLosingOutcome", "#applyRefusal"],
   receipts: ["#applyDispatch", "#applyInput", "#applyOutcome", "#applyTakeover"],
-  nextAcceptancePosition: ["#applyDispatch", "#applyInput", "#applyOutcome", "#applyTakeover"],
+  nextAcceptancePosition: ["#applyCancellation", "#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome", "#applyTakeover"],
   activationsMinted: ["#applyDispatch"],
-  state: ["#applyDispatch", "#applyOutcome"],
-  activation: ["#applyDispatch", "#applyOutcome", "#applyTakeover"],
+  state: ["#applyCancellation", "#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  activation: ["#applyCancellation", "#applyDispatch", "#applyOutcome", "#applyTakeover"],
   acceptedProgress: ["#applyOutcome"],
   progressRevision: ["#applyOutcome"],
   acceptedOutcomes: ["#applyOutcome"],
   exchanges: ["#applyOutcome"],
   emissions: ["#applyOutcome"],
   result: ["#applyOutcome"],
-  disposition: ["#applyOutcome"],
-  recoveryHistory: ["#applyControl", "#applyOutcome", "#applyTakeover"],
+  disposition: ["#applyCancellation", "#applyOutcome"],
+  recoveryHistory: ["#applyCancellation", "#applyControl", "#applyOutcome", "#applyTakeover"],
   codeHold: ["#applyControl"],
   protocolFailureHold: ["#applyControl", "#applyTakeover"],
   submission: ["#applyTakeover"],
@@ -160,7 +223,63 @@ const ARM_WRITERS: Readonly<Record<string, readonly string[]>> = {
   deliveries: ["#applyDelivery"],
   status: ["#applySettlement"],
   failure: ["#applySettlement"],
-  version: ["#applyControl", "#applyDelivery", "#applyDispatch", "#applyInput", "#applyOutcome", "#applyRefusal", "#applySettlement", "#applyTakeover"],
+  registrations: ["#applyOutcome"],
+  wait: ["#applyCancellation", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  readiness: ["#applyCancellation", "#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  retiredWaits: ["#applyCancellation", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  timerFires: ["#applyCancellation", "#applyExpiry", "#applyTimerDiscard"],
+  cancellation: ["#applyCancellation"],
+  losingIndex: ["#applyLosingOutcome"],
+  version: [
+    "#applyCancellation",
+    "#applyControl",
+    "#applyDelivery",
+    "#applyDispatch",
+    "#applyExpiry",
+    "#applyInput",
+    "#applyLosingOutcome",
+    "#applyOutcome",
+    "#applyRefusal",
+    "#applySettlement",
+    "#applyTakeover",
+    "#applyTimerDiscard",
+  ],
+};
+
+/**
+ * K1.3 (design 03 Q4, revised for D03-CHK-01): each arm that changes a governed field, and the
+ * successor components its change literal changes, which its commit applies exactly once.
+ */
+const SUCCESSOR_ARMS: Readonly<Record<string, { readonly kind: string; readonly changes: readonly string[] }>> = {
+  "#applyInput": { kind: "input", changes: ["appended", "readiness", "retired", "state", "wait"] },
+  "#applyDispatch": { kind: "dispatch", changes: ["activation", "readiness", "state"] },
+  "#applyOutcome": { kind: "outcome", changes: ["acknowledged", "activation", "appended", "ended", "readiness", "registrations", "retired", "state", "wait"] },
+  "#applyExpiry": { kind: "expiry", changes: ["appended", "readiness", "retired", "state", "wait"] },
+  "#applyCancellation": { kind: "cancellation", changes: ["activation", "cancellation", "ended", "readiness", "retired", "state", "wait"] },
+};
+
+/**
+ * The governed fields' writers, each field named by the interface that declares it: the successor arms
+ * only. `ActivationRecord.activation`, the attempt a takeover replaces inside the open exchange, is not
+ * governed; the name-only `ARM_WRITERS.activation` above lists both.
+ */
+const GOVERNED_WRITERS: Readonly<Record<string, readonly string[]>> = {
+  "ExecutionRecord.state": ["#applyCancellation", "#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  "ExecutionRecord.registrations": ["#applyOutcome"],
+  "ExecutionRecord.wait": ["#applyCancellation", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  "ExecutionRecord.readiness": ["#applyCancellation", "#applyDispatch", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  "ExecutionRecord.activation": ["#applyCancellation", "#applyDispatch", "#applyOutcome"],
+  "ExecutionRecord.cancellation": ["#applyCancellation"],
+  "ExecutionRecord.retiredWaits": ["#applyCancellation", "#applyExpiry", "#applyInput", "#applyOutcome"],
+  "ExecutionRecord.mailbox": ["#applyExpiry", "#applyInput", "#applyOutcome"],
+  "MailboxEntry.disposition": ["#applyCancellation", "#applyOutcome"],
+};
+
+/** The component each governed field is committed from, for comparing `GOVERNED_WRITERS` with `SUCCESSOR_ARMS`. */
+const COMPONENT_OF: Readonly<Record<string, readonly string[]>> = {
+  "ExecutionRecord.retiredWaits": ["retired"],
+  "ExecutionRecord.mailbox": ["appended"],
+  "MailboxEntry.disposition": ["acknowledged", "ended"],
 };
 
 const OWNER_FILES = new Set(["state.ts", "state-records.ts", "plan.ts"]);
@@ -199,7 +318,7 @@ function violations(zone: Zone, analysis: EffectAnalysis): string[] {
   }
   out.push(...refusalsWithoutExit(zone));
   const accept = findMethod(zone, "ExecutionCoordinator", "#accept");
-  if (accept !== undefined) out.push(...basisArgumentViolations(zone, accept, 4));
+  if (accept !== undefined) out.push(...basisArgumentViolations(zone, accept, 5));
   for (const arm of Object.values(ARMS)) {
     const method = findMethod(zone, "KernelState", arm);
     if (method === undefined) {
@@ -215,6 +334,21 @@ function violations(zone: Zone, analysis: EffectAnalysis): string[] {
     const expected = [...(ARM_WRITERS[field] ?? [])].sort();
     const actual = [...found].sort();
     if (JSON.stringify(actual) !== JSON.stringify(expected)) out.push(`${field} written by ${actual.join(", ") || "nothing"}; expected ${expected.join(", ") || "nothing"}`);
+  }
+  for (const [arm, { kind, changes }] of Object.entries(SUCCESSOR_ARMS)) {
+    const method = findMethod(zone, "KernelState", arm);
+    if (method === undefined) continue;
+    const check = checkSuccessorArm(zone, method, kind);
+    out.push(...check.violations);
+    if (JSON.stringify(check.changed) !== JSON.stringify(changes)) out.push(`${arm}: changes ${check.changed.join(", ")}; declared ${changes.join(", ")}`);
+  }
+  const creation = findMethod(zone, "KernelState", "#applyCreation");
+  if (creation !== undefined) out.push(...checkCreationAdmission(zone, creation));
+  const governed = qualifiedWriters(zone, analysis, Object.keys(GOVERNED_WRITERS), "state.ts");
+  for (const [member, found] of governed) {
+    const actual = [...found].sort();
+    const expected = [...(GOVERNED_WRITERS[member] ?? [])].sort();
+    if (JSON.stringify(actual) !== JSON.stringify(expected)) out.push(`${member} written by ${actual.join(", ") || "nothing"}; expected ${expected.join(", ") || "nothing"}`);
   }
   out.push(...mutationsOutsideHandOver(zone, analysis, "coordinator.ts"));
   for (const [fn, summary] of analysis.effects) {
@@ -268,13 +402,16 @@ describe("correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole 
     assert.deepEqual(suffix("reportProtocolFailure"), ["this.#state.apply(plan);", "return answer;"]);
     assert.deepEqual(suffix("requestTakeover"), ["this.#state.apply(plan);", "this.#deliver(exchange);", "return answer;"]);
     assert.deepEqual(suffix("redeliver"), ["this.#deliver(intent);", "return answer;"]);
-    assert.deepEqual(suffix("submitOutcome"), ["return ok(this.#accept(record, intent, capture.outcome, caller, basis));"]);
+    assert.deepEqual(suffix("submitOutcome"), ["return ok(this.#accept(record, intent, capture.outcome, caller, reading, basis));"]);
+    assert.deepEqual(suffix("fireTimer"), ["this.#state.apply(plan);", "this.#requestCancellation(cancellation === null ? null : cancellation.request);", "return answer;"]);
+    assert.deepEqual(suffix("cancelExecution"), ["this.#state.apply(plan);", "this.#requestCancellation(request);", "return answer;"]);
+    assert.deepEqual(suffix("#refuseLosing"), ["this.#state.apply(plan);", "return refusal;"]);
     assert.deepEqual(suffix("#refusal"), ["this.#state.apply(plan);", "return refusal;"]);
   });
 
   test("every refusal ends its request, and #accept takes its basis from its caller's own binding", () => {
     assert.deepEqual(refusalsWithoutExit(zone), []);
-    assert.deepEqual(basisArgumentViolations(zone, findMethod(zone, "ExecutionCoordinator", "#accept")!, 4), []);
+    assert.deepEqual(basisArgumentViolations(zone, findMethod(zone, "ExecutionCoordinator", "#accept")!, 5), []);
     for (const [name, shape] of [["#requireControl", "null"], ["#openExchange", "result"]] as const) {
       const method = findMethod(zone, "ExecutionCoordinator", name);
       assert.ok(method !== undefined, name);
@@ -320,6 +457,35 @@ describe("correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole 
     for (const field of Object.keys(ARM_WRITERS)) assert.ok(fields.has(field), `${field} is a record field`);
     for (const [field, found] of owners) assert.deepEqual([...found].sort(), [...(ARM_WRITERS[field] ?? [])].sort(), field);
     assert.deepEqual(mutationsOutsideHandOver(zone, analysis, "coordinator.ts"), []);
+  });
+
+  for (const [arm, { kind, changes }] of Object.entries(SUCCESSOR_ARMS)) {
+    test(`${arm}: admits one successor of its own record before any write, and commits exactly its changes from it`, () => {
+      const method = findMethod(zone, "KernelState", arm);
+      assert.ok(method !== undefined);
+      const check = checkSuccessorArm(zone, method, kind);
+      assert.deepEqual(check.violations, []);
+      assert.deepEqual(check.changed, changes);
+    });
+  }
+
+  test("#applyCreation: publishes only the fresh record its admission returned", () => {
+    const method = findMethod(zone, "KernelState", "#applyCreation");
+    assert.ok(method !== undefined);
+    assert.deepEqual(checkCreationAdmission(zone, method), []);
+  });
+
+  test("the governed fields are written by the successor arms alone; the open-exchange pointer is told from the attempt a takeover replaces", () => {
+    const governed = qualifiedWriters(zone, analysis, [...Object.keys(GOVERNED_WRITERS), "ActivationRecord.activation"], "state.ts");
+    for (const [member, arms] of Object.entries(GOVERNED_WRITERS)) {
+      assert.deepEqual([...governed.get(member)!].sort(), [...arms].sort(), member);
+      const components = COMPONENT_OF[member] ?? [member.slice(member.indexOf(".") + 1)];
+      const declared = Object.entries(SUCCESSOR_ARMS).filter(([, { changes }]) => changes.some((component) => components.includes(component))).map(([name]) => name);
+      assert.deepEqual([...arms].sort(), declared.sort(), `${member}: its writers are the arms whose successor changes it`);
+    }
+    // Positive control: a takeover edits the open exchange's own attempt, never the pointer to it.
+    assert.deepEqual([...governed.get("ActivationRecord.activation")!], ["#applyTakeover"]);
+    assert.ok(ARM_WRITERS.activation!.includes("#applyTakeover"), "the name-only writer table conflates the two");
   });
 
   test("the effect summaries do not depend on the order functions are analysed in", () => {
@@ -381,7 +547,7 @@ const MUTANTS: readonly { readonly name: string; readonly edits: readonly (reado
   { name: "25: the basis bound before the safety callback", edits: [at(COORDINATOR, TAKEOVER_BASIS, "\n    // -- K1.2-DEC-19 revalidation"), at(COORDINATOR, "    let safe = false;\n    try {", "    const basis = record.version;\n    let safe = false;\n    try {")], reason: "requestTakeover: binds its basis before its last callback" },
   { name: "25: a plan's basis read when the plan is assembled", edits: [at(COORDINATOR, '      kind: "takeover",\n      executionId: record.executionId,\n      basis,', '      kind: "takeover",\n      executionId: record.executionId,\n      basis: record.version,')], reason: "requestTakeover: a plan's basis is not the planner's bound basis" },
   { name: "25: accepted state read after the last callback, before the basis", edits: [at(COORDINATOR, '    const content = acceptInputContent(request, "");\n', '    const content = acceptInputContent(request, "");\n    const early = record.mailboxLength;\n')], reason: "submitInput: reads accepted state after its last callback and before binding its basis: record.mailboxLength" },
-  { name: "25: #accept handed a basis that is not its caller's binding", edits: [at(COORDINATOR, "return ok(this.#accept(record, intent, capture.outcome, caller, basis));", "return ok(this.#accept(record, intent, capture.outcome, caller, record.version));")], reason: "submitOutcome: passes #accept a basis that is not its own binding" },
+  { name: "25: #accept handed a basis that is not its caller's binding", edits: [at(COORDINATOR, "return ok(this.#accept(record, intent, capture.outcome, caller, reading, basis));", "return ok(this.#accept(record, intent, capture.outcome, caller, reading, record.version));")], reason: "submitOutcome: passes #accept a basis that is not its own binding" },
   // Control 26: the Driver handed the attempt before it is recorded.
   { name: "26: the Driver handed the attempt before the decision is applied", edits: [at(COORDINATOR, "    this.#state.apply(plan);\n    this.#deliver(exchange);\n    return answer;", "    this.#deliver(exchange);\n    this.#state.apply(plan);\n    return answer;")], reason: "requestTakeover: statement outside the hand-over → delivery → return suffix" },
   // Control 27 (round 6 H3): holds written before their history append.
@@ -401,11 +567,28 @@ const MUTANTS: readonly { readonly name: string; readonly edits: readonly (reado
   // Controls 29–31: holds and history written in the wrong place.
   { name: "29: a protocol hold written while preparing", edits: [at(STATE, "    const stored = plan.history;", "    const stored = plan.history;\n    const probe = (exchange.protocolFailureHold = null);")], reason: "#applyControl: mutates before its commit" },
   { name: "30: a hold written by the wrong arm", edits: [at(STATE, "    appendOwn(exchange.deliveries, attempt);", "    appendOwn(exchange.deliveries, attempt);\n    exchange.codeHold = null;")], reason: "codeHold written by #applyControl, #applyDelivery" },
-  { name: "31: recovery history changed through an alias outside the arms", edits: [at(STATE, "  const open = record.activation;\n  if (open !== null", "  appendAllOwn(record.recoveryHistory, []);\n  const open = record.activation;\n  if (open !== null")], reason: "recoveryHistory written by #applyControl, #applyOutcome, #applyTakeover, deliveriesOf" },
+  { name: "31: recovery history changed through an alias outside the arms", edits: [at(STATE, "  const open = record.activation;\n  if (open !== null", "  appendAllOwn(record.recoveryHistory, []);\n  const open = record.activation;\n  if (open !== null")], reason: "recoveryHistory written by #applyCancellation, #applyControl, #applyOutcome, #applyTakeover, deliveriesOf" },
   // D01-CHK-2: getters.
   { name: "a reader getter that writes its record", edits: [at(STATE, "  get version(): number {\n    return this.#record.version;\n  }", "  get version(): number {\n    this.#record.version = this.#record.version;\n    return this.#record.version;\n  }")], reason: "version written by" },
   { name: "a changing getter read by a planner before its hand-over", edits: [at(STATE, "  get mailboxLength(): number {\n    return this.#record.mailbox.length;\n  }", "  get mailboxLength(): number {\n    appendAllOwn(this.#record.mailbox, []);\n    return this.#record.mailbox.length;\n  }")], reason: "submitInput: mutates before its hand-over: record.mailboxLength" },
-  { name: "a getter that returns a live record list, which a planner changes", edits: [at(STATE, "  get mailboxLength(): number {", "  get liveRefusals(): RefusalRecord[] {\n    return this.#record.refusals;\n  }\n\n  get mailboxLength(): number {"), at(STATE, 'import type { ExecutionState } from "./lifecycle.ts";', 'import type { ExecutionState } from "./lifecycle.ts";\nimport type { RefusalRecord } from "./refusal.ts";'), at(COORDINATOR, '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n', '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n    appendAllOwn(record.liveRefusals, []);\n')], reason: "submitInput: mutates before its hand-over: appendAllOwn(record.liveRefusals, [])" },
+  // D03-CHK-01: the successor rule's negative controls. Each is valid TypeScript that changes what is
+  // committed away from the admitted successor, or commits before admitting it.
+  { name: "D03-CHK-01 a governed commit computed from the successor (next.registrations + 1)", edits: [at(STATE, "    const registrations = next.registrations;", "    const registrations = next.registrations + 1;")], reason: "#applyOutcome: governed write registrations does not commit the successor's registrations exactly" },
+  {
+    name: "D03-CHK-01 a successor built but never admitted",
+    edits: [at(STATE, '    const next = admit(\n      record,\n      "outcome",\n      successor(record, {', "    const next = (\n      successor(record, {"), at(STATE, "      }),\n    );\n    const toAcknowledge", "      })\n    );\n    const toAcknowledge")],
+    reason: "#applyOutcome: admits no successor",
+  },
+  { name: "D03-CHK-01 an admission after the first write", edits: [at(STATE, "    // A wake retires the live generation, with its readiness and READY; any other input only queues.\n", "    record.version = plan.basis + 1;\n")], reason: "#applyInput: statement outside the prepare → commit grammar" },
+  { name: "D03-CHK-01 an omitted scalar write (the live wait)", edits: [at(STATE, "    const liveWait = next.wait;\n", ""), at(STATE, "    record.wait = liveWait;\n", "")], reason: "#applyOutcome: the successor's wait is not committed" },
+  { name: "D03-CHK-01 a skipped disposition (the loop starts at 1)", edits: [at(STATE, "    for (let index = 0; index < toEnd.length; index += 1) (readAt(toEnd, index) as MailboxEntry).disposition = ending;\n    record.acceptedProgress", "    for (let index = 1; index < toEnd.length; index += 1) (readAt(toEnd, index) as MailboxEntry).disposition = ending;\n    record.acceptedProgress")], reason: "#applyOutcome: a disposition loop does not apply the successor's ended exactly" },
+  { name: "D03-CHK-01 a duplicated append (the timeout twice)", edits: [at(STATE, "    if (timeoutEntry !== null) appendOwn(record.mailbox, timeoutEntry);\n", "    if (timeoutEntry !== null) appendOwn(record.mailbox, timeoutEntry);\n    if (timeoutEntry !== null) appendOwn(record.mailbox, timeoutEntry);\n")], reason: "#applyOutcome: the successor's appended is committed 2 times" },
+  { name: "D03-CHK-01 a plan-derived conditional that suppresses a checked change (a scalar)", edits: [at(STATE, "    record.wait = liveWait;", "    if (plan.liveWait !== null) record.wait = liveWait;")], reason: "#applyOutcome: governed write wait is conditional" },
+  { name: "D03-CHK-01 a plan-derived conditional that suppresses a checked change (an append)", edits: [at(STATE, "    if (timeoutEntry !== null) appendOwn(record.mailbox, timeoutEntry);", "    if (timeout !== null) appendOwn(record.mailbox, timeoutEntry as MailboxEntry);")], reason: "#applyOutcome: governed append mailbox is conditional on something other than its own value" },
+  { name: "D03-CHK-01 a change the commit does not apply (input clears the cancellation record)", edits: [at(STATE, "        cancellation: record.cancellation,\n        retired: woken,", "        cancellation: woken === null ? record.cancellation : null,\n        retired: woken,")], reason: "#applyInput: the successor's cancellation is not committed" },
+  { name: "D03-CHK-01 a takeover that writes the open-exchange pointer", edits: [at(STATE, "    exchange.protocolFailureHold = null;\n  }", "    exchange.protocolFailureHold = null;\n    record.activation = exchange;\n  }")], reason: "ExecutionRecord.activation written by #applyCancellation, #applyDispatch, #applyOutcome, #applyTakeover" },
+  { name: "D03-CHK-01 creation publishing its fresh record unadmitted", edits: [at(STATE, "    const record = admitCreated(fresh);", "    const record = fresh;")], reason: "#applyCreation: publishes a record its admission did not return" },
+  { name: "a getter that returns a live record list, which a planner changes", edits: [at(STATE, "  get mailboxLength(): number {", "  get liveRefusals(): RefusalRecord[] {\n    return this.#record.refusals;\n  }\n\n  get mailboxLength(): number {"), at(COORDINATOR, '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n', '    const content = acceptInputContent(request, "");\n    // The last caller observation is above: the decision below is planned against this version.\n    const basis = record.version;\n    appendAllOwn(record.liveRefusals, []);\n')], reason: "submitInput: mutates before its hand-over: appendAllOwn(record.liveRefusals, [])" },
 ];
 
 describe("correction DEC-9 negative controls: every forbidden shape is reported", () => {
@@ -423,7 +606,7 @@ describe("correction DEC-9 negative controls: every forbidden shape is reported"
       }
       const changed = new Map([...texts].filter(([file, text]) => text !== SOURCES[file]));
       const mutated = buildZone(zoneFiles(), changed, zone);
-      assert.deepEqual(typeErrors(mutated).filter((error) => !/'(probe|late|early|applied|grantsMinted)' is declared but/.test(error)), [], "the mutant is valid TypeScript, so only the rule can reject it");
+      assert.deepEqual(typeErrors(mutated).filter((error) => !/'(probe|late|early|applied|grantsMinted|admitCreated)' is declared but/.test(error)), [], "the mutant is valid TypeScript, so only the rule can reject it");
       const found = violations(mutated, analyse(mutated));
       assert.ok(found.some((violation) => violation.includes(mutant.reason)), `expected "${mutant.reason}"; reported: ${found.join(" | ") || "nothing"}`);
     });

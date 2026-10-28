@@ -1,0 +1,188 @@
+✔ control: normal cancellation disposes both queued Events (4.553958ms)
+✔ S2 must reject duplicated cancellation positions, even when the length equals queued count (0.823583ms)
+✔ S2 must reject an Outcome acknowledging and terminal-disposing the same position (2.241541ms)
+✔ control: two immediate expiries mint distinct generations (2.255916ms)
+✔ S4 must reject reusing an already-expired generation in the Outcome arm (1.087208ms)
+✔ due-at-registration wait expiry needs no host fire (L-22 counterexample) (0.670541ms)
+ℹ {"state":"READY","queued":["timeout-38:execution-5:app-a8:tenant-a9:report-171:1"],"mailbox":[{"eventId":"event-creation-5:app-a8:tenant-a9:report-17","kind":"acknowledged","generation":null},{"eventId":"timeout-38:execution-5:app-a8:tenant-a9:report-171:1","kind":"queued","generation":1}],"retired":[1],"timerFires":0}
+{"kind":"cancellation","state":"CANCELLED","queued":["event-creation-5:app-a8:tenant-a9:report-17","event-5:app-a38:execution-5:app-a8:tenant-a9:report-177:input-2"],"dispositions":["queued","queued"],"readiness":null}
+{"kind":"cancellation","state":"CANCELLED","queued":["event-creation-5:app-a8:tenant-a9:report-17","event-5:app-a38:execution-5:app-a8:tenant-a9:report-177:input-4"],"dispositions":["queued","queued"],"readiness":null}
+{"kind":"outcome","state":"COMPLETED","queued":["event-creation-5:app-a8:tenant-a9:report-17"],"dispositions":["queued","terminal"],"readiness":null}
+{"kind":"outcome","state":"COMPLETED","queued":["event-5:app-a38:execution-5:app-a8:tenant-a9:report-177:input-8"],"dispositions":["acknowledged","queued"],"readiness":null}
+{"kind":"outcome","state":"COMPLETED","queued":["timeout-38:execution-5:app-a8:tenant-a9:report-171:1"],"dispositions":["acknowledged","queued"],"readiness":{"species":"deadline","generation":1,"timeoutEventId":"timeout-38:execution-5:app-a8:tenant-a9:report-171:1"}}
+{"kind":"outcome","state":"FAILED","queued":["event-creation-5:app-a8:tenant-a9:report-17"],"dispositions":["queued","terminal"],"readiness":null}
+{"kind":"outcome","state":"FAILED","queued":["event-5:app-a38:execution-5:app-a8:tenant-a9:report-178:input-12"],"dispositions":["acknowledged","queued"],"readiness":null}
+{"kind":"outcome","state":"FAILED","queued":["timeout-38:execution-5:app-a8:tenant-a9:report-171:1"],"dispositions":["acknowledged","queued"],"readiness":{"species":"deadline","generation":1,"timeoutEventId":"timeout-38:execution-5:app-a8:tenant-a9:report-171:1"}}
+✖ K13-R02-S2-01 exact position cover with queued ending: explicit (4.931333ms)
+✖ K13-R02-S2-01 exact position cover with queued ending: execution_deadline (0.947625ms)
+✖ K13-R02-S2-01 exact position cover with queued acknowledgment: complete (2.619625ms)
+✖ K13-R02-S2-01 exact position cover with queued ending: complete (1.276209ms)
+✖ K13-R02-S2-02 terminal decision appends queued timeout: complete (0.926042ms)
+✖ K13-R02-S2-01 exact position cover with queued acknowledgment: fail (2.043041ms)
+✖ K13-R02-S2-01 exact position cover with queued ending: fail (1.441583ms)
+✖ K13-R02-S2-02 terminal decision appends queued timeout: fail (0.806625ms)
+✔ positive: exact cover, correct dispositions, and nonterminal timeout (2.064166ms)
+{"dimension":"exact-cover","accepted":12,"refused":2245}
+{"dimension":"generation-freshness","accepted":3,"refused":12}
+✔ exact-cover matrix: two queued positions, every split, numeric aliases and out-of-range positions (654.452292ms)
+✔ generation matrix: mutually consistent reused/skipped/fresh generations for live, immediate wake and immediate expiry (5.125125ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 9
+ℹ fail 8
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 865.593709
+
+✖ failing tests:
+
+test at docs/development/work/K1.3/review-02/guard-search.test.mjs:25:3
+✖ K13-R02-S2-01 exact position cover with queued ending: explicit (4.931333ms)
+  AssertionError [ERR_ASSERTION]: owner must refuse before any mutation
+      at mustRefuse (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:21:10)
+      at TestContext.<anonymous> (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:28:5)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: /S2|S5/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.3/review-02/guard-search.test.mjs:25:3
+✖ K13-R02-S2-01 exact position cover with queued ending: execution_deadline (0.947625ms)
+  AssertionError [ERR_ASSERTION]: owner must refuse before any mutation
+      at mustRefuse (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:21:10)
+      at TestContext.<anonymous> (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:28:5)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: /S2|S5/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.3/review-02/guard-search.test.mjs:33:5
+✖ K13-R02-S2-01 exact position cover with queued acknowledgment: complete (2.619625ms)
+  AssertionError [ERR_ASSERTION]: owner must refuse before any mutation
+      at mustRefuse (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:21:10)
+      at TestContext.<anonymous> (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:35:7)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: /S2|S5/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.3/review-02/guard-search.test.mjs:33:5
+✖ K13-R02-S2-01 exact position cover with queued ending: complete (1.276209ms)
+  AssertionError [ERR_ASSERTION]: owner must refuse before any mutation
+      at mustRefuse (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:21:10)
+      at TestContext.<anonymous> (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:35:7)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: /S2|S5/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.3/review-02/guard-search.test.mjs:38:3
+✖ K13-R02-S2-02 terminal decision appends queued timeout: complete (0.926042ms)
+  AssertionError [ERR_ASSERTION]: owner must refuse before any mutation
+      at mustRefuse (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:21:10)
+      at TestContext.<anonymous> (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:40:5)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: /S2|S5/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.3/review-02/guard-search.test.mjs:33:5
+✖ K13-R02-S2-01 exact position cover with queued acknowledgment: fail (2.043041ms)
+  AssertionError [ERR_ASSERTION]: owner must refuse before any mutation
+      at mustRefuse (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:21:10)
+      at TestContext.<anonymous> (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:35:7)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: /S2|S5/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.3/review-02/guard-search.test.mjs:33:5
+✖ K13-R02-S2-01 exact position cover with queued ending: fail (1.441583ms)
+  AssertionError [ERR_ASSERTION]: owner must refuse before any mutation
+      at mustRefuse (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:21:10)
+      at TestContext.<anonymous> (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:35:7)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: /S2|S5/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.3/review-02/guard-search.test.mjs:38:3
+✖ K13-R02-S2-02 terminal decision appends queued timeout: fail (0.806625ms)
+  AssertionError [ERR_ASSERTION]: owner must refuse before any mutation
+      at mustRefuse (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:21:10)
+      at TestContext.<anonymous> (file:///Users/rex-shih/.codex/worktrees/k1-3-design-check-03/arrokothi/docs/development/work/K1.3/review-02/guard-search.test.mjs:40:5)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: /S2|S5/,
+    operator: 'match',
+    diff: 'simple'
+  }

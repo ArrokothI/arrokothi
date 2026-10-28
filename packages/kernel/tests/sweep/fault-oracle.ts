@@ -49,11 +49,19 @@
  *     answer is returned.
  * - **Takeover apply window** (`CHECKS.takeoverWindowAt`): the fault is at the clearing record's append,
  *   the second of the takeover's two appends. Expected: that fault, and `B` plus exactly the receipt.
+ * - **Losing-proposal apply window** (`CHECKS.losingWindowAt`; K1.3, CX-6): the fault is at the index
+ *   insert, the last of the losing-proposal commit's two faultable statements. Expected: that fault, and
+ *   `B` plus exactly the refusal, with no losing-proposal record: the unindexed form.
  * - **Outcome apply window** (`CHECKS.outcomeStepAt`, `CHECKS.outcomePrefix`): the fault is at one of
  *   the Outcome commit's statements. Expected: that fault, and a state that is a prefix of the declared
  *   apply sequence `OUTCOME_APPLY` ending inside that statement. The sweep checks that the sequence
  *   matches the source (`CHECKS.applySequence`) and, from the reference decision, that applying it
- *   whole reproduces the reference state (`CHECKS.applyModel`).
+ *   whole reproduces the reference state (`CHECKS.applyModel`). K1.3 (017 L-28, owner choice 06): a
+ *   prefix can break the state owner's post-state predicate, for example terminal dispositions while
+ *   still `RUNNING`, or a timeout appended before its retirement. The owner then refuses every later
+ *   decision that carries the violation, so in such a prefix the two probes that reach it, the next
+ *   accepted input and (until the accepted-Outcome index holds the Activation) the setup grant's
+ *   Outcome, are observed as `owner refused (P<n>)` (`ownerRefusalIn`).
  *
  * Since COORD-REFACTOR-01 the two commits are applied by the state owner: the Outcome commit is the end
  * of `KernelState`'s `#applyOutcome` and the takeover's appends and writes are the end of
@@ -169,6 +177,11 @@ export interface Context {
   readonly unnamedRefusal: RefusalRecord;
   /** The failure reason the Kernel records when a Driver throws a non-string, from a clean call. */
   readonly deliveryFailure: string;
+  /**
+   * K1.3, CX-6: the coordinates of a well-formed proposal that loses to an accepted cancellation. Its
+   * refusal is recorded with one losing-proposal record carrying these coordinates and that refusal.
+   */
+  readonly losing: { readonly activationId: string; readonly writerEpoch: number; readonly baseProgressRevision: number } | null;
 }
 
 export type Verdict =
@@ -190,7 +203,13 @@ export const OUTCOME_APPLY = [
   ["acceptedOutcomes", "mapSet(record.acceptedOutcomes, activationId, stored);"],
   ["receipts", "appendOwn(record.receipts, receipt);"],
   ["history", "appendAllOwn(record.recoveryHistory, historyToAppend);"],
-  ["activation", "record.activation = null;"],
+  // K1.3: an `await` registration's facts, in the same commit.
+  ["timeout", "if (timeoutEntry !== null) appendOwn(record.mailbox, timeoutEntry);"],
+  ["retired", "if (retired !== null) appendOwn(record.retiredWaits, retired);"],
+  ["registrations", "record.registrations = registrations;"],
+  ["wait", "record.wait = liveWait;"],
+  ["readiness", "record.readiness = readiness;"],
+  ["activation", "record.activation = activation;"],
   ["state", "record.state = nextState;"],
 ] as const;
 export type OutcomeStep = (typeof OUTCOME_APPLY)[number][0];
@@ -210,6 +229,13 @@ export const TAKEOVER_APPLY = [
   "exchange.protocolFailureHold = null;",
   "this.#deliver(exchange);",
   "return answer;",
+] as const;
+
+/** K1.3: the losing-proposal commit, in order: the end of `state.ts`'s `#applyLosingOutcome`. */
+export const LOSING_APPLY = [
+  "appendOwn(record.refusals, refusal);",
+  "record.nextRefusalPosition = position + 1;",
+  "mapSet(record.losingIndex, key, losing);",
 ] as const;
 
 /** The statements that hand a decision to the state owner, each followed by the rest of its method. */
@@ -242,6 +268,8 @@ export interface SourceModel {
   readonly outcomeApply: readonly { readonly step: OutcomeStep; readonly lines: Lines | null }[];
   readonly takeoverClearingAppend: Lines | null;
   readonly takeoverDeliverCall: Lines | null;
+  /** K1.3: the losing-proposal commit's index insert. */
+  readonly losingIndexInsert: Lines | null;
   readonly deliverySites: readonly { readonly site: DeliverySite; readonly lines: Lines | null }[];
   readonly exits: readonly Exit[];
   /** Mismatches between the declared sequences and the source. */
@@ -332,6 +360,9 @@ export function sourceModel(coordinatorPath: string): SourceModel {
   // its plan over, delivering and returning.
   sequence("#applyTakeover", TAKEOVER_APPLY.slice(0, 7), END, owner);
   sequence("requestTakeover", [TAKEOVER_HANDOVER, ...TAKEOVER_APPLY.slice(7)], END);
+  // The losing-proposal commit ends the owner's losing-outcome arm.
+  sequence("#applyLosingOutcome", LOSING_APPLY, END, owner);
+  const losingIndexInsert = anchored("#applyLosingOutcome", LOSING_APPLY[2], owner);
   const outcomeApply = OUTCOME_APPLY.map(([step, anchor]) => ({ step, lines: anchored("#applyOutcome", anchor, owner) }));
   const takeoverClearingAppend = anchored("#applyTakeover", TAKEOVER_APPLY[1], owner);
   const takeoverDeliverCall = anchored("requestTakeover", TAKEOVER_APPLY[7]);
@@ -376,7 +407,7 @@ export function sourceModel(coordinatorPath: string): SourceModel {
       }
     }
   }
-  return { outcomeApply, takeoverClearingAppend, takeoverDeliverCall, deliverySites, exits, problems };
+  return { outcomeApply, takeoverClearingAppend, takeoverDeliverCall, losingIndexInsert, deliverySites, exits, problems };
 }
 
 // -- Helpers ------------------------------------------------------------------------------------
@@ -388,8 +419,12 @@ const threw = (operation: number): Returned => ({ kind: "threw", operation });
 
 const withView = (state: State, patch: Partial<ExecutionView>): State => ({ ...state, view: { ...state.view, ...patch } });
 
-const withRefusal = (base: State, refusal: RefusalRecord): State => ({
-  view: { ...base.view, refusals: [...base.view.refusals, refusal] },
+const withRefusal = (base: State, refusal: RefusalRecord, losing: Context["losing"]): State => ({
+  view: {
+    ...base.view,
+    refusals: [...base.view.refusals, refusal],
+    ...(losing === null ? {} : { losingOutcomes: [...base.view.losingOutcomes, { ...losing, refusal }] }),
+  },
   nextRefusal: base.nextRefusal + 1,
   nextAcceptance: base.nextAcceptance,
   setupGrant: base.setupGrant,
@@ -440,6 +475,8 @@ export const CHECKS = {
   },
   takeoverWindowAt: (model: SourceModel, fault: Fault | null): boolean =>
     fault !== null && fault.stack.some((frame) => inLines(frame, model.takeoverClearingAppend)),
+  losingWindowAt: (model: SourceModel, fault: Fault | null): boolean =>
+    fault !== null && fault.stack.some((frame) => inLines(frame, model.losingIndexInsert)),
   outcomeStepAt: (model: SourceModel, fault: Fault | null, step: OutcomeStep): boolean => {
     const lines = model.outcomeApply.find((entry) => entry.step === step)?.lines ?? null;
     return fault !== null && fault.stack.some((frame) => inLines(frame, lines));
@@ -460,7 +497,7 @@ export const CHECKS = {
     if (returned.kind !== "err") return false;
     const base = context.callback?.state ?? context.s0;
     return CHECKS.refusalPosition(returned.refusal, base) && CHECKS.refusalExecution(returned.refusal, context.executionId) &&
-      decided({ returned, state: withRefusal(base, returned.refusal) }, context.reference);
+      decided({ returned, state: withRefusal(base, returned.refusal, context.losing) }, context.reference);
   },
   referenceUnnamed: (context: Context): boolean => decided({ returned: { kind: "err", refusal: context.unnamedRefusal }, state: context.s0 }, context.reference),
   referenceUnchanged: (context: Context): boolean => isDeepStrictEqual(context.reference.state, context.s0),
@@ -512,9 +549,22 @@ export const CHECKS = {
       resultId: string | null;
       terminalDispositions: readonly string[];
       replayed: boolean;
+      wait: { generation: number; result: string; timeoutEventId: string | null } | null;
     };
     const before = context.s0.view;
     const after = decision.state.view;
+    // K1.3: an `await`'s registration result agrees with the wait state it left; any other step leaves none.
+    const wait = answer.wait;
+    const lastRetired = after.retiredWaits.at(-1);
+    const readiness = after.waitEndedReadiness;
+    const waitAgrees =
+      wait === null
+        ? after.wait === null && readiness === null && after.retiredWaits.length === before.retiredWaits.length
+        : wait.result === "waiting"
+          ? after.wait !== null && after.wait.generation === wait.generation && readiness === null && wait.timeoutEventId === null
+          : after.wait === null && lastRetired !== undefined && lastRetired.generation === wait.generation && readiness !== null &&
+            readiness.generation === wait.generation && readiness.timeoutEventId === wait.timeoutEventId &&
+            (wait.result === "expired" ? lastRetired.retiredBy === "deadline" && lastRetired.endingEventId === wait.timeoutEventId : lastRetired.retiredBy === "event");
     const added = (list: readonly string[], base: readonly string[]): string[] => list.filter((id) => !base.includes(id));
     if (before.activation === null || typeof context.s0.nextAcceptance !== "number") return false;
     return answer.replayed === false && answer.activationId === before.activation.activationId &&
@@ -527,8 +577,8 @@ export const CHECKS = {
       answer.resultId === (after.result === null ? null : after.result.resultId) &&
       isDeepStrictEqual([...answer.terminalDispositions], added(after.terminalDispositions, before.terminalDispositions)) &&
       after.activation === null && decision.state.nextRefusal === context.s0.nextRefusal &&
-      decision.state.nextAcceptance === (after.state === "READY" ? context.s0.nextAcceptance + 1 : "terminal_destination") &&
-      decision.state.setupGrant === "duplicate_conflict";
+      decision.state.nextAcceptance === (after.state === "READY" || after.state === "WAITING" ? context.s0.nextAcceptance + 1 : "terminal_destination") &&
+      decision.state.setupGrant === "duplicate_conflict" && waitAgrees;
   },
   // Exits.
   declaredExit: (declared: readonly Exit[], executed: (exit: Exit) => boolean): boolean => declared.length === 1 && executed(declared[0] as Exit),
@@ -569,6 +619,15 @@ export function outcomeLadder(context: Context): { readonly step: OutcomeStep; r
   const s1 = context.reference.state;
   const ladder: { step: OutcomeStep; states: State[] }[] = [];
   let state = s0;
+  let registrations = countOf(s0.view);
+  let indexed = false;
+  const observed = (current: State): State => {
+    const clause = ownerRefusalIn(current.view, registrations);
+    if (clause === null) return current;
+    const refused = `owner refused (${clause})`;
+    // An input probe always reaches the owner; the setup grant's Outcome does until the index holds it.
+    return { ...current, nextAcceptance: refused, setupGrant: indexed ? current.setupGrant : refused };
+  };
   const changedTo = (kind: string): number[] =>
     s1.view.mailbox.flatMap((entry, index) => (s0.view.mailbox[index]?.disposition.kind === "queued" && entry.disposition.kind === kind ? [index] : []));
   for (const [step] of OUTCOME_APPLY) {
@@ -618,6 +677,25 @@ export function outcomeLadder(context: Context): { readonly step: OutcomeStep; r
           elements.push((current) => withView(current, { recoveryHistory: s1.view.recoveryHistory.slice(0, s0.view.recoveryHistory.length + added) }));
         }
         break;
+      case "timeout":
+        for (let added = 1; added <= s1.view.mailbox.length - s0.view.mailbox.length; added += 1) {
+          elements.push((current) => withMailbox(current, [...current.view.mailbox, ...s1.view.mailbox.slice(current.view.mailbox.length, current.view.mailbox.length + 1)]));
+        }
+        break;
+      case "retired":
+        for (let added = 1; added <= s1.view.retiredWaits.length - s0.view.retiredWaits.length; added += 1) {
+          elements.push((current) => withView(current, { retiredWaits: s1.view.retiredWaits.slice(0, s0.view.retiredWaits.length + added) }));
+        }
+        break;
+      case "registrations":
+        // Not in any view: the generation is observable only through the live and retired waits.
+        break;
+      case "wait":
+        elements.push((current) => withView(current, { wait: s1.view.wait }));
+        break;
+      case "readiness":
+        elements.push((current) => withView(current, { waitEndedReadiness: s1.view.waitEndedReadiness }));
+        break;
       case "activation":
         elements.push((current) =>
           withView(current, {
@@ -631,14 +709,56 @@ export function outcomeLadder(context: Context): { readonly step: OutcomeStep; r
         elements.push((current) => ({ ...withView(current, { state: s1.view.state }), nextAcceptance: s1.nextAcceptance }));
         break;
     }
-    const states: State[] = [state];
+    // What the probes observe of each state: the state itself, unless it breaks the post-state predicate.
+    const states: State[] = [observed(state)];
     for (const element of elements) {
       state = element(state);
-      states.push(state);
+      states.push(observed(state));
     }
     ladder.push({ step, states });
+    if (step === "registrations") registrations = countOf(s1.view);
+    if (step === "acceptedOutcomes") indexed = true;
   }
   return ladder;
+}
+
+/** The registration count of a state the owner admitted: its retired and live generations. */
+const countOf = (view: ExecutionView): number => view.retiredWaits.length + (view.wait === null ? 0 : 1);
+
+/**
+ * K1.3 (L-28): the first post-state clause a state breaks, as the state owner names it, over what a view
+ * shows and the registration count, which no view holds. A view does not show readiness's selector, so
+ * P9's selector term is not checked; no apply-sequence state changes readiness apart from its retirement.
+ */
+export function ownerRefusalIn(view: ExecutionView, registrations: number): string | null {
+  const terminal = view.state === "COMPLETED" || view.state === "FAILED" || view.state === "CANCELLED";
+  const readiness = view.waitEndedReadiness;
+  if (terminal && (view.wait !== null || readiness !== null || view.activation !== null)) return "P1";
+  if ((view.state === "WAITING") !== (view.wait !== null)) return "P2";
+  if ((view.state === "RUNNING") !== (view.activation !== null)) return "P3";
+  if ((view.state === "CANCELLED") !== (view.cancellation !== null)) return "P4";
+  for (const entry of view.mailbox) {
+    if (terminal && entry.disposition.kind === "queued") return "P1";
+    if (!terminal && entry.disposition.kind === "terminal") return "P5";
+  }
+  const retired = view.retiredWaits;
+  const ledger = view.wait === null ? retired : [...retired, view.wait];
+  if (ledger.length !== registrations || ledger.some((wait, index) => wait.generation !== index + 1 || wait.deadline !== wait.declaration.deadline)) return "P6";
+  const timeouts = view.mailbox.flatMap((entry) => (entry.sourceCategory === "kernel_timeout" ? [entry] : []));
+  const deadlines = retired.filter((wait) => wait.retiredBy === "deadline");
+  const matches = (wait: (typeof retired)[number], entry: (typeof timeouts)[number]): boolean => wait.endingEventId === entry.eventId && wait.generation === entry.waitGeneration && wait.deadline === entry.deadline;
+  if (timeouts.length !== deadlines.length || !timeouts.every((entry) => deadlines.filter((wait) => matches(wait, entry)).length === 1) || !deadlines.every((wait) => timeouts.filter((entry) => matches(wait, entry)).length === 1)) return "P7";
+  for (const [index, wait] of retired.entries()) {
+    if (wait.retiredBy === "cancellation" && !(index === retired.length - 1 && view.state === "CANCELLED" && wait.endingEventId === null)) return "P8";
+    if (wait.retiredBy === "event" && !view.mailbox.some((entry) => entry.eventId === wait.endingEventId && entry.sourceCategory !== "kernel_timeout")) return "P8";
+  }
+  if (readiness !== null) {
+    const last = retired.at(-1);
+    if (view.state !== "READY" || last === undefined || readiness.generation !== last.generation || readiness.species !== last.retiredBy) return "P9";
+    if (readiness.timeoutEventId !== (last.retiredBy === "deadline" ? last.endingEventId : null)) return "P9";
+    if (view.mailbox.find((entry) => entry.eventId === last.endingEventId)?.disposition.kind !== "queued") return "P9";
+  }
+  return null;
 }
 
 // -- Classification -----------------------------------------------------------------------------
@@ -696,6 +816,10 @@ export function classify(context: Context, model: SourceModel, attempt: Attempt,
         return pass("threw inside the declared takeover apply window: receipt appended, clearing record not");
       }
     }
+    const losingRefusal = context.reference.returned.kind === "err" ? context.reference.returned.refusal : null;
+    if (context.losing !== null && losingRefusal !== null && CHECKS.losingWindowAt(model, attempt.fault) && decided({ returned: threw(attempt.k), state: withRefusal(base, losingRefusal, null) }, observed)) {
+      return pass("threw inside the declared losing-proposal apply window: refusal recorded, index entry not");
+    }
     if (CHECKS.acceptingExit(context, "submitOutcome") && CHECKS.applySequence(model)) {
       for (const { step, states } of ladder) {
         if (!CHECKS.outcomeStepAt(model, attempt.fault, step)) continue;
@@ -715,9 +839,15 @@ export function classify(context: Context, model: SourceModel, attempt: Attempt,
         ? pass("refused without naming the Execution: nothing recorded")
         : fail("refused without naming the Execution and left a state other than the no-call state", differing(unnamed, observed));
     }
-    const recorded: Observation = { returned, state: withRefusal(base, refusal) };
+    const recorded: Observation = { returned, state: withRefusal(base, refusal, context.losing) };
     if (CHECKS.refusalPosition(refusal, base) && CHECKS.refusalExecution(refusal, context.executionId) && decided(recorded, observed)) {
       return pass(afterCallback ? "refused after the safety callback: its decision and exactly one refusal" : "refused: exactly one refusal recorded");
+    }
+    // K1.3, CX-6: a contained fault that made the losing proposal's identity or content unreadable leaves
+    // no canonical proposal to index, so the same refusal is recorded without a losing-proposal record.
+    const unindexed: Observation | null = context.losing === null ? null : { returned, state: withRefusal(base, refusal, null) };
+    if (unindexed !== null && refusal.classification === "cancellation_terminal_conflict" && CHECKS.refusalPosition(refusal, base) && CHECKS.refusalExecution(refusal, context.executionId) && decided(unindexed, observed)) {
+      return pass("refused: exactly one refusal recorded, unindexed after a contained fault");
     }
     return fail(
       "refused and left a state other than the no-call state plus that refusal",

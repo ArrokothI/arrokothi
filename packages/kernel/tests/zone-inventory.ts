@@ -37,13 +37,14 @@ export const ACCESS_INVENTORY: readonly InventoryEntry[] = [
   // coordinator.ts
   { file: "coordinator.ts", kind: "assertion", mode: "introduce", text: "initialObserved as InputContent", count: 1, reason: "an observed caller value already checked to be a non-null object; acceptInputContent reads it only through observeField (its parameter is an envelope seed below)" },
   { file: "coordinator.ts", kind: "index", mode: "read", text: "controls[index]", count: 1, bounded: true, reason: "the trusted host's controlScopes list (DEC-8 host contract), read below its own length" },
+  { file: "coordinator.ts", kind: "index", mode: "read", text: "cancels[index]", count: 1, bounded: true, reason: "the trusted host's cancelScopes list (K1.3, the same host contract as controlScopes), read below its own length" },
   { file: "coordinator.ts", kind: "index", mode: "read", text: "scalars[scalarIndex]", count: 1, bounded: true, reason: KERNEL_LIST },
   { file: "coordinator.ts", kind: "spread", mode: "read", text: "...already.decision", count: 1, reason: "the frozen Kernel-built decision retained for replay" },
   { file: "coordinator.ts", kind: "spread", mode: "read", text: "...decision", count: 1, reason: "#accept's frozen Kernel-built decision" },
   { file: "coordinator.ts", kind: "spread", mode: "read", text: "...exchange.activation", count: 1, reason: "the frozen Kernel-built Activation (takeover copies it with a new epoch)" },
   // state.ts (COORD-REFACTOR-01: the view projections moved here with the records they read)
   { file: "state.ts", kind: "spread", mode: "read", text: "...base", count: 1, reason: "a view literal built immediately above" },
-  { file: "state.ts", kind: "spread", mode: "read", text: "...entry.inputId", count: 1, reason: "the frozen Kernel copy of an accepted Input ID" },
+  { file: "state.ts", kind: "spread", mode: "read", text: "...(entry.inputId as InputId)", count: 1, reason: "the frozen Kernel copy of an accepted Input ID; application input always owns one (K1.3 makes the field nullable for timeouts)" },
   // envelope.ts
   { file: "envelope.ts", kind: "dynamic", mode: "read", text: "(holder as Record<string, unknown>)[key]", count: 1, getter: true, reason: "observeOwn: the single own observation, reached only after the holder's own descriptor was found" },
   { file: "envelope.ts", kind: "envelope", mode: "read", text: "(holder as Record<string, unknown>)[key]", count: 1, reason: "the same observation: the one member access the envelope rule permits on a caller-owned value" },
@@ -86,6 +87,8 @@ export const FOREIGN_CALLS: ReadonlyMap<string, string> = new Map([
   ["#deliver this.#driver.deliver(intent.activation, settlement, intent.submission)", "the Driver's delivery of the frozen Activation, a fresh settlement capability and the frozen grant, after the decision is recorded (post-commit)"],
   ["hostMember PrimordialReflectApply(getter, holder, [])", "a trusted host object's own accessor for an optional member, with the host as receiver"],
   ["requestTakeover PrimordialReflectApply(establish, this.#driver, [exchange.activation])", "the Driver's safe-replacement callback on the frozen current Activation; K1.2-DEC-19 revalidates after it"],
+  ["#requestCancellation PrimordialReflectApply(ask, this.#driver, [request])", "the Driver's cancellation request (owner choice 01), after the cancellation is recorded (post-commit); its return value is never read"],
+  ["readClock PrimordialReflectApply(now, clock, [])", "the host clock's `now`, resolved on its own chain (K1.3): a trusted host callback that may reenter, read before the basis of every plan it informs"],
 ]);
 
 /**

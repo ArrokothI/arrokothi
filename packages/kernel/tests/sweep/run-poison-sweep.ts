@@ -34,8 +34,12 @@ const TESTS_ROOT = resolve(SWEEP_ROOT, "..");
 const ZONE_ROOT = resolve(TESTS_ROOT, "../src");
 const REPOSITORY_ROOT = resolve(TESTS_ROOT, "../../..");
 
-/** Test files that are sweeps themselves, and so are not scenarios for this one. */
-export const EXCLUDED_FILES = new Set(["poison-catalog.test.ts", "fault-sweep.test.ts"]);
+/**
+ * Test files that are sweeps themselves, and so are not scenarios for this one. `race-search.test.ts` is
+ * K1.3's bounded schedule search: it reaches no Kernel source the scenario files do not reach, and its
+ * tens of thousands of boundary calls would dominate every poisoned run (K1.3 owner choice 02).
+ */
+export const EXCLUDED_FILES = new Set(["poison-catalog.test.ts", "fault-sweep.test.ts", "race-search.test.ts"]);
 
 const option = (name: string): string | undefined => {
   const index = process.argv.indexOf(name);

@@ -134,6 +134,9 @@ Wait and cancellation races. Expected Layer-3 owners:
 - [core](concepts/core.md)
 - [operations](concepts/operations.md)
 - [recovery](mechanisms/recovery.md)
+- [creation](mechanisms/creation.md#one-atomic-creation)
+- [identity](concepts/identity.md#request-key-and-input-id)
+- [values](concepts/values.md#canonical-form)
 
 Evidence mapping: keep wait timeout, Execution deadline and cancellation races distinct. Lease expiry must not become a Runtime-declared wait or proof of native death; [recovery](mechanisms/recovery.md#decide-permission-before-replacing-work) owns the separate takeover obligation.
 

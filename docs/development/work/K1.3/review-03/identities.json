@@ -1,0 +1,94 @@
+{
+  "recorded_at_utc": "2026-10-28T04:04:38.522281+00:00",
+  "refs": {
+    "B": "22c8c1db9958049eb8693dd5aa4d7005f2d565db",
+    "C": "c7abff65ceca3e3b21fd64ffee12ea2f636f5cbc",
+    "H": "47c0b7f1c089260991649a6d814ad7db22b54a2f",
+    "previous_H": "87db3c40c379d0d2186b16cfee9cc2b16d989a73",
+    "review_01": "72e6f5ec51a83476967623b263365fb682a1ead6",
+    "review_02": "2ee779a5c89d93091fe3a3ee87f3acfa67dba3e1",
+    "design_check_03": "5605beb7f99b8938f300f1e4266cb94abe3b2023",
+    "TOOLS_02_range_1": "4015599e6178202541e0091f99b6196adaff0430",
+    "TOOLS_02_receipt": "c3b45a64b0a16fb19342950377a3e13568a03ac8",
+    "K12_correction_integration": "ed509e11dc39ff24e10c1ace68189776c4270919",
+    "COORD_integration": "d17ea6d11bbab977f0c8b7693b3391924b9c815b"
+  },
+  "origin_claude_k13_at_review": "47c0b7f1c089260991649a6d814ad7db22b54a2f",
+  "branch": "codex/k1.3-review-03",
+  "worktree_HEAD": "47c0b7f1c089260991649a6d814ad7db22b54a2f",
+  "ancestry": {
+    "B": {
+      "ancestor_of_C": true,
+      "ancestor_of_H": true
+    },
+    "previous_H": {
+      "ancestor_of_C": true,
+      "ancestor_of_H": true
+    },
+    "review_01": {
+      "ancestor_of_C": true,
+      "ancestor_of_H": true
+    },
+    "review_02": {
+      "ancestor_of_C": true,
+      "ancestor_of_H": true
+    },
+    "design_check_03": {
+      "ancestor_of_C": true,
+      "ancestor_of_H": true
+    },
+    "TOOLS_02_range_1": {
+      "ancestor_of_C": true,
+      "ancestor_of_H": true
+    },
+    "TOOLS_02_receipt": {
+      "ancestor_of_C": true,
+      "ancestor_of_H": true
+    },
+    "K12_correction_integration": {
+      "ancestor_of_C": true,
+      "ancestor_of_H": true
+    },
+    "COORD_integration": {
+      "ancestor_of_C": true,
+      "ancestor_of_H": true
+    }
+  },
+  "C_ancestor_H": true,
+  "C_to_H": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/K1.3/implementation-03.md",
+    "docs/development/work/K1.3/progress.md"
+  ],
+  "B_to_H_paths": 147,
+  "B_subject": "Merge pull request #61 from ArrokothI/claude/k1.3-brief",
+  "process_sha256": {
+    "AGENTS.md": {
+      "B": "f9a12ebd831b4bb2aed1a2296faab9b0f779f16558ef41ea95524b68de3459c6",
+      "H": "f9a12ebd831b4bb2aed1a2296faab9b0f779f16558ef41ea95524b68de3459c6"
+    },
+    "docs/development/006-development-process.md": {
+      "B": "a71b802466ca422107c53a22012c90e2a240c23aac719ff7070682283fed2e36",
+      "H": "a71b802466ca422107c53a22012c90e2a240c23aac719ff7070682283fed2e36"
+    },
+    "docs/development/008-implementation-report.md": {
+      "B": "a6c230269b396a49c872cb34bb2ed98cb9ad4d1107cad792077cf42ae180f91b",
+      "H": "a6c230269b396a49c872cb34bb2ed98cb9ad4d1107cad792077cf42ae180f91b"
+    },
+    "docs/development/009-universal-prompts.md": {
+      "B": "ead0ca2be3d08639714c96b168a0c91cda49d6b19e2ae6e0ca2590424eb89d4a",
+      "H": "ead0ca2be3d08639714c96b168a0c91cda49d6b19e2ae6e0ca2590424eb89d4a"
+    },
+    "docs/development/012-review-methods.md": {
+      "B": "61d8360966ab10b7dff010d5c7a5ab184aa6367a9c9ee6e94073428fd19e9a5a",
+      "H": "61d8360966ab10b7dff010d5c7a5ab184aa6367a9c9ee6e94073428fd19e9a5a"
+    }
+  },
+  "cumulative_diff_sha256": "e39af1aa2b0316a6bd08587c3a1e1ec6548fc12adc24d3e127f6bf7227544b99",
+  "local_environment": {
+    "node": "v26.10.0",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.6",
+    "git": "git version 2.39.5 (Apple Git-154)"
+  }
+}

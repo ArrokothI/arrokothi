@@ -2,8 +2,10 @@
  * Explicit refusal for target Kernel surfaces that no packet has implemented yet.
  *
  * K1.0 established where target Kernel code will live; K1.1 implemented its first protocol
- * boundaries there (creation, input ingress, reservation/dispatch/redelivery and inspection), and
- * K1.2 Outcome acceptance, takeover and the recovery holds. A caller that reaches for a surface this
+ * boundaries there (creation, input ingress, reservation/dispatch/redelivery and inspection), K1.2
+ * Outcome acceptance, takeover and the recovery holds, and K1.3 waits, timers and cancellation. No
+ * coordinator surface refuses this way after K1.3; the mechanism stays for the surfaces later packets
+ * add. A caller that reaches for a surface this
  * package does not have yet gets a refusal naming the packet that owns it, never a silent no-op that
  * could be mistaken for working behaviour.
  */
@@ -24,8 +26,8 @@ export class UnsupportedKernelSurfaceError extends Error {
   constructor(surface: string, owner: string) {
     super(
       `${surface} is not implemented in @arrokothi/kernel at this revision. It implements creation, ` +
-        `input ingress, reservation/dispatch/redelivery, inspection, Outcome acceptance, takeover and the ` +
-        `recovery holds only; ${owner} owns this surface. ` +
+        `input ingress, reservation/dispatch/redelivery, inspection, Outcome acceptance, takeover, the ` +
+        `recovery holds, waits, timers and cancellation only; ${owner} owns this surface. ` +
         `The current 0.8.x behaviour remains available from @arrokothi/core, which is explicitly legacy.`,
     );
     this.surface = surface;

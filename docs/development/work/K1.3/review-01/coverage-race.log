@@ -1,0 +1,25 @@
+▶ K13-9 the declared search's depth-2 slice
+  ✔ every two-letter word from every seed at bounds 1 and 2 agrees with the model and keeps every invariant (327.752625ms)
+  ✔ a small supplementary walk agrees too (the verify check runs 20,000 words) (28.961708ms)
+  ✔ each seed's prefix reaches the state it declares (0.947875ms)
+✔ K13-9 the declared search's depth-2 slice (358.495792ms)
+▶ K13-9 oracle controls (addendum 01 § A2)
+  ✔ positive control: S5 d at bound 1 reserves [T1], the mandatory but ineligible timeout (0.391458ms)
+  ✔ negative control: K13-A05 retained input payload replaced with null after cancellation (0.370292ms)
+  ✔ negative control: K13-A21 a pending timer omitted from the listing (0.2435ms)
+  ✔ negative control: K13-A21 an existing Event renamed between views (0.187792ms)
+  ✔ negative control: K13-A21 a retry answered with an equal copy of the receipt (0.23425ms)
+  ✔ negative control: K13-A21 a cancellation field corrupted beside an untouched delivery row (0.167166ms)
+✔ K13-9 oracle controls (addendum 01 § A2) (1.738167ms)
+▶ K13-9 schedule classes: every class has a passing witness with its expected outcome
+  ✔ all classes (5.056209ms)
+  ✔ every witness lies inside the declared space: at most four letters, bounds 1 or 2, a declared seed (0.126375ms)
+✔ K13-9 schedule classes: every class has a passing witness with its expected outcome (5.254ms)
+ℹ tests 11
+ℹ suites 3
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 508.123875

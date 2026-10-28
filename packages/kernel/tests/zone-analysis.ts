@@ -1385,9 +1385,21 @@ export const isApplyCall = (checker: ts.TypeChecker, node: ts.Node): node is ts.
 /** Calls that hand a decision on to another planner, which applies it. */
 const DELEGATIONS: ReadonlySet<string> = new Set(["this.#accept", "this.#deliver"]);
 
-/** Whether `call` is `this.#refusal(...)` in exactly `return this.#refusal(...)` or `return err(this.#refusal(...))`. */
+/**
+ * The post-commit Driver calls a planner may make after its hand-over, before it returns: delivery,
+ * and K1.3's cancellation request (owner choice 01). Each runs after the decision is recorded.
+ */
+const POST_COMMIT_CALLS: ReadonlySet<string> = new Set(["this.#deliver", "this.#requestCancellation"]);
+
+/**
+ * The refusal recorders: `#refusal`, and K1.3's `#refuseLosing`, which records a CX-6 losing proposal's
+ * refusal with its index entry. Each forms and applies its own plan and returns the refusal.
+ */
+const REFUSAL_RECORDERS: ReadonlySet<string> = new Set(["this.#refusal", "this.#refuseLosing"]);
+
+/** Whether `call` is a refusal recorder in exactly `return <recorder>(...)` or `return err(<recorder>(...))`. */
 const isRefusalExit = (call: ts.Node): boolean => {
-  if (!ts.isCallExpression(call) || calleeText(call) !== "this.#refusal") return false;
+  if (!ts.isCallExpression(call) || !REFUSAL_RECORDERS.has(calleeText(call))) return false;
   const parent = call.parent;
   if (ts.isReturnStatement(parent)) return true;
   return ts.isCallExpression(parent) && calleeText(parent) === "err" && parent.arguments.length === 1 && ts.isReturnStatement(parent.parent);
@@ -1396,6 +1408,7 @@ const isRefusalExit = (call: ts.Node): boolean => {
 /** The refusal helpers a planner may call before handing its plan over, with the exit test each needs. */
 const REFUSAL_HELPERS: ReadonlyMap<string, "null" | "result"> = new Map([
   ["this.#requireControl", "null"],
+  ["this.#requireCancel", "null"],
   ["this.#openExchange", "result"],
 ]);
 
@@ -1481,7 +1494,7 @@ export function refusalsWithoutExit(zone: Zone): string[] {
   const out: string[] = [];
   for (const source of sourcesOf(zone)) {
     const visit = (node: ts.Node): void => {
-      if (ts.isCallExpression(node) && calleeText(node) === "this.#refusal" && !isRefusalExit(node)) out.push(`${ownerName(node)}: a refusal recorded without exiting: ${spelling(node).slice(0, 80)}`);
+      if (ts.isCallExpression(node) && REFUSAL_RECORDERS.has(calleeText(node)) && !isRefusalExit(node)) out.push(`${ownerName(node)}: a refusal recorded without exiting: ${spelling(node).slice(0, 80)}`);
       if (ts.isCallExpression(node) && REFUSAL_HELPERS.has(calleeText(node))) {
         const declaration = node.parent;
         const statement = ts.isVariableDeclaration(declaration) && declaration.initializer === node ? declaration.parent.parent : undefined;
@@ -1594,7 +1607,7 @@ export function checkPlanner(zone: Zone, analysis: EffectAnalysis, fn: Fn, shape
         rank = 1;
         continue;
       }
-      if (ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) && calleeText(statement.expression) === "this.#deliver" && rank <= 1) {
+      if (ts.isExpressionStatement(statement) && ts.isCallExpression(statement.expression) && POST_COMMIT_CALLS.has(calleeText(statement.expression)) && rank <= 1) {
         rank = 2;
         continue;
       }
@@ -1733,6 +1746,8 @@ const commitSource = (checker: ts.TypeChecker, fn: Fn, plan: string, expression:
   if (ts.isBinaryExpression(target) && target.operatorToken.kind === K.PlusToken && ts.isNumericLiteral(target.right)) return commitSource(checker, fn, plan, target.left, depth + 1);
   if (ts.isPropertyAccessExpression(target)) {
     if (ts.isIdentifier(target.expression) && target.expression.text === plan) return target.name.text;
+    // K1.3: a member of the admitted successor is named as itself (design 03 Q4).
+    if (ts.isIdentifier(target.expression) && admittedBinding(checker, fn, target.expression) !== undefined) return `next.${target.name.text}`;
     return commitSource(checker, fn, plan, target.expression, depth + 1);
   }
   if (ts.isObjectLiteralExpression(target)) {
@@ -1744,7 +1759,14 @@ const commitSource = (checker: ts.TypeChecker, fn: Fn, plan: string, expression:
     return `{${[...parts].filter((part) => !part.startsWith('"') && part !== "null" && !/^[0-9]/.test(part) && part !== "[]").sort().join("+")}}`;
   }
   if (ts.isArrayLiteralExpression(target) || ts.isNewExpression(target)) return "[]";
-  if (ts.isCallExpression(target) && calleeText(target) === "PrimordialObjectFreeze" && target.arguments.length === 1) return commitSource(checker, fn, plan, target.arguments[0]!, depth + 1);
+  // K1.3: a value built only when its plan field is present (`field === null ? null : {...}`) comes
+  // from that field; the `null` side contributes nothing.
+  if (ts.isConditionalExpression(target)) {
+    const sides = [...new Set([commitSource(checker, fn, plan, target.whenTrue, depth + 1), commitSource(checker, fn, plan, target.whenFalse, depth + 1)])].filter((side) => side !== "null").sort();
+    return sides.length === 1 ? sides[0]! : `(${sides.join("|")})`;
+  }
+  // A freeze, and creation's admission of its fresh record, return their argument.
+  if (ts.isCallExpression(target) && (calleeText(target) === "PrimordialObjectFreeze" || calleeText(target) === "admitCreated") && target.arguments.length === 1) return commitSource(checker, fn, plan, target.arguments[0]!, depth + 1);
   if (ts.isIdentifier(target)) {
     if (target.text === plan) return "plan";
     const declaration = (ts.isShorthandPropertyAssignment(target.parent) ? checker.getShorthandAssignmentValueSymbol(target.parent) : checker.getSymbolAtLocation(target))?.valueDeclaration;
@@ -1757,6 +1779,37 @@ const commitSource = (checker: ts.TypeChecker, fn: Fn, plan: string, expression:
     return "state";
   }
   return "state";
+};
+
+/**
+ * Whether `statement` belongs to an owner arm's prepare phase: a `const` binding, an `if (…) throw`
+ * guard, or a loop that only appends to a list the arm created.
+ */
+const isPrepareStatement = (checker: ts.TypeChecker, arm: Fn, statement: ts.Statement): boolean => {
+  const isFreshLocal = (expression: ts.Expression): boolean => {
+    const target = strip(expression);
+    const declaration = ts.isIdentifier(target) ? checker.getSymbolAtLocation(target)?.valueDeclaration : undefined;
+    return declaration !== undefined && ts.isVariableDeclaration(declaration) && enclosingFn(declaration) === arm && declaration.initializer !== undefined && ts.isArrayLiteralExpression(strip(declaration.initializer));
+  };
+  if (ts.isVariableStatement(statement)) return (statement.declarationList.flags & ts.NodeFlags.Const) !== 0;
+  if (ts.isIfStatement(statement) && statement.elseStatement === undefined) {
+    const then = ts.isBlock(statement.thenStatement) && statement.thenStatement.statements.length === 1 ? statement.thenStatement.statements[0]! : statement.thenStatement;
+    return ts.isThrowStatement(then);
+  }
+  if (ts.isForStatement(statement)) {
+    const inner = ts.isBlock(statement.statement) && statement.statement.statements.length === 1 ? statement.statement.statements[0]! : statement.statement;
+    return ts.isExpressionStatement(inner) && ts.isCallExpression(inner.expression) && calleeText(inner.expression) === "appendOwn" && isFreshLocal(inner.expression.arguments[0]!);
+  }
+  return false;
+};
+
+/** The `const` binding in `fn` that `identifier` names, when its initializer is an `admit(…)` call. */
+const admittedBinding = (checker: ts.TypeChecker, fn: Fn, identifier: ts.Identifier): ts.VariableDeclaration | undefined => {
+  const declaration = checker.getSymbolAtLocation(identifier)?.valueDeclaration;
+  if (declaration === undefined || !ts.isVariableDeclaration(declaration) || declaration.initializer === undefined || enclosingFn(declaration) !== fn) return undefined;
+  if ((declaration.parent.flags & ts.NodeFlags.Const) === 0) return undefined;
+  const initializer = strip(declaration.initializer);
+  return ts.isCallExpression(initializer) && calleeText(initializer) === "admit" ? declaration : undefined;
 };
 
 /** The field a commit target names: `x.field`, or a private `this.#field`. */
@@ -1794,23 +1847,7 @@ export function checkArm(zone: Zone, analysis: EffectAnalysis, arm: ts.MethodDec
   const plan = arm.parameters[0]?.name.getText();
   if (body === undefined || plan === undefined) return { violations: [`${name}: expected (plan) and a block body`], commits };
   const source = (expression: ts.Expression): string => commitSource(checker, arm, plan, expression);
-  const isFreshLocal = (expression: ts.Expression): boolean => {
-    const target = strip(expression);
-    const declaration = ts.isIdentifier(target) ? checker.getSymbolAtLocation(target)?.valueDeclaration : undefined;
-    return declaration !== undefined && ts.isVariableDeclaration(declaration) && enclosingFn(declaration) === arm && declaration.initializer !== undefined && ts.isArrayLiteralExpression(strip(declaration.initializer));
-  };
-  const isPrepare = (statement: ts.Statement): boolean => {
-    if (ts.isVariableStatement(statement)) return (statement.declarationList.flags & ts.NodeFlags.Const) !== 0;
-    if (ts.isIfStatement(statement) && statement.elseStatement === undefined) {
-      const then = ts.isBlock(statement.thenStatement) && statement.thenStatement.statements.length === 1 ? statement.thenStatement.statements[0]! : statement.thenStatement;
-      return ts.isThrowStatement(then);
-    }
-    if (ts.isForStatement(statement)) {
-      const inner = ts.isBlock(statement.statement) && statement.statement.statements.length === 1 ? statement.statement.statements[0]! : statement.statement;
-      return ts.isExpressionStatement(inner) && ts.isCallExpression(inner.expression) && calleeText(inner.expression) === "appendOwn" && isFreshLocal(inner.expression.arguments[0]!);
-    }
-    return false;
-  };
+  const isPrepare = (statement: ts.Statement): boolean => isPrepareStatement(checker, arm, statement);
   /** One commit statement's facts, or `undefined` when it is not one. */
   const commitOf = (statement: ts.Statement): string[] | undefined => {
     if (ts.isExpressionStatement(statement)) {
@@ -1882,6 +1919,279 @@ export function checkArm(zone: Zone, analysis: EffectAnalysis, arm: ts.MethodDec
   return { violations, commits };
 }
 
+// -- K1.3: the successor rule (design 03 Q4, revised for D03-CHK-01) --------------------------------
+
+/** The successor's scalar components, each committed to the `ExecutionRecord` field of the same name. */
+export const SUCCESSOR_SCALARS: readonly string[] = ["state", "registrations", "wait", "readiness", "activation", "cancellation"];
+
+/** The `ExecutionRecord` lists a successor appends to, and the component each takes its one element from. */
+const SUCCESSOR_APPENDS: ReadonlyMap<string, string> = new Map([
+  ["mailbox", "appended"],
+  ["retiredWaits", "retired"],
+]);
+
+/** The successor's written-entry lists, and the disposition component each list's loop installs. */
+const SUCCESSOR_LOOPS: ReadonlyMap<string, string> = new Map([
+  ["acknowledged", "acknowledgment"],
+  ["ended", "ending"],
+]);
+
+/** The change-literal member each component is built from, where it differs from the component's name. */
+const CHANGE_MEMBER: ReadonlyMap<string, string> = new Map([
+  ["acknowledged", "acknowledgeAt"],
+  ["ended", "endAt"],
+]);
+
+export interface SuccessorCheck {
+  readonly violations: readonly string[];
+  /** The components the change literal changes, which the commit must apply: sorted. */
+  readonly changed: readonly string[];
+}
+
+/** The declaring interface and name of the member a property access reaches, as `Interface.member`. */
+const qualifiedMember = (checker: ts.TypeChecker, target: ts.PropertyAccessExpression): string | undefined => {
+  const declaration = checker.getSymbolAtLocation(target.name)?.declarations?.[0];
+  const parent = declaration?.parent;
+  return parent !== undefined && ts.isInterfaceDeclaration(parent) ? `${parent.name.text}.${target.name.text}` : undefined;
+};
+
+/**
+ * One successor arm (K1.3): it admits exactly one successor of its own record, and its commit applies
+ * exactly that successor.
+ *
+ * - **Admission.** The prepare phase binds `const next = admit(record, "<kind>", successor(record, {…}))`
+ *   once, `record` being the arm's resolved record; the change is an object literal. No other call
+ *   builds or admits a successor. The prepare phase precedes every commit statement (`checkArm`), so the
+ *   admission precedes the first write.
+ * - **Changed components.** A member of the change literal leaves its component alone only in its
+ *   no-change form: `record.<field>` for a scalar, `null` for `retired` and `appended`, `NO_POSITIONS`
+ *   for a position list. Every other member changes its component, which the commit must then apply.
+ * - **Exact commits.** Each governed commit statement takes its value from the matching successor
+ *   member, through `const` aliases only: `record.<scalar> = next.<scalar>`, unconditionally;
+ *   `if (v !== null) appendOwn(record.<list>, v)` with `v` that very member; and
+ *   `for (let i = 0; i < l.length; i += 1) (readAt(l, i) as MailboxEntry).disposition = d`, with `l` and
+ *   `d` a list and its disposition. Each changed component is applied exactly once; no unchanged one is.
+ */
+export function checkSuccessorArm(zone: Zone, arm: ts.MethodDeclaration, kind: string): SuccessorCheck {
+  const { checker } = zone;
+  const name = arm.name.getText();
+  const violations: string[] = [];
+  const body = arm.body;
+  if (body === undefined) return { violations: [`${name}: expected a block body`], changed: [] };
+  const symbolOf = (expression: ts.Expression): ts.Symbol | undefined => {
+    const target = strip(expression);
+    return ts.isIdentifier(target) ? checker.getSymbolAtLocation(target) : undefined;
+  };
+
+  // The admission.
+  const admissions: ts.VariableDeclaration[] = [];
+  let literal: ts.ObjectLiteralExpression | undefined;
+  let record: ts.Symbol | undefined;
+  let committing = false;
+  const commit: ts.Statement[] = [];
+  for (const statement of body.statements) {
+    if (!committing && isPrepareStatement(checker, arm, statement)) {
+      if (!ts.isVariableStatement(statement)) continue;
+      for (const declaration of statement.declarationList.declarations) {
+        const initializer = declaration.initializer === undefined ? undefined : strip(declaration.initializer);
+        if (initializer === undefined || !ts.isCallExpression(initializer) || calleeText(initializer) !== "admit") continue;
+        admissions.push(declaration);
+        const [owner, label, built] = initializer.arguments;
+        const inner = built === undefined ? undefined : strip(built);
+        const resolved = owner === undefined ? undefined : checker.getSymbolAtLocation(strip(owner))?.valueDeclaration;
+        const resolvedInit = resolved !== undefined && ts.isVariableDeclaration(resolved) && resolved.initializer !== undefined ? strip(resolved.initializer) : undefined;
+        const ownRecord = resolvedInit !== undefined && ts.isCallExpression(resolvedInit) && calleeText(resolvedInit) === "this.#resolve";
+        const sameRecord = inner !== undefined && ts.isCallExpression(inner) && calleeText(inner) === "successor" && inner.arguments[0] !== undefined && symbolOf(inner.arguments[0]) === symbolOf(owner!);
+        const change = inner !== undefined && ts.isCallExpression(inner) && inner.arguments[1] !== undefined ? strip(inner.arguments[1]) : undefined;
+        if (!ownRecord || label === undefined || !ts.isStringLiteral(label) || label.text !== kind || !sameRecord || change === undefined || !ts.isObjectLiteralExpression(change)) {
+          violations.push(`${name}: does not admit a successor of its own record as "${kind}": ${spelling(initializer).slice(0, 100)}`);
+          continue;
+        }
+        literal = change;
+        record = symbolOf(owner!);
+      }
+      continue;
+    }
+    committing = true;
+    commit.push(statement);
+  }
+  if (admissions.length !== 1) violations.push(`${name}: admits ${admissions.length === 0 ? "no" : admissions.length} successor${admissions.length === 1 ? "" : "s"}`);
+  allNodes(body, (node) => {
+    if (ts.isCallExpression(node) && (calleeText(node) === "admit" || calleeText(node) === "successor")) {
+      const inAdmission = admissions.some((declaration) => node.pos >= declaration.pos && node.end <= declaration.end);
+      if (!inAdmission) violations.push(`${name}: calls ${calleeText(node)} outside its admission`);
+    }
+  });
+  if (literal === undefined || record === undefined) return { violations, changed: [] };
+  const admitted = admissions[0]!;
+
+  // The components the change literal changes.
+  const changed = new Set<string>();
+  for (const property of literal.properties) {
+    if (!ts.isPropertyAssignment(property) && !ts.isShorthandPropertyAssignment(property)) {
+      violations.push(`${name}: the change literal holds ${spelling(property).slice(0, 60)}`);
+      continue;
+    }
+    const member = property.name.getText();
+    const value = strip(ts.isPropertyAssignment(property) ? property.initializer : property.name);
+    const component = [...CHANGE_MEMBER].find(([, change]) => change === member)?.[0] ?? member;
+    if (SUCCESSOR_SCALARS.includes(member)) {
+      const same = ts.isPropertyAccessExpression(value) && value.name.text === member && symbolOf(value.expression) === record;
+      if (!same) changed.add(member);
+    } else if (member === "retired" || member === "appended") {
+      if (value.kind !== K.NullKeyword) changed.add(member);
+    } else if (CHANGE_MEMBER.has(component)) {
+      if (!(ts.isIdentifier(value) && value.text === "NO_POSITIONS")) changed.add(component);
+    }
+  }
+
+  // The commit's governed statements.
+  const exact = (expression: ts.Expression): string | undefined => {
+    let current = strip(expression);
+    for (let depth = 0; depth < 16; depth += 1) {
+      if (ts.isPropertyAccessExpression(current) && ts.isIdentifier(current.expression) && checker.getSymbolAtLocation(current.expression)?.valueDeclaration === admitted) return current.name.text;
+      if (!ts.isIdentifier(current)) return undefined;
+      const declaration = checker.getSymbolAtLocation(current)?.valueDeclaration;
+      if (declaration === undefined || !ts.isVariableDeclaration(declaration) || declaration.initializer === undefined || enclosingFn(declaration) !== arm || (declaration.parent.flags & ts.NodeFlags.Const) === 0) return undefined;
+      current = strip(declaration.initializer);
+    }
+    return undefined;
+  };
+  const isRecordField = (target: ts.Expression, fields: readonly string[]): string | undefined => {
+    const stripped = strip(target);
+    if (!ts.isPropertyAccessExpression(stripped)) return undefined;
+    const qualified = qualifiedMember(checker, stripped);
+    return qualified !== undefined && qualified.startsWith("ExecutionRecord.") && fields.includes(stripped.name.text) ? stripped.name.text : undefined;
+  };
+  const applied = new Map<string, number>();
+  const apply = (component: string): void => void applied.set(component, (applied.get(component) ?? 0) + 1);
+  const appendOf = (statement: ts.Statement): { field: string; value: ts.Expression } | undefined => {
+    if (!ts.isExpressionStatement(statement) || !ts.isCallExpression(statement.expression)) return undefined;
+    const call = statement.expression;
+    const callee = calleeText(call);
+    if ((callee !== "appendOwn" && callee !== "appendAllOwn") || call.arguments.length !== 2) return undefined;
+    const field = isRecordField(call.arguments[0]!, [...SUCCESSOR_APPENDS.keys()]);
+    return field === undefined ? undefined : { field, value: call.arguments[1]! };
+  };
+  const scalarOf = (statement: ts.Statement): { field: string; value: ts.Expression } | undefined => {
+    if (!ts.isExpressionStatement(statement) || !ts.isBinaryExpression(statement.expression) || statement.expression.operatorToken.kind !== K.EqualsToken) return undefined;
+    const field = isRecordField(statement.expression.left, SUCCESSOR_SCALARS);
+    return field === undefined ? undefined : { field, value: statement.expression.right };
+  };
+  for (const statement of commit) {
+    const scalar = scalarOf(statement);
+    if (scalar !== undefined) {
+      if (exact(scalar.value) !== scalar.field) violations.push(`${name}: governed write ${scalar.field} does not commit the successor's ${scalar.field} exactly`);
+      apply(scalar.field);
+      continue;
+    }
+    if (ts.isIfStatement(statement)) {
+      const guarded = scalarOf(statement.thenStatement);
+      if (guarded !== undefined) {
+        violations.push(`${name}: governed write ${guarded.field} is conditional`);
+        apply(guarded.field);
+        continue;
+      }
+      const append = appendOf(statement.thenStatement);
+      if (append !== undefined) {
+        const component = SUCCESSOR_APPENDS.get(append.field)!;
+        const condition = statement.expression;
+        const tests = ts.isBinaryExpression(condition) && condition.operatorToken.kind === K.ExclamationEqualsEqualsToken && condition.right.kind === K.NullKeyword && symbolOf(condition.left) !== undefined && symbolOf(condition.left) === symbolOf(append.value);
+        if (!tests) violations.push(`${name}: governed append ${append.field} is conditional on something other than its own value`);
+        if (calleeText((statement.thenStatement as ts.ExpressionStatement).expression as ts.CallExpression) !== "appendOwn" || exact(append.value) !== component) violations.push(`${name}: governed append ${append.field} does not commit the successor's ${component} exactly`);
+        apply(component);
+        continue;
+      }
+    }
+    const bare = appendOf(statement);
+    if (bare !== undefined) {
+      violations.push(`${name}: governed append ${bare.field} is not guarded by its own value`);
+      apply(SUCCESSOR_APPENDS.get(bare.field)!);
+      continue;
+    }
+    if (ts.isForStatement(statement) && ts.isExpressionStatement(statement.statement)) {
+      const write = statement.statement.expression;
+      if (!ts.isBinaryExpression(write) || write.operatorToken.kind !== K.EqualsToken) continue;
+      const target = strip(write.left);
+      if (!ts.isPropertyAccessExpression(target) || qualifiedMember(checker, target) !== "MailboxEntry.disposition") continue;
+      const read = strip(target.expression);
+      const list = ts.isCallExpression(read) && calleeText(read) === "readAt" ? read.arguments[0] : undefined;
+      const component = list === undefined ? undefined : exact(list);
+      const disposition = component === undefined ? undefined : SUCCESSOR_LOOPS.get(component);
+      const initializer = statement.initializer;
+      const declared = initializer !== undefined && ts.isVariableDeclarationList(initializer) && initializer.declarations.length === 1 ? initializer.declarations[0]! : undefined;
+      const index = declared === undefined ? undefined : checker.getSymbolAtLocation(declared.name);
+      const startsAtZero = declared?.initializer !== undefined && ts.isNumericLiteral(declared.initializer) && declared.initializer.text === "0";
+      const condition = statement.condition;
+      const bounded = condition !== undefined && ts.isBinaryExpression(condition) && condition.operatorToken.kind === K.LessThanToken && symbolOf(condition.left) === index && ts.isPropertyAccessExpression(condition.right) && condition.right.name.text === "length" && list !== undefined && symbolOf(condition.right.expression) === symbolOf(list);
+      const step = statement.incrementor;
+      const stepsByOne = step !== undefined && ts.isBinaryExpression(step) && step.operatorToken.kind === K.PlusEqualsToken && symbolOf(step.left) === index && ts.isNumericLiteral(step.right) && step.right.text === "1";
+      const readsIndex = ts.isCallExpression(read) && read.arguments[1] !== undefined && symbolOf(read.arguments[1]) === index;
+      if (disposition === undefined || !startsAtZero || !bounded || !stepsByOne || !readsIndex || exact(write.right) !== disposition) {
+        violations.push(`${name}: a disposition loop does not apply the successor's ${component ?? "written entries"} exactly`);
+      }
+      if (component !== undefined) apply(component);
+    }
+  }
+  for (const component of changed) {
+    const count = applied.get(component) ?? 0;
+    if (count === 0) violations.push(`${name}: the successor's ${component} is not committed`);
+    if (count > 1) violations.push(`${name}: the successor's ${component} is committed ${count} times`);
+  }
+  for (const component of applied.keys()) if (!changed.has(component)) violations.push(`${name}: commits the successor's ${component}, which its change leaves alone`);
+  return { violations, changed: [...changed].sort() };
+}
+
+/**
+ * Creation's exception to the successor rule (K1.3, D03-CHK-01): it has no old record, so it builds the
+ * fresh record whole in its prepare phase, admits it with the post-state predicate alone, and every
+ * publication inserts the record that admission returned.
+ */
+export function checkCreationAdmission(zone: Zone, arm: ts.MethodDeclaration): string[] {
+  const { checker } = zone;
+  const name = arm.name.getText();
+  const out: string[] = [];
+  let published = 0;
+  allNodes(arm, (node) => {
+    if (!ts.isCallExpression(node) || calleeText(node) !== "mapSet" || node.arguments.length !== 3) return;
+    published += 1;
+    const value = strip(node.arguments[2]!);
+    const declaration = ts.isIdentifier(value) ? checker.getSymbolAtLocation(value)?.valueDeclaration : undefined;
+    const initializer = declaration !== undefined && ts.isVariableDeclaration(declaration) && declaration.initializer !== undefined ? strip(declaration.initializer) : undefined;
+    if (initializer === undefined || !ts.isCallExpression(initializer) || calleeText(initializer) !== "admitCreated") out.push(`${name}: publishes a record its admission did not return: ${spelling(node).slice(0, 80)}`);
+  });
+  if (published === 0) out.push(`${name}: publishes nothing`);
+  return out;
+}
+
+/**
+ * The functions declared in `file` that write or mutate one of `members`, each named `Interface.member`
+ * by the interface that declares the member, in an object that existed before the call. Unlike
+ * `stateWriters`, which goes by member name, this tells `ExecutionRecord.activation` (the open-exchange
+ * pointer) from `ActivationRecord.activation` (the attempt a takeover replaces).
+ */
+export function qualifiedWriters(zone: Zone, analysis: EffectAnalysis, members: readonly string[], file: string): Map<string, Set<string>> {
+  const { checker } = zone;
+  const owners = new Map<string, Set<string>>(members.map((member) => [member, new Set<string>()]));
+  const memberOf = (expression: ts.Expression): string | undefined => {
+    const target = strip(expression);
+    return ts.isPropertyAccessExpression(target) ? qualifiedMember(checker, target) : undefined;
+  };
+  for (const fn of analysis.effects.keys()) {
+    if (basename(fn.getSourceFile().fileName) !== file) continue;
+    ownNodes(fn, (node) => {
+      if (!isPreExisting(analysis.nodeEffects(node, fn).mutated)) return;
+      const found: (string | undefined)[] = [];
+      if (ts.isBinaryExpression(node) && isAssignmentOperator(node.operatorToken.kind)) found.push(memberOf(node.left));
+      if (ts.isDeleteExpression(node)) found.push(memberOf(node.expression));
+      if ((ts.isPrefixUnaryExpression(node) || ts.isPostfixUnaryExpression(node)) && (node.operator === K.PlusPlusToken || node.operator === K.MinusMinusToken)) found.push(memberOf(node.operand));
+      if (ts.isCallExpression(node) || ts.isNewExpression(node)) for (const argument of mutatedArguments(analysis, node)) found.push(memberOf(throughAliases(checker, argument)));
+      for (const member of found) if (member !== undefined) owners.get(member)?.add(ownerName(node));
+    });
+  }
+  return owners;
+}
+
 /**
  * The functions declared in `file` that write or mutate one of `fields` in an object that existed before
  * the call: `writeOwners` for one module, without the writes a function makes to lists it created itself.
@@ -1906,7 +2216,7 @@ export function mutationsOutsideHandOver(zone: Zone, analysis: EffectAnalysis, f
       if (isApplyCall(zone.checker, node)) return;
       if (ts.isCallExpression(node)) {
         const callee = calleeText(node);
-        if (DELEGATIONS.has(callee) || callee === "this.#refusal" || REFUSAL_HELPERS.has(callee) || callee === "settle") return;
+        if (DELEGATIONS.has(callee) || REFUSAL_RECORDERS.has(callee) || REFUSAL_HELPERS.has(callee) || callee === "settle") return;
       }
       out.push(`${ownerName(node)}: changes accepted state outside a hand-over: ${spelling(node).slice(0, 100)}`);
     });

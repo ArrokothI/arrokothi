@@ -110,7 +110,7 @@ for (const namespace of ["actor-é", "actor-\ud800"]) for (const step of ["compl
       assert.deepEqual(first, {
         activationId, receipt: receiptAt(executionId, "outcome_acceptance", 5), acknowledged: batch,
         emissionIds: [`emission-${packed([executionId, activationId, "draft-é"])}`],
-        resultId: null, terminalDispositions: [], nextState: "READY", progressRevision: 1, replayed: false,
+        resultId: null, terminalDispositions: [], nextState: "READY", progressRevision: 1, replayed: false, wait: null,
       });
       const next = accepted(kernel.dispatch(who, executionId, { bound: 1 }));
       assert.deepEqual(next, { activationId: nextActivationId, writerEpoch: 1, baseProgressRevision: 1, batch: [], receipt: receiptAt(executionId, "dispatch_intent", 6), redelivered: false });
@@ -124,7 +124,7 @@ for (const namespace of ["actor-é", "actor-\ud800"]) for (const step of ["compl
         activationId: nextActivationId, receipt: receiptAt(executionId, "outcome_acceptance", 8), acknowledged: [],
         emissionIds: [`emission-${packed([executionId, nextActivationId, "draft-é"])}`],
         resultId: `result-${packed([executionId, nextActivationId])}`, terminalDispositions: [outsideEventId],
-        nextState: step === "complete" ? "COMPLETED" : "FAILED", progressRevision: 2, replayed: false,
+        nextState: step === "complete" ? "COMPLETED" : "FAILED", progressRevision: 2, replayed: false, wait: null,
       });
       assert.notEqual(first.emissionIds[0], last.emissionIds[0], "same local key across exchanges stays distinct");
       const final = view();

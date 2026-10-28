@@ -55,6 +55,10 @@ export interface Scenario {
   readonly emissionsPerOutcome?: number;
   /** Review 11's exact setup: no input accepted after the reservation. */
   readonly bare?: boolean;
+  /** K1.3: the coordinator's clock reads this value, or throws; absent means no clock. */
+  readonly clock?: number | "throws";
+  /** K1.3, CX-6: the call is a well-formed proposal for the setup exchange that loses to a cancellation, indexed with its coordinates. */
+  readonly losing?: true;
 }
 
 /** Suspends the sweep around the Driver's safety callback. */
@@ -98,6 +102,14 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
   };
   const complete = (env: Env): void => answerOutcome(env, { next: { step: "complete", result: { done: true } } });
   const nothing = (): void => {};
+  /** K1.3: cancels the Execution with the scenario caller plus cancel power. */
+  const cancel = (env: Env): void => {
+    harness.accepted(env.kernel.cancelExecution({ ...env.who, cancelScopes: ["tenant-a"] }, env.executionId));
+  };
+  /** K1.3: an input an `await` subscribing to class `s` is eligible for, queued outside the batch. */
+  const eligibleInput = (env: Env): void => {
+    harness.accepted(env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "eligible", kind: "update", payload: bytes({ eligible: true }), subscriptionClass: "s" }));
+  };
 
   const hidden = () => harness.caller("hidden", "other-scope");
   const recover = (available: typeof AVAILABLE, activationId?: string) => (env: Env): Call => {
@@ -198,7 +210,7 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
     { name: "takeover: refused, the safety callback took the exchange over itself", control: "requestTakeover", expect: refused("stale_exchange"), exit: ["requestTakeover", "is not the current epoch ${exchange.activation.writerEpoch}"], setup: nothing, call: takeover(), callback: (env) => { harness.accepted(env.kernel.requestTakeover(env.who, env.executionId, { activationId: env.open.activationId, writerEpoch: 1 })); } },
     { name: "takeover: refused, the safety callback held the exchange's code", control: "requestTakeover", expect: refused("recovery_held"), exit: ["requestTakeover", "${postCallbackHold.reason}"], setup: nothing, call: takeover(), callback: (env) => codeHold(env) },
 
-    // -- submitOutcome: 23 -----------------------------------------------------------------------
+    // -- submitOutcome: 29 -----------------------------------------------------------------------
     { name: "outcome: continue", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, call: submit() },
     { name: "outcome: complete with an Emission and a queued outside-batch input", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, call: submit({ next: { step: "complete", result: { done: true } }, emissions: [{ emissionKey: "e", value: { output: true } }] }) },
     { name: "outcome: fail", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, call: submit({ next: { step: "fail", error: { reason: "x" } } }) },
@@ -227,6 +239,13 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
     { name: "outcome: refused over the Emission capacity, identity unusable", control: "submitOutcome", expect: refused("capacity_exhausted"), exit: ["submitOutcome", `${UNUSABLE} the Outcome carries`], setup: nothing, emissionsPerOutcome: 1, call: submit({ activationId: 42, emissions: [{ emissionKey: "a", value: 1 }, { emissionKey: "b", value: 2 }] }) },
     { name: "outcome: refused malformed content", control: "submitOutcome", expect: refused("malformed_envelope"), exit: ["submitOutcome", `${USABLE} refused whole`], setup: nothing, call: submit({ progress: harness.rawBytes("1e400") }) },
     { name: "outcome: refused malformed content, identity unusable", control: "submitOutcome", expect: refused("malformed_envelope"), exit: ["submitOutcome", `${UNUSABLE} the Outcome is refused whole`], setup: nothing, call: submit({ activationId: 42 }) },
+    // K1.3: the three registration outcomes of an `await`, and the one refusal its deadline adds.
+    { name: "outcome: await, the wait stays live", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, clock: 0, call: submit({ next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }], deadline: 10 } } }) },
+    { name: "outcome: await, a queued eligible input wakes it at registration", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: eligibleInput, call: submit({ next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }] } } }) },
+    { name: "outcome: await, a due deadline mints its timeout at registration", control: "submitOutcome", expect: "accepted", exit: ["submitOutcome", "return ok(this.#accept("], setup: nothing, clock: 10, call: submit({ next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }], deadline: 10 } } }) },
+    { name: "outcome: refused, losing to an accepted cancellation (CX-6, indexed)", control: "submitOutcome", expect: refused("cancellation_terminal_conflict"), exit: ["submitOutcome", "this.#refuseLosing(record, activationId, capture.outcome)"], setup: cancel, losing: true, call: submit() },
+    { name: "outcome: refused, losing to an accepted cancellation, identity unusable", control: "submitOutcome", expect: refused("cancellation_terminal_conflict"), exit: ["submitOutcome", "this.#refusal(\"cancellation_terminal_conflict\""], setup: cancel, call: submit({ activationId: 42 }) },
+    { name: "outcome: refused, the clock gave no usable reading for a deadline", control: "submitOutcome", expect: refused("clock_unavailable"), exit: ["submitOutcome", "registers a wait whose deadline must be compared with the clock"], setup: nothing, clock: "throws", call: submit({ next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }], deadline: 10 } } }) },
   ];
 
   /**
@@ -236,7 +255,13 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
    */
   const fresh = (scenario: Scenario, hook = true): Env => {
     const driver = scenario.unsafeDriver === true ? (harness.unsafeDriver() as unknown as ReturnType<typeof harness.recordingDriver>) : harness.recordingDriver();
-    const coordinator = new ExecutionCoordinator(scenario.emissionsPerOutcome === undefined ? { driver } : { driver, emissionsPerOutcome: scenario.emissionsPerOutcome });
+    const reading = scenario.clock;
+    const clock = reading === undefined ? undefined : { now: (): number => { if (reading === "throws") throw new Error("clock unavailable"); return reading; } };
+    const coordinator = new ExecutionCoordinator({
+      driver,
+      ...(scenario.emissionsPerOutcome === undefined ? {} : { emissionsPerOutcome: scenario.emissionsPerOutcome }),
+      ...(clock === undefined ? {} : { clock }),
+    });
     const who = harness.caller("fault", "tenant-a");
     const { executionId } = harness.accepted(coordinator.createExecution(who, create()));
     const open = harness.accepted(coordinator.dispatch(who, executionId, { bound: 1 }));
@@ -272,18 +297,33 @@ export function faultKit(kernel: typeof KernelModule, harness: typeof HarnessMod
     const view = harness.accepted(env.kernel.inspect(env.who, env.executionId));
     const refusal = env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "probe-refusal", kind: 42 as never, payload: bytes(null) });
     if (refusal.ok) throw new Error("the refusal probe was accepted");
-    const acceptance = env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "probe-acceptance", kind: "probe", payload: bytes(null) });
+    const acceptance = ownerRefused(() => env.kernel.submitInput(env.who, { destination: env.executionId, requestKey: "probe-acceptance", kind: "probe", payload: bytes(null) }));
     let grantAnswer = "no setup grant";
     if (setupGrant !== undefined) {
-      const answer = env.kernel.submitOutcome(env.who, outcome(env, { progress: { probe: true } }), setupGrant);
-      grantAnswer = answer.ok ? `accepted at ${answer.value.receipt.position}` : answer.error.classification;
+      const answer = ownerRefused(() => env.kernel.submitOutcome(env.who, outcome(env, { progress: { probe: true } }), setupGrant));
+      grantAnswer = typeof answer === "string" ? answer : answer.ok ? `accepted at ${answer.value.receipt.position}` : answer.error.classification;
     }
     return {
       view,
       nextRefusal: refusal.error.position,
-      nextAcceptance: acceptance.ok ? acceptance.value.receipt.position : acceptance.error.classification,
+      nextAcceptance: typeof acceptance === "string" ? acceptance : acceptance.ok ? acceptance.value.receipt.position : acceptance.error.classification,
       setupGrant: grantAnswer,
     };
+  };
+
+  /**
+   * K1.3, L-28 (owner choice 06): a probe the state owner refuses, because the record a fault left
+   * inside the Outcome apply window breaks the post-state predicate, is observed as that refusal and the
+   * rule it names. Any other exception is not an observation.
+   */
+  const ownerRefused = <T>(probe: () => T): T | string => {
+    try {
+      return probe();
+    } catch (error) {
+      const named = error instanceof Error ? /^plan refused: .*\(([PT][0-9]), S[1-5]:/.exec(error.message) : null;
+      if (named === null) throw error;
+      return `owner refused (${named[1]})`;
+    }
   };
 
   /** The grant the Driver received with the setup exchange's first attempt. */

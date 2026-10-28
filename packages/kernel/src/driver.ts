@@ -16,20 +16,43 @@
 
 import type { BoundaryValue } from "./values.ts";
 
-/** One accepted Event as it is carried in a batch. */
-export interface ActivationEvent {
+/**
+ * One accepted Event as it is carried in a batch: application input, or a Kernel timeout (K1.3).
+ *
+ * `sourceCategory` is the trusted path that accepted or minted the Event. Trusted results are K2's.
+ */
+export type ActivationEvent = InputActivationEvent | TimeoutActivationEvent;
+
+/** One accepted application-input Event as it is carried in a batch. */
+export interface InputActivationEvent {
   readonly eventId: string;
   readonly destination: string;
   readonly kind: string;
   readonly payload: BoundaryValue;
-  /**
-   * The trusted path that accepted or minted this Event. Only application input exists in this
-   * packet; Kernel timeouts are K1.3's and trusted results are K2's.
-   */
   readonly sourceCategory: "application_input";
-  /** Present for application input that declared one; carried, never matched here. Matching is K1.3's. */
+  /**
+   * Present for application input that declared one. An input subscription matches it by equality
+   * (`waits.md` § Eligibility); `kind` is never matched.
+   */
   readonly subscriptionClass?: string;
   /** Per-Execution acceptance position, which is the order a batch is presented in. */
+  readonly acceptancePosition: number;
+}
+
+/**
+ * The one timeout Event a wait generation's expiry minted (W-9), carried like any other Event.
+ *
+ * Its kind is `kernel.wait.timeout` and its payload `null`; `waitGeneration` and `deadline` say which
+ * wait expired. A batch carries it as the mandatory member of the reservation after that expiry.
+ */
+export interface TimeoutActivationEvent {
+  readonly eventId: string;
+  readonly destination: string;
+  readonly kind: string;
+  readonly payload: null;
+  readonly sourceCategory: "kernel_timeout";
+  readonly waitGeneration: number;
+  readonly deadline: number;
   readonly acceptancePosition: number;
 }
 
@@ -143,4 +166,34 @@ export interface ExecutionDriver {
    * after it returns and before committing (K1.2-DEC-19).
    */
   isSafeToReplace?(activation: Activation): boolean;
+  /**
+   * Asks the Driver to cancel the Execution's native work (K1.3; owner choice 01, D01-CHK-06).
+   *
+   * `lifecycle.md` § Cancellation order (CX-1) requires the Kernel to request Driver cancellation
+   * without awaiting cooperation. The Kernel calls this once, after an accepted cancellation commits,
+   * from whichever nonterminal state it ended: `RUNNING`, `WAITING`, or `READY`, including `READY`
+   * after an exchange resolved, since an accepted Outcome does not prove native work stopped. Both
+   * causes call it: explicit cancellation and the Execution deadline's expiry. A repeated cancellation
+   * changes nothing and requests nothing.
+   *
+   * The request names the Execution, and the open exchange's current attempt when one is open. It must
+   * return promptly and only `undefined`. The Kernel never awaits it and never observes its return
+   * value, so no thenable is read; the Driver owns its own asynchronous failures. A throw, from looking
+   * the member up or from calling it, is contained and cannot change the committed cancellation. The
+   * member is resolved on the Driver itself or its own prototype chain, never on a built-in prototype.
+   *
+   * This is a request, never a physical stop or a safe takeover. A Driver without the member receives
+   * no request; Kernel guarantees stay logical (`docs/development/017-known-limitations.md`). The call
+   * can reenter the coordinator: the Execution is already `CANCELLED`, so a reentrant Outcome loses and a
+   * delivery report settles only its own row.
+   */
+  requestCancellation?(request: CancellationRequest): undefined;
+}
+
+/** What `requestCancellation` names (owner choice 01). Frozen. */
+export interface CancellationRequest {
+  readonly executionId: string;
+  readonly cause: "explicit" | "execution_deadline";
+  /** The open exchange's current attempt; `null` when no exchange was open. */
+  readonly attempt: { readonly activationId: string; readonly writerEpoch: number } | null;
 }

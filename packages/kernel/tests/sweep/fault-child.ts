@@ -365,6 +365,7 @@ const prepare = (scenario: Scenario): Prepared => {
     setupAnswer: baseline.setupAnswer,
     unnamedRefusal,
     deliveryFailure,
+    losing: scenario.losing === true ? { activationId: baseline.open.activationId, writerEpoch: baseline.open.writerEpoch, baseProgressRevision: baseline.open.baseProgressRevision } : null,
   };
   const segments = (reference.coverage ?? []).map((ranges) => coverageExecuted(ranges));
   const referenceViolations = checkContext(context, model).map((violation) => `reference: ${violation}`);

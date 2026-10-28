@@ -1,0 +1,140 @@
+{
+  "result": "checks_passed",
+  "error": null,
+  "checks": [
+    {
+      "id": "tool-tests",
+      "passed": true,
+      "result": null,
+      "counts": {
+        "tests": 671
+      }
+    },
+    {
+      "id": "inventory",
+      "passed": true,
+      "result": "provenance_verified",
+      "counts": null
+    },
+    {
+      "id": "adoption",
+      "passed": true,
+      "result": "revalidation_complete",
+      "counts": null
+    },
+    {
+      "id": "dimensions",
+      "passed": true,
+      "result": "coverage_reported",
+      "counts": null
+    },
+    {
+      "id": "registered-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": null
+    },
+    {
+      "id": "refusal-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": null
+    },
+    {
+      "id": "value-cost-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": null
+    },
+    {
+      "id": "refusal-census",
+      "passed": true,
+      "result": null,
+      "counts": {}
+    },
+    {
+      "id": "oracle-census",
+      "passed": true,
+      "result": null,
+      "counts": {}
+    },
+    {
+      "id": "typecheck",
+      "passed": true,
+      "result": null,
+      "counts": {}
+    },
+    {
+      "id": "repository-tests",
+      "passed": true,
+      "result": null,
+      "counts": {
+        "tests": 4653,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "archive-tests",
+      "passed": true,
+      "result": null,
+      "counts": {
+        "tests": 4,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "kernel-sweeps",
+      "passed": true,
+      "result": null,
+      "counts": {}
+    },
+    {
+      "id": "race-search",
+      "passed": true,
+      "result": null,
+      "counts": {}
+    },
+    {
+      "id": "value-cost-dimensions",
+      "passed": true,
+      "result": null,
+      "counts": {}
+    },
+    {
+      "id": "value-cost-continuations",
+      "passed": true,
+      "result": null,
+      "counts": {}
+    },
+    {
+      "id": "example-tests",
+      "passed": true,
+      "result": null,
+      "counts": {
+        "tests": 18,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "builder-docs",
+      "passed": true,
+      "result": null,
+      "counts": {}
+    },
+    {
+      "id": "area-gate",
+      "passed": true,
+      "result": "reported",
+      "counts": null
+    }
+  ]
+}

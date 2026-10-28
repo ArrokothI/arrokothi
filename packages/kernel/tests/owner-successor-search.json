@@ -1,0 +1,1159 @@
+{
+  "version": 1,
+  "source": "K1.3 design 03 Q6, revised for design check 03 (D03-CHK-05): the declared bounded search of the owner's successor check. Each family's generator domain, its exact size and the verdict counts by rule, frozen; owner-successor-search.test.ts asserts them.",
+  "families": {
+    "OA R1/continue": {
+      "seed": "R1",
+      "dimensions": {
+        "mode": [
+          "none",
+          "live",
+          "woken",
+          "expired",
+          "both"
+        ],
+        "generation": [
+          "registrations",
+          "registrations + 1",
+          "registrations + 2",
+          "(none: registrations + 1 only)"
+        ],
+        "count": [
+          "registrations - 1 (when not negative)",
+          "registrations",
+          "registrations + 1",
+          "registrations + 2"
+        ],
+        "deadline": [
+          "genuine",
+          "all+1 (wait, retirement and timeout together)",
+          "timeout+1 (expired only)"
+        ],
+        "nextState": [
+          "READY",
+          "RUNNING",
+          "WAITING",
+          "COMPLETED",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "reusedTimeoutEvent": [
+          "false",
+          "true (expired, generation = registrations ≥ 1)"
+        ]
+      },
+      "size": 504,
+      "verdicts": {
+        "P1": 44,
+        "P2": 22,
+        "P6": 17,
+        "P7": 1,
+        "T1": 168,
+        "T6": 248,
+        "accepted": 4
+      }
+    },
+    "OA R1/complete": {
+      "seed": "R1",
+      "dimensions": {
+        "mode": [
+          "none",
+          "live",
+          "woken",
+          "expired",
+          "both"
+        ],
+        "generation": [
+          "registrations",
+          "registrations + 1",
+          "registrations + 2",
+          "(none: registrations + 1 only)"
+        ],
+        "count": [
+          "registrations - 1 (when not negative)",
+          "registrations",
+          "registrations + 1",
+          "registrations + 2"
+        ],
+        "deadline": [
+          "genuine",
+          "all+1 (wait, retirement and timeout together)",
+          "timeout+1 (expired only)"
+        ],
+        "nextState": [
+          "READY",
+          "RUNNING",
+          "WAITING",
+          "COMPLETED",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "reusedTimeoutEvent": [
+          "false",
+          "true (expired, generation = registrations ≥ 1)"
+        ]
+      },
+      "size": 504,
+      "verdicts": {
+        "P1": 42,
+        "P2": 22,
+        "P5": 22,
+        "T1": 168,
+        "T6": 248,
+        "accepted": 2
+      }
+    },
+    "OA R2/continue": {
+      "seed": "R2",
+      "dimensions": {
+        "mode": [
+          "none",
+          "live",
+          "woken",
+          "expired",
+          "both"
+        ],
+        "generation": [
+          "registrations",
+          "registrations + 1",
+          "registrations + 2",
+          "(none: registrations + 1 only)"
+        ],
+        "count": [
+          "registrations - 1 (when not negative)",
+          "registrations",
+          "registrations + 1",
+          "registrations + 2"
+        ],
+        "deadline": [
+          "genuine",
+          "all+1 (wait, retirement and timeout together)",
+          "timeout+1 (expired only)"
+        ],
+        "nextState": [
+          "READY",
+          "RUNNING",
+          "WAITING",
+          "COMPLETED",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "reusedTimeoutEvent": [
+          "false",
+          "true (expired, generation = registrations ≥ 1)"
+        ]
+      },
+      "size": 744,
+      "verdicts": {
+        "P1": 50,
+        "P2": 25,
+        "P6": 20,
+        "P7": 1,
+        "T1": 248,
+        "T6": 396,
+        "accepted": 4
+      }
+    },
+    "OB R1/live": {
+      "seed": "R1",
+      "dimensions": {
+        "deviation": [
+          "liveWait.registeredBy forged",
+          "liveWait.generation + 1",
+          "liveWait.deadline + 1",
+          "liveWait.declaration another object (semantic)",
+          "readiness added (the woken template's)",
+          "nextState READY",
+          "registrations unchanged"
+        ]
+      },
+      "size": 7,
+      "verdicts": {
+        "P2": 1,
+        "P6": 2,
+        "T4": 1,
+        "T5": 1,
+        "T6": 1,
+        "accepted": 1
+      }
+    },
+    "OB R1/woken": {
+      "seed": "R1",
+      "dimensions": {
+        "deviation": [
+          "readiness null",
+          "readiness.generation + 1",
+          "readiness.species swapped",
+          "readiness.selector another",
+          "readiness.timeoutEventId forged",
+          "retired.registeredBy forged",
+          "retired.retiredBy cancellation",
+          "retired.retiredBy swapped",
+          "retired.endingEventId forged",
+          "retired.endingEventId the acknowledged batch entry",
+          "retired.declaration another object",
+          "retired.deadline + 1",
+          "nextState WAITING",
+          "registrations + 1",
+          "timeout added (the expired template's)"
+        ]
+      },
+      "size": 15,
+      "verdicts": {
+        "P2": 1,
+        "P6": 1,
+        "P7": 2,
+        "P8": 1,
+        "P9": 6,
+        "T4": 2,
+        "T5": 1,
+        "T6": 1
+      }
+    },
+    "OB R1/expired": {
+      "seed": "R1",
+      "dimensions": {
+        "deviation": [
+          "readiness null",
+          "readiness.generation + 1",
+          "readiness.species swapped",
+          "readiness.selector another",
+          "readiness.timeoutEventId forged",
+          "retired.registeredBy forged",
+          "retired.retiredBy cancellation",
+          "retired.retiredBy swapped",
+          "retired.endingEventId forged",
+          "retired.endingEventId the acknowledged batch entry",
+          "retired.declaration another object",
+          "retired.deadline + 1",
+          "nextState WAITING",
+          "registrations + 1",
+          "timeout null",
+          "timeout.generation + 1",
+          "timeout.eventId forged",
+          "timeout.deadline + 1",
+          "timeout.acceptancePosition + 1 (semantic)"
+        ]
+      },
+      "size": 19,
+      "verdicts": {
+        "P2": 1,
+        "P6": 1,
+        "P7": 7,
+        "P9": 5,
+        "T4": 2,
+        "T5": 1,
+        "T6": 1,
+        "accepted": 1
+      }
+    },
+    "OB R2/woken": {
+      "seed": "R2",
+      "dimensions": {
+        "deviation": [
+          "readiness null",
+          "readiness.generation + 1",
+          "readiness.species swapped",
+          "readiness.selector another",
+          "readiness.timeoutEventId forged",
+          "retired.registeredBy forged",
+          "retired.retiredBy cancellation",
+          "retired.retiredBy swapped",
+          "retired.endingEventId forged",
+          "retired.endingEventId the acknowledged batch entry",
+          "retired.declaration another object",
+          "retired.deadline + 1",
+          "nextState WAITING",
+          "registrations + 1",
+          "timeout added (the expired template's)"
+        ]
+      },
+      "size": 15,
+      "verdicts": {
+        "P2": 1,
+        "P6": 1,
+        "P7": 2,
+        "P8": 2,
+        "P9": 5,
+        "T4": 2,
+        "T5": 1,
+        "T6": 1
+      }
+    },
+    "OB R2/expired": {
+      "seed": "R2",
+      "dimensions": {
+        "deviation": [
+          "readiness null",
+          "readiness.generation + 1",
+          "readiness.species swapped",
+          "readiness.selector another",
+          "readiness.timeoutEventId forged",
+          "retired.registeredBy forged",
+          "retired.retiredBy cancellation",
+          "retired.retiredBy swapped",
+          "retired.endingEventId forged",
+          "retired.endingEventId the acknowledged batch entry",
+          "retired.declaration another object",
+          "retired.deadline + 1",
+          "nextState WAITING",
+          "registrations + 1",
+          "timeout null",
+          "timeout.generation + 1",
+          "timeout.eventId forged",
+          "timeout.deadline + 1",
+          "timeout.acceptancePosition + 1 (semantic)"
+        ]
+      },
+      "size": 19,
+      "verdicts": {
+        "P2": 1,
+        "P6": 1,
+        "P7": 7,
+        "P9": 5,
+        "T4": 2,
+        "T5": 1,
+        "T6": 1,
+        "accepted": 1
+      }
+    },
+    "OD R1/continue": {
+      "seed": "R1",
+      "dimensions": {
+        "acknowledgment": [
+          "queued",
+          "acknowledged by the resolving Activation",
+          "acknowledged by another Activation",
+          "terminal (genuine)"
+        ],
+        "ending": [
+          "queued",
+          "acknowledged by the resolving Activation",
+          "acknowledged by another Activation",
+          "terminal (genuine)"
+        ],
+        "nextState": [
+          "READY",
+          "RUNNING",
+          "WAITING",
+          "COMPLETED",
+          "FAILED",
+          "CANCELLED"
+        ]
+      },
+      "size": 96,
+      "verdicts": {
+        "P1": 8,
+        "P2": 4,
+        "T1": 32,
+        "T2": 16,
+        "T3": 32,
+        "accepted": 4
+      }
+    },
+    "OD R1/complete": {
+      "seed": "R1",
+      "dimensions": {
+        "acknowledgment": [
+          "queued",
+          "acknowledged by the resolving Activation",
+          "acknowledged by another Activation",
+          "terminal (genuine)"
+        ],
+        "ending": [
+          "queued",
+          "acknowledged by the resolving Activation",
+          "acknowledged by another Activation",
+          "terminal (genuine)"
+        ],
+        "nextState": [
+          "READY",
+          "RUNNING",
+          "WAITING",
+          "COMPLETED",
+          "FAILED",
+          "CANCELLED"
+        ]
+      },
+      "size": 96,
+      "verdicts": {
+        "P2": 1,
+        "P5": 1,
+        "T1": 32,
+        "T2": 28,
+        "T3": 32,
+        "accepted": 2
+      }
+    },
+    "OD R1/fail": {
+      "seed": "R1",
+      "dimensions": {
+        "acknowledgment": [
+          "queued",
+          "acknowledged by the resolving Activation",
+          "acknowledged by another Activation",
+          "terminal (genuine)"
+        ],
+        "ending": [
+          "queued",
+          "acknowledged by the resolving Activation",
+          "acknowledged by another Activation",
+          "terminal (genuine)"
+        ],
+        "nextState": [
+          "READY",
+          "RUNNING",
+          "WAITING",
+          "COMPLETED",
+          "FAILED",
+          "CANCELLED"
+        ]
+      },
+      "size": 96,
+      "verdicts": {
+        "P2": 1,
+        "P5": 1,
+        "T1": 32,
+        "T2": 28,
+        "T3": 32,
+        "accepted": 2
+      }
+    },
+    "OD R1e/complete": {
+      "seed": "R1e",
+      "dimensions": {
+        "acknowledgment": [
+          "queued",
+          "acknowledged by the resolving Activation",
+          "acknowledged by another Activation",
+          "terminal (genuine)"
+        ],
+        "ending": [
+          "queued",
+          "acknowledged by the resolving Activation",
+          "acknowledged by another Activation",
+          "terminal (genuine)"
+        ],
+        "nextState": [
+          "READY",
+          "RUNNING",
+          "WAITING",
+          "COMPLETED",
+          "FAILED",
+          "CANCELLED"
+        ]
+      },
+      "size": 96,
+      "verdicts": {
+        "P2": 16,
+        "T1": 32,
+        "accepted": 48
+      }
+    },
+    "OP R1/complete": {
+      "seed": "R1",
+      "dimensions": {
+        "alphabet": [
+          "-1",
+          "-0",
+          "0",
+          "1",
+          "2",
+          "m (the mailbox length, 2: not deduplicated)",
+          "NaN",
+          "0.5",
+          "Infinity"
+        ],
+        "lengths": [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        "split": [
+          "every split between acknowledgeAt and endAt"
+        ]
+      },
+      "size": 3178,
+      "verdicts": {
+        "P1": 2,
+        "T2": 3159,
+        "T3": 15,
+        "accepted": 2
+      }
+    },
+    "OP R1/fail": {
+      "seed": "R1",
+      "dimensions": {
+        "alphabet": [
+          "-1",
+          "-0",
+          "0",
+          "1",
+          "2",
+          "m (the mailbox length, 2: not deduplicated)",
+          "NaN",
+          "0.5",
+          "Infinity"
+        ],
+        "lengths": [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        "split": [
+          "every split between acknowledgeAt and endAt"
+        ]
+      },
+      "size": 3178,
+      "verdicts": {
+        "P1": 2,
+        "T2": 3159,
+        "T3": 15,
+        "accepted": 2
+      }
+    },
+    "R02 position matrix R1/complete": {
+      "seed": "R1",
+      "dimensions": {
+        "alphabet": [
+          "-1",
+          "-0",
+          "0",
+          "1",
+          "2",
+          "NaN",
+          "Infinity",
+          "0.5"
+        ],
+        "lengths": [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        "split": [
+          "every split between acknowledgeAt and endAt"
+        ]
+      },
+      "size": 2257,
+      "verdicts": {
+        "P1": 2,
+        "T2": 2238,
+        "T3": 15,
+        "accepted": 2
+      }
+    },
+    "IN R0/inputS": {
+      "seed": "R0",
+      "dimensions": {
+        "woken": [
+          "genuine",
+          "the other (null, or the W seed's wake)",
+          "generation + 1",
+          "retiredBy deadline",
+          "retiredBy cancellation",
+          "endingEventId forged",
+          "registeredBy forged",
+          "deadline + 1",
+          "declaration another object"
+        ],
+        "readiness": [
+          "genuine",
+          "the other (null, or the W seed's readiness)",
+          "generation + 1",
+          "species deadline",
+          "selector another",
+          "timeoutEventId forged"
+        ]
+      },
+      "size": 54,
+      "verdicts": {
+        "T1": 48,
+        "T5": 5,
+        "accepted": 1
+      }
+    },
+    "IN R1/inputX": {
+      "seed": "R1",
+      "dimensions": {
+        "woken": [
+          "genuine",
+          "the other (null, or the W seed's wake)",
+          "generation + 1",
+          "retiredBy deadline",
+          "retiredBy cancellation",
+          "endingEventId forged",
+          "registeredBy forged",
+          "deadline + 1",
+          "declaration another object"
+        ],
+        "readiness": [
+          "genuine",
+          "the other (null, or the W seed's readiness)",
+          "generation + 1",
+          "species deadline",
+          "selector another",
+          "timeoutEventId forged"
+        ]
+      },
+      "size": 54,
+      "verdicts": {
+        "T1": 48,
+        "T5": 5,
+        "accepted": 1
+      }
+    },
+    "IN W/inputX": {
+      "seed": "W",
+      "dimensions": {
+        "woken": [
+          "genuine",
+          "the other (null, or the W seed's wake)",
+          "generation + 1",
+          "retiredBy deadline",
+          "retiredBy cancellation",
+          "endingEventId forged",
+          "registeredBy forged",
+          "deadline + 1",
+          "declaration another object"
+        ],
+        "readiness": [
+          "genuine",
+          "the other (null, or the W seed's readiness)",
+          "generation + 1",
+          "species deadline",
+          "selector another",
+          "timeoutEventId forged"
+        ]
+      },
+      "size": 54,
+      "verdicts": {
+        "T4": 48,
+        "T5": 5,
+        "accepted": 1
+      }
+    },
+    "IN W/inputS": {
+      "seed": "W",
+      "dimensions": {
+        "woken": [
+          "genuine",
+          "the other (null, or the W seed's wake)",
+          "generation + 1",
+          "retiredBy deadline",
+          "retiredBy cancellation",
+          "endingEventId forged",
+          "registeredBy forged",
+          "deadline + 1",
+          "declaration another object"
+        ],
+        "readiness": [
+          "genuine",
+          "the other (null, or the W seed's readiness)",
+          "generation + 1",
+          "species deadline",
+          "selector another",
+          "timeoutEventId forged"
+        ]
+      },
+      "size": 54,
+      "verdicts": {
+        "P9": 4,
+        "T4": 42,
+        "T5": 6,
+        "accepted": 2
+      }
+    },
+    "IN RE/inputX": {
+      "seed": "RE",
+      "dimensions": {
+        "woken": [
+          "genuine",
+          "the other (null, or the W seed's wake)",
+          "generation + 1",
+          "retiredBy deadline",
+          "retiredBy cancellation",
+          "endingEventId forged",
+          "registeredBy forged",
+          "deadline + 1",
+          "declaration another object"
+        ],
+        "readiness": [
+          "genuine",
+          "the other (null, or the W seed's readiness)",
+          "generation + 1",
+          "species deadline",
+          "selector another",
+          "timeoutEventId forged"
+        ]
+      },
+      "size": 54,
+      "verdicts": {
+        "T1": 48,
+        "T5": 5,
+        "accepted": 1
+      }
+    },
+    "IN RD/inputX": {
+      "seed": "RD",
+      "dimensions": {
+        "woken": [
+          "genuine",
+          "the other (null, or the W seed's wake)",
+          "generation + 1",
+          "retiredBy deadline",
+          "retiredBy cancellation",
+          "endingEventId forged",
+          "registeredBy forged",
+          "deadline + 1",
+          "declaration another object"
+        ],
+        "readiness": [
+          "genuine",
+          "the other (null, or the W seed's readiness)",
+          "generation + 1",
+          "species deadline",
+          "selector another",
+          "timeoutEventId forged"
+        ]
+      },
+      "size": 54,
+      "verdicts": {
+        "T1": 48,
+        "T5": 5,
+        "accepted": 1
+      }
+    },
+    "EX W/expiry": {
+      "seed": "W",
+      "dimensions": {
+        "retired": [
+          "genuine",
+          "generation + 1",
+          "generation - 1",
+          "retiredBy event",
+          "retiredBy cancellation",
+          "endingEventId forged",
+          "registeredBy forged",
+          "deadline + 1",
+          "declaration another object"
+        ],
+        "readiness": [
+          "genuine",
+          "null",
+          "generation + 1",
+          "species event",
+          "selector another",
+          "timeoutEventId null"
+        ],
+        "timeout": [
+          "genuine",
+          "generation + 1",
+          "eventId forged",
+          "deadline + 1"
+        ]
+      },
+      "size": 216,
+      "verdicts": {
+        "P7": 10,
+        "P9": 9,
+        "T4": 192,
+        "T5": 4,
+        "accepted": 1
+      }
+    },
+    "CA R0/cancel": {
+      "seed": "R0",
+      "dimensions": {
+        "endAt": [
+          "genuine",
+          "the last dropped",
+          "the first repeated",
+          "the first as -0 beside 0",
+          "one past the mailbox added",
+          "none"
+        ],
+        "ending": [
+          "genuine",
+          "queued",
+          "acknowledged by another Activation"
+        ],
+        "retired": [
+          "genuine",
+          "the other (null, or the W seed's cancellation retirement)",
+          "retiredBy event",
+          "generation + 1",
+          "endingEventId forged"
+        ]
+      },
+      "size": 90,
+      "verdicts": {
+        "P1": 4,
+        "T2": 55,
+        "T3": 10,
+        "T4": 20,
+        "accepted": 1
+      }
+    },
+    "CA R0d/fire": {
+      "seed": "R0d",
+      "dimensions": {
+        "endAt": [
+          "genuine",
+          "the last dropped",
+          "the first repeated",
+          "the first as -0 beside 0",
+          "one past the mailbox added",
+          "none"
+        ],
+        "ending": [
+          "genuine",
+          "queued",
+          "acknowledged by another Activation"
+        ],
+        "retired": [
+          "genuine",
+          "the other (null, or the W seed's cancellation retirement)",
+          "retiredBy event",
+          "generation + 1",
+          "endingEventId forged"
+        ]
+      },
+      "size": 90,
+      "verdicts": {
+        "P1": 4,
+        "T2": 55,
+        "T3": 10,
+        "T4": 20,
+        "accepted": 1
+      }
+    },
+    "CA R1/cancel": {
+      "seed": "R1",
+      "dimensions": {
+        "endAt": [
+          "genuine",
+          "the last dropped",
+          "the first repeated",
+          "the first as -0 beside 0",
+          "one past the mailbox added",
+          "none"
+        ],
+        "ending": [
+          "genuine",
+          "queued",
+          "acknowledged by another Activation"
+        ],
+        "retired": [
+          "genuine",
+          "the other (null, or the W seed's cancellation retirement)",
+          "retiredBy event",
+          "generation + 1",
+          "endingEventId forged"
+        ]
+      },
+      "size": 90,
+      "verdicts": {
+        "P1": 4,
+        "T2": 55,
+        "T3": 10,
+        "T4": 20,
+        "accepted": 1
+      }
+    },
+    "CA W/cancel": {
+      "seed": "W",
+      "dimensions": {
+        "endAt": [
+          "genuine",
+          "the last dropped",
+          "the first repeated",
+          "the first as -0 beside 0",
+          "one past the mailbox added",
+          "none"
+        ],
+        "ending": [
+          "genuine",
+          "queued",
+          "acknowledged by another Activation"
+        ],
+        "retired": [
+          "genuine",
+          "the other (null, or the W seed's cancellation retirement)",
+          "retiredBy event",
+          "generation + 1",
+          "endingEventId forged"
+        ]
+      },
+      "size": 90,
+      "verdicts": {
+        "P1": 6,
+        "T2": 50,
+        "T3": 5,
+        "T4": 28,
+        "accepted": 1
+      }
+    },
+    "CA RE/cancel": {
+      "seed": "RE",
+      "dimensions": {
+        "endAt": [
+          "genuine",
+          "the last dropped",
+          "the first repeated",
+          "the first as -0 beside 0",
+          "one past the mailbox added",
+          "none"
+        ],
+        "ending": [
+          "genuine",
+          "queued",
+          "acknowledged by another Activation"
+        ],
+        "retired": [
+          "genuine",
+          "the other (null, or the W seed's cancellation retirement)",
+          "retiredBy event",
+          "generation + 1",
+          "endingEventId forged"
+        ]
+      },
+      "size": 90,
+      "verdicts": {
+        "P1": 4,
+        "T2": 55,
+        "T3": 10,
+        "T4": 20,
+        "accepted": 1
+      }
+    },
+    "CA RD/cancel": {
+      "seed": "RD",
+      "dimensions": {
+        "endAt": [
+          "genuine",
+          "the last dropped",
+          "the first repeated",
+          "the first as -0 beside 0",
+          "one past the mailbox added",
+          "none"
+        ],
+        "ending": [
+          "genuine",
+          "queued",
+          "acknowledged by another Activation"
+        ],
+        "retired": [
+          "genuine",
+          "the other (null, or the W seed's cancellation retirement)",
+          "retiredBy event",
+          "generation + 1",
+          "endingEventId forged"
+        ]
+      },
+      "size": 90,
+      "verdicts": {
+        "P1": 4,
+        "T2": 55,
+        "T3": 10,
+        "T4": 20,
+        "accepted": 1
+      }
+    },
+    "RT R0": {
+      "seed": "R0",
+      "dimensions": {
+        "template": [
+          "R0/inputS",
+          "R0/dispatch",
+          "R0/cancel",
+          "R1/continue",
+          "R1/complete",
+          "W/expiry"
+        ]
+      },
+      "size": 6,
+      "verdicts": {
+        "T1": 1,
+        "accepted": 3,
+        "stale": 2
+      }
+    },
+    "RT R0d": {
+      "seed": "R0d",
+      "dimensions": {
+        "template": [
+          "R0/inputS",
+          "R0/dispatch",
+          "R0/cancel",
+          "R1/continue",
+          "R1/complete",
+          "W/expiry"
+        ]
+      },
+      "size": 6,
+      "verdicts": {
+        "T1": 1,
+        "accepted": 3,
+        "stale": 2
+      }
+    },
+    "RT R1": {
+      "seed": "R1",
+      "dimensions": {
+        "template": [
+          "R0/inputS",
+          "R0/dispatch",
+          "R0/cancel",
+          "R1/continue",
+          "R1/complete",
+          "W/expiry"
+        ]
+      },
+      "size": 6,
+      "verdicts": {
+        "T1": 2,
+        "accepted": 3,
+        "stale": 1
+      }
+    },
+    "RT R1e": {
+      "seed": "R1e",
+      "dimensions": {
+        "template": [
+          "R0/inputS",
+          "R0/dispatch",
+          "R0/cancel",
+          "R1/continue",
+          "R1/complete",
+          "W/expiry"
+        ]
+      },
+      "size": 6,
+      "verdicts": {
+        "T1": 2,
+        "accepted": 1,
+        "stale": 3
+      }
+    },
+    "RT R2": {
+      "seed": "R2",
+      "dimensions": {
+        "template": [
+          "R0/inputS",
+          "R0/dispatch",
+          "R0/cancel",
+          "R1/continue",
+          "R1/complete",
+          "W/expiry"
+        ]
+      },
+      "size": 6,
+      "verdicts": {
+        "T1": 2,
+        "accepted": 1,
+        "stale": 3
+      }
+    },
+    "RT W": {
+      "seed": "W",
+      "dimensions": {
+        "template": [
+          "R0/inputS",
+          "R0/dispatch",
+          "R0/cancel",
+          "R1/continue",
+          "R1/complete",
+          "W/expiry"
+        ]
+      },
+      "size": 6,
+      "verdicts": {
+        "T1": 1,
+        "T2": 1,
+        "T4": 1,
+        "accepted": 1,
+        "stale": 2
+      }
+    },
+    "RT RE": {
+      "seed": "RE",
+      "dimensions": {
+        "template": [
+          "R0/inputS",
+          "R0/dispatch",
+          "R0/cancel",
+          "R1/continue",
+          "R1/complete",
+          "W/expiry"
+        ]
+      },
+      "size": 6,
+      "verdicts": {
+        "T1": 1,
+        "T2": 1,
+        "accepted": 2,
+        "stale": 2
+      }
+    },
+    "RT RD": {
+      "seed": "RD",
+      "dimensions": {
+        "template": [
+          "R0/inputS",
+          "R0/dispatch",
+          "R0/cancel",
+          "R1/continue",
+          "R1/complete",
+          "W/expiry"
+        ]
+      },
+      "size": 6,
+      "verdicts": {
+        "T1": 1,
+        "T2": 1,
+        "accepted": 2,
+        "stale": 2
+      }
+    },
+    "RT XC": {
+      "seed": "XC",
+      "dimensions": {
+        "template": [
+          "R0/inputS",
+          "R0/dispatch",
+          "R0/cancel",
+          "R1/continue",
+          "R1/complete",
+          "W/expiry"
+        ]
+      },
+      "size": 6,
+      "verdicts": {
+        "T1": 4,
+        "stale": 2
+      }
+    },
+    "RT XK": {
+      "seed": "XK",
+      "dimensions": {
+        "template": [
+          "R0/inputS",
+          "R0/dispatch",
+          "R0/cancel",
+          "R1/continue",
+          "R1/complete",
+          "W/expiry"
+        ]
+      },
+      "size": 6,
+      "verdicts": {
+        "T1": 4,
+        "stale": 2
+      }
+    }
+  },
+  "total": 11964
+}

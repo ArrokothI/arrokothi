@@ -11,10 +11,14 @@
  * `fail` with the terminal disposition of unprocessed input, authorized takeover, and the
  * inspectable recovery holds for unavailable pinned code and for unclassifiable responses.
  *
- * **It is not a working Kernel yet.** Out-of-band cancellation, waits and deadlines are K1.3's;
- * Effects are K2's; the legacy bridge, the SDK host entry and the E1 gate are K1.4's. Every surface
- * those packets own refuses by name rather than answering with a no-op, and an Outcome proposing an
- * Effect or a wait is refused whole. The boundary this package is held to is recorded in
+ * K1.3 adds waits and their deadlines: `await` registration, wake by an eligible input, the host's
+ * timer entries (`pendingTimers`, `fireTimer`) over an injected clock, wait-ended batch selection, and
+ * out-of-band cancellation (`cancelExecution`, and the Execution deadline set at creation) with the
+ * CX-6 fence for losing Outcomes and an optional Driver cancellation request.
+ *
+ * **It is not a working Kernel yet.** Effects are K2's; the legacy bridge, the SDK host entry and the
+ * E1 gate are K1.4's. An Outcome proposing an Effect is refused whole, and a surface a later packet
+ * owns refuses by name rather than answering with a no-op. The boundary this package is held to is recorded in
  * `docs/development/kernel-ownership.md` and enforced by
  * `tests/conformance/architecture/kernel-landing-zone.test.ts`: nothing here may import
  * `@arrokothi/core`, any provider or Runtime integration, or the SDK. External reach is `node:`
@@ -36,10 +40,17 @@ export type {
   InputAccepted,
   InputContent,
   OutcomeAccepted,
+  PendingTimer,
   RecoveryDecision,
   SubmitInputRequest,
   TakeoverAccepted,
+  TimerFireAnswer,
+  TimerKey,
+  WaitOutcome,
 } from "./coordinator.ts";
+
+export type { KernelClock } from "./time.ts";
+export type { AcceptedAlternative, AcceptedSubscription, AcceptedWait, DependencyAlternative, InputSubscription, SourceCategory, WaitDeclaration } from "./waits.ts";
 
 export type {
   CodeAvailability,
@@ -51,7 +62,15 @@ export type {
   TakeoverRequest,
 } from "./outcome.ts";
 
-export type { Activation, ActivationEvent, DeliverySettlement, ExecutionDriver, SubmissionGrant } from "./driver.ts";
+export type {
+  Activation,
+  ActivationEvent,
+  DeliverySettlement,
+  ExecutionDriver,
+  InputActivationEvent,
+  SubmissionGrant,
+  TimeoutActivationEvent,
+} from "./driver.ts";
 
 export { creationRequestIdKey, inputIdKey, mayReachScope, mintReceipt } from "./identity.ts";
 export type { AuthenticatedCaller, CreationRequestId, InputId, Receipt, ReceiptBoundary } from "./identity.ts";
@@ -62,11 +81,18 @@ export type {
   EmissionView,
   ExchangeView,
   ExecutionView,
+  InputMailboxEntryView,
   MailboxDisposition,
   MailboxEntryView,
+  ReadinessView,
   RecoveryHistoryRecord,
   RecoveryHoldView,
+  RetiredWaitView,
   TerminalResultView,
+  TimeoutMailboxEntryView,
+  TimerFireResult,
+  TimerFireView,
+  WaitView,
 } from "./inspection.ts";
 
 export { TERMINAL_STATES, isTerminal } from "./lifecycle.ts";

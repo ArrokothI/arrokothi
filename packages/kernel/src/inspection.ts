@@ -14,6 +14,7 @@ import type { InputId, Receipt } from "./identity.ts";
 import type { ExecutionState } from "./lifecycle.ts";
 import type { RefusalRecord } from "./refusal.ts";
 import type { BoundaryValue } from "./values.ts";
+import type { AcceptedWait } from "./waits.ts";
 
 /**
  * A mailbox entry's own disposition.
@@ -34,8 +35,17 @@ export type MailboxDisposition =
   | { readonly kind: "acknowledged"; readonly activationId: string }
   | { readonly kind: "terminal"; readonly reason: string };
 
-/** One accepted Event in an Execution's mailbox. */
-export interface MailboxEntryView {
+/**
+ * One accepted Event in an Execution's mailbox: application input, or a Kernel timeout (K1.3).
+ *
+ * The two members share their field names, so a reader can list a mailbox without narrowing; a field
+ * one category has no value for is `null`. `sourceCategory` is the trusted path that accepted or minted
+ * the Event, and the only thing wait eligibility branches on first.
+ */
+export type MailboxEntryView = InputMailboxEntryView | TimeoutMailboxEntryView;
+
+/** One accepted application-input Event. */
+export interface InputMailboxEntryView {
   readonly eventId: string;
   /** The triple that identifies this input. Two producers' identical key text are different entries. */
   readonly inputId: InputId;
@@ -50,6 +60,126 @@ export interface MailboxEntryView {
   readonly reserved: boolean;
   /** The receipt of the boundary that accepted it: creation for the initial input, ingress after. */
   readonly receipt: Receipt;
+}
+
+/**
+ * One Kernel timeout Event: the one Event a wait generation's expiry mints (W-9).
+ *
+ * Its kind is `kernel.wait.timeout` and its payload the canonical `null`. It has no Input ID, no
+ * subscription class and no receipt: timeout acceptance is Kernel-internal and mints none (`identity.md`
+ * names six receipt boundaries). It is acknowledged, ordered and disposed like any other Event.
+ */
+export interface TimeoutMailboxEntryView {
+  readonly eventId: string;
+  readonly inputId: null;
+  readonly kind: string;
+  readonly payload: null;
+  readonly subscriptionClass: null;
+  readonly sourceCategory: "kernel_timeout";
+  /** The generation whose expiry minted it. */
+  readonly waitGeneration: number;
+  /** That generation's deadline, on the injected clock's scale. */
+  readonly deadline: number;
+  readonly acceptancePosition: number;
+  readonly disposition: MailboxDisposition;
+  readonly reserved: boolean;
+  readonly receipt: null;
+}
+
+/** The live wait generation (`WAITING` only). */
+export interface WaitView {
+  readonly generation: number;
+  /** The Activation whose accepted Outcome registered it. */
+  readonly registeredBy: string;
+  /** The accepted declaration: the selector the generation is judged by. Frozen. */
+  readonly declaration: AcceptedWait;
+  readonly deadline: number | null;
+}
+
+/** A retired generation and how it ended. Each generation retires exactly once. */
+export interface RetiredWaitView {
+  readonly generation: number;
+  readonly registeredBy: string;
+  readonly declaration: AcceptedWait;
+  readonly deadline: number | null;
+  /** An eligible Event, its deadline, or the Execution's cancellation. */
+  readonly retiredBy: "event" | "deadline" | "cancellation";
+  /** The eligible Event or the timeout Event that ended it; `null` for cancellation. */
+  readonly endingEventId: string | null;
+}
+
+/** Wait-ended readiness, waiting for the next reservation (`core.md` § Readiness). */
+export interface ReadinessView {
+  readonly species: "event" | "deadline";
+  /** The retired generation whose selector the next reservation evaluates. */
+  readonly generation: number;
+  /** The mandatory timeout Event for deadline readiness; `null` for an Event wake. */
+  readonly timeoutEventId: string | null;
+}
+
+/** The exchange an accepted cancellation ended unacknowledged. */
+export interface EndedExchangeView {
+  readonly activationId: string;
+  /** The epoch that was current when the cancellation was accepted. */
+  readonly writerEpoch: number;
+  readonly baseProgressRevision: number;
+  /** The reserved batch: terminal-disposed, never acknowledged. */
+  readonly batch: readonly string[];
+  readonly dispatchReceipt: Receipt;
+}
+
+/**
+ * One accepted cancellation (K1.3; `lifecycle.md` § Cancellation order, CX-6).
+ *
+ * Explicit cancellation and Execution-deadline expiry make the same decision; only `cause`, the
+ * actor and the disposition reason differ. It takes an acceptance position and mints no receipt.
+ */
+export interface CancellationView {
+  readonly cause: "explicit" | "execution_deadline";
+  /** The caller's namespace; for the Execution deadline, the namespace that created the Execution. */
+  readonly actorNamespace: string;
+  readonly actorScope: string;
+  readonly position: number;
+  /** The exchange it ended unacknowledged, or `null` when none was open. */
+  readonly endedExchange: EndedExchangeView | null;
+  /** The live wait generation it retired, or `null`. */
+  readonly retiredGeneration: number | null;
+  /** Every Event it gave a `B-5` terminal disposition, in acceptance order. */
+  readonly terminalDispositions: readonly string[];
+}
+
+/**
+ * One Outcome proposal that lost to an accepted cancellation (CX-6), retained with its coordinates.
+ * Its canonical content is retained privately as the index an exact retry is answered from.
+ */
+export interface LosingOutcomeView {
+  readonly activationId: string;
+  readonly writerEpoch: number;
+  readonly baseProgressRevision: number;
+  /** The refusal it received, which an exact retry receives again. */
+  readonly refusal: RefusalRecord;
+}
+
+/** What one host timer fire resolved to. */
+export type TimerFireResult = "expired" | "cancelled" | "duplicate" | "stale" | "not_due" | "clock_unavailable";
+
+/**
+ * One host timer fire, retained as operational evidence (K1.3).
+ *
+ * A fire is a hint the Kernel resolves against its own clock and state. Only `expired` (a wait
+ * generation) and `cancelled` (the Execution deadline) came with a logical change. Every other result
+ * changed no lifecycle state, mailbox entry, wait, readiness, progress or acceptance position.
+ */
+export interface TimerFireView {
+  readonly timer: "wait_deadline" | "execution_deadline";
+  /** The wait generation the key named; `null` for the Execution deadline. */
+  readonly generation: number | null;
+  /** The clock reading the fire was resolved against; `null` when it was unusable. */
+  readonly observedAt: number | null;
+  readonly result: TimerFireResult;
+  readonly reason: string;
+  /** The timeout Event an expiry minted, or the one a duplicate fire refers to; otherwise `null`. */
+  readonly timeoutEventId: string | null;
 }
 
 /** One attempt to hand an Activation to the Driver. Operational traffic, not accepted state. */
@@ -150,7 +280,7 @@ export interface RecoveryHistoryRecord {
   /** The writer epoch current when the decision was made (for takeover clears, the superseded epoch). */
   readonly writerEpoch: number;
   readonly cause: "pinned_code_unavailable" | "protocol_failure";
-  readonly transition: "entered" | "updated" | "cleared_by_declaration" | "cleared_by_takeover" | "ended_by_outcome";
+  readonly transition: "entered" | "updated" | "cleared_by_declaration" | "cleared_by_takeover" | "ended_by_outcome" | "ended_by_cancellation";
   /** The hold reason at entry/update, or the clearing/ending explanation. */
   readonly reason: string;
   /**
@@ -161,9 +291,11 @@ export interface RecoveryHistoryRecord {
    * `attempt_submission` means the accepted Outcome presented the current attempt's submission
    * grant (K1.2-DEC-20): a valid Runtime proposal, which is not by itself general control power.
    * The two are never conflated: a Runtime submitter without `controlScopes` is recorded as
-   * `attempt_submission`, never as a control actor.
+   * `attempt_submission`, never as a control actor. K1.3: `cancellation` means an explicit
+   * cancellation by a caller holding cancel power (`cancelScopes`) ended the hold with the exchange;
+   * `execution_deadline` means the Execution deadline set at creation did.
    */
-  readonly authority: "control" | "attempt_submission";
+  readonly authority: "control" | "attempt_submission" | "cancellation" | "execution_deadline";
   /** The authenticated actor: the caller's namespace as the host established it. */
   readonly actorNamespace: string;
   /**
@@ -253,4 +385,21 @@ export interface ExecutionView {
   readonly refusals: readonly RefusalRecord[];
   /** Every receipt this Execution's accepted boundaries have minted, oldest first. */
   readonly receipts: readonly Receipt[];
+  /** The live wait generation, exactly while `WAITING`; otherwise `null`. */
+  readonly wait: WaitView | null;
+  /** Wait-ended readiness not yet consumed by a reservation; otherwise `null`. */
+  readonly waitEndedReadiness: ReadinessView | null;
+  /** Retired wait generations, in generation order. */
+  readonly retiredWaits: readonly RetiredWaitView[];
+  /** Every host timer fire that named this Execution, oldest first. */
+  readonly timerFires: readonly TimerFireView[];
+  /** The Execution deadline set at creation, on the injected clock's scale; `null` when none was set. */
+  readonly executionDeadline: number | null;
+  /**
+   * The accepted cancellation, once `CANCELLED`. The ended exchange carries its delivery log: a late
+   * report still settles its own row there.
+   */
+  readonly cancellation: (CancellationView & { readonly deliveries: readonly DeliveryAttemptView[] }) | null;
+  /** Outcome proposals that lost to the cancellation, oldest first. */
+  readonly losingOutcomes: readonly LosingOutcomeView[];
 }

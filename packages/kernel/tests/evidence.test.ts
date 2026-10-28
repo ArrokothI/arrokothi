@@ -128,7 +128,7 @@ describe("K11-R2-EVID-01 retained receipts survive a caller editing what it was 
     const snapshot = before.receipts.map((receipt) => ({ ...receipt }));
 
     for (const receipt of before.receipts) forgeReceipt(receipt);
-    for (const entry of before.mailbox) forgeReceipt(entry.receipt);
+    for (const entry of before.mailbox) forgeReceipt(entry.receipt as Receipt);
     if (before.activation !== null) forgeReceipt(before.activation.receipt);
 
     const after = accepted(kernel.inspect(author, created.executionId));
@@ -249,7 +249,7 @@ describe("K11-R2-EVID-01 the ownership rule, not one call site", () => {
       { what: "inspection activation receipt", value: view.activation?.receipt as object },
       ...view.receipts.map((receipt, index) => ({ what: `inspection receipt ${index}`, value: receipt })),
       ...view.refusals.map((refusal, index) => ({ what: `inspection refusal ${index}`, value: refusal })),
-      ...view.mailbox.map((entry, index) => ({ what: `mailbox receipt ${index}`, value: entry.receipt })),
+      ...view.mailbox.map((entry, index) => ({ what: `mailbox receipt ${index}`, value: entry.receipt as Receipt })),
       ...view.mailbox.map((entry, index) => ({ what: `mailbox disposition ${index}`, value: entry.disposition })),
       ...view.mailbox.map((entry, index) => ({ what: `mailbox payload ${index}`, value: entry.payload as object })),
       { what: "authority context", value: view.authorityContext as object },

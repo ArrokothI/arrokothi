@@ -9,68 +9,50 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { UnsupportedKernelSurfaceError } from "../src/index.ts";
+import { UnsupportedKernelSurfaceError, refuseUnsupportedSurface } from "../src/index.ts";
 import { ExecutionCoordinator } from "./binding-facade.ts";
-import { accepted, caller, createRequest, recordingDriver } from "./harness.ts";
+import { accepted, caller, createRequest, recordingDriver, refused } from "./harness.ts";
 
 const author = caller("app-a", "tenant-a");
 
 describe("K1.1-C7 unlanded surfaces", () => {
-  test("each refuses, names its owner packet, and returns nothing", () => {
-    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
-    // Governing 007: out-of-band cancellation and its terminal disposition are K1.3's, and the
-    // surface refuses naming its owner (K11-R1-SCOPE-01). Outcome submission, takeover and the
-    // recovery hold refused here as K1.2's until K1.2 implemented them; their behavior is now pinned
-    // by that packet's own suites (`outcome-acceptance`, `takeover`, `recovery` tests).
-    const expectations: [() => unknown, string, string][] = [[() => kernel.cancelExecution(), "cancelExecution", "K1.3"]];
-
-    for (const [call, surface, owner] of expectations) {
-      let returned: unknown = "sentinel";
-      assert.throws(
-        () => {
-          returned = call();
-        },
-        (error: unknown) => {
-          assert.ok(error instanceof UnsupportedKernelSurfaceError, `${surface} refuses with the packet's own error`);
-          assert.equal(error.surface, surface);
-          assert.equal(error.owner, owner);
-          return true;
-        },
-      );
-      assert.equal(returned, "sentinel", `${surface} produced no value`);
-    }
+  test("an unlanded surface refuses, names its owner packet, and returns nothing", () => {
+    // Governing 007: a surface no packet has built refuses naming its owner (K11-R1-SCOPE-01). K1.3
+    // implemented the last coordinator surface that refused this way (`cancelExecution`), so the
+    // mechanism is exercised on a later packet's surface name; its behaviour is unchanged.
+    let returned: unknown = "sentinel";
+    assert.throws(
+      () => {
+        returned = refuseUnsupportedSurface("admitEffect", "K2");
+      },
+      (error: unknown) => {
+        assert.ok(error instanceof UnsupportedKernelSurfaceError);
+        assert.equal(error.surface, "admitEffect");
+        assert.equal(error.owner, "K2");
+        return true;
+      },
+    );
+    assert.equal(returned, "sentinel", "the refusal produced no value");
   });
 
-  test("calling them leaves the whole observable state untouched", () => {
+  test("K11-R1-SCOPE-01 after K1.3: cancellation's own refusals change no accepted state", () => {
     const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
     const created = accepted(kernel.createExecution(author, createRequest()));
     accepted(kernel.submitInput(author, { destination: created.executionId, requestKey: "c1", kind: "k", payload: { a: 1 } }));
     accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
     const before = accepted(kernel.inspect(author, created.executionId));
-
-    for (const call of [() => kernel.cancelExecution()]) {
-      assert.throws(call, UnsupportedKernelSurfaceError);
-    }
-
-    // No progress, no acknowledgment, no epoch advance, no refusal record, no receipt: a refused
-    // surface is not even a recorded rejection of a proposal, because no proposal was accepted for
-    // inspection in the first place.
+    // Invisible and missing answer alike and record nothing.
+    const hidden = refused(kernel.cancelExecution(caller("elsewhere", "tenant-b"), created.executionId));
+    const missing = refused(kernel.cancelExecution(author, "no-such-execution"));
+    assert.deepEqual([hidden.classification, hidden.position, hidden.executionId], ["unknown_destination", 0, null]);
+    assert.deepEqual(missing, hidden);
     assert.deepEqual(accepted(kernel.inspect(author, created.executionId)), before);
-  });
-
-  test("K11-R1-SCOPE-01 cancellation is K1.3-owned and changes no accepted state", () => {
-    const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
-    const created = accepted(kernel.createExecution(author, createRequest()));
-    const before = accepted(kernel.inspect(author, created.executionId));
-    assert.throws(() => kernel.cancelExecution(), (error: unknown) => {
-      assert.ok(error instanceof UnsupportedKernelSurfaceError);
-      assert.equal((error as UnsupportedKernelSurfaceError).owner, "K1.3");
-      assert.match((error as Error).message, /K1\.3 owns this surface/);
-      return true;
-    });
-    assert.deepEqual(accepted(kernel.inspect(author, created.executionId)), before);
-    // A weaker implementation that accepted cancellation would change lifecycle state and
-    // dispose input; refusal leaves both untouched.
-    assert.equal(before.state, "READY");
+    // Visible without cancel power: scoped, recorded, nothing else changed.
+    const unauthorized = refused(kernel.cancelExecution(author, created.executionId));
+    assert.equal(unauthorized.classification, "unauthorized_control");
+    assert.equal(unauthorized.executionId, created.executionId);
+    const after = accepted(kernel.inspect(author, created.executionId));
+    assert.deepEqual({ ...after, refusals: before.refusals }, before, "only the refusal was recorded");
+    assert.equal(after.state, "RUNNING");
   });
 });

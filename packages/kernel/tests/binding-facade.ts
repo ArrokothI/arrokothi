@@ -4,7 +4,7 @@
  */
 import assert from "node:assert/strict";
 import { ExecutionCoordinator as CoreCoordinator } from "../src/index.ts";
-import type { AuthenticatedCaller, SubmissionGrant, CreateExecutionRequest as CoreCreate, SubmitInputRequest as CoreInput, OutcomeEnvelope as CoreOutcome, RecoveryRequest as CoreRecovery } from "../src/index.ts";
+import type { AuthenticatedCaller, SubmissionGrant, WaitDeclaration, CreateExecutionRequest as CoreCreate, SubmitInputRequest as CoreInput, OutcomeEnvelope as CoreOutcome, RecoveryRequest as CoreRecovery } from "../src/index.ts";
 import { captureCanonicalBytes, type BoundaryValue } from "../../sdk/src/internal/value-capture.ts";
 
 export type { BoundaryValue } from "../../sdk/src/internal/value-capture.ts";
@@ -12,7 +12,7 @@ export interface InputContent { readonly kind: string; readonly payload: Boundar
 export type CreateExecutionRequest = Omit<CoreCreate, "authorityContext" | "initialInput"> & { readonly authorityContext: BoundaryValue; readonly initialInput: InputContent };
 export type SubmitInputRequest = Omit<CoreInput, "payload"> & { readonly payload: BoundaryValue };
 export interface EmissionProposal { readonly emissionKey: string; readonly value: BoundaryValue }
-export type OutcomeNext = { readonly step: "continue" } | { readonly step: "await"; readonly wait: unknown } | { readonly step: "complete"; readonly result: BoundaryValue } | { readonly step: "fail"; readonly error: BoundaryValue };
+export type OutcomeNext = { readonly step: "continue" } | { readonly step: "await"; readonly wait: WaitDeclaration } | { readonly step: "complete"; readonly result: BoundaryValue } | { readonly step: "fail"; readonly error: BoundaryValue };
 export type OutcomeEnvelope = Omit<CoreOutcome, "progress" | "emissions" | "next"> & { readonly progress: BoundaryValue; readonly emissions?: readonly EmissionProposal[]; readonly next: OutcomeNext };
 export interface CodeAvailability { readonly definitionRevisions: readonly string[]; readonly runtimeContractRevisions: readonly string[]; readonly progressCodecs: readonly string[] }
 export type RecoveryRequest = Omit<CoreRecovery, "available"> & { readonly available: CodeAvailability };

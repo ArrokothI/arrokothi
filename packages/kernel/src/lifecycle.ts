@@ -4,9 +4,9 @@
  * `mental-model/mechanisms/lifecycle.md` owns the transitions. The full set of states is named here
  * because it is settled vocabulary. Creation makes an Execution `READY`, an accepted dispatch intent
  * makes it `RUNNING`, and an accepted Outcome makes it `READY` (`continue`), `COMPLETED` or
- * `FAILED` (K1.2). `WAITING` requires an accepted wait registration and `CANCELLED` accepted
- * out-of-band cancellation, both K1.3's. A terminal state is reached only through an accepted
- * decision and never reopens.
+ * `FAILED` (K1.2). An accepted `await` makes it `WAITING` while its wait is live, and an accepted
+ * cancellation, explicit or by the Execution deadline, makes it `CANCELLED` (K1.3). A terminal state
+ * is reached only through an accepted decision and never reopens.
  *
  * There is no `CREATED`. `creation.md`: creation "becomes `READY`; there is no externally visible
  * intermediate `CREATED` state."

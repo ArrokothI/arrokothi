@@ -21,11 +21,17 @@
 import type { Activation, SubmissionGrant } from "./driver.ts";
 import type { CreationRequestId, InputId, Receipt } from "./identity.ts";
 import type {
+  CancellationView,
   EmissionView,
+  LosingOutcomeView,
   MailboxDisposition,
   RecoveryHistoryRecord,
   RecoveryHoldView,
+  RetiredWaitView,
   TerminalResultView,
+  TimerFireResult,
+  TimerFireView,
+  WaitView,
 } from "./inspection.ts";
 import type { ExecutionState } from "./lifecycle.ts";
 import type { CapturedOutcome } from "./outcome.ts";
@@ -33,6 +39,7 @@ import { appendOwn } from "./own-array.ts";
 import type { RefusalRecord } from "./refusal.ts";
 import type { Ok } from "./result.ts";
 import type { BoundaryValue, CanonicalValue } from "./value-types.ts";
+import type { AcceptedWait } from "./waits.ts";
 
 const PrimordialObjectFreeze = Object.freeze;
 
@@ -66,6 +73,22 @@ export interface DispatchAccepted {
 }
 
 /**
+ * What an accepted `await` did with its wait (`waits.md` § Registering a wait).
+ *
+ * `waiting`: the generation is live and the Execution is `WAITING`. `woken`: an eligible Event was
+ * already queued, so the generation retired at registration with Event readiness. `expired`: nothing
+ * eligible was queued and the deadline was already due, so the generation retired with its one timeout
+ * Event and deadline readiness. Durable `WAITING` is never persisted for an expired deadline.
+ */
+export interface WaitOutcome {
+  /** The generation this registration created; with the Execution ID it names the wait's timer. */
+  readonly generation: number;
+  readonly result: "waiting" | "woken" | "expired";
+  /** The timeout Event minted at registration for `expired`; otherwise `null`. */
+  readonly timeoutEventId: string | null;
+}
+
+/**
  * The answer to an accepted Outcome, and to every exact replay of it.
  *
  * Everything but `replayed` is the retained decision: a replay returns the same receipt object and
@@ -88,6 +111,8 @@ export interface OutcomeAccepted {
   readonly resultId: string | null;
   /** Events this decision gave a `B-5` terminal disposition. */
   readonly terminalDispositions: readonly string[];
+  /** What an accepted `await` did with its wait; `null` for every other step. */
+  readonly wait: WaitOutcome | null;
 }
 
 /** An accepted takeover: the same exchange, now answerable only by the new attempt. */
@@ -101,6 +126,21 @@ export interface TakeoverAccepted {
   readonly batch: readonly string[];
   /** The dispatch-intent receipt re-recording the exchange's current attempt (K1.2-DEC-6). */
   readonly receipt: Receipt;
+}
+
+/**
+ * The answer to `cancelExecution` (K1.3): what the request found or decided. Always terminal.
+ *
+ * `changed` is false when the Execution had already ended: `COMPLETED` or `FAILED` report their result
+ * unchanged, and `CANCELLED` reports the cancellation that ended it (CX-2: a repeat changes nothing).
+ */
+export interface CancellationDecision {
+  readonly changed: boolean;
+  readonly state: ExecutionState;
+  /** The accepted cancellation when the Execution is `CANCELLED`; otherwise `null`. */
+  readonly cancellation: CancellationView | null;
+  /** The terminal result when the Execution had completed or failed; otherwise `null`. */
+  readonly result: TerminalResultView | null;
 }
 
 /** What a recovery request or a protocol-failure report left in place. */
@@ -204,6 +244,48 @@ export const holdsOf = (intent: HoldState): RecoveryHoldView[] => {
   return holds;
 };
 
+// -- Waits and timers (K1.3) ---------------------------------------------------
+
+/** A live wait generation: what registered it, the selector it is judged by, and its deadline. */
+export type LiveWait = WaitView;
+
+/** A retired generation and how it ended. Each generation retires once. */
+export type RetiredWait = RetiredWaitView;
+
+/**
+ * Wait-ended readiness (`core.md` § Readiness): the retired selector the next reservation evaluates.
+ *
+ * It lives for exactly one reservation. The dispatch plan consumes it, and a terminal decision
+ * discards it, so it never spans two exchanges or re-arms.
+ */
+export interface Readiness {
+  readonly species: "event" | "deadline";
+  readonly generation: number;
+  readonly selector: AcceptedWait;
+  /** The exact timeout Event for deadline readiness; `null` for an Event wake. */
+  readonly timeoutEventId: string | null;
+}
+
+/** One Kernel timeout Event's facts, as a plan carries them; the owner adds its disposition. */
+export interface TimeoutFacts {
+  readonly eventId: string;
+  readonly destination: string;
+  readonly generation: number;
+  readonly deadline: number;
+  /** The decision's acceptance position: the Outcome's own at registration, the next one at a fire. */
+  readonly acceptancePosition: number;
+}
+
+/** One host timer fire, retained as operational evidence on its Execution. */
+export type TimerFireRecord = TimerFireView;
+
+/** The answer to `fireTimer`. `unknown` names no Execution and records nothing. */
+export interface TimerFireAnswer {
+  readonly result: TimerFireResult | "unknown";
+  readonly reason: string;
+  readonly timeoutEventId: string | null;
+}
+
 // -- The plans ----------------------------------------------------------------
 
 /** One mailbox entry's accepted facts, as a plan carries them; the owner adds the mutable disposition. */
@@ -231,6 +313,8 @@ export interface CreationPlan {
   readonly runtimeContractRevision: string;
   readonly progressCodec: string;
   readonly authorityContext: CanonicalValue;
+  /** The Execution deadline set at creation (K1.3, owner decision 1), or `null`. Immutable. */
+  readonly executionDeadline: number | null;
   readonly creationIdentity: string;
   readonly receipt: Receipt;
   readonly initial: EntryFacts;
@@ -243,10 +327,20 @@ export interface InputPlan {
   readonly executionId: string;
   readonly basis: number;
   readonly entry: EntryFacts;
+  /**
+   * The live generation this input retires, when the Execution is `WAITING` and the input is eligible
+   * under it (B-6 path B); otherwise `null`. The same decision records Event readiness and `READY`.
+   */
+  readonly woken: RetiredWait | null;
+  readonly readiness: Readiness | null;
   readonly answer: Ok<InputAccepted>;
 }
 
-/** One accepted dispatch intent: the pinned exchange, its reserved batch and its first attempt. */
+/**
+ * One accepted dispatch intent: the pinned exchange, its reserved batch and its first attempt.
+ *
+ * The owner always clears wait-ended readiness with it: readiness lives for one reservation.
+ */
 export interface DispatchPlan {
   readonly kind: "dispatch";
   readonly executionId: string;
@@ -320,6 +414,16 @@ export interface OutcomePlan {
   readonly resolved: ResolvedFacts;
   readonly stored: AcceptedOutcome;
   readonly history: readonly RecoveryHistoryRecord[];
+  /** The Execution's registration count after this decision: one more for an accepted `await`. */
+  readonly registrations: number;
+  /** The generation left live, exactly when the next state is `WAITING`. */
+  readonly liveWait: LiveWait | null;
+  /** The generation an `await` created and retired in this same decision, or `null`. */
+  readonly retired: RetiredWait | null;
+  /** Readiness recorded when that generation retired at registration. */
+  readonly readiness: Readiness | null;
+  /** The timeout Event minted at registration for an already-due deadline. */
+  readonly timeout: TimeoutFacts | null;
   readonly nextState: ExecutionState;
   readonly answer: OutcomeAccepted;
 }
@@ -348,6 +452,68 @@ export interface ControlPlan {
   readonly answer: Ok<RecoveryDecision>;
 }
 
+/**
+ * One accepted expiry of the live wait generation (W-9): its one timeout Event at the next acceptance
+ * position, the generation retired, deadline readiness and `READY`, and the fire that caused it.
+ */
+export interface ExpiryPlan {
+  readonly kind: "expiry";
+  readonly executionId: string;
+  readonly basis: number;
+  readonly timeout: TimeoutFacts;
+  readonly retired: RetiredWait;
+  readonly readiness: Readiness;
+  readonly fire: TimerFireRecord;
+  readonly answer: TimerFireAnswer;
+}
+
+/** One timer fire that changes nothing logical: duplicate, stale, not due, or an unusable clock. */
+export interface TimerDiscardPlan {
+  readonly kind: "timer_discard";
+  readonly executionId: string;
+  readonly basis: number;
+  readonly fire: TimerFireRecord;
+  readonly answer: TimerFireAnswer;
+}
+
+/**
+ * One accepted cancellation (K1.3): explicit, or the Execution deadline's expiry through a timer fire.
+ *
+ * Every queued Event, the open exchange's reserved batch and any queued timeout included, takes `ending`;
+ * nothing is acknowledged. The open exchange ends unacknowledged; the owner keeps its delivery log with
+ * the cancellation record. A live wait retires as `cancellation`; readiness is discarded. Each hold on
+ * the open exchange contributes its `ended_by_cancellation` record. The state becomes `CANCELLED` at the
+ * record's acceptance position, with no receipt.
+ */
+export interface CancellationPlan {
+  readonly kind: "cancellation";
+  readonly executionId: string;
+  readonly basis: number;
+  /** Every queued mailbox position. */
+  readonly endAt: readonly number[];
+  readonly ending: MailboxDisposition;
+  readonly record: CancellationView;
+  readonly retired: RetiredWait | null;
+  readonly history: readonly RecoveryHistoryRecord[];
+  /** The fire that expired the Execution deadline; `null` for explicit cancellation. */
+  readonly fire: TimerFireRecord | null;
+  readonly answer: Ok<CancellationDecision> | TimerFireAnswer;
+}
+
+/**
+ * One Outcome proposal that lost to the cancellation (CX-6), indexed so an exact retry gets the same
+ * refusal. The refusal is recorded like any other, at the Execution's next refusal position.
+ */
+export interface LosingOutcomePlan {
+  readonly kind: "losing_outcome";
+  readonly executionId: string;
+  readonly basis: number;
+  /** The Activation ID and the captured content identity, packed: the exact-retry index key. */
+  readonly key: string;
+  readonly losing: LosingOutcomeView;
+  readonly refusal: RefusalRecord;
+}
+
 /** One recorded refusal of a request that named a visible Execution; the refusal is also its answer. */
 export interface RefusalPlan {
   readonly kind: "refusal";
@@ -373,7 +539,20 @@ export type DataOnly<T> = T extends (...args: never[]) => unknown
           : T;
 
 /** Every decision the owner applies. Closed: a new decision is a new variant and a new owner arm. */
-export type Plan = CreationPlan | InputPlan | DispatchPlan | DeliveryPlan | SettlementPlan | OutcomePlan | TakeoverPlan | ControlPlan | RefusalPlan;
+export type Plan =
+  | CreationPlan
+  | InputPlan
+  | DispatchPlan
+  | DeliveryPlan
+  | SettlementPlan
+  | OutcomePlan
+  | TakeoverPlan
+  | ControlPlan
+  | RefusalPlan
+  | ExpiryPlan
+  | TimerDiscardPlan
+  | CancellationPlan
+  | LosingOutcomePlan;
 
 type AssertTrue<T extends true> = T;
 /** Compile-time proof that no plan variant holds a function anywhere (CR1-1). */

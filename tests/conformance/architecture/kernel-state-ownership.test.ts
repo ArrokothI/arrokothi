@@ -58,7 +58,7 @@ describe("COORD-REFACTOR-01 CR1-2: only the state owner reaches accepted state",
     { name: "a mutable record type named by the plan module", file: "plan.ts", change: { prepend: 'import type { MailboxEntry } from "./state-records.ts";' }, rule: "R3", reports: `${SRC}/plan.ts imports ${SRC}/state-records.ts` },
     { name: "caller observation called from the owner", file: "state.ts", change: { prepend: 'import { hostMember } from "./envelope.ts";' }, rule: "R4", reports: `${SRC}/state.ts imports ${SRC}/envelope.ts` },
     { name: "capture called from the plan module", file: "plan.ts", change: { prepend: 'import { captureOutcome } from "./outcome.ts";' }, rule: "R4", reports: `${SRC}/plan.ts imports ${SRC}/outcome.ts` },
-    { name: "the owner's own import of its records removed", file: "state.ts", change: { drop: 'import type { ActivationRecord, DeliveryAttempt, ExecutionRecord, MailboxEntry, ResolvedExchange } from "./state-records.ts";\n' }, rule: "R1", reports: "so the rule matches nothing" },
+    { name: "the owner's own import of its records removed", file: "state.ts", change: { drop: 'import type { ActivationRecord, CancellationRecord, DeliveryAttempt, ExecutionRecord, MailboxEntry, ResolvedExchange } from "./state-records.ts";\n' }, rule: "R1", reports: "so the rule matches nothing" },
   ];
   for (const fixture of fixtures) {
     test(`must fail: ${fixture.name}`, async () => {

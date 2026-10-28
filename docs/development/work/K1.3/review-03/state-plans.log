@@ -1,0 +1,40 @@
+▶ CR1-1: each operation forms frozen, data-only plans before anything changes
+  ✔ creation: accepted, replayed, conflicting (5.499792ms)
+  ✔ input: accepted, replayed, conflicting, to a terminal Execution (3.662333ms)
+  ✔ dispatch and delivery: reported at once, reported later (also after resolution), thrown (1.222834ms)
+  ✔ redelivery: resent, and refused while held (0.705208ms)
+  ✔ Outcome: accepted, replayed, stale (1.216417ms)
+  ✔ takeover: accepted with its delivery, and refused by an unsafe Driver (0.889875ms)
+  ✔ recovery controls: enter, repeat, clear; protocol failure: enter, repeat (2.365166ms)
+✔ CR1-1: each operation forms frozen, data-only plans before anything changes (16.437125ms)
+▶ K1.3 CR1-1: wait, wake, expiry and fire decisions are frozen, data-only plans
+  ✔ await: waiting, woken at registration, expired at registration (1.774625ms)
+  ✔ input wake, wait-ended dispatch, and every fire result (1.588875ms)
+✔ K1.3 CR1-1: wait, wake, expiry and fire decisions are frozen, data-only plans (3.491458ms)
+▶ K1.3 CR1-1: cancellation and losing-proposal decisions are frozen, data-only plans
+  ✔ cancel: accepted, repeated, refused; a losing proposal: recorded, retried, unindexed (1.029667ms)
+  ✔ the Execution deadline's fire forms the same cancellation plan (0.344125ms)
+✔ K1.3 CR1-1: cancellation and losing-proposal decisions are frozen, data-only plans (1.439625ms)
+▶ K1.3 the owner's structural guards refuse a plan that breaks them (direct negative controls)
+  ✔ S1: a dispatch on a WAITING Execution, and an input on a terminal one (1.5105ms)
+  ✔ S3: an Outcome plan whose next state and live wait disagree (0.506375ms)
+  ✔ S4: an expiry plan for a generation that is not live (0.667417ms)
+  ✔ S1 and S2: a cancellation of a terminal Execution, and one that leaves a queued Event (0.501416ms)
+  ✔ S5: an input wake with no readiness, and readiness over readiness (0.4885ms)
+✔ K1.3 the owner's structural guards refuse a plan that breaks them (direct negative controls) (3.773375ms)
+▶ CR1-2: the owner's views alias nothing it holds
+  ✔ every reader member returns a primitive, a reader, frozen data or a fresh list of frozen values (1.446666ms)
+  ✔ editing every container of a returned view changes neither the next view nor the Execution (1.754334ms)
+  ✔ a reader holds its record privately and cannot be borrowed by a forged receiver (3.041333ms)
+✔ CR1-2: the owner's views alias nothing it holds (6.321125ms)
+▶ K1.3 design 03: the post-state witness
+  ✔ every record an accepted plan in this file left satisfies the post-state predicate (0.04525ms)
+✔ K1.3 design 03: the post-state witness (0.079542ms)
+ℹ tests 20
+ℹ suites 6
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 215.998417

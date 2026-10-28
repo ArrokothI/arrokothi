@@ -1,0 +1,142 @@
+{"group": "race", "files": 1, "exit": 0}
+{"group": "scenarios", "files": 60, "exit": 0}
+files covered: first 17, second 18; files with bytes only in the first: 0
+canonical-bytes.ts: 7218 bytes only in the first run, 73 ranges
+   L36: (code: ValueIssueCode, message: string): ValueIssue => PrimordialFreeze({ path: "", code, message })
+   L37: (problem: ValueIssue): ValueAcceptance<T> => PrimordialFreeze({ ok: false, issues: PrimordialFreeze([problem])
+   L41: return issue("string_too_long", `string cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} U
+   L45: return issue("string_too_long", `string cannot fit within the limit of ${BOUNDARY_LIMITS.stringScalarValues} U
+   L47: && unit <= 0xdbff
+   L47: {       const next = index + 1 < text.length ? unitAt(text, index + 1) : -1;       if (next < 0xdc00 || next >
+   L51: && unit <= 0xdfff
+   L51: return issue("lone_surrogate", "string contains an unpaired surrogate and has no UTF-8 encoding");
+   L58: return refusal(issue("unsupported_form", "expected a Uint8Array of canonical UTF-8 bytes"));
+   L61: return refusal(issue(transport ? "transport_too_large" : "too_many_bytes", transport ? "JSON transport exceeds
+   L63: return refusal(issue("unsupported_form", "shared backing memory cannot supply a stable byte snapshot"));
+   L67: catch {     return refusal(issue("unstable_representation", "byte view could not be copied"));   }
+   L81: else if (first >= 0xc2 && first <= 0xdf) { scalar = first & 0x1f; continuation = 1; minimum = 0x80; }     else
+   L86: return refusal(issue("invalid_utf8", "truncated UTF-8 sequence"));
+   L87: {       const next = bytes[index]!;       index += 1;       if (next < 0x80 || next > 0xbf) return refusal(iss
+   L93: && scalar <= 0xdfff
+   L93: return refusal(issue("invalid_utf8", "invalid Unicode scalar encoding"));
+   L94: : PrimordialFromCharCode(0xd800 + ((scalar - 0x10000) >> 10), 0xdc00 + ((scalar - 0x10000) & 0x3ff))
+   L100: function encodeUtf8(text: string): Uint8Array {   let count = 0;   for (let index = 0; index < text.length; in
+   L107: }   const bytes = new PrimordialUint8Array(count);   let offset = 0;   for (let index = 0; index < text.length
+coordinator.ts: 34535 bytes only in the first run, 88 ranges
+   L388: (reason: unknown): string => boundDiagnostic(reason, DELIVERY_FAILURE_FALLBACK)
+   L408: return;
+   L409: ? describeDeliveryFailure(reason)
+   L425: (caller: AuthenticatedCaller, scope: string): boolean => {   // `controlScopes` is optional, so an ordinary re
+   L447: return false;
+   L510: appendOwn(       history,       PrimordialObjectFreeze({         activationId: exchange.activation.activationI
+   L564: (exchange: ExchangeReader): StoredHold | null => exchange.codeHold
+   L605: (   activationId: string,   writerEpoch: number,   cause: RecoveryHistoryRecord["cause"],   transition: "enter
+   L617: (   activationId: string,   supersededEpoch: number,   reason: string,   actorNamespace: string,   actorScope:
+   L672: return discarded("clock_unavailable", "the clock gave no usable reading", null);
+   L673: return discarded("not_due", `Execution deadline ${deadline} is after the reading ${reading.now}`, null);
+   L687: return discarded("stale", "generation never issued", null);
+   L692: return discarded("stale", "generation had no deadline", null);
+   L699: return discarded("clock_unavailable", "the clock gave no usable reading", null);
+   L700: return discarded("not_due", `deadline ${deadline} is after the reading ${reading.now}`, null);
+   L756: : null
+   L758: return err(issues);
+   L765: appendIssues(issues, located(payload.issues, `${prefix}payload`));
+   L774: return err(issues);
+   L783: ? "absent"
+envelope.ts: 6047 bytes only in the first run, 18 ranges
+   L46: (target: LocatedIssue[], issue: LocatedIssue): void => {   appendOwn(target, issue); }
+   L56: (issues: readonly T[], label: string): T[] => {   const out: T[] = [];   for (let index = 0; index < issues.le
+   L78: return omitted;
+   L80: return omitted;
+   L89: (target: LocatedIssue[], issues: readonly ValueIssue[], root: string): void => {   for (let index = 0; index <
+   L101: (issues: readonly LocatedIssue[], withMessages: boolean): string => {   let out = "";   const counts: { code: 
+   L148: (issues: readonly LocatedIssue[]): string => {   let out = "";   for (let index = 0; index < issues.length; in
+   L178: {     // A Proxy is named as one before anything else observes it (K1.1-correction-03, owner decision-01     /
+   L201: {     appendIssue(issues, { ...problem, path: label });     return false;   }
+   L219: appendIssue(issues, { path: label, code: "unsupported_form", message: "expected a primitive string naming an A
+   L246: return { observed: undefined, threw: false };
+   L247: && typeof holder !== "function"
+   L247: return { observed: undefined, threw: false };
+   L255: catch {     return { observed: undefined, threw: true };   }
+   L262: {     appendIssue(issues, { path: label, code: "unstable_representation", message: `request field ${label} cou
+   L298: const getter = descriptorGetter(descriptor);       return typeof getter === "function" ? PrimordialReflectAppl
+   L300: : undefined
+   L327: (reason: unknown, fallback: string): string => {   try {     if (typeof reason === "string") {       return Pr
+identity.ts: 125 bytes only in the first run, 1 ranges
+   L111: {       throw new PrimordialTypeError(`identity parts must be text; received ${part === null ? "null" : typeof
+json-transport.ts: 1124 bytes only in the first run, 2 ranges
+   L1: /** Internal transport adapter. The receiving transport must cap accumulation/decompression too. */ import { c
+   L16: ; }
+outcome.ts: 14680 bytes only in the first run, 62 ranges
+   L216: {     const received = typeof observed === "number" ? `${observed}` : observed === undefined ? "nothing" : typ
+   L226: {     appendIssue(issues, { path: label, code: "missing_field", message: `${label} is required` });     return
+   L231: {     appendRootIssues(issues, captured.issues, label);     return null;   }
+   L240: return false;
+   L243: catch {     // A revoked Proxy throws from `IsArray`; it is not a record the Kernel can read.     return false
+   L253: catch {     return false;   }
+   L261: function diagnosticFieldName(key: string): string {   if (key.length > 128) return "<unknown field name omitte
+   L269: (label: string, key: string): string => (label === "" ? key : `${label}.${key}`)
+   L281: catch {     appendIssue(issues, { path: label, code: "unstable_representation", message: `the fields of ${labe
+   L289: {       appendIssue(issues, { path: label, code: "unknown_field", message: "a symbol-keyed field is not part o
+   L298: {       const name = diagnosticFieldName(key);       appendIssue(issues, { path: childPath(label, name), code:
+   L324: if (!isListLike(observed)) {     appendIssue(issues, { path: "emissions", code: "unsupported_form", message: "
+   L374: if (!isListLike(observed)) {     appendIssue(issues, { path: "effects", code: "unsupported_form", message: "ex
+   L380: {     appendIssue(issues, {       path: "effects",       code: "effects_unsupported",       message: "Effect p
+   L390: function optionalText(holder: object, key: string, label: string, issues: LocatedIssue[]): string | null | und
+   L392: if (field.observed === undefined) return null;   return acceptIdentityText(field.observed, label, issues) ? (f
+   L403: {     appendIssue(issues, { path: label, code: "unsupported_form", message: `expected a list for ${label}` });
+   L412: function tooManySelectors(issues: LocatedIssue[]): void {   appendIssue(issues, {     path: "next.wait",     c
+   L428: {     appendIssue(issues, { path: "next.wait", code: "missing_field", message: "next.wait is required for awai
+   L432: {     appendIssue(issues, { path: "next.wait", code: "unsupported_form", message: "expected a wait declaration
+own-array.ts: 636 bytes only in the first run, 9 ranges
+   L91: (holder: object, key: string): boolean =>   PrimordialReflectApply(PrimordialHasOwnProperty, holder, [key])
+   L108: return undefined;
+   L122: : undefined
+   L125: (descriptor: PropertyDescriptor): unknown =>   hasOwnField(descriptor, "get") ? ownFieldValue(descriptor, "get
+   L169: (   holder: object,   key: string | symbol,   descriptor: PropertyDescriptor | undefined, ): void => {   if (d
+   L193: }
+   L243: return undefined;
+   L249: {     appendOwn(target, readAt(extra, index) as T);   }
+   L288: function writeByte(bytes: Uint8Array, index: number, value: number): void {   bytes[index] = value; }
+plan.ts: 1143 bytes only in the first run, 3 ranges
+   L198: (cause: StoredHold["cause"], hasCodeHold: boolean): readonly string[] => {   if (cause === "pinned_code_unavai
+   L218: {     const stored = intent.codeHold;     appendOwn(       holds,       PrimordialObjectFreeze({         cause
+   L231: {     const stored = intent.protocolFailureHold;     appendOwn(       holds,       PrimordialObjectFreeze({   
+state.ts: 4546 bytes only in the first run, 49 ranges
+   L141: get contentIdentity(): string {     return this.#entry.contentIdentity;   }
+   L145: get acceptancePosition(): number {     return this.#entry.acceptancePosition;   }
+   L150: get receipt(): Receipt | null {     return this.#entry.receipt;   }
+   L240: get creationIdentity(): string {     return this.#record.creationIdentity;   }
+   L244: get creationReceipt(): Receipt {     return this.#record.creationReceipt;   }
+   L248: get initialEventId(): string {     return this.#record.initialEventId;   }
+   L334: ? null
+   L365: : new EntryReader(entry)
+   L407: ? null
+   L413: : new ExecutionReader(record)
+   L423: visibleExecutionIds(caller: AuthenticatedCaller): string[] {     const visible: string[] = [];     // `Map.for
+   L452: return null;
+   L454: ? undefined
+   L455: ? null
+   L484: {       this.#applyTakeover(plan);       return;     }
+   L488: {       this.#applyControl(plan);       return;     }
+   L511: const unreachable: never = plan;     throw new PrimordialError(`${STALE_PLAN}: unknown plan ${typeof unreachab
+   L519: throw new PrimordialError(STALE_PLAN);
+   L527: {       throw new PrimordialError(STALE_PLAN);     }
+   L600: throw new PrimordialError(`${STALE_PLAN} (${S1})`);
+time.ts: 48 bytes only in the first run, 2 ranges
+   L58: return UNUSABLE;
+   L60: catch {     return UNUSABLE;   }
+unsupported.ts: 887 bytes only in the first run, 3 ranges
+   L20: name = "UnsupportedKernelSurfaceError";   /** The surface that was asked for, e.g. `createExecution`. */   rea
+   L26: constructor(surface: string, owner: string) {     super(       `${surface} is not implemented in @arrokothi/ke
+   L39: function refuseUnsupportedSurface(surface: string, owner: string): never {   throw new UnsupportedKernelSurfac
+values.ts: 237 bytes only in the first run, 2 ranges
+   L12: : copied
+   L16: function validateCanonicalBytes(input: Uint8Array): ValueAcceptance<BoundaryValue> {   const accepted = accept
+waits.ts: 1013 bytes only in the first run, 5 ranges
+   L104: return false;
+   L110: if (category === "kernel_timeout") return false;
+   L121: (alternative: AcceptedAlternative, facts: TrustedEventFacts): boolean => {   if (alternative.eventIdentity !==
+   L135: (wait: AcceptedWait, facts: TrustedEventFacts): boolean => {   let matched = false;   for (let index = 0; inde
+   L188: return null;
+files covered: first 18, second 17; files with bytes only in the first: 13

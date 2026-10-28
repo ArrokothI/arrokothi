@@ -21,6 +21,9 @@
  * - **Every located exception**: the same state with the fault moved to another location.
  * - **The reference decision**: each check of the uninjected call, against an altered context.
  * - **The exit inventory**: a missing scenario, an exit not taken, an ambiguous declaration.
+ * - **K1.3, 017 L-28** (owner choice 06): an Outcome apply-window prefix that breaks the state owner's
+ *   post-state predicate is observed as the owner's refusal, and the old accepted observation of it is
+ *   a violation.
  *
  * `docs/development/work/K1.2-correction-01/oracle-mutants-09.mjs` disables each entry of the
  * oracle's `CHECKS` in turn and requires this file to fail.
@@ -39,6 +42,7 @@ import {
   checkContext,
   classify,
   exitInventory,
+  outcomeLadder,
   sourceModel,
   type Attempt,
   type Context,
@@ -62,7 +66,9 @@ const EXAMPLE_SCENARIOS = [
   "takeover: accepted, clearing a protocol hold",
   "takeover: refused, the safety callback took the exchange over itself",
   "outcome: continue",
+  "outcome: fail",
   "outcome: exact replay",
+  "outcome: refused, losing to an accepted cancellation (CX-6, indexed)",
 ];
 
 interface Report {
@@ -91,8 +97,16 @@ const EXAMPLE_CLASSES: Record<string, readonly string[]> = {
   ],
   "takeover: refused, the safety callback took the exchange over itself": ["threw: no-call state", "refused: exactly one refusal recorded", "threw after the safety callback: its decision only", "completed"],
   "outcome: continue": ["refused without naming the Execution: nothing recorded", "threw: no-call state", "refused: exactly one refusal recorded", "threw inside the declared Outcome apply window: a permitted prefix", "completed"],
+  "outcome: fail": ["refused without naming the Execution: nothing recorded", "threw: no-call state", "refused: exactly one refusal recorded", "threw inside the declared Outcome apply window: a permitted prefix", "completed"],
   "outcome: continue, ending a code and a protocol hold": ["refused without naming the Execution: nothing recorded", "threw: no-call state", "refused: exactly one refusal recorded", "threw inside the declared Outcome apply window: a permitted prefix", "completed"],
   "outcome: exact replay": ["refused without naming the Execution: nothing recorded", "threw: no-call state", "refused: exactly one refusal recorded", "completed"],
+  "outcome: refused, losing to an accepted cancellation (CX-6, indexed)": [
+    "refused without naming the Execution: nothing recorded",
+    "threw: no-call state",
+    "refused: exactly one refusal recorded, unindexed after a contained fault",
+    "threw inside the declared losing-proposal apply window: refusal recorded, index entry not",
+    "completed",
+  ],
 };
 
 const child = (args: string[]): { status: number | null; failure: string | null; report: Report } => {
@@ -312,6 +326,16 @@ describe("every located exception needs its location", () => {
       "receipt only, outside the window",
     ));
 
+  const LOSING = "outcome: refused, losing to an accepted cancellation (CX-6, indexed)";
+  test("the losing window's refusal-only state, outside the index insert", () =>
+    rejected(
+      contextOf(LOSING),
+      withStack(exampleOf(LOSING, "threw inside the declared losing-proposal apply window: refusal recorded, index entry not"), (stack) =>
+        stack.map((frame) => (frame.file === MODEL.losingIndexInsert?.file && frame.line === lineOf(MODEL.losingIndexInsert) ? { ...frame, line: lineOf(MODEL.losingIndexInsert) - 1 } : frame)),
+      ),
+      "refusal only, outside the window",
+    ));
+
   const OUTCOME = "outcome: continue, ending a code and a protocol hold";
   const outcome = (): Context => contextOf(OUTCOME);
   const inWindow = (): Attempt => exampleOf(OUTCOME, "threw inside the declared Outcome apply window: a permitted prefix");
@@ -354,6 +378,37 @@ describe("every located exception needs its location", () => {
   test("a fault that did not fire, and a repeat in which one did", () => {
     rejected(reentry(), { ...exampleOf(REENTRY, "threw: no-call state"), fired: false }, "fault not fired");
     rejected(reentry(), { ...exampleOf(REENTRY, "completed"), fired: true }, "repeat fired");
+  });
+});
+
+describe("K1.3, 017 L-28: an Outcome prefix that breaks the post-state predicate (owner choice 06)", () => {
+  const FAILING = "outcome: fail";
+  const atStep = (step: string, attempt: Attempt): Attempt => {
+    const lines = MODEL.outcomeApply.find((entry) => entry.step === step)?.lines ?? null;
+    const own = (frame: Frame): boolean => MODEL.outcomeApply.some((entry) => entry.lines !== null && frame.file === entry.lines.file && frame.line >= entry.lines[0] && frame.line <= entry.lines[1]);
+    return withStack(attempt, (stack) => stack.map((frame) => (own(frame) ? { ...frame, line: lineOf(lines) } : frame)));
+  };
+
+  test("the ladder expects the owner's refusal exactly from the first terminal disposition until the decision is whole", () => {
+    const context = contextOf(FAILING);
+    const states = outcomeLadder(context).flatMap((rung) => rung.states.map((state) => ({ step: rung.step, state })));
+    const first = states.findIndex(({ state }) => typeof state.nextAcceptance === "string");
+    assert.ok(first > 0, "a prefix breaks the predicate");
+    assert.equal(states[first]!.step, "end", "the first is the terminal disposition");
+    assert.ok(states.slice(0, first).every(({ state }) => typeof state.nextAcceptance === "number"), "nothing before it is refused");
+    assert.ok(states.some(({ step, state }) => step === "exchanges" && state.nextAcceptance === "owner refused (P5)" && state.setupGrant === "owner refused (P5)"), "both probes reach the owner before the index holds the Activation");
+    assert.deepEqual(states.at(-1)!.state, context.reference.state, "the whole sequence is the reference decision");
+  });
+
+  test("a prefix that breaks it is permitted observed as the owner's refusal, and a violation observed with its probes accepted", () => {
+    const context = contextOf(FAILING);
+    const prefix = outcomeLadder(context).find((rung) => rung.step === "exchanges")!.states[0]!;
+    assert.equal(prefix.nextAcceptance, "owner refused (P5)");
+    const located = atStep("exchanges", exampleOf(FAILING, "threw inside the declared Outcome apply window: a permitted prefix"));
+    const permitted = judge(context, withState(located, () => prefix));
+    assert.equal(permitted.ok, true, permitted.ok ? "" : permitted.violation);
+    const advanced = typeof context.s0.nextAcceptance === "number" ? context.s0.nextAcceptance + 1 : 0;
+    rejected(context, withState(located, () => ({ ...prefix, nextAcceptance: advanced, setupGrant: `accepted at ${advanced + 1}` })), "a P-breaking prefix whose probes were accepted");
   });
 });
 

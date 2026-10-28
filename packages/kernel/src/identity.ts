@@ -33,6 +33,13 @@ export interface AuthenticatedCaller {
   readonly namespace: string;
   readonly scopes: readonly string[];
   readonly controlScopes?: readonly string[];
+  /**
+   * The separate cancel power (K1.3; `authority.md`: send, inspect, cancel, delegate, read, write and
+   * impersonate are separate powers). `cancelExecution` requires the Execution's scope here, in addition
+   * to visibility. Neither `controlScopes`, which `identity.ts` limits to the three exchange controls,
+   * nor a submission grant authorizes cancellation. Absent denies it. A trusted host input, like `scopes`.
+   */
+  readonly cancelScopes?: readonly string[];
 }
 
 /**
@@ -123,6 +130,8 @@ export const creationRequestIdKey = (id: CreationRequestId): string => packIdent
  * that boundary rather than inventing a seventh (K1.2-DEC-6).
  */
 export type ReceiptBoundary = "creation" | "input_ingress" | "dispatch_intent" | "outcome_acceptance";
+// K1.3 adds no boundary: a cancellation, an expiry and a timer fire take acceptance positions but are
+// not among identity.md's six receipt boundaries, so they mint no receipt.
 
 /**
  * Evidence that one specific request was accepted at one named boundary.

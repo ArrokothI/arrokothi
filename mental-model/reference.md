@@ -95,7 +95,7 @@ Read [core coordination vocabulary](#core-coordination-vocabulary) first: Effect
 - [Trusted Execution](concepts/operations.md#trusted-execution)
 - [Isolated Execution](concepts/operations.md#isolated-execution)
 - [Operating profile and durability](concepts/operations.md#operating-profile-and-durability)
-- [Three clocks](concepts/operations.md#three-clocks)
+- [Three clocks: wait deadline, Execution deadline and scheduler lease](concepts/operations.md#three-clocks)
 - [Child and ownership](concepts/operations.md#child-and-ownership)
 - [Message, request and correlation](concepts/operations.md#message-request-and-correlation)
 - [Observation, cursor and routing](concepts/operations.md#observation-cursor-and-routing)

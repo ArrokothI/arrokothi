@@ -14,6 +14,9 @@
  *   has no recipe for fails, so a new reader member must be classified here.
  * - **Inspection witness.** Every container of a returned view is edited, and the next view must equal
  *   the one before the edits.
+ * - **Post-state witness** (K1.3, design 03). After every plan the owner accepts in this file, the
+ *   owner's full post-state predicate is evaluated again on the record the commit actually left
+ *   (`postStateViolation`), so a commit that differed from the successor it admitted would show here.
  *
  * The recording inside `apply` runs inside poison windows when the poisoned-prototype sweep runs this
  * file, so it uses load-time references and own-data writes only; every check runs after the call.
@@ -32,6 +35,7 @@ const defineProperty = Object.defineProperty;
 const create = Object.create;
 const originalApply = KernelState.prototype.apply;
 const find = KernelState.prototype.find;
+const postStateViolation = KernelState.prototype.postStateViolation;
 
 interface Applied {
   readonly plan: Plan;
@@ -50,10 +54,25 @@ const recordApplied = (entry: Applied): void => {
   defineProperty(applied, `${applied.length}`, descriptor);
 };
 
+/** What the post-state witness found: one line per accepted plan whose committed record breaks P. */
+const witnessed: string[] = [];
+let witnessedPlans = 0;
+const recordWitnessed = (line: string): void => {
+  const descriptor = create(null) as PropertyDescriptor;
+  descriptor.value = line;
+  descriptor.writable = true;
+  descriptor.enumerable = true;
+  descriptor.configurable = true;
+  defineProperty(witnessed, `${witnessed.length}`, descriptor);
+};
+
 KernelState.prototype.apply = function (this: KernelState, plan: Plan): void {
   const reader = plan.kind === "creation" ? null : (ReflectApply(find, this, [plan.executionId]) as ReturnType<KernelState["find"]>);
   recordApplied({ plan, before: reader === null ? null : reader.inspection(), state: this });
   ReflectApply(originalApply, this, [plan]);
+  witnessedPlans += 1;
+  const violation = ReflectApply(postStateViolation, this, [plan.executionId]) as string | null;
+  if (violation !== null) recordWitnessed(`${plan.kind} on ${plan.executionId}: ${violation}`);
 };
 
 /** Runs one operation and returns the plans it applied. */
@@ -63,7 +82,7 @@ const during = <T>(operation: () => T): { result: T; plans: Applied[] } => {
   return { result, plans: [...applied] };
 };
 
-const KINDS = new Set(["creation", "input", "dispatch", "delivery", "settlement", "outcome", "takeover", "control", "refusal"]);
+const KINDS = new Set(["creation", "input", "dispatch", "delivery", "settlement", "outcome", "takeover", "control", "refusal", "expiry", "timer_discard", "cancellation", "losing_outcome"]);
 
 /** Everything wrong with `value` as plan data: functions, accessors, foreign bytes, exotic objects and, when `frozen`, anything unfrozen. */
 function dataViolations(value: unknown, path: string, frozen: boolean, seen = new Set<object>()): string[] {
@@ -220,6 +239,175 @@ describe("CR1-1: each operation forms frozen, data-only plans before anything ch
   });
 });
 
+// -- K1.3: waits, timers and the owner's structural guards --------------------------
+
+describe("K1.3 CR1-1: wait, wake, expiry and fire decisions are frozen, data-only plans", () => {
+  const clocked = () => {
+    let reading = 0;
+    const clock = { now: () => reading, set: (value: number) => void (reading = value) };
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver, clock });
+    const created = accepted(kernel.createExecution(author, createRequest()));
+    const open = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    return { kernel, driver, clock, executionId: created.executionId, open };
+  };
+  const awaitOn = (deadline?: number) => ({ step: "await", wait: deadline === undefined ? { subscriptions: [{ subscriptionClass: "s" }] } : { subscriptions: [{ subscriptionClass: "s" }], deadline } });
+
+  test("await: waiting, woken at registration, expired at registration", () => {
+    for (const [deadline, reading, eligible, result] of [[10, 0, false, "waiting"], [undefined, 0, true, "woken"], [5, 5, false, "expired"]] as const) {
+      const { kernel, driver, clock, executionId, open } = clocked();
+      clock.set(reading);
+      if (eligible) accepted(kernel.submitInput(author, { destination: executionId, requestKey: "e", kind: "k", payload: 1, subscriptionClass: "s" }));
+      const run = expectPlans(kernel, executionId, () => kernel.submitOutcome(author, outcomeFor(executionId, open, { next: awaitOn(deadline) }), submissionFor(driver, open.activationId)), ["outcome"]);
+      assert.equal(accepted(run.result).wait?.result, result);
+    }
+  });
+
+  test("input wake, wait-ended dispatch, and every fire result", () => {
+    const { kernel, driver, clock, executionId, open } = clocked();
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, open, { next: awaitOn(10) }), submissionFor(driver, open.activationId)));
+    const key = { executionId, kind: "wait_deadline" as const, generation: 1 };
+    expectPlans(kernel, executionId, () => kernel.fireTimer(key), ["timer_discard"]);
+    clock.set(10);
+    const expiry = expectPlans(kernel, executionId, () => kernel.fireTimer(key), ["expiry"]);
+    assert.equal(expiry.result, (expiry.plans[0]!.plan as Extract<Plan, { kind: "expiry" }>).answer, "the operation returns the plan's answer");
+    expectPlans(kernel, executionId, () => kernel.fireTimer(key), ["timer_discard"]);
+    checkPlans(during(() => kernel.fireTimer({ executionId: "none", kind: "wait_deadline", generation: 1 })).plans, [], null);
+    const next = expectPlans(kernel, executionId, () => kernel.dispatch(author, executionId, { bound: 2 }), ["dispatch", "delivery", "settlement"]);
+    const exchange = accepted(next.result);
+    accepted(kernel.submitOutcome(author, outcomeFor(executionId, exchange, { next: awaitOn() }), submissionFor(driver, exchange.activationId)));
+    expectPlans(kernel, executionId, () => kernel.submitInput(author, { destination: executionId, requestKey: "wake", kind: "k", payload: 1, subscriptionClass: "s" }), ["input"]);
+    expectPlans(kernel, executionId, () => kernel.dispatch(author, executionId, { bound: 2 }), ["dispatch", "delivery", "settlement"]);
+  });
+});
+
+describe("K1.3 CR1-1: cancellation and losing-proposal decisions are frozen, data-only plans", () => {
+  const canceller = { ...author, cancelScopes: ["tenant-a"] };
+
+  test("cancel: accepted, repeated, refused; a losing proposal: recorded, retried, unindexed", () => {
+    const { kernel, driver, executionId, open } = opened();
+    expectPlans(kernel, executionId, () => kernel.cancelExecution(author, executionId), ["refusal"]);
+    const cancelled = expectPlans(kernel, executionId, () => kernel.cancelExecution(canceller, executionId), ["cancellation"]);
+    assert.equal(cancelled.result, (cancelled.plans[0]!.plan as Extract<Plan, { kind: "cancellation" }>).answer, "the operation returns the plan's answer");
+    checkPlans(during(() => kernel.cancelExecution(canceller, executionId)).plans, [], null);
+    const losing = expectPlans(kernel, executionId, () => kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId)), ["losing_outcome"]);
+    assert.equal(refused(losing.result), (losing.plans[0]!.plan as Extract<Plan, { kind: "losing_outcome" }>).refusal);
+    checkPlans(during(() => kernel.submitOutcome(author, outcomeFor(executionId, open), submissionFor(driver, open.activationId))).plans, [], null);
+    expectPlans(kernel, executionId, () => kernel.submitOutcome(author, outcomeFor(executionId, open, { activationId: 42 }), submissionFor(driver, open.activationId)), ["refusal"]);
+  });
+
+  test("the Execution deadline's fire forms the same cancellation plan", () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver, clock: { now: () => 10 } });
+    const created = accepted(kernel.createExecution(author, { ...createRequest(), executionDeadline: 5 } as never));
+    const fired = expectPlans(kernel, created.executionId, () => kernel.fireTimer({ executionId: created.executionId, kind: "execution_deadline", generation: null }), ["cancellation"]);
+    assert.equal(fired.result, (fired.plans[0]!.plan as Extract<Plan, { kind: "cancellation" }>).answer);
+    expectPlans(kernel, created.executionId, () => kernel.fireTimer({ executionId: created.executionId, kind: "execution_deadline", generation: null }), ["timer_discard"]);
+  });
+});
+
+describe("K1.3 the owner's structural guards refuse a plan that breaks them (direct negative controls)", () => {
+  const refusedBy = (state: KernelState, plan: Plan, guard: RegExp, executionId: string): void => {
+    const reader = ReflectApply(find, state, [executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
+    const before = reader.inspection();
+    assert.throws(() => ReflectApply(originalApply, state, [plan]), guard);
+    assert.deepEqual(reader.inspection(), before, "the refused plan changed nothing");
+  };
+  const waitingSetup = () => {
+    const driver = recordingDriver();
+    const kernel = new ExecutionCoordinator({ driver, clock: { now: () => 0 } });
+    const created = accepted(kernel.createExecution(author, createRequest()));
+    const open = accepted(kernel.dispatch(author, created.executionId, { bound: 1 }));
+    const outcome = during(() => kernel.submitOutcome(author, outcomeFor(created.executionId, open, { next: { step: "await", wait: { subscriptions: [{ subscriptionClass: "s" }], deadline: 10 } } }), submissionFor(driver, open.activationId)));
+    return { kernel, driver, executionId: created.executionId, open, outcome: outcome.plans[0]! };
+  };
+
+  test("S1: a dispatch on a WAITING Execution, and an input on a terminal one", () => {
+    const { kernel, executionId } = waitingSetup();
+    // A second Execution on the same owner supplies well-formed templates for the forged plans.
+    const other = accepted(kernel.createExecution(author, createRequest({ creationKey: "s1-template" })));
+    const dispatchTemplate = during(() => kernel.dispatch(author, other.executionId, { bound: 1 })).plans[0]!;
+    const state = dispatchTemplate.state;
+    const waiting = ReflectApply(find, state, [executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
+    refusedBy(state, Object.freeze({ ...(dispatchTemplate.plan as Extract<Plan, { kind: "dispatch" }>), executionId, basis: waiting.version, activationsMinted: 2 }) as Plan, /S1/, executionId);
+
+    const done = opened();
+    accepted(done.kernel.submitOutcome(author, outcomeFor(done.executionId, done.open, { next: { step: "complete", result: null } }), submissionFor(done.driver, done.open.activationId)));
+    const live = accepted(done.kernel.createExecution(author, createRequest({ creationKey: "s1-live" })));
+    const inputTemplate = during(() => done.kernel.submitInput(author, { destination: live.executionId, requestKey: "live", kind: "k", payload: 1 })).plans[0]!;
+    const inputPlan = inputTemplate.plan as Extract<Plan, { kind: "input" }>;
+    const ended = ReflectApply(find, inputTemplate.state, [done.executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
+    const entry = { ...inputPlan.entry, inputId: { ...inputPlan.entry.inputId, destination: done.executionId } };
+    refusedBy(inputTemplate.state, Object.freeze({ ...inputPlan, executionId: done.executionId, basis: ended.version, entry }) as Plan, /S1/, done.executionId);
+  });
+
+  test("S3: an Outcome plan whose next state and live wait disagree", () => {
+    const template = opened();
+    const plain = during(() => template.kernel.submitOutcome(author, outcomeFor(template.executionId, template.open), submissionFor(template.driver, template.open.activationId)));
+    const outcomePlan = plain.plans[0]!.plan as Extract<Plan, { kind: "outcome" }>;
+    const target = opened();
+    const recorded = during(() => target.kernel.redeliver(author, target.executionId)).plans[0]!;
+    const reader = ReflectApply(find, recorded.state, [target.executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
+    const forged = Object.freeze({
+      ...outcomePlan,
+      executionId: target.executionId,
+      basis: reader.version,
+      resolved: { ...outcomePlan.resolved, activationId: reader.activation!.activation.activationId },
+      nextState: "WAITING",
+      liveWait: null,
+    }) as Plan;
+    refusedBy(recorded.state, forged, /S3/, target.executionId);
+  });
+
+  test("S4: an expiry plan for a generation that is not live", () => {
+    const { kernel, executionId } = waitingSetup();
+    const fireRun = during(() => kernel.fireTimer({ executionId, kind: "wait_deadline", generation: 1 }));
+    const recorded = fireRun.plans[0]!;
+    const reader = ReflectApply(find, recorded.state, [executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
+    const live = reader.wait!;
+    const forged = Object.freeze({
+      kind: "expiry",
+      executionId,
+      basis: reader.version,
+      timeout: { eventId: "t-forged", destination: executionId, generation: 2, deadline: 10, acceptancePosition: reader.nextAcceptancePosition },
+      retired: { generation: 1, registeredBy: live.registeredBy, declaration: live.declaration, deadline: 10, retiredBy: "deadline", endingEventId: "t-forged" },
+      readiness: { species: "deadline", generation: 1, selector: live.declaration, timeoutEventId: "t-forged" },
+      fire: { timer: "wait_deadline", generation: 1, observedAt: 10, result: "expired", reason: "forged", timeoutEventId: "t-forged" },
+      answer: { result: "expired", reason: "forged", timeoutEventId: "t-forged" },
+    }) as unknown as Plan;
+    refusedBy(recorded.state, forged, /S4/, executionId);
+  });
+
+  test("S1 and S2: a cancellation of a terminal Execution, and one that leaves a queued Event", () => {
+    const canceller = { ...author, cancelScopes: ["tenant-a"] };
+    const target = opened();
+    accepted(target.kernel.submitInput(author, { destination: target.executionId, requestKey: "backlog", kind: "k", payload: 1 }));
+    const other = accepted(target.kernel.createExecution(author, createRequest({ creationKey: "s2-template" })));
+    const template = during(() => target.kernel.cancelExecution(canceller, other.executionId)).plans[0]!;
+    const plan = template.plan as Extract<Plan, { kind: "cancellation" }>;
+    const reader = ReflectApply(find, template.state, [target.executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
+    const exchange = reader.activation!;
+    const record = { ...plan.record, endedExchange: { activationId: exchange.activation.activationId, writerEpoch: 1, baseProgressRevision: 0, batch: exchange.batch, dispatchReceipt: exchange.receipt } };
+    // Only the reserved batch's position, not the backlog: a terminal decision that leaves an Event queued.
+    refusedBy(template.state, Object.freeze({ ...plan, executionId: target.executionId, basis: reader.version, endAt: [0], record }) as Plan, /S2/, target.executionId);
+    const otherReader = ReflectApply(find, template.state, [other.executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
+    refusedBy(template.state, Object.freeze({ ...plan, basis: otherReader.version }) as Plan, /S1/, other.executionId);
+  });
+
+  test("S5: an input wake with no readiness, and readiness over readiness", () => {
+    const { kernel, executionId } = waitingSetup();
+    const discard = during(() => kernel.fireTimer({ executionId, kind: "wait_deadline", generation: 1 })).plans[0]!;
+    const reader = ReflectApply(find, discard.state, [executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
+    const live = reader.wait!;
+    const template = during(() => kernel.submitInput(author, { destination: executionId, requestKey: "ineligible", kind: "k", payload: 1 })).plans[0]!;
+    const plan = template.plan as Extract<Plan, { kind: "input" }>;
+    const after = ReflectApply(find, template.state, [executionId]) as NonNullable<ReturnType<KernelState["find"]>>;
+    const woken = { generation: live.generation, registeredBy: live.registeredBy, declaration: live.declaration, deadline: live.deadline, retiredBy: "event", endingEventId: "e-forged" };
+    const entry = { ...plan.entry, eventId: "e-forged", inputId: { ...plan.entry.inputId, requestKey: "forged" }, acceptancePosition: after.nextAcceptancePosition, receipt: { ...plan.entry.receipt, position: after.nextAcceptancePosition } };
+    refusedBy(template.state, Object.freeze({ ...plan, basis: after.version, entry, woken, readiness: null }) as Plan, /S5/, executionId);
+  });
+});
+
 // -- Readers and inspection ----------------------------------------------------------
 
 /** A populated Execution: resolved exchange with Emission and history, an open exchange with holds and deliveries, a refusal. */
@@ -273,12 +461,17 @@ describe("CR1-2: the owner's views alias nothing it holds", () => {
         findCreation: () => state.findCreation(creationRequestIdKey({ producerNamespace: "app-a", scope: "tenant-a", requestKey: "report-17" })),
         visibleExecutionIds: () => state.visibleExecutionIds(author),
         deliveryStatus: () => state.deliveryStatus(executionId, first.activationId, 1),
+        executionIds: () => state.executionIds(),
+        postStateViolation: () => state.postStateViolation(executionId),
       },
       ExecutionReader: {
         entryAt: () => execution.entryAt(1),
         inputEntry: () => execution.inputEntry(inputIdKey({ producerNamespace: "app-a", destination: executionId, requestKey: "k1" })),
         acceptedOutcome: () => execution.acceptedOutcome(first.activationId),
         queuedEvents: () => execution.queuedEvents(8),
+        activationEventAt: () => execution.activationEventAt(1),
+        retiredWait: () => execution.retiredWait(1),
+        losingRefusal: () => execution.losingRefusal("no-such-key"),
       },
       ExchangeReader: {},
       EntryReader: {},
@@ -329,5 +522,12 @@ describe("CR1-2: the owner's views alias nothing it holds", () => {
     assert.throws(() => {
       (reader as unknown as { state: string }).state = "COMPLETED";
     }, TypeError, "a reader member cannot be written");
+  });
+});
+
+describe("K1.3 design 03: the post-state witness", () => {
+  test("every record an accepted plan in this file left satisfies the post-state predicate", () => {
+    assert.ok(witnessedPlans > 100, `the witness ran after ${witnessedPlans} accepted plans`);
+    assert.deepEqual(witnessed, []);
   });
 });

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "test_count": 267,
+  "test_count": 320,
   "controls": {
     "returned": [
       "report: enter a protocol hold / completed / returned value"
@@ -88,6 +88,9 @@
     ],
     "exitReached": [
       "an exit no scenario takes"
+    ],
+    "losingWindowAt": [
+      "the losing window's refusal-only state, outside the index insert"
     ]
   }
 }
