@@ -5772,7 +5772,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(counterexamples.get(route.get('counterexample'), {}).get('kind') in ('held_witness', 'superseded_witness'),\n                'a witness route names a held or superseded counterexample: ' + member['label'])",
+          "before": "require(counterexamples.get(route.get('counterexample'), {}).get('kind') in ('held_witness', 'superseded_witness', 'unread_witness'),\n                'a witness route names a held or superseded counterexample: ' + member['label'])",
           "after": "pass  # tools01-ablate:a801ba64700f209d",
           "operator": "remove-refusal-check",
           "name": "guard.member_route.a801ba64700f209d",
@@ -8034,7 +8034,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(('decision' in row) != ('reading' in row),\n                'a held or superseded entry names exactly one of its decision or its reading: ' + row['key'])",
+          "before": "require(('decision' in row) != ('reading' in row),\n                    'a held or superseded entry names exactly one of its decision or its reading: ' + row['key'])",
           "after": "pass  # tools01-ablate:d9ed523177a6ea39",
           "operator": "remove-refusal-check",
           "name": "guard.hold_register.d9ed523177a6ea39",
@@ -8092,7 +8092,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(isinstance(reading, dict) and set(reading) == {'facts', 'claim'} and isinstance(reading['facts'], str) and\n                    bool(reading['facts'].strip()) and reading['claim'] == row['claim'],\n                    'a reading states its facts and the claim they bear on: ' + row['key'])",
+          "before": "require(isinstance(reading, dict) and set(reading) == {'facts', 'claim'} and isinstance(reading['facts'], str) and\n                    bool(reading['facts'].strip()) and reading['claim'] in claims and reading['claim'] == row.get('claim'),\n                    'a reading states its facts and the claim they bear on: ' + row['key'])",
           "after": "pass  # tools01-ablate:ee7ae9a35da34b13",
           "operator": "remove-refusal-check",
           "name": "guard.hold_register.ee7ae9a35da34b13",
@@ -8121,7 +8121,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(row['claim'] not in CATEGORY_DECISIONS or row.get('decision') in CATEGORY_DECISIONS[row['claim']],\n                'a category entry names its existing decision: ' + row['key'])",
+          "before": "require(kind == 'not_held' or row['claim'] not in CATEGORY_DECISIONS or row.get('decision') in CATEGORY_DECISIONS[row['claim']],\n                'a category entry names its existing decision: ' + row['key'])",
           "after": "pass  # tools01-ablate:0f33bb919dea0e97",
           "operator": "remove-refusal-check",
           "name": "guard.hold_register.0f33bb919dea0e97",
@@ -8150,7 +8150,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(not venv or row['classification'] != 'not_held', 'a V-ENV match is held by owner choice 08 rule 1: ' + key)",
+          "before": "require(not active_venv or row['classification'] != 'not_held', 'a V-ENV match is held by owner choice 08 rule 1: ' + key)",
           "after": "pass  # tools01-ablate:f03d63e9cca797f2",
           "operator": "remove-refusal-check",
           "name": "guard.hold_register.f03d63e9cca797f2",
@@ -8179,7 +8179,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(not venv or row.get('claim') != 'V-ENV' or (row['classification'] == 'held' and row.get('decision') == VENV_RECORD),\n                'a V-ENV match held under V-ENV names owner choice 08: ' + key)",
+          "before": "require(not active_venv or row.get('claim') != 'V-ENV' or (row['classification'] == 'held' and row.get('decision') == VENV_RECORD),\n                'a V-ENV match held under V-ENV names owner choice 08: ' + key)",
           "after": "pass  # tools01-ablate:cac4c2072a1d75cc",
           "operator": "remove-refusal-check",
           "name": "guard.hold_register.cac4c2072a1d75cc",
@@ -8208,7 +8208,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(row.get('decision') != VENV_RECORD or (venv and row.get('claim') == 'V-ENV'),\n                'owner choice 08 holds V-ENV matches only: ' + key)",
+          "before": "require(row.get('decision') != VENV_RECORD or (active_venv and row.get('claim') == 'V-ENV'),\n                'owner choice 08 holds V-ENV matches only: ' + key)",
           "after": "pass  # tools01-ablate:2c1d190106cb44e0",
           "operator": "remove-refusal-check",
           "name": "guard.hold_register.2c1d190106cb44e0",
@@ -8846,7 +8846,7 @@
       "mutants": [
         {
           "path": "scripts/packet_tools.py",
-          "before": "require(entry.get('classification') == 'held' and entry.get('claim') == 'V-ENV' and\n                    entry.get('decision') == VENV_RECORD and result.get('title_kind') == 'literal' and\n                    result['refused'] == [P1H_TARGET_REFUSAL.format('held')],\n                    \"an extra limited member's target passes P1-T at a rule-1 held leaf: \" + extra['member'])",
+          "before": "require(entry.get('classification') == 'unread' and entry.get('claim') == 'V-ENV' and\n                    entry.get('decision') == VENV_RELEASE and claims.get('V-ENV', {}).get('status') == 'released' and\n                    result.get('title_kind') == 'literal' and result['refused'] == [P1H_TARGET_REFUSAL.format('unread')],\n                    \"an extra limited member's target passes P1-T at a rule-1 held leaf: \" + extra['member'])",
           "after": "pass  # tools01-ablate:353802aa3a90880b",
           "operator": "remove-refusal-check",
           "name": "guard.limited_origins.353802aa3a90880b",
@@ -9605,6 +9605,180 @@
           "operator": "remove-refusal-check",
           "name": "guard.target_control.unique-invocation",
           "id": "mutation-10b4515ced99f03f1dd0a4606c96a880c784887c5a68b44033816a5905159bd1"
+        }
+      ]
+    },
+    {
+      "id": "guard.released.bf54ecbcfe98de94",
+      "assertion": "test_released_holds.ReleasedRegisterTests.test_claim_status_is_required",
+      "category": "tool-refusal",
+      "source": "TOOLS-02 design 03 release checks",
+      "input": {
+        "test": "test_released_holds.ReleasedRegisterTests.test_claim_status_is_required"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.released.bf54ecbcfe98de94"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(claim.get('status') in ('held', 'released'), 'a claim names its held or released status')",
+          "after": "pass  # tools02-ablate:bf54ecbcfe98de94",
+          "operator": "remove-refusal-check",
+          "name": "guard.released.bf54ecbcfe98de94",
+          "id": "mutation-bf54ecbcfe98de94a50c2930b711c068f11577bed83eead133625998b09f3de5"
+        }
+      ]
+    },
+    {
+      "id": "guard.released.e80347c3ab2cbe6c",
+      "assertion": "test_released_holds.ReleasedRegisterTests.test_released_claim_refuses_active_hold",
+      "category": "tool-refusal",
+      "source": "TOOLS-02 design 03 release checks",
+      "input": {
+        "test": "test_released_holds.ReleasedRegisterTests.test_released_claim_refuses_active_hold"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.released.e80347c3ab2cbe6c"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(kind != 'held' or not released, 'a released claim cannot retain a held entry: ' + row['key'])",
+          "after": "pass  # tools02-ablate:e80347c3ab2cbe6c",
+          "operator": "remove-refusal-check",
+          "name": "guard.released.e80347c3ab2cbe6c",
+          "id": "mutation-e80347c3ab2cbe6c15728ffce4b09c7da9a76181714b57ea913c158b1eff40e7"
+        }
+      ]
+    },
+    {
+      "id": "guard.released.9281ff531950ce44",
+      "assertion": "test_released_holds.ReleasedRegisterTests.test_not_held_needs_reading_and_then_uses_normal_preservation",
+      "category": "tool-refusal",
+      "source": "TOOLS-02 design 03 release checks",
+      "input": {
+        "test": "test_released_holds.ReleasedRegisterTests.test_not_held_needs_reading_and_then_uses_normal_preservation"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.released.9281ff531950ce44"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(row['classification'] != 'not_held' or not released_matches or\n                (isinstance(row.get('reading'), dict) and row['reading'].get('claim') in released_matches),\n                'a not_held match under a released claim needs a per-entry reading: ' + key)",
+          "after": "pass  # tools02-ablate:9281ff531950ce44",
+          "operator": "remove-refusal-check",
+          "name": "guard.released.9281ff531950ce44",
+          "id": "mutation-9281ff531950ce444d1681e737641b248fc32f97da68dbf164a22a6bcf8332dd"
+        }
+      ]
+    },
+    {
+      "id": "guard.released.c47e04a2a8fd8a76",
+      "assertion": "test_released_holds.ReleasedRegisterTests.test_release_path_and_limits_are_fixed",
+      "category": "tool-refusal",
+      "source": "TOOLS-02 design 03 release checks",
+      "input": {
+        "test": "test_released_holds.ReleasedRegisterTests.test_release_path_and_limits_are_fixed"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.released.c47e04a2a8fd8a76"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(expected is not None and claim.get('release') == expected[0] and claim.get('limits') == expected[1],\n                    'a released claim names its fixed release and limits')",
+          "after": "pass  # tools02-ablate:c47e04a2a8fd8a76",
+          "operator": "remove-refusal-check",
+          "name": "guard.released.c47e04a2a8fd8a76",
+          "id": "mutation-c47e04a2a8fd8a763cf4f45d44af23b72eefa749c54f1051061b88d14e466878"
+        }
+      ]
+    },
+    {
+      "id": "guard.released.c605f09bdaa12fbe",
+      "assertion": "test_released_holds.ReleasedRegisterTests.test_core_release_does_not_claim_wrapper_release",
+      "category": "tool-refusal",
+      "source": "TOOLS-02 design 03 release checks",
+      "input": {
+        "test": "test_released_holds.ReleasedRegisterTests.test_core_release_does_not_claim_wrapper_release"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.released.c605f09bdaa12fbe"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(claim['id'] != 'V-ENV' or claim.get('scope') == 'core', 'V-ENV release is scoped to the core')",
+          "after": "pass  # tools02-ablate:c605f09bdaa12fbe",
+          "operator": "remove-refusal-check",
+          "name": "guard.released.c605f09bdaa12fbe",
+          "id": "mutation-c605f09bdaa12fbefe4f69e9eef0bf846f569e339d5c283419f12046c4bbbd55"
+        }
+      ]
+    },
+    {
+      "id": "guard.released.3ea635a5d8440b07",
+      "assertion": "test_released_holds.ReleasedRegisterTests.test_unread_has_only_its_release_not_a_reading_or_limit",
+      "category": "tool-refusal",
+      "source": "TOOLS-02 design 03 release checks",
+      "input": {
+        "test": "test_released_holds.ReleasedRegisterTests.test_unread_has_only_its_release_not_a_reading_or_limit"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.released.3ea635a5d8440b07"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(released and row.get('decision') == claim.get('release') and 'reading' not in row and 'limit' not in row,\n                    'an unread entry names its released claim and release only: ' + row['key'])",
+          "after": "pass  # tools02-ablate:3ea635a5d8440b07",
+          "operator": "remove-refusal-check",
+          "name": "guard.released.3ea635a5d8440b07",
+          "id": "mutation-3ea635a5d8440b0709f3551fab6619e3d803afad57d33f7b6996311c76834daa"
         }
       ]
     }

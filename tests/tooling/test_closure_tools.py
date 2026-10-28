@@ -51,6 +51,15 @@ class ClosureTests(RepositoryFixture):
         result = self.close(self.closure())
         self.assertEqual(result, {'ranges': 3, 'candidates': 3, 'reasoned': 1})
 
+    def test_unread_witness_preserves_closure_without_credit(self):
+        facts = self.facts()
+        facts['member']['m.held']['status'] = 'unread'
+        facts['counterexample']['witness.one']['kind'] = 'unread_witness'
+        self.assertEqual(self.close(self.closure(), facts=facts)['ranges'], 3)
+        facts['counterexample']['witness.one']['kind'] = 'held_witness'
+        with self.assertRaisesRegex(tool.CheckError, 'no linked witness'):
+            self.close(self.closure(), facts=facts)
+
     def test_a_refused_member_needs_a_linked_target(self):
         with self.assertRaisesRegex(tool.CheckError, 'refused member of this origin has no linked target'):
             self.close(self.closure(links=[{'kind': 'counterexample', 'id': 'witness.one'}]))

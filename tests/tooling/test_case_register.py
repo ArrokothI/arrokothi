@@ -39,7 +39,7 @@ class CaseRegisterTests(RepositoryFixture):
 
     def hold(self, cases, entries):
         environment = tool.child_environment(tool.environment_declaration(None))[0]
-        claims = {claim: {'decisions': [tool.VENV_RECORD, *tool.CATEGORY_DECISIONS['Proxy']]} for claim in CLAIMS}
+        claims = {claim: {'status': 'held', 'decisions': [tool.VENV_RECORD, *tool.CATEGORY_DECISIONS['Proxy']]} for claim in CLAIMS}
         return tool.hold_register(self.reader, self.rev, self.register(entries), claims, [], environment, pinned_toolchain(),
                                   cases, REGISTRY)
 

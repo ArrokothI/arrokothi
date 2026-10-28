@@ -61,7 +61,7 @@ class RepositoryFixture(unittest.TestCase):
         record = gzip.compress(json.dumps({'results': [{'assumption': 'A10', 'passed': True, 'facts': {
             'process_isolation': {'distinct_processes': True}, 'order_model_holds': False}}]}).encode(), mtime=0)
         (self.root / 'floor.json.gz').write_bytes(record)
-        claims = [{'id': claim, 'owner': 'BINDING-01' if claim == 'V-ENV' else 'K1.1-correction-03',
+        claims = [{'id': claim, 'status': 'held', 'owner': 'BINDING-01' if claim == 'V-ENV' else 'K1.1-correction-03',
                    'decisions': ['decision.md', *(tool.CATEGORY_DECISIONS.get(claim) or (tool.VENV_RECORD,))]}
                   for claim in ('V-D1', 'Proxy', 're-prototyped-built-in', 'V-ENV')]
         return {'holds': {'claims': claims, 'register': {'recipes': json.loads(json.dumps(tool.REGISTER_MINIMUM)),

@@ -56,7 +56,14 @@ READ_KIND = {'readFile': 'bytes', 'open': 'bytes', 'createReadStream': 'bytes', 
 NODE_BUILTINS = {'assert', 'async_hooks', 'buffer', 'child_process', 'crypto', 'events', 'fs', 'http', 'https', 'module',
                  'net', 'os', 'path', 'perf_hooks', 'process', 'readline', 'stream', 'string_decoder', 'test', 'timers',
                  'url', 'util', 'vm', 'worker_threads', 'zlib'}
-REGISTER_CLASSES = ('held', 'superseded', 'not_held')
+REGISTER_CLASSES = ('held', 'superseded', 'unread', 'not_held')
+CLAIM_RELEASES = {
+    'V-ENV': ('docs/development/work/BINDING-01/hold-release-01.md', ['L-01']),
+    'V-D1': ('docs/development/work/K1.1-correction-03/hold-release-01.md', ['L-03', 'L-04', 'L-05', 'L-06', 'L-07', 'L-13']),
+    'Proxy': ('docs/development/work/K1.1-correction-03/hold-release-01.md', ['L-09']),
+    're-prototyped-built-in': ('docs/development/work/K1.1-correction-03/hold-release-01.md', ['L-08']),
+}
+VENV_RELEASE = CLAIM_RELEASES['V-ENV'][0]
 # CONT-05: property writes on named intrinsics, plus conservative prototype/helper aliases.
 VENV_INTRINSICS = (r'(?:Object|Function|Array|String|Number|Boolean|BigInt|Symbol|Date|RegExp|'
                    r'Error|AggregateError|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|'
@@ -116,7 +123,7 @@ TARGET_FAILURES = {'testCodeFailure': 'error', 'cancelledByParent': 'cancelled',
 ORIGIN_STATES = ('pending', 'pending_revalidation', 'triaged', 'complete')
 FORMAT_2_TABLES = ('origins', 'counterexamples', 'suite_targets', 'preserved', 'families', 'holds', 'areas',
                    'moves', 'floor', 'helper_reviews')
-COUNTEREXAMPLE_KINDS = ('behavior', 'mutation', 'held_witness', 'superseded_witness', 'prose_pending')
+COUNTEREXAMPLE_KINDS = ('behavior', 'mutation', 'held_witness', 'superseded_witness', 'unread_witness', 'prose_pending')
 TARGET_FIELDS = ('id', 'counterexample', 'command', 'file', 'test_path', 'declaration', 'input_anchors',
                  'assertion_anchors', 'relation', 'discrimination')
 # P1-H's refusal of a target on a held or superseded leaf, appended after the P1-T checks.
@@ -563,6 +570,13 @@ def holds_table(git, rev, holds):
     for claim in claims.values():
         require(isinstance(claim.get('owner'), str) and bool(claim['owner']) and
                 bool(unique_text(claim.get('decisions', []), 'hold decisions')), 'hold claim needs owner and decisions')
+        require(claim.get('status') in ('held', 'released'), 'a claim names its held or released status')
+        if claim['status'] == 'released':
+            expected = CLAIM_RELEASES.get(claim['id'])
+            require(expected is not None and claim.get('release') == expected[0] and claim.get('limits') == expected[1],
+                    'a released claim names its fixed release and limits')
+            require(claim['id'] != 'V-ENV' or claim.get('scope') == 'core', 'V-ENV release is scoped to the core')
+            git.blob(rev, claim['release'])
         for path in claim['decisions']:
             git.blob(rev, path)
     return claims
@@ -636,7 +650,7 @@ def later_limit_list(git, rev, entry):
     return listed
 
 
-def limited_origins(git, rev, rows, lists, members, targets, results, register):
+def limited_origins(git, rev, rows, lists, members, targets, results, register, claims):
     """C2-LIMIT (owner choice 04 §1, amended by owner choice 08 §2.4 and owner choice 11). Each origin transferred
     under owner choice 04 carries `limited`: the pinned unbound-member list and its extras, each `{member, target}`,
     and, where owner choice 11 lists a member of that origin, its pinned list under `listed`. An extra is admitted
@@ -654,10 +668,12 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register):
             by_member.setdefault(target['member'], []).append(target)
     credited = {member for member, mapped in by_member.items() if any(not results[row['id']]['refused'] for row in mapped)}
 
-    def rule_1_held(key):
+    def released_venv_unread(key):
         row = members[key]
         entry = register.get(f"{row['file']}:{row['current'][0]}:{row['current'][1]}", {}) if row.get('current') else {}
-        return row['status'] == 'held' and entry.get('claim') == 'V-ENV' and entry.get('decision') == VENV_RECORD
+        return (row['status'] == 'unread' and entry.get('classification') == 'unread' and
+                entry.get('claim') == 'V-ENV' and entry.get('decision') == VENV_RELEASE and
+                claims.get('V-ENV', {}).get('status') == 'released')
 
     limited, listed_all, owner_listed, later = {}, None, None, {}
     for row in rows:
@@ -714,13 +730,13 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register):
                     'an extra limited member maps through its only target: ' + extra['member'])
             declaration, result = mapped[0]['declaration'], results[extra['target']]
             entry = register.get(f"{mapped[0]['file']}:{declaration['line']}:{declaration['column']}", {})
-            require(entry.get('classification') == 'held' and entry.get('claim') == 'V-ENV' and
-                    entry.get('decision') == VENV_RECORD and result.get('title_kind') == 'literal' and
-                    result['refused'] == [P1H_TARGET_REFUSAL.format('held')],
+            require(entry.get('classification') == 'unread' and entry.get('claim') == 'V-ENV' and
+                    entry.get('decision') == VENV_RELEASE and claims.get('V-ENV', {}).get('status') == 'released' and
+                    result.get('title_kind') == 'literal' and result['refused'] == [P1H_TARGET_REFUSAL.format('unread')],
                     "an extra limited member's target passes P1-T at a rule-1 held leaf: " + extra['member'])
             extras.add(extra['member'])
         unbound = {key for key in in_origin if (members[key]['status'] == 'refused' and key not in credited) or
-                   (key in listed and rule_1_held(key))}
+                   (key in listed and released_venv_unread(key))}
         require(unbound == listed | extras, f'the refused members without a credited target differ from the limit: {origin} '
                                             f'(unlisted {sorted(unbound - listed - extras)[:3]}, bound {sorted(listed - unbound)[:3]})')
         limited[origin] = {'listed': len(listed), 'extras': sorted(extras)}
@@ -822,7 +838,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
     pending = sorted(key for key, row in rows.items() if row['state'] in ('pending', 'pending_revalidation'))
     lists = transfer_lists(git, rev, spec.get('transfer_lists', []))
     transferred = transferred_origins(git, rev, spec.get('transferred', []), rows, lists)
-    limited = limited_origins(git, rev, spec.get('transferred', []), lists, members, targets, results, register)
+    limited = limited_origins(git, rev, spec.get('transferred', []), lists, members, targets, results, register, claims)
     trace = intrinsic_trace(detected, register, members, targets, results)
     unexplained = [key for key in pending if rows[key]['state'] == 'pending_revalidation' and key not in transferred]
     return {'operation': 'corpus', 'format': 2, 'revision': rev,
@@ -2655,20 +2671,30 @@ def hold_register(git, rev, register, claims, files, environment, toolchain=None
                 'a held or superseded entry names its held claim')
         entries[row['key']] = row
     for row in entries.values():
-        if row['classification'] == 'not_held':
-            require('decision' not in row, 'a not_held entry names no hold decision: ' + row['key'])
+        kind = row['classification']
+        claim = claims.get(row.get('claim'), {})
+        released = claim.get('status') == 'released'
+        require(kind != 'held' or not released, 'a released claim cannot retain a held entry: ' + row['key'])
+        if kind == 'unread':
+            require(released and row.get('decision') == claim.get('release') and 'reading' not in row and 'limit' not in row,
+                    'an unread entry names its released claim and release only: ' + row['key'])
             continue
-        require(('decision' in row) != ('reading' in row),
-                'a held or superseded entry names exactly one of its decision or its reading: ' + row['key'])
+        if kind == 'not_held':
+            require('decision' not in row, 'a not_held entry names no hold decision: ' + row['key'])
+            if 'reading' not in row:
+                continue
+        else:
+            require(('decision' in row) != ('reading' in row),
+                    'a held or superseded entry names exactly one of its decision or its reading: ' + row['key'])
         if 'decision' in row:
             require(row['decision'] in claims[row['claim']]['decisions'],
                     "a held or superseded entry's decision governs its claim: " + row['key'])
         else:
             reading = row['reading']
             require(isinstance(reading, dict) and set(reading) == {'facts', 'claim'} and isinstance(reading['facts'], str) and
-                    bool(reading['facts'].strip()) and reading['claim'] == row['claim'],
+                    bool(reading['facts'].strip()) and reading['claim'] in claims and reading['claim'] == row.get('claim'),
                     'a reading states its facts and the claim they bear on: ' + row['key'])
-        require(row['claim'] not in CATEGORY_DECISIONS or row.get('decision') in CATEGORY_DECISIONS[row['claim']],
+        require(kind == 'not_held' or row['claim'] not in CATEGORY_DECISIONS or row.get('decision') in CATEGORY_DECISIONS[row['claim']],
                 'a category entry names its existing decision: ' + row['key'])
     matches = register_matches(git, rev, files, recipes, environment, toolchain)
     matches += register_case_matches(git, rev, cases, recipes, registry_path, environment, toolchain)
@@ -2677,10 +2703,16 @@ def hold_register(git, rev, register, claims, files, environment, toolchain=None
         require(entries[row['key']].get('matched') == row['claims'], 'register entry records other matched claims: ' + row['key'])
     for key, row in entries.items():
         venv = 'V-ENV' in row['matched']
-        require(not venv or row['classification'] != 'not_held', 'a V-ENV match is held by owner choice 08 rule 1: ' + key)
-        require(not venv or row.get('claim') != 'V-ENV' or (row['classification'] == 'held' and row.get('decision') == VENV_RECORD),
+        released_matches = [claim for claim in row['matched'] if claims[claim]['status'] == 'released']
+        require(row['classification'] != 'not_held' or not released_matches or
+                (isinstance(row.get('reading'), dict) and row['reading'].get('claim') in released_matches),
+                'a not_held match under a released claim needs a per-entry reading: ' + key)
+        # Existing active holds retain their old decision rule; released matches use the new reading route.
+        active_venv = venv and claims['V-ENV']['status'] == 'held'
+        require(not active_venv or row['classification'] != 'not_held', 'a V-ENV match is held by owner choice 08 rule 1: ' + key)
+        require(not active_venv or row.get('claim') != 'V-ENV' or (row['classification'] == 'held' and row.get('decision') == VENV_RECORD),
                 'a V-ENV match held under V-ENV names owner choice 08: ' + key)
-        require(row.get('decision') != VENV_RECORD or (venv and row.get('claim') == 'V-ENV'),
+        require(row.get('decision') != VENV_RECORD or (active_venv and row.get('claim') == 'V-ENV'),
                 'owner choice 08 holds V-ENV matches only: ' + key)
     for case in cases:
         attributed = (case.get('claim') or {}).get('kind') in CASE_ATTRIBUTIONS
@@ -2700,16 +2732,18 @@ def intrinsic_trace(detected, register, members, targets, results):
     current leaf has one is preserved; no target at such a leaf earns credit. Closures link only unrefused targets
     and attributed witnesses (origin_closure), and C2-LIMIT's extras sit at rule-1 held leaves (limited_origins)."""
     traced = {key for key, sites in detected.items() if sites}
-    unheld = sorted(key for key in traced if register.get(key, {}).get('classification') not in ('held', 'superseded'))
+    unheld = sorted(key for key in traced if register.get(key, {}).get('classification') not in ('held', 'superseded', 'unread') and
+                    not (register.get(key, {}).get('classification') == 'not_held' and register.get(key, {}).get('reading')))
     require(not unheld, 'a key with a detector site is held or superseded: ' + ', '.join(unheld[:3]))
+    uncredited = {key for key in traced if register[key]['classification'] != 'not_held'}
     leaf = lambda path, line, column: f'{path}:{line}:{column}'
     at_leaf = [row for row in members.values() if row.get('current') and leaf(row['file'], *row['current']) in traced]
-    preserved = sorted(row['member'] for row in at_leaf if row['status'] == 'preserved')
+    preserved = sorted(row['member'] for row in at_leaf if row['status'] == 'preserved' and leaf(row['file'], *row['current']) in uncredited)
     require(not preserved, 'a member at a leaf with a detector site earns no preserved credit: ' + ', '.join(preserved[:3]))
     results = {row['id']: row for row in results}
     held_targets = [key for key, target in targets.items()
                     if leaf(target.get('file'), (target.get('declaration') or {}).get('line'),
-                            (target.get('declaration') or {}).get('column')) in traced]
+                            (target.get('declaration') or {}).get('column')) in uncredited]
     credited = sorted(key for key in held_targets if 'credit' in results[key] or not results[key]['refused'])
     require(not credited, 'a target at a leaf with a detector site earns no credit: ' + ', '.join(credited[:3]))
     return {'sites': sum(len(detected[key]) for key in traced), 'keys': len(traced),
@@ -2928,7 +2962,7 @@ def preserved_table(evaluations):
         first = rows[0]
         reasons = sorted({reason for row in rows for reason in row['reasons']})
         register = first.get('register')
-        status = register if register in ('held', 'superseded') else 'refused' if reasons else 'preserved'
+        status = register if register in ('held', 'superseded', 'unread') else 'refused' if reasons else 'preserved'
         record = {'member': f'{pin_path}:{line}:{column}@{pin_blob[:12]}', 'origins': sorted(row['origin'] for row in rows),
                   'file': first['file'], 'pin_blob': pin_blob, 'title': first['title'], 'title_kind': first['title_kind'],
                   'status': status, 'reasons': reasons}
@@ -3246,7 +3280,7 @@ def member_route(git, rev, family_id, member, counterexamples, mutants):
         require(mutant is not None and mutant.get('obligation') == f'{family_id}#{member_key(member)}',
                 'a mutation route needs a registered mutant whose obligation is this member: ' + member['label'])
     elif kind == 'witness':
-        require(counterexamples.get(route.get('counterexample'), {}).get('kind') in ('held_witness', 'superseded_witness'),
+        require(counterexamples.get(route.get('counterexample'), {}).get('kind') in ('held_witness', 'superseded_witness', 'unread_witness'),
                 'a witness route names a held or superseded counterexample: ' + member['label'])
     elif kind == 'no_longer_applicable':
         require(text('reason') and text('authority'), 'no-longer-applicable needs its reason and authority: ' + member['label'])
@@ -3509,7 +3543,7 @@ def origin_closure(git, rev, key, row, origin, facts):
         if member['status'] == 'refused':
             require(any(facts['target'][target]['member'] == member['member'] for target in linked['target']),
                     'a refused member of this origin has no linked target: ' + member['member'])
-        elif member['status'] in ('held', 'superseded'):
+        elif member['status'] in ('held', 'superseded', 'unread'):
             expected_kind = member['status'] + '_witness'
             require(any(facts['counterexample'][cx]['kind'] == expected_kind and
                         key in facts['counterexample'][cx]['origins'] and
@@ -3528,10 +3562,10 @@ def origin_closure(git, rev, key, row, origin, facts):
 def witness_records(counterexamples, members, claims, register):
     """P1-H: a held or superseded witness names its claim and the members the register classifies so."""
     for key, row in counterexamples.items():
-        if row['kind'] not in ('held_witness', 'superseded_witness'):
+        if row['kind'] not in ('held_witness', 'superseded_witness', 'unread_witness'):
             continue
         require(row.get('claim') in claims, 'a witness names a held claim: ' + key)
-        expected = 'held' if row['kind'] == 'held_witness' else 'superseded'
+        expected = row['kind'].removesuffix('_witness')
         linked = unique_text(row.get('members', []), 'witness members')
         for member in linked:
             record = members.get(member)

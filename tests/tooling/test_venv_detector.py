@@ -337,7 +337,7 @@ class StructureTests(RepositoryFixture):
         }
 
     def hold(self):
-        claims = {claim: {'decisions': decisions} for claim, decisions in self.decisions.items()}
+        claims = {claim: {'status': 'held', 'decisions': decisions} for claim, decisions in self.decisions.items()}
         environment = tool.child_environment(tool.environment_declaration(None))[0]
         return tool.hold_register(self.reader, self.rev, {'recipes': json.loads(json.dumps(tool.REGISTER_MINIMUM)),
                                                           'entries': list(self.entries.values())},
@@ -411,7 +411,7 @@ class RepositoryRuleOneTests(RepositoryFixture):
                 'packages/sdk/tests/value-capture.test.ts:2371:3', 'packages/sdk/tests/value-capture.test.ts:2109:3',
                 'packages/kernel/tests/creation.test.ts:596:3', 'packages/kernel/tests/ingress.test.ts:503:3']
         self.assertEqual({key: (entries[key]['classification'], entries[key]['claim'], entries[key]['decision'])
-                          for key in keys}, dict.fromkeys(keys, ('held', 'V-ENV', tool.VENV_RECORD)))
+                          for key in keys}, dict.fromkeys(keys, ('unread', 'V-ENV', tool.VENV_RELEASE)))
         self.assertIn('not value capture or its serializer window', entries['packages/kernel/tests/host-members.test.ts:159:3']['reason'])
         self.assertIn('Earlier reading, kept as a note for BINDING-01', entries['packages/kernel/tests/creation.test.ts:596:3']['reason'])
         venv = next(row for row in manifest['holds']['claims'] if row['id'] == 'V-ENV')

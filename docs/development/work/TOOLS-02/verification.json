@@ -1,200 +1,205 @@
 {
   "version": 1,
-  "base": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-  "require_direct_parent": false,
+  "base": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+  "require_direct_parent": true,
   "administrative_files": [
     "docs/development/007-work-packets.md",
-    "docs/development/work/TOOLS-02/implementation-04.md",
-    "docs/development/work/TOOLS-02/progress.md"
+    "docs/development/work/TOOLS-02/implementation-05.md",
+    "docs/development/work/TOOLS-02/progress.md",
+    "docs/development/work/TOOLS-02/self-audit-05.json"
   ],
   "preserve": [
     {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/BINDING-01"
     },
     {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/COORD-REFACTOR-01"
     },
     {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/DESIGN-AUDIT-01"
     },
     {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/DOCS-CLEANUP-01"
     },
     {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/K1.1-correction-02"
     },
     {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/K1.1-correction-03"
     },
     {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": "docs/development/work/K1.2"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/K1.2-correction-01"
     },
     {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/K1.2"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/K1.3"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/PLAN-01"
     },
     {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/TOOLS-01"
     },
     {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/TOOLS-02A"
     },
     {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": "docs/development/002-implemented-kernel-baseline.md"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": "docs/development/006-development-process.md"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": "docs/development/008-implementation-report.md"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": "docs/development/009-universal-prompts.md"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": "docs/development/012-review-methods.md"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": "docs/development/research"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": "docs/guides"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": "mental-model"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": ".agents/skills"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": ".github"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": "packages"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": "examples"
-    },
-    {
-      "revision": "b5daf35aeee37305c1ee41bb626c97d26db94ab2",
-      "path": "docs/development/work/TOOLS-02/release-01.md"
-    },
-    {
-      "revision": "cfa80abd151cf8facc391e16844df19a7d4272cf",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/TOOLS-02/brief-01.md"
     },
     {
-      "revision": "cfa80abd151cf8facc391e16844df19a7d4272cf",
-      "path": "docs/development/work/TOOLS-02/owner-choice-01.md"
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/cleanup-01.md"
     },
     {
-      "revision": "4e86b667ba224fcaacc66f3245e584d3e1402638",
-      "path": "docs/development/017-known-limitations.md"
-    },
-    {
-      "revision": "1aec8b6210647d16e0014cdbe4e303d6369b0be4",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/TOOLS-02/design-01.md"
     },
     {
-      "revision": "9ca58fbe6378ffd9b509c6851dbfe6347068ac73",
-      "path": "docs/development/work/TOOLS-02/design-check-01.md"
-    },
-    {
-      "revision": "fbd40fe85c03a7e17ce92c5b4ae5c0e5d7a650fb",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/TOOLS-02/design-02.md"
-    },
-    {
-      "revision": "6e96639a8c497642bcc7dd44265dd42f5d72f840",
-      "path": "docs/development/work/TOOLS-02/design-check-02.md"
-    },
-    {
-      "revision": "f2184fc60e0b766b36877784b56e66af5a9cfbb5",
-      "path": "docs/development/work/TOOLS-02/implementation-01.md"
-    },
-    {
-      "revision": "e93e012363b4174401caf91c4374a66441a1809a",
-      "path": "docs/development/work/TOOLS-02/review-01.md"
-    },
-    {
-      "revision": "e93e012363b4174401caf91c4374a66441a1809a",
-      "path": "docs/development/work/TOOLS-02/review-01"
     },
     {
       "revision": "c10eb1491e438e93dffa5c193ad17482c91cb437",
       "path": "docs/development/work/TOOLS-02/design-04.md"
     },
     {
-      "revision": "7791cda6b0b28324e608ca5483e97059b7398b55",
-      "path": "docs/development/work/TOOLS-02/implementation-02.md"
-    },
-    {
-      "revision": "3e0bb93b3e3bcd10f5136bbc66091a7a92a01150",
-      "path": "docs/development/work/TOOLS-02/review-02.md"
-    },
-    {
-      "revision": "3e0bb93b3e3bcd10f5136bbc66091a7a92a01150",
-      "path": "docs/development/work/TOOLS-02/review-02"
-    },
-    {
-      "revision": "5ab098bd893e3d39f58851276926abea81e5a5d8",
-      "path": "docs/development/work/TOOLS-02/owner-choice-03.md"
-    },
-    {
-      "revision": "5ab098bd893e3d39f58851276926abea81e5a5d8",
-      "path": "docs/development/work/TOOLS-02/owner-choice-03"
-    },
-    {
-      "revision": "286ef01f778e6dcf0e5c33bece1bf8da8190e20d",
-      "path": "docs/development/work/TOOLS-02/owner-choice-04.md"
-    },
-    {
-      "revision": "4e86b667ba224fcaacc66f3245e584d3e1402638",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/TOOLS-02/design-05.md"
     },
     {
-      "revision": "23d65ac332fdbd267b00d12d5b02e3b77ad8923e",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/design-check-01.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/design-check-02.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/design-check-05.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/implementation-01.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/implementation-02.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/TOOLS-02/implementation-03.md"
     },
     {
-      "revision": "f76182815ce30e631dddf5f02dcbc08b6ccd0fc3",
-      "path": "docs/development/work/TOOLS-02/review-03.md"
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/implementation-04.md"
     },
     {
-      "revision": "f76182815ce30e631dddf5f02dcbc08b6ccd0fc3",
-      "path": "docs/development/work/TOOLS-02/review-03"
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/integration-01.md"
     },
     {
-      "revision": "4e86b667ba224fcaacc66f3245e584d3e1402638",
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/owner-choice-01.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/owner-choice-03.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/owner-choice-03"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/owner-choice-04.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
       "path": "docs/development/work/TOOLS-02/owner-choice-05.md"
     },
     {
-      "revision": "8ab1607b282c63c23752743babda9affa6882e6a",
-      "path": "docs/development/work/TOOLS-02/design-check-05.md"
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/release-01.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/review-01.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/review-01"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/review-02.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/review-02"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/review-03.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/review-03"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/review-04.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/work/TOOLS-02/review-04"
+    },
+    {
+      "revision": "c71818c83e26c7ba93a8d4f64f39cc579c614ae8",
+      "path": "docs/development/work/TOOLS-02/owner-choice-02.md"
+    },
+    {
+      "revision": "c71818c83e26c7ba93a8d4f64f39cc579c614ae8",
+      "path": "docs/development/work/TOOLS-02/design-03.md"
+    },
+    {
+      "revision": "c71818c83e26c7ba93a8d4f64f39cc579c614ae8",
+      "path": "docs/development/work/TOOLS-02/design-check-03.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/006-development-process.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/008-implementation-report.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/009-universal-prompts.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/012-review-methods.md"
+    },
+    {
+      "revision": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+      "path": "docs/development/research"
     }
   ],
   "whitespace_exceptions": [
@@ -279,6 +284,10 @@
       {
         "name": "ARROKOTHI_VALUE_COST_LOAD",
         "effect": "Absent from every declared command; value-cost-probe.mjs sets it for the test process it spawns, the only process that loads value-cost-witness.mjs, which writes a load failure to that path (KC3-R1-EVID-02)."
+      },
+      {
+        "name": "ARROKOTHI_TARGET_WITNESS",
+        "effect": "Absent from declared commands; the target-set runner sets it only for its invocation-bound witness processes."
       }
     ],
     "census": {
@@ -441,14 +450,14 @@
       "timeout_seconds": 900,
       "output_limit_bytes": 1048576,
       "counts": {
-        "tests": "^[#ℹ] tests (\\d+)$",
-        "fail": "^[#ℹ] fail (\\d+)$",
-        "cancelled": "^[#ℹ] cancelled (\\d+)$",
-        "skipped": "^[#ℹ] skipped (\\d+)$",
-        "todo": "^[#ℹ] todo (\\d+)$"
+        "tests": "^[#\u2139] tests (\\d+)$",
+        "fail": "^[#\u2139] fail (\\d+)$",
+        "cancelled": "^[#\u2139] cancelled (\\d+)$",
+        "skipped": "^[#\u2139] skipped (\\d+)$",
+        "todo": "^[#\u2139] todo (\\d+)$"
       },
       "minimum_counts": {
-        "tests": 4412
+        "tests": 4750
       },
       "exact_counts": {
         "fail": 0,
@@ -473,11 +482,11 @@
       "timeout_seconds": 900,
       "output_limit_bytes": 1048576,
       "counts": {
-        "tests": "^[#ℹ] tests (\\d+)$",
-        "fail": "^[#ℹ] fail (\\d+)$",
-        "cancelled": "^[#ℹ] cancelled (\\d+)$",
-        "skipped": "^[#ℹ] skipped (\\d+)$",
-        "todo": "^[#ℹ] todo (\\d+)$"
+        "tests": "^[#\u2139] tests (\\d+)$",
+        "fail": "^[#\u2139] fail (\\d+)$",
+        "cancelled": "^[#\u2139] cancelled (\\d+)$",
+        "skipped": "^[#\u2139] skipped (\\d+)$",
+        "todo": "^[#\u2139] todo (\\d+)$"
       },
       "minimum_counts": {
         "tests": 1
@@ -500,6 +509,17 @@
         "test:kernel-sweeps"
       ],
       "timeout_seconds": 2400,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "race-search",
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "packages/kernel/tests/race-search/run.ts"
+      ],
+      "timeout_seconds": 1800,
       "output_limit_bytes": 1048576
     },
     {
@@ -544,11 +564,11 @@
       "timeout_seconds": 900,
       "output_limit_bytes": 1048576,
       "counts": {
-        "tests": "^[#ℹ] tests (\\d+)$",
-        "fail": "^[#ℹ] fail (\\d+)$",
-        "cancelled": "^[#ℹ] cancelled (\\d+)$",
-        "skipped": "^[#ℹ] skipped (\\d+)$",
-        "todo": "^[#ℹ] todo (\\d+)$"
+        "tests": "^[#\u2139] tests (\\d+)$",
+        "fail": "^[#\u2139] fail (\\d+)$",
+        "cancelled": "^[#\u2139] cancelled (\\d+)$",
+        "skipped": "^[#\u2139] skipped (\\d+)$",
+        "todo": "^[#\u2139] todo (\\d+)$"
       },
       "minimum_counts": {
         "tests": 1
@@ -663,9 +683,9 @@
     }
   ],
   "limits": [
-    "TOOLS-02 range 1 (T2-1 and T2-2; owner choice 01 item 2), corrected under review 01 brief 02 and design 04 (T2-R1-READ-01: recursive listings, typed listing entries), then under owner choice 04 refined claim and design 05 with design check 05, then under owner choice 05 (cooperative threat model, 017 L-18; rule P path binding and rule O options prototypes; design 05 section 8) (review 02 T2-R2-READ-01 and T2-R2-PATTERN-01: every traced row admitted by an explicit matrix with refusal by default; path walk before normalization; recursive listings crossing a symlink and reads through one, at C or the pin, refuse; file existence identity is Git mode and blob ID): evidence tooling only. No product file changes; packages/ and examples/ are preserved at B.",
-    "The preserved table is regenerated mechanically by the new regenerate operation in a fresh clone. Read digests take the walk form of owner choice 01 and design 02 section 1. Design 02 section 1.3 self-check at C: by_status is unchanged (held 1013, refused 228, preserved 30, superseded 1) and no non-fixture reason changes; 21 members (ambient-reads, control-commits) drop directory-existence fixture reasons outside fixtures directories and stay held. No new credit. Design 04 correction self-check at C: held 1013 and superseded 1 unchanged; refused 228 -> 235 and preserved 30 -> 23, all seven changes in mcp-boundaries.test.ts, whose recursive listings of tests observe changed tests/fixtures entries (T2-R1-READ-01 in the real table); 418 rows gain fixture reasons, no non-fixture reason changes. Owner choice 03 reopens the two complete mcp-boundaries origins that held those seven members as pending_revalidation and transfers them to TOOLS-02 range 4 with a pinned list. Design 05 self-check at C: no status or reason changes (held 1013, refused 235, preserved 23, superseded 1); 485 read digests change with the file existence identity. Owner choice 05 dry-run at the rules P and O build: the regenerated table is byte-identical, so no member changes status. No new credit.",
-    "Fresh-clone local composed verification runs before the one CI dispatch; the CI run is the handoff evidence.",
-    "No prior results reused; acceptance is not evaluated."
+    "TOOLS-02 ranges 2\u20134 under owner choice 06. No product semantic changes; no acceptance claim.",
+    "T2-3 invocation-bound assertion witness; T2-4 unread classification under owner choice 02 and design 03 \u00a76.",
+    "T2-5 triage remains pending until its batch work and self-audit complete.",
+    "Inherited K1.3 checks include the bounded race search; external live-provider and large-memory profiles remain not run."
   ]
 }

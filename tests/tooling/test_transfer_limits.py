@@ -4,7 +4,7 @@ plus extras, each admitted only through its target record, never by title."""
 from test_adoption_format import FormatTwoTests
 from test_packet_tools import RepositoryFixture, tool
 
-P1H = tool.P1H_TARGET_REFUSAL.format('held')
+P1H = tool.P1H_TARGET_REFUSAL.format('unread')
 LATER_DECISION = 'docs/development/work/K1.1-correction-03/owner-choice-01.md'
 SECOND_DECISION = 'docs/development/work/K1.1-correction-03/owner-choice-02.md'
 
@@ -101,7 +101,7 @@ class LimitTests(RepositoryFixture):
         self.targets = {'t.extra': self.target('t.extra', 'm.extra', 5), 't.bound': self.target('t.bound', 'm.bound', 9)}
         self.results = [{'id': 't.extra', 'refused': [P1H], 'title_kind': 'literal'},
                         {'id': 't.bound', 'refused': [], 'title_kind': 'literal'}]
-        self.register = {'f.test.ts:5:3': {'classification': 'held', 'claim': 'V-ENV', 'decision': tool.VENV_RECORD}}
+        self.register = {'f.test.ts:5:3': {'classification': 'unread', 'claim': 'V-ENV', 'decision': tool.VENV_RELEASE}}
         self.rows = [{'origin': 'o.limited', 'decision': tool.LIMIT_DECISION,
                       'limited': {'members': tool.LIMIT_MEMBERS, 'sha256': self.sha,
                                   'extras': [{'member': 'm.extra', 'target': 't.extra'}]}},
@@ -115,7 +115,7 @@ class LimitTests(RepositoryFixture):
 
     def limit(self):
         return tool.limited_origins(self.reader, self.rev, self.rows, self.lists, self.members, self.targets,
-                                    self.results, self.register)
+                                    self.results, self.register, {'V-ENV': {'status': 'released'}})
 
     refuses = TransferListTests.refuses
 
@@ -201,13 +201,13 @@ class LimitTests(RepositoryFixture):
             self.targets[key] = self.target(key, 'm.multi', 20)
             self.results.append({'id': key, 'refused': [P1H], 'title_kind': 'template'})
 
-    def test_a_listed_member_held_by_rule_1_stays_in_the_limit(self):
-        self.members['m.listed'].update(status='held', file='f.test.ts', current=[12, 3])
-        self.register['f.test.ts:12:3'] = {'classification': 'held', 'claim': 'V-ENV', 'decision': tool.VENV_RECORD}
+    def test_a_listed_member_unread_under_released_venv_stays_in_the_limit(self):
+        self.members['m.listed'].update(status='unread', file='f.test.ts', current=[12, 3])
+        self.register['f.test.ts:12:3'] = {'classification': 'unread', 'claim': 'V-ENV', 'decision': tool.VENV_RELEASE}
         self.assertEqual(self.limit(), {'o.limited': {'listed': 1, 'extras': ['m.extra']}})
 
     def test_a_listed_member_held_by_a_category_claim_is_bound(self):
-        self.members['m.listed'].update(status='held', file='f.test.ts', current=[12, 3])
+        self.members['m.listed'].update(status='unread', file='f.test.ts', current=[12, 3])
         self.register['f.test.ts:12:3'] = {'classification': 'held', 'claim': 'Proxy', 'decision': 'decision-01.md'}
         self.refuses('the refused members without a credited target differ from the limit', self.limit)
 

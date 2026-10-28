@@ -187,8 +187,9 @@ detectable kinds are claimed again. The owner released the holds of
 on 2026-10-22 ([hold release](work/BINDING-01/hold-release-01.md)). The core claim is limited to admission,
 parsed content and equality after trusted initialization: call-time binding replacement/shadowing cannot
 steer them. The SDK wrapper makes no V-ENV claim (L-01). Wrapper stable-realm
-fidelity, pre-import poisoning and containment remain outside it. The 853 rule-1 held entries remain
-TOOLS-02 bookkeeping; no historical evidence is promoted by this relocation.
+fidelity, pre-import poisoning and containment remain outside it. The register now records the released core V-ENV, V-D1, Proxy and re-prototyped-built-in claims,
+with 983 unread entries (017 L-17). Those entries earn no credit and carry no per-entry semantic
+limit until a recorded reading; no historical evidence is promoted by this relocation.
 
 Plain strings first receive a UTF-16 length precheck. More than twice the 65,536-scalar limit
 cannot fit even if every scalar uses a surrogate pair; refusing there avoids an engine flattening
