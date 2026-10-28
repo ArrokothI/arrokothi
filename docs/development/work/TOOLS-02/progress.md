@@ -2,6 +2,20 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 K1.1 implementation 05–07 checkpoint:** 75 origins read in
+  source-file order; 71 retired and 4 planned extraction origins in two groups.
+  Source-packet triage and first-300 projection remain incomplete.
+  - Added the creation/ingress envelope single-observation extraction group. Existing
+    stable-scope ordering, payload-mutation and Outcome-field tests do not by themselves
+    assert first-observation reuse for all creation/ingress identity fields. No product
+    defect is claimed; the planned tests must stop the build if they reveal one.
+  - Current wrapper global-replacement claims are bounded by L-01; obsolete Proxy
+    acceptance is superseded by DESIGN-AUDIT-01 decision-01. Kernel dispatch and
+    retained-evidence obligations are mapped to the current behavioral leaves.
+  - All coverage pointers resolve to passing leaves in the fresh-clone catalog at
+    `281c8b0a654ce4638d3fa2a61d1b48190fc4359d`; no derived table regenerated.
+    Resume at implementation 08. Preliminary readings of 08–11 are not dispositions.
+
 - **2026-10-28 K1.1 implementation 04 checkpoint (handover session):** 34 origins
   read in source-file order: 27 `covered_elsewhere`, 4 `superseded`,
   1 `not_a_counterexample`, and the same 2 origins grouped for one extraction.

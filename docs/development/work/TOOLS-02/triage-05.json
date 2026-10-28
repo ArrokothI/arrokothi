@@ -34,7 +34,46 @@
     "mention-eefa852730f43d334dc25bd2",
     "mention-114d2503e8db3a62b5b47ba1",
     "mention-d38e70b42bce50fb41bb3569",
-    "mention-5a4e29d0863c77448bdd3433"
+    "mention-5a4e29d0863c77448bdd3433",
+    "mention-e63e884605810890ec5a4e85",
+    "mention-177d288e36c33ceb1e1432a2",
+    "mention-f89b9a65c1be32ef9a5ea77c",
+    "mention-a1c7b33f942cbe7a83b776ec",
+    "mention-4f4b30f04207e4914247d388",
+    "mention-c4387b2aa4d41c2aa71967e7",
+    "mention-fd2c411d1380b27516f1f8cf",
+    "mention-5cc6fd36c90b3848e55ca3b8",
+    "mention-2ac585fe4cc4b01b6ab429e5",
+    "mention-8101afd7dc4a3cabc82cac50",
+    "mention-a777991fa06f7aa93c48d4c5",
+    "mention-81cabb313be562c2e51154a7",
+    "mention-6250acb64aa117d0718e1bcf",
+    "mention-24814073dce3bba7a5f356a5",
+    "mention-c102533c6ec7396a13e7568c",
+    "mention-330af9dce08d3c2308911a7e",
+    "mention-6e0afcde87c067b03600dfb6",
+    "mention-b9558c21adbcea28dbf0bb55",
+    "mention-5acba96ef17d785b57142214",
+    "mention-5e96403d3534baa51885557a",
+    "mention-35c018033054ff8c36ce5fb5",
+    "mention-2e932fab330f1029ab67fda7",
+    "mention-64bc42bb57dd6738a1400bb8",
+    "mention-1d9b8389483dddce67f425b6",
+    "mention-87ad04850d9033bfb1071e51",
+    "mention-d3f7c937b03b29b44b8aa1dc",
+    "mention-4ec53924702413495175b78b",
+    "mention-209365df390f12236f965a63",
+    "mention-d562850db622f0fcbe394fac",
+    "mention-9e43a2eb5a990336b70cc4be",
+    "mention-a531138ea284e91aba0e7602",
+    "mention-5fe63b1c0253df7a5d2cb57c",
+    "mention-f6f7b0ebb4a670600aefbb3f",
+    "mention-23826c5bece54ffd881d0dd4",
+    "mention-9a671c33c5247940b3c4a54f",
+    "mention-48583c566e3a297f382e54a6",
+    "mention-4a4e1e7db97fe4a23717fd30",
+    "mention-d79d6857dce63571f267181c",
+    "mention-e9c607a226e71e2b4d371baa"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -51,6 +90,21 @@
       "gap": "The maintained visibleExecutions leaf checks only a positive read count and visible-ID shape. It does not assert equal read counts for early/late/no-match scans. The single-ID lookup leaves do not execute the listing path.",
       "planned_test": "A separate kernel scope-listing regression compares equal-size early-match, late-match and no-match scope arrays over the same record population and checks returned IDs, then binds it through P1. No product change; stop if it fails.",
       "group": "mention-194ad35e98b1396a9d84c97f"
+    },
+    "mention-bc970277f23ef1e97995b21f": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-05.md:146",
+      "required_result": "Creation and ingress reuse each observed envelope field for validation, authority, identity and retained content; a shifting getter cannot validate one value and commit another.",
+      "gap": "The source requires single observation across scope authorization, key packing and retained creation/ingress fields. The current ordering leaf uses stable scope values; payload mutation and Outcome field-count leaves test different inputs/paths. A bounded search of packages/kernel/tests and packages/sdk/tests found no shifting-getter matrix asserting each creation/ingress field count and its retained first value. Source reading therefore cannot retire this obligation on those weaker pointers.",
+      "planned_test": "Exercise shifting own getters on creation scope/key/pins/initial input fields and ingress key/kind/subscription/payload, count observations, and inspect/replay the retained result. Use core byte roots directly; stop if a new regression exposes a product defect."
+    },
+    "mention-a8747fd8bd4f23a87a5aea60": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-05.md:317",
+      "required_result": "Creation and ingress reuse each observed envelope field for validation, authority, identity and retained content; a shifting getter cannot validate one value and commit another.",
+      "gap": "The source requires single observation across scope authorization, key packing and retained creation/ingress fields. The current ordering leaf uses stable scope values; payload mutation and Outcome field-count leaves test different inputs/paths. A bounded search of packages/kernel/tests and packages/sdk/tests found no shifting-getter matrix asserting each creation/ingress field count and its retained first value. Source reading therefore cannot retire this obligation on those weaker pointers.",
+      "planned_test": "Exercise shifting own getters on creation scope/key/pins/initial input fields and ingress key/kind/subscription/payload, count observations, and inspect/replay the retained result. Use core byte roots directly; stop if a new regression exposes a product defect.",
+      "group": "mention-bc970277f23ef1e97995b21f"
     }
   }
 }
