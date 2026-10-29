@@ -1,7 +1,7 @@
 {
   "source_base": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
   "source_packet": "K1.2-correction-01",
-  "state": "triage_in_progress",
+  "state": "stopped_owner_choice_08_cap",
   "retirement_readings": [
     "mention-b43188cfa39f39ae809510de",
     "mention-6f40e8f1a46ba505eb1dc0e2",
@@ -953,6 +953,21 @@
       "required_result": "Z1-Z16 exact-coordinate production edits remain live, with separate current re-anchors for every absent old span. Existing exact-coordinate leaf covers each ordinary behavior but no current mutation route was found.",
       "reading": "group-review-10.md",
       "planned_test": "Add only to existing registries; run each fresh control and qualified kill before claiming closure. No mutant executed in this reading."
+    },
+    "artifact-89a6c743f27e1e2697eab84d": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/ablations-06.mjs:1",
+      "groups": [
+        "k12c1-recovery-h1",
+        "k12c1-recovery-h10",
+        "k12c1-recovery-h11",
+        "k12c1-recovery-h12",
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h16"
+      ],
+      "required_result": "At least six live mutation adoptions (H1/H10/H11/H12/H15/H16) need existing-registry cases against current passing leaves. The observed total reaches 61 and triggers owner choice 08 before the remaining routes can be finalized.",
+      "reading": "group-review-11.md",
+      "planned_test": "Stopped at the observed adoption cap. No new registry entry, control/kill or family closure claimed; reconcile the remaining members after owner disposition."
     }
   },
   "reconsidered_extractions": [
@@ -2523,6 +2538,137 @@
         "    const stored = intent.codeHold;\n    appendOwn(\n      holds,\n      PrimordialObjectFreeze({\n        cause: stored.cause,\n        reason: stored.reason,\n        activationId: stored.activationId,"
       ],
       "relocation_reading": "holdsOf moved to plan.ts; the code-hold Activation-ID projection remains exact. This differs from X11 changing retained hold state."
+    },
+    "k12c1-recovery-h1": {
+      "family": "family.k12c1.ablations-06",
+      "member": "H1 hold history built from an entry whose resultingEpoch is optional (review 09's read)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Hold History does not inherit resultingEpoch from Object.prototype.",
+      "gap": "The optional read would admit ambient data into a hold record. Current fixed History builders still require own fields; the ordinary pollution leaf asserts the exact record. No registered production edit restores this optional read.",
+      "reading": "group-review-11.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/recovery-ambient.test.ts",
+        "test_path": [
+          "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+          "protocol-enter / data"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "  PrimordialObjectFreeze({ activationId, writerEpoch, cause, transition, reason, authority: \"control\" as const, actorNamespace, actorScope });"
+      ],
+      "relocation_reading": "The optional read would admit ambient data into a hold record. Current fixed History builders still require own fields; the ordinary pollution leaf asserts the exact record. No registered production edit restores this optional read."
+    },
+    "k12c1-recovery-h10": {
+      "family": "family.k12c1.ablations-06",
+      "member": "H10 takeover record loses its resulting epoch",
+      "work_kind": "mutation_adoption",
+      "required_result": "A takeover-clearing History record owns resultingEpoch equal to the new writer epoch.",
+      "gap": "The takeover History builder still owns resultingEpoch. The complete-decision takeover check constrains epochs in the answer/Activation, but not this History field; dropping it requires an adoption against the existing History leaf.",
+      "reading": "group-review-11.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/recovery-history.test.ts",
+        "test_path": [
+          "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+          "b) protocol hold via takeover: entered, then cleared_by_takeover with resultingEpoch"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "    actorScope,\n    resultingEpoch,\n  });"
+      ],
+      "relocation_reading": "The takeover History builder still owns resultingEpoch. The complete-decision takeover check constrains epochs in the answer/Activation, but not this History field; dropping it requires an adoption against the existing History leaf."
+    },
+    "k12c1-recovery-h11": {
+      "family": "family.k12c1.ablations-06",
+      "member": "H11 declaration records claim attempt-submission authority",
+      "work_kind": "mutation_adoption",
+      "required_result": "Explicit control declarations retain control authority in History.",
+      "gap": "The declaration builder is still current. k12.adopt-b9 mutates Outcome-ending attempt_submission History, the opposite operation/authority boundary, and is not this adoption. The complete-decision oracle does not independently assert this History authority field.",
+      "reading": "group-review-11.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/history-attribution.test.ts",
+        "test_path": [
+          "K12-R3-HISTORY-02 explicit control transitions still record control authority",
+          "entered, protocol entered, and cleared_by_takeover are control-origin"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "authority: \"control\" as const, actorNamespace, actorScope });"
+      ],
+      "relocation_reading": "The declaration builder is still current. k12.adopt-b9 mutates Outcome-ending attempt_submission History, the opposite operation/authority boundary, and is not this adoption. The complete-decision oracle does not independently assert this History authority field."
+    },
+    "k12c1-recovery-h12": {
+      "family": "family.k12c1.ablations-06",
+      "member": "H12 takeover receipt token through the diagnostic spelling",
+      "work_kind": "mutation_adoption",
+      "required_result": "Takeover receipt token retains the exact Execution ID in both retained state and its answer.",
+      "gap": "Initial dispatch now has the same mintReceipt line, so scope the current anchor to writerEpoch = currentEpoch + 1. Unlike Z11, this changes the actual minted receipt, not only the returned receipt. Short ASCII sweep identities do not distinguish the lossy spelling.",
+      "reading": "group-review-11.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "    const writerEpoch = currentEpoch + 1;\n    const position = record.nextAcceptancePosition;\n    const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);"
+      ],
+      "relocation_reading": "Initial dispatch now has the same mintReceipt line, so scope the current anchor to writerEpoch = currentEpoch + 1. Unlike Z11, this changes the actual minted receipt, not only the returned receipt. Short ASCII sweep identities do not distinguish the lossy spelling."
+    },
+    "k12c1-recovery-h15": {
+      "family": "family.k12c1.ablations-06",
+      "member": "H15 ordinary optional controlScopes read restored",
+      "work_kind": "mutation_adoption",
+      "required_result": "Object.prototype.controlScopes cannot authorize a visibility-only caller.",
+      "gap": "The hostMember call remains unique. Ordinary caller.controlScopes would consult ambient inheritance; current registry/oracle control-authority scenarios do not introduce this inherited scope. The maintained pollution leaf names the actual distinguishing input.",
+      "reading": "group-review-11.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/host-members.test.ts",
+        "test_path": [
+          "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+          "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "  const controls = hostMember(caller, \"controlScopes\") as readonly string[] | undefined;"
+      ],
+      "relocation_reading": "The hostMember call remains unique. Ordinary caller.controlScopes would consult ambient inheritance; current registry/oracle control-authority scenarios do not introduce this inherited scope. The maintained pollution leaf names the actual distinguishing input."
+    },
+    "k12c1-recovery-h16": {
+      "family": "family.k12c1.ablations-06",
+      "member": "H16 ordinary optional isSafeToReplace call restored",
+      "work_kind": "mutation_adoption",
+      "required_result": "Object.prototype.isSafeToReplace cannot establish takeover safety for a Driver without that method.",
+      "gap": "The guarded hostMember/ReflectApply site remains unique. The historical optional call would invoke an inherited ambient method installed during request capture; the maintained leaf refuses it and requires zero calls. No current registry production edit restores this Driver read.",
+      "reading": "group-review-11.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/host-members.test.ts",
+        "test_path": [
+          "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+          "a Driver without the method is refused even when the request's getter installs an inherited one"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "      const establish = hostMember(this.#driver, \"isSafeToReplace\");\n      safe = typeof establish === \"function\" && PrimordialReflectApply(establish, this.#driver, [exchange.activation]) === true;"
+      ],
+      "relocation_reading": "The guarded hostMember/ReflectApply site remains unique. The historical optional call would invoke an inherited ambient method installed during request capture; the maintained leaf refuses it and requires zero calls. No current registry production edit restores this Driver read."
     }
   },
   "resume_origin": "artifact-89a6c743f27e1e2697eab84d",
@@ -2534,5 +2680,18 @@
     "next_checkpoint": 731
   },
   "resume_path": "docs/development/work/K1.2-correction-01/ablations-03-rebound-06.mjs",
-  "resume_line": 1
+  "resume_line": 1,
+  "cap_stop_07": {
+    "origins_reached": 696,
+    "origins_before_current_family": 695,
+    "test_groups": 5,
+    "mutation_adoptions_lower_bound": 61,
+    "validated_adoptions": 18,
+    "planned_adoptions_lower_bound": 43,
+    "pending_family": "family.k12c1.ablations-06",
+    "reading": "group-review-11.md",
+    "projection": "projection-07.md",
+    "scheduled_checkpoint": 731,
+    "scheduled_checkpoint_completed": false
+  }
 }

@@ -2,6 +2,26 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 owner-choice-08 cap stop — origin 696 under reconciliation:**
+  674 retired; 22 extraction-origin plans; **five test groups and at least 61 mutation
+  adoptions**. The observed adoption count exceeds 60, so dependent triage/build stops.
+  [Projection 07](projection-07.md) records the early trigger, partial 265-origin rates,
+  projected 11–12 test groups / 134–217 adoptions, and projected added registry runtime.
+  The scheduled origin-731 checkpoint is **not complete** (35 origins remain).
+  - [Group review 11](group-review-11.md) establishes six live adoptions at current
+    History/host-member sites (H1/H10/H11/H12/H15/H16). All six have existing passing
+    ordinary leaves; no duplicate behavior test is planned. H2 and other remaining
+    routes require reconciliation and are not counted as safe retirements.
+  - Resume after owner disposition within `K1.2-correction-01/ablations-06.mjs:1`,
+    `artifact-89a6c743f27e1e2697eab84d`, then ablations-07 and source order. Worktree:
+    `/Users/rex-shih/.codex/worktrees/tools-02-gpt6-handover/arrokothi`; prepend Node
+    `/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin` to PATH.
+  - Eighteen adoptions have fresh-clone controls/qualified kills; at least 43 are
+    planned. No product/historical evidence or derived adoption data changed in the
+    correction-01 reading. No new test/mutant execution, P3 completion, self-audit,
+    mappings_complete, final C/H, CI dispatch or independent acceptance claimed.
+    IN_PROGRESS, stopped for the explicit owner cap; not review-ready.
+
 - **2026-10-29 correction-01 Z family — origin 695:** 674 retired; 21 extraction
   origins; **five test groups and 55 mutation adoptions**. [Group review 10](group-review-10.md)
   adds sixteen exact-coordinate production adoptions against existing passing leaves.
