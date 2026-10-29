@@ -2,6 +2,24 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 K1.2 complete — origin 692:** 674 retired; eighteen extraction
+  origins; **five test groups and twenty mutation adoptions**. The remaining reviews,
+  reviewer-09 runner/order/race artifacts, reviewer-11 probe and submission audit were
+  read in source order. Repeated P3/P4 grant-transfer references join group-review-08's
+  two planned tests. No additional group was found in this batch.
+  - All 674 retirement pointers resolve against the prior passing catalog and the
+    fresh-clone registry; this is a pointer-only check, not a new corpus/verify run.
+    Exact long-ID producer schedules and text-edge coverage remain in maintained
+    activation-identity tests under accepted correction-01; original probes stay sealed.
+  - Resume at `K1.2-correction-01/ablations-03-rebound-06.mjs:1`,
+    `artifact-580251cfb343edeaf49a8661`, then source order. Projection 07 is due
+    after **39 more origins (731 total)**, with both counts/rates/projections and
+    projected registry runtime. Stop early if either observed count exceeds its cap.
+  - Eighteen adoptions are built and control/kill validated; two are planned. Five
+    maintained-test groups, final family closures, P3, self-audit and mappings_complete
+    remain outstanding. No derived regeneration, final C/H or CI dispatch claimed.
+    No product/historical evidence edited; IN_PROGRESS only.
+
 - **2026-10-29 K1.2 implementation records complete — origin 548:** 535 retired;
   thirteen extraction origins; **five test groups and twenty mutation adoptions**.
   [Group review 08](group-review-08.md) records two new test groups (cross-Execution
