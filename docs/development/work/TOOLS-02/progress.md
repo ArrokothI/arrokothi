@@ -2,6 +2,17 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 K1.1 reviews 01–07 checkpoint:** 214 origins read in source-file
+  order; 188 retired and 26 planned extraction origins in four groups.
+  - Included the review 03 and 06 supplements and their concrete fenced witnesses.
+    Prior transfer records and legacy mappings are retained verbatim when the current
+    source has a retirement; unread witnesses are not promoted to executable credit.
+  - Current retained-evidence, indexed accumulation, descriptor conversion and dispatch
+    bound obligations map to passing leaves. The review-01 listing-work requirement
+    joins the existing listing extraction group. No product or historical file changed.
+  - Derived adoption data is unchanged. Resume at review 08; preliminary reading of
+    reviews 08–16 is not a disposition. First-300 projection remains outstanding.
+
 - **2026-10-28 K1.1 implementation 12–17 checkpoint:** 155 origins read in
   source-file order; 130 retired and 25 planned extraction origins in four groups.
   - Added the pre-first-creation nondisclosure schedule: the existing leaf with that
