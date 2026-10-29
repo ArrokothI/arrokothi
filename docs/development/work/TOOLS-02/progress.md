@@ -2,6 +2,17 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 K1.1 implementation 08–11 checkpoint:** 104 origins read in
+  source-file order; 100 retired and 4 planned extraction origins in two groups.
+  Read the linked validation/ablation evidence for 08–10; implementation 11 only
+  corrects the evidence/status record at unchanged C10.
+  - Current indexed-write and descriptor-pollution obligations are mapped to passing
+    behavioral and bounded source-guard leaves. Moved serializer-window claims remain
+    bounded by L-01; host-breaking pollution is L-02; Proxy observation is superseded.
+  - Coverage pointers resolve in the fresh-clone catalog at `281c8b0a`.
+    Derived adoption data is unchanged. Resume at implementation 12, then remaining
+    source files in order. The first-300 projection remains outstanding.
+
 - **2026-10-28 K1.1 implementation 05–07 checkpoint:** 75 origins read in
   source-file order; 71 retired and 4 planned extraction origins in two groups.
   Source-packet triage and first-300 projection remain incomplete.

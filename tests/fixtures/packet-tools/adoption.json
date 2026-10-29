@@ -14427,119 +14427,1108 @@
     },
     {
       "id": "mention-1a197fd1a9afd08d51ec5d20",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The amendment note identifies the dispatch fixture installing three partly-restorable accessors when bound was read three times. The current shifting-bound leaf detects repeated observation; indexed-pollution leaves assert a live trap, the exact reserved batch and one bound read. The discarded historical validation/amendment chronology is S1.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "K11-R4-DISP-01 the batch bound is observed once: a 1,1,0 shifting getter selects the validated bound"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "K11-R4-DISP-01 validation uses the primordial integer test even if the observation pollutes it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "K11-R4-DISP-01 a non-object envelope is refused as an invalid bound, not thrown out of the boundary"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "a bound getter that installs Array.prototype[\"0\"] still reserves the exact available prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "the same trap at every reserved index cannot shorten a larger batch either"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-466b8d26797b8c23b356bc3f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The source names ordinary indexed writes and raw property-definition/ambient-operation regression guards, including a weakening at a previously unexercised site. Current boundary leaves scan the complete current Kernel source and fail those spellings/owner bypasses; runtime dispatch leaves distinguish the resulting-state failures. These are bounded guards, not a sound analysis of all future programs (L-11). Host/module subversion and the moved serializer window are outside this current claim.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "a bound getter that installs Array.prototype[\"0\"] still reserves the exact available prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "the same trap at every reserved index cannot shorten a larger batch either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "a bound getter that installs Object.prototype.get still reserves the exact prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an inherited descriptor getter runs zero times inside the hardened operation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "descriptor pollution and an inherited indexed trap together still commit the exact batch"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-a42222311b933e63ed22bd2d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "recorded_limit",
+        "rationale": "S3, mixed. X2/X3/X5 concern scratch/index shadows and prototype pollution inside the live-object capture/serializer window. That window moved to the SDK under BINDING-01; its fidelity under same-process intrinsic/prototype replacement is L-01. Original Proxy-triggered capture is also superseded by decision-01. The ordinary unpolluted snapshot obligation remains current; these rows add no separate ordinary-data counterexample.",
+        "limit": "L-01"
+      }
     },
     {
       "id": "mention-425f718cf5c396d1966adc8c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "recorded_limit",
+        "rationale": "S3, mixed. X2/X3/X5 concern scratch/index shadows and prototype pollution inside the live-object capture/serializer window. That window moved to the SDK under BINDING-01; its fidelity under same-process intrinsic/prototype replacement is L-01. Original Proxy-triggered capture is also superseded by decision-01. The ordinary unpolluted snapshot obligation remains current; these rows add no separate ordinary-data counterexample.",
+        "limit": "L-01"
+      }
     },
     {
       "id": "mention-a4191eec6ce62eda4993166f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The self-found-defects paragraph contains ordinary caller mutation of exported TERMINAL_STATES and BOUNDARY_LIMITS: the current evidence leaves attempt extension/overwrite/truncation, then verify real ingress and semantic-limit decisions remain unchanged. The same paragraph also names live intrinsic/serializer-window restoration under hostile ambient changes (L-01 for the moved wrapper; L-02 for host subversion), and historical descriptions of fixes (S1). The highest current disposition is coverage of the mutable exported values.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/evidence.test.ts",
+            "test_path": [
+              "the exported vocabulary a Kernel decision reads is not caller-mutable (self-found)",
+              "the terminal vocabulary cannot be extended, emptied or re-spelled"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/evidence.test.ts",
+            "test_path": [
+              "the exported vocabulary a Kernel decision reads is not caller-mutable (self-found)",
+              "the published limits cannot be raised or lowered by a caller"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-2f0c08779a2c409e87461d2a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The self-found-defects paragraph contains ordinary caller mutation of exported TERMINAL_STATES and BOUNDARY_LIMITS: the current evidence leaves attempt extension/overwrite/truncation, then verify real ingress and semantic-limit decisions remain unchanged. The same paragraph also names live intrinsic/serializer-window restoration under hostile ambient changes (L-01 for the moved wrapper; L-02 for host subversion), and historical descriptions of fixes (S1). The highest current disposition is coverage of the mutable exported values.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/evidence.test.ts",
+            "test_path": [
+              "the exported vocabulary a Kernel decision reads is not caller-mutable (self-found)",
+              "the terminal vocabulary cannot be extended, emptied or re-spelled"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/evidence.test.ts",
+            "test_path": [
+              "the exported vocabulary a Kernel decision reads is not caller-mutable (self-found)",
+              "the published limits cannot be raised or lowered by a caller"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-fc465678e1bd71a81656ba2c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The paragraph requires the indexed trap to remain live through the boundary and only the test control write to reach its setter. Current dispatch indexed-pollution leaves assert liveness, one bound read, the exact batch and forbidden swallowed writes; this is executable oracle discrimination, not merely a test name.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "a bound getter that installs Array.prototype[\"0\"] still reserves the exact available prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "the same trap at every reserved index cannot shorten a larger batch either"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-f8a6a880e07541636b316209",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The cited V3 witness observes a Proxy value while changing the live Object binding to pass a foreign prototype. Decision-01 replaces acceptance/observation of Proxy values with refusal before any trap. This does not retire ordinary unsupported-prototype refusal or core byte admission.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      }
     },
     {
       "id": "mention-046a78230e0dddd5cbafbdf2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. N3 is the repeated dispatch-bound observation. The current getter/invalid-envelope/primordial-validator leaves assert one observed bound and no invalid dispatch state.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "K11-R4-DISP-01 the batch bound is observed once: a 1,1,0 shifting getter selects the validated bound"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "K11-R4-DISP-01 validation uses the primordial integer test even if the observation pollutes it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "K11-R4-DISP-01 a non-object envelope is refused as an invalid bound, not thrown out of the boundary"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-5e176d2e22f4d538d9ed5b82",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The source names ordinary indexed writes and raw property-definition/ambient-operation regression guards, including a weakening at a previously unexercised site. Current boundary leaves scan the complete current Kernel source and fail those spellings/owner bypasses; runtime dispatch leaves distinguish the resulting-state failures. These are bounded guards, not a sound analysis of all future programs (L-11). Host/module subversion and the moved serializer window are outside this current claim.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "a bound getter that installs Array.prototype[\"0\"] still reserves the exact available prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "the same trap at every reserved index cannot shorten a larger batch either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "a bound getter that installs Object.prototype.get still reserves the exact prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an inherited descriptor getter runs zero times inside the hardened operation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "descriptor pollution and an inherited indexed trap together still commit the exact batch"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-dc58678794fe791c6cba1c1e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The amendment note identifies the dispatch fixture installing three partly-restorable accessors when bound was read three times. The current shifting-bound leaf detects repeated observation; indexed-pollution leaves assert a live trap, the exact reserved batch and one bound read. The discarded historical validation/amendment chronology is S1.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "K11-R4-DISP-01 the batch bound is observed once: a 1,1,0 shifting getter selects the validated bound"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "K11-R4-DISP-01 validation uses the primordial integer test even if the observation pollutes it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "K11-R4-DISP-01 a non-object envelope is refused as an invalid bound, not thrown out of the boundary"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "a bound getter that installs Array.prototype[\"0\"] still reserves the exact available prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "the same trap at every reserved index cannot shorten a larger batch either"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-db6aedf9dd7d4b7389c28730",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The source names ordinary indexed writes and raw property-definition/ambient-operation regression guards, including a weakening at a previously unexercised site. Current boundary leaves scan the complete current Kernel source and fail those spellings/owner bypasses; runtime dispatch leaves distinguish the resulting-state failures. These are bounded guards, not a sound analysis of all future programs (L-11). Host/module subversion and the moved serializer window are outside this current claim.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "a bound getter that installs Array.prototype[\"0\"] still reserves the exact available prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "the same trap at every reserved index cannot shorten a larger batch either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "a bound getter that installs Object.prototype.get still reserves the exact prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an inherited descriptor getter runs zero times inside the hardened operation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "descriptor pollution and an inherited indexed trap together still commit the exact batch"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-3a752df34efc8c5397d52505",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "recorded_limit",
+        "rationale": "S3, mixed. X2/X3/X5 concern scratch/index shadows and prototype pollution inside the live-object capture/serializer window. That window moved to the SDK under BINDING-01; its fidelity under same-process intrinsic/prototype replacement is L-01. Original Proxy-triggered capture is also superseded by decision-01. The ordinary unpolluted snapshot obligation remains current; these rows add no separate ordinary-data counterexample.",
+        "limit": "L-01"
+      }
     },
     {
       "id": "mention-63a3f0a5e32095e490ebf8ba",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "recorded_limit",
+        "rationale": "S3, mixed. X2/X3/X5 concern scratch/index shadows and prototype pollution inside the live-object capture/serializer window. That window moved to the SDK under BINDING-01; its fidelity under same-process intrinsic/prototype replacement is L-01. Original Proxy-triggered capture is also superseded by decision-01. The ordinary unpolluted snapshot obligation remains current; these rows add no separate ordinary-data counterexample.",
+        "limit": "L-01"
+      }
     },
     {
       "id": "mention-5f90abf2b2613e8b18e8b25f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The self-found-defects paragraph contains ordinary caller mutation of exported TERMINAL_STATES and BOUNDARY_LIMITS: the current evidence leaves attempt extension/overwrite/truncation, then verify real ingress and semantic-limit decisions remain unchanged. The same paragraph also names live intrinsic/serializer-window restoration under hostile ambient changes (L-01 for the moved wrapper; L-02 for host subversion), and historical descriptions of fixes (S1). The highest current disposition is coverage of the mutable exported values.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/evidence.test.ts",
+            "test_path": [
+              "the exported vocabulary a Kernel decision reads is not caller-mutable (self-found)",
+              "the terminal vocabulary cannot be extended, emptied or re-spelled"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/evidence.test.ts",
+            "test_path": [
+              "the exported vocabulary a Kernel decision reads is not caller-mutable (self-found)",
+              "the published limits cannot be raised or lowered by a caller"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-21af6ffae1443310be14ac26",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The self-found-defects paragraph contains ordinary caller mutation of exported TERMINAL_STATES and BOUNDARY_LIMITS: the current evidence leaves attempt extension/overwrite/truncation, then verify real ingress and semantic-limit decisions remain unchanged. The same paragraph also names live intrinsic/serializer-window restoration under hostile ambient changes (L-01 for the moved wrapper; L-02 for host subversion), and historical descriptions of fixes (S1). The highest current disposition is coverage of the mutable exported values.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/evidence.test.ts",
+            "test_path": [
+              "the exported vocabulary a Kernel decision reads is not caller-mutable (self-found)",
+              "the terminal vocabulary cannot be extended, emptied or re-spelled"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/evidence.test.ts",
+            "test_path": [
+              "the exported vocabulary a Kernel decision reads is not caller-mutable (self-found)",
+              "the published limits cannot be raised or lowered by a caller"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-d54721eee7035336e7dfe124",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The paragraph requires the indexed trap to remain live through the boundary and only the test control write to reach its setter. Current dispatch indexed-pollution leaves assert liveness, one bound read, the exact batch and forbidden swallowed writes; this is executable oracle discrimination, not merely a test name.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "a bound getter that installs Array.prototype[\"0\"] still reserves the exact available prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "the same trap at every reserved index cannot shorten a larger batch either"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-beb4886ea9096ce69f0ee503",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The cited V3 witness observes a Proxy value while changing the live Object binding to pass a foreign prototype. Decision-01 replaces acceptance/observation of Proxy values with refusal before any trap. This does not retire ordinary unsupported-prototype refusal or core byte admission.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      }
     },
     {
       "id": "mention-fe8390125be42cd0b060dd01",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. N3 is the repeated dispatch-bound observation. The current getter/invalid-envelope/primordial-validator leaves assert one observed bound and no invalid dispatch state.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "K11-R4-DISP-01 the batch bound is observed once: a 1,1,0 shifting getter selects the validated bound"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "K11-R4-DISP-01 validation uses the primordial integer test even if the observation pollutes it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K1.1-C4 what one dispatch intent pins",
+              "K11-R4-DISP-01 a non-object envelope is refused as an invalid bound, not thrown out of the boundary"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ae5d80f7b3337155087853da",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "recorded_limit",
+        "rationale": "S3, mixed. The paragraph cites a non-configurable, non-writable prototype data shadow and points to the host-failure limit below: that pollution breaks Node internals before this boundary runs. Current L-02 excludes general protection against a hostile same-process caller. The rerun/ancestry/probe-accounting statements are S1; no cooperative Kernel result is retired.",
+        "limit": "L-02"
+      }
     },
     {
       "id": "mention-da90f4379be0952261b13533",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The source names ordinary indexed writes and raw property-definition/ambient-operation regression guards, including a weakening at a previously unexercised site. Current boundary leaves scan the complete current Kernel source and fail those spellings/owner bypasses; runtime dispatch leaves distinguish the resulting-state failures. These are bounded guards, not a sound analysis of all future programs (L-11). Host/module subversion and the moved serializer window are outside this current claim.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "a bound getter that installs Array.prototype[\"0\"] still reserves the exact available prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "the same trap at every reserved index cannot shorten a larger batch either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "a bound getter that installs Object.prototype.get still reserves the exact prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an inherited descriptor getter runs zero times inside the hardened operation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "descriptor pollution and an inherited indexed trap together still commit the exact batch"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b3949fe11fcc98fa502fe206",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The instrumentation row requires combined inherited index and descriptor-field traps to remain live through the operation and be restorable. The maintained combined dispatch case installs both, proves both live, restores them in order, checks one bound read and the exact batch, and asserts that only the control write reached the setter.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "descriptor pollution and an inherited indexed trap together still commit the exact batch"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-26d6e4c997744875ce4f7a37",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. XA weakens property installation descriptors and XB weakens restoration. Current Kernel descriptor-pollution leaves assert exact batches, zero inherited descriptor getter calls and preserved redelivery under get/set and combined indexed traps; static ownership controls prevent bypasses. The serializer-specific restoration direction now lives only in the SDK and is subject to L-01. The historical counts and choice of separate ablations are not new results.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "a bound getter that installs Object.prototype.get still reserves the exact prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an inherited descriptor getter runs zero times inside the hardened operation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "descriptor pollution and an inherited indexed trap together still commit the exact batch"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-0e6a59cbc94f8a12fcd0ebc5",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. XA weakens property installation descriptors and XB weakens restoration. Current Kernel descriptor-pollution leaves assert exact batches, zero inherited descriptor getter calls and preserved redelivery under get/set and combined indexed traps; static ownership controls prevent bypasses. The serializer-specific restoration direction now lives only in the SDK and is subject to L-01. The historical counts and choice of separate ablations are not new results.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "a bound getter that installs Object.prototype.get still reserves the exact prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an inherited descriptor getter runs zero times inside the hardened operation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "descriptor pollution and an inherited indexed trap together still commit the exact batch"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b2d730846485700005e75368",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The source names ordinary indexed writes and raw property-definition/ambient-operation regression guards, including a weakening at a previously unexercised site. Current boundary leaves scan the complete current Kernel source and fail those spellings/owner bypasses; runtime dispatch leaves distinguish the resulting-state failures. These are bounded guards, not a sound analysis of all future programs (L-11). Host/module subversion and the moved serializer window are outside this current claim.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "a bound getter that installs Array.prototype[\"0\"] still reserves the exact available prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 batch reservation is own data, not an ambient write",
+              "the same trap at every reserved index cannot shorten a larger batch either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "a bound getter that installs Object.prototype.get still reserves the exact prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an inherited descriptor getter runs zero times inside the hardened operation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "descriptor pollution and an inherited indexed trap together still commit the exact batch"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-f6187867490fa9a6f76746ec",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The paragraph links descriptor conversion in both directions and handler-trap lookup. Current dispatch tests distinguish install-time descriptor getter execution and composed pollution. The old handler observation through a value Proxy is superseded by unconditional Proxy refusal (decision-01), and wrapper serializer restoration under ambient replacement is L-01.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "a bound getter that installs Object.prototype.get still reserves the exact prefix"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an installed Object.prototype.set cannot shorten a larger batch, and redelivery keeps it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "an inherited descriptor getter runs zero times inside the hardened operation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/dispatch.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 dispatch under inherited descriptor-field pollution",
+              "descriptor pollution and an inherited indexed trap together still commit the exact batch"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-2e7d62792ce70c8840671f84",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Implementation-11 is an evidence/status-only correction at unchanged C10. These paragraphs state repeated counts, byte-preservation, ablation reruns and readiness; they introduce no new system input or required result. The underlying directional/index/serializer counterexamples are retained and read with implementation-10 and its manifest rather than treating a historical pass count as present evidence."
+      }
     },
     {
       "id": "mention-eb7f000d33c9b12307874f0d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Implementation-11 is an evidence/status-only correction at unchanged C10. These paragraphs state repeated counts, byte-preservation, ablation reruns and readiness; they introduce no new system input or required result. The underlying directional/index/serializer counterexamples are retained and read with implementation-10 and its manifest rather than treating a historical pass count as present evidence."
+      }
     },
     {
       "id": "mention-1bf40f247ee74b58f60804ac",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Implementation-11 is an evidence/status-only correction at unchanged C10. These paragraphs state repeated counts, byte-preservation, ablation reruns and readiness; they introduce no new system input or required result. The underlying directional/index/serializer counterexamples are retained and read with implementation-10 and its manifest rather than treating a historical pass count as present evidence."
+      }
     },
     {
       "id": "mention-376006ab2c4d85804e897648",
