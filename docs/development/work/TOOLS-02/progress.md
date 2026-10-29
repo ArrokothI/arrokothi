@@ -2,6 +2,19 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 correction-01 base/rebound families — origin 694:** 674 retired;
+  twenty extraction origins; **five test groups and 39 mutation adoptions**.
+  [Group review 09](group-review-09.md) records nineteen shared new adoptions:
+  X8–X23 exact coordinates and V1–V3 diagnostic behavior. Every absent anchor has
+  an individual relocation reading; base/rebound reuse does not increase the count.
+  V4 is covered by an existing registry case; V5 keeps the accepted equivalence route.
+  - Resume at `K1.2-correction-01/ablations-04.mjs:1`,
+    `artifact-ca6184769b762384a49e1d67`. The required checkpoint is still origin 731;
+    stop early if either observed count exceeds its cap.
+  - Eighteen adoptions remain control/kill validated; 21 are planned. No new mutant
+    or behavior test was run in this batch. No product/historical evidence, derived
+    tables, final C/H or CI dispatch. IN_PROGRESS only.
+
 - **2026-10-29 K1.2 complete — origin 692:** 674 retired; eighteen extraction
   origins; **five test groups and twenty mutation adoptions**. The remaining reviews,
   reviewer-09 runner/order/race artifacts, reviewer-11 probe and submission audit were

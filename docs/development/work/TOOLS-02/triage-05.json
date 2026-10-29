@@ -1,7 +1,7 @@
 {
   "source_base": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
-  "source_packet": "K1.2",
-  "state": "packet_complete",
+  "source_packet": "K1.2-correction-01",
+  "state": "triage_in_progress",
   "retirement_readings": [
     "mention-b43188cfa39f39ae809510de",
     "mention-6f40e8f1a46ba505eb1dc0e2",
@@ -872,6 +872,62 @@
       "required_result": "The referenced P3/P4 and R12 schedules require cross-Execution and next-exchange saved-grant negatives, not only a helper-selected current grant. Both remain extracted; redelivery/takeover within an exchange and grant nondisclosure have maintained leaves.",
       "reading": "group-review-08.md",
       "planned_test": "Build the named new tests or registry adoptions after their live-at-C recheck; keep all named variants and provenance. No product edit; stop if a new test exposes a product defect."
+    },
+    "artifact-580251cfb343edeaf49a8661": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/ablations-03-rebound-06.mjs:1",
+      "groups": [
+        "k12c1-coordinate-x8",
+        "k12c1-coordinate-x9",
+        "k12c1-coordinate-x10",
+        "k12c1-coordinate-x11",
+        "k12c1-coordinate-x12",
+        "k12c1-coordinate-x13",
+        "k12c1-coordinate-x14",
+        "k12c1-coordinate-x15",
+        "k12c1-coordinate-x16",
+        "k12c1-coordinate-x17",
+        "k12c1-coordinate-x18",
+        "k12c1-coordinate-x19",
+        "k12c1-coordinate-x20",
+        "k12c1-coordinate-x21",
+        "k12c1-coordinate-x22",
+        "k12c1-coordinate-x23",
+        "k12c1-diagnostics-v1",
+        "k12c1-diagnostics-v2",
+        "k12c1-diagnostics-v3"
+      ],
+      "required_result": "X8-X23 exact-coordinate and V1-V3 diagnostic mutation adoptions remain live. V4 has RC-OWN-EXPLAIN coverage in value-cost.c1.value-refusal-cost; V5 is the accepted equivalent survivor and adds no adoption. Rebound and base share all nineteen obligations.",
+      "reading": "group-review-09.md",
+      "planned_test": "Adopt into existing registries against the named passing leaves; validate each fresh control and qualified kill before binding P1-M. No kill or family closure claimed."
+    },
+    "artifact-5354ca6e028547cc6e88a7e4": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/ablations-03.mjs:1",
+      "groups": [
+        "k12c1-coordinate-x8",
+        "k12c1-coordinate-x9",
+        "k12c1-coordinate-x10",
+        "k12c1-coordinate-x11",
+        "k12c1-coordinate-x12",
+        "k12c1-coordinate-x13",
+        "k12c1-coordinate-x14",
+        "k12c1-coordinate-x15",
+        "k12c1-coordinate-x16",
+        "k12c1-coordinate-x17",
+        "k12c1-coordinate-x18",
+        "k12c1-coordinate-x19",
+        "k12c1-coordinate-x20",
+        "k12c1-coordinate-x21",
+        "k12c1-coordinate-x22",
+        "k12c1-coordinate-x23",
+        "k12c1-diagnostics-v1",
+        "k12c1-diagnostics-v2",
+        "k12c1-diagnostics-v3"
+      ],
+      "required_result": "X8-X23 exact-coordinate and V1-V3 diagnostic mutation adoptions remain live. V4 has RC-OWN-EXPLAIN coverage in value-cost.c1.value-refusal-cost; V5 is the accepted equivalent survivor and adds no adoption. Rebound and base share all nineteen obligations.",
+      "reading": "group-review-09.md",
+      "planned_test": "Adopt into existing registries against the named passing leaves; validate each fresh control and qualified kill before binding P1-M. No kill or family closure claimed."
     }
   },
   "reconsidered_extractions": [
@@ -1704,9 +1760,410 @@
           "changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
         ]
       }
+    },
+    "k12c1-coordinate-x8": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X8 Emission ID derived from diagnostic Activation spelling",
+      "work_kind": "mutation_adoption",
+      "required_result": "X8 Emission ID derived from exact Activation spelling",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "const emissionId = `emission-${packIdentity([record.executionId, activationId, emission.emissionKey])}`;"
+      ],
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    "k12c1-coordinate-x9": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X9 result ID derived from diagnostic Activation spelling",
+      "work_kind": "mutation_adoption",
+      "required_result": "X9 result ID derived from exact Activation spelling",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "resultId: `result-${packIdentity([record.executionId, activationId])}`,"
+      ],
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    "k12c1-coordinate-x10": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X10 acknowledged disposition names diagnostic Activation spelling",
+      "work_kind": "mutation_adoption",
+      "required_result": "X10 acknowledged disposition names exact Activation spelling",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "PrimordialObjectFreeze({ kind: \"acknowledged\" as const, activationId });"
+      ],
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    "k12c1-coordinate-x11": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X11 code hold stores diagnostic Activation spelling",
+      "work_kind": "mutation_adoption",
+      "required_result": "X11 code hold stores exact Activation spelling",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "        reason: missing,\n        activationId: pinned.activationId,"
+      ],
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    "k12c1-coordinate-x12": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X12 recovery history stores diagnostic Activation spelling",
+      "work_kind": "mutation_adoption",
+      "required_result": "X12 recovery history stores exact Activation spelling",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "PrimordialObjectFreeze({ activationId, writerEpoch, cause, transition, reason, authority: \"control\" as const, actorNamespace, actorScope });",
+        "    activationId,\n    writerEpoch: supersededEpoch,"
+      ],
+      "relocation_reading": "Removed appendRecoveryHistory was reconstructed as holdHistoryRecord and takeoverHistoryRecord. Rebound-06 already targets both current builders; preserve both edits, not a new group."
+    },
+    "k12c1-coordinate-x13": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X13 delivery row stores diagnostic Activation spelling",
+      "work_kind": "mutation_adoption",
+      "required_result": "X13 delivery row stores exact Activation spelling",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchors": [
+        "      activationId: plan.activationId,\n      writerEpoch: plan.writerEpoch,"
+      ],
+      "relocation_reading": "Delivery construction moved to ExecutionStateOwner.#applyDelivery; its retained row still carries the exact plan Activation ID. Re-anchor here; rendering it remains a live defect."
+    },
+    "k12c1-coordinate-x14": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X14 resolved exchange stores diagnostic Activation spelling",
+      "work_kind": "mutation_adoption",
+      "required_result": "X14 resolved exchange stores exact Activation spelling",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "    const resolved: ResolvedFacts = PrimordialObjectFreeze({\n      activationId,"
+      ],
+      "relocation_reading": "ResolvedExchange construction became prebuilt ResolvedFacts plus the state-owner append. The exact coordinate is still supplied by this builder; re-anchor its activationId field."
+    },
+    "k12c1-coordinate-x15": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X15 Outcome receipt token uses diagnostic Execution spelling",
+      "work_kind": "mutation_adoption",
+      "required_result": "X15 Outcome receipt token uses exact Execution spelling",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "const receipt = mintReceipt(\"outcome_acceptance\", acceptancePosition, record.executionId);"
+      ],
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    "k12c1-coordinate-x16": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X16 history actor namespace rendered lossy",
+      "work_kind": "mutation_adoption",
+      "required_result": "X16 history actor namespace remains exact",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "          actorNamespace: caller.namespace,\n          actorScope: record.scope,\n        }),\n      );\n    }\n    if (intent.protocolFailureHold !== null) {"
+      ],
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    "k12c1-coordinate-x17": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X17 decision answer activationId rendered lossy",
+      "work_kind": "mutation_adoption",
+      "required_result": "X17 decision answer activationId remains exact",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "    const decision: Omit<OutcomeAccepted, \"replayed\"> = PrimordialObjectFreeze({\n      receipt,\n      activationId,"
+      ],
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    "k12c1-coordinate-x18": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X18 takeover answer activationId rendered lossy",
+      "work_kind": "mutation_adoption",
+      "required_result": "X18 takeover answer activationId remains exact",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "    const answer = ok({\n      activationId: named.activationId,\n      supersededEpoch: currentEpoch,"
+      ],
+      "relocation_reading": "Takeover now prebuilds the answer before applying its plan. The historical return moved; rebound-06 identifies the current exact Activation-ID field."
+    },
+    "k12c1-coordinate-x19": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X19 recovery answer activationId rendered lossy",
+      "work_kind": "mutation_adoption",
+      "required_result": "X19 recovery answer activationId remains exact",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "return ok({ activationId: pinned.activationId, writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(exchange), changed: false });",
+        "const answer = ok({ activationId: pinned.activationId, writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(commit), changed: true });"
+      ],
+      "relocation_reading": "The old shared return split into no-change and changed prebuilt answers. Preserve both current spans as rebound-06 does; one historical adoption, not two."
+    },
+    "k12c1-coordinate-x20": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X20 protocol answer activationId rendered lossy",
+      "work_kind": "mutation_adoption",
+      "required_result": "X20 protocol answer activationId remains exact",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "const answer = ok({ activationId: named.activationId, writerEpoch: currentEpoch, recoveryHolds: holdsOf(commit), changed: true });"
+      ],
+      "relocation_reading": "Protocol report now prebuilds its changed answer from the commit. Rebound-06 relocates the same coordinate obligation here."
+    },
+    "k12c1-coordinate-x21": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X21 protocol hold stores diagnostic Activation spelling",
+      "work_kind": "mutation_adoption",
+      "required_result": "X21 protocol hold stores exact Activation spelling",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "      reason,\n      activationId: named.activationId,\n      writerEpoch: currentEpoch,\n    });"
+      ],
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    "k12c1-coordinate-x22": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X22 Emission record activationId rendered lossy",
+      "work_kind": "mutation_adoption",
+      "required_result": "X22 Emission record activationId remains exact",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "PrimordialObjectFreeze({ emissionId, emissionKey: emission.emissionKey, activationId, value: emission.value.value, receipt }),"
+      ],
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    "k12c1-coordinate-x23": {
+      "family": "family.k12c1.ablations-03",
+      "member": "X23 result record activationId rendered lossy",
+      "work_kind": "mutation_adoption",
+      "required_result": "X23 result record activationId remains exact",
+      "gap": "No registered production mutation for this field/operation. Fault scenarios use short ASCII identities; their answer/view relations cannot establish exact long/non-ASCII spelling. Generic oracle-disabling controls are not this source mutation.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "        value: outcome.next.step === \"complete\" ? outcome.next.result.value : outcome.next.error.value,\n        activationId,"
+      ],
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    "k12c1-diagnostics-v1": {
+      "family": "family.k12c1.ablations-03",
+      "member": "V1",
+      "work_kind": "mutation_adoption",
+      "required_result": "Bound diagnostic storage while retaining every observed issue occurrence",
+      "gap": "Collector moved from Kernel values.ts to SDK value-capture.ts. Its eight details and per-code suffix remain; replacing the collector with appendOwn would restore per-position storage. No registry edit replaces this collector or removes its detail bound.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+        "test_path": [
+          "V-D1 every issue family: nonfinite"
+        ]
+      },
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchors": [
+        "const pushIssue = (issues: ValueIssue[], issue: ValueIssue): void => {"
+      ],
+      "relocation_reading": "Collector moved from Kernel values.ts to SDK value-capture.ts. Its eight details and per-code suffix remain; replacing the collector with appendOwn would restore per-position storage. No registry edit replaces this collector or removes its detail bound."
+    },
+    "k12c1-diagnostics-v2": {
+      "family": "family.k12c1.ablations-03",
+      "member": "V2",
+      "work_kind": "mutation_adoption",
+      "required_result": "Continue observing siblings after eight diagnostics until a declared cost stop",
+      "gap": "Capture moved to SDK and its declared stop now returns STOPPED. Add a separate issues.length >= 8 early REFUSED return after that guard. The 256 nonfinite input is below the declared work/byte budget; early diagnostic-based termination still loses occurrences. Budget/STOPPED controls do not mutate this decision.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+        "test_path": [
+          "V-D1 every issue family: nonfinite"
+        ]
+      },
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchors": [
+        "function capture(value: unknown, path: string, level: number, state: CaptureState): Visited {\n  if (state.stopped) return STOPPED;"
+      ],
+      "relocation_reading": "Capture moved to SDK and its declared stop now returns STOPPED. Add a separate issues.length >= 8 early REFUSED return after that guard. The 256 nonfinite input is below the declared work/byte budget; early diagnostic-based termination still loses occurrences. Budget/STOPPED controls do not mutate this decision."
+    },
+    "k12c1-diagnostics-v3": {
+      "family": "family.k12c1.ablations-03",
+      "member": "V3",
+      "work_kind": "mutation_adoption",
+      "required_result": "Render every suffix occurrence rather than counting each suffix record once",
+      "gap": "The Kernel aggregate formatter still owns the count assignment. Existing own-only and charging cases do not replace occurrences with one.",
+      "reading": "group-review-09.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+        "test_path": [
+          "V-D1 suffix counts preserve late codes and first occurrence order across root consumers"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "const count = occurrences ?? 1;"
+      ],
+      "relocation_reading": "The Kernel aggregate formatter still owns the count assignment. Existing own-only and charging cases do not replace occurrences with one."
     }
   },
-  "resume_origin": "artifact-580251cfb343edeaf49a8661",
+  "resume_origin": "artifact-ca6184769b762384a49e1d67",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,

@@ -1,0 +1,176 @@
+{
+  "revision": "64245a584d6e48a7c7858035d6d54844b3b6d48a",
+  "method": "Read-only unique-anchor checks over current tracked product bytes; no mutant execution. Original X definitions at the fixed source pin; every absent anchor has a separate relocation reading.",
+  "members": [
+    {
+      "member": "X8 Emission ID derived from diagnostic Activation spelling",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    {
+      "member": "X9 result ID derived from diagnostic Activation spelling",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    {
+      "member": "X10 acknowledged disposition names diagnostic Activation spelling",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    {
+      "member": "X11 code hold stores diagnostic Activation spelling",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    {
+      "member": "X12 recovery history stores diagnostic Activation spelling",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1,
+        1
+      ],
+      "reading": "Removed appendRecoveryHistory was reconstructed as holdHistoryRecord and takeoverHistoryRecord. Rebound-06 already targets both current builders; preserve both edits, not a new group."
+    },
+    {
+      "member": "X13 delivery row stores diagnostic Activation spelling",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "Delivery construction moved to ExecutionStateOwner.#applyDelivery; its retained row still carries the exact plan Activation ID. Re-anchor here; rendering it remains a live defect."
+    },
+    {
+      "member": "X14 resolved exchange stores diagnostic Activation spelling",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "ResolvedExchange construction became prebuilt ResolvedFacts plus the state-owner append. The exact coordinate is still supplied by this builder; re-anchor its activationId field."
+    },
+    {
+      "member": "X15 Outcome receipt token uses diagnostic Execution spelling",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    {
+      "member": "X16 history actor namespace rendered lossy",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    {
+      "member": "X17 decision answer activationId rendered lossy",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    {
+      "member": "X18 takeover answer activationId rendered lossy",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "Takeover now prebuilds the answer before applying its plan. The historical return moved; rebound-06 identifies the current exact Activation-ID field."
+    },
+    {
+      "member": "X19 recovery answer activationId rendered lossy",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1,
+        1
+      ],
+      "reading": "The old shared return split into no-change and changed prebuilt answers. Preserve both current spans as rebound-06 does; one historical adoption, not two."
+    },
+    {
+      "member": "X20 protocol answer activationId rendered lossy",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "Protocol report now prebuilds its changed answer from the commit. Rebound-06 relocates the same coordinate obligation here."
+    },
+    {
+      "member": "X21 protocol hold stores diagnostic Activation spelling",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    {
+      "member": "X22 Emission record activationId rendered lossy",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    {
+      "member": "X23 result record activationId rendered lossy",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original production anchor remains unique; exact identity is still required."
+    },
+    {
+      "member": "V1",
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "Collector moved from Kernel values.ts to SDK value-capture.ts. Its eight details and per-code suffix remain; replacing the collector with appendOwn would restore per-position storage. No registry edit replaces this collector or removes its detail bound."
+    },
+    {
+      "member": "V2",
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "Capture moved to SDK and its declared stop now returns STOPPED. Add a separate issues.length >= 8 early REFUSED return after that guard. The 256 nonfinite input is below the declared work/byte budget; early diagnostic-based termination still loses occurrences. Budget/STOPPED controls do not mutate this decision."
+    },
+    {
+      "member": "V3",
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The Kernel aggregate formatter still owns the count assignment. Existing own-only and charging cases do not replace occurrences with one."
+    }
+  ]
+}
