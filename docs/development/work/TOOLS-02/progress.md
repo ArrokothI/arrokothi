@@ -2,6 +2,22 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 correction-01 complete — 389 origins:** 382 retired; seven planned
+  extraction origins in **three distinct groups**. Resume with
+  `K1.1-correction-02/cleanup-01.md`; origin 600 remains the projection-06 checkpoint.
+  - Added accepted KC1-ARCH-1 decision-01 to the superseding table with its fixed
+    archive snapshot `9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49`. Accepted H
+    `52b1600f3b42e3a360fdc3395178f1d147edf304`, integration
+    `b53ccb48a8fd4b9d0b0028fc11e925d563e284fa`, and the archive snapshot all precede
+    base `335ae7e6` (ancestry checked). The decision removes Driver-returned Promise
+    observation; current reporting behavior maps to passing KC1-ARCH-1 leaves.
+  - The table resolves that archived path at the fixed snapshot, without recreating
+    evidence in the checkout or allowing a manifest-selected revision. Its new test
+    removes the current copy, checks the pinned lookup and rejects an unlisted spelling.
+    All 16 focused triage tests passed (3.217 s, Node v26.10.0).
+  - No product or historical evidence changed. Other adoption tables and derived data
+    remain byte-equivalent as parsed JSON; previously complete origins were untouched.
+
 - **2026-10-29 K1.1 complete — 309 origins:** 302 retired; seven planned extraction
   origins in **three distinct groups**. Resume with `K1.1-correction-01/blocker-01.md`.
   - Owner choice 07's pre-build check removed the count-gate group: its temporary

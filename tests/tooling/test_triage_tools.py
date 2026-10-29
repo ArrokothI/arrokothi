@@ -3,6 +3,7 @@ import copy
 from pathlib import Path
 import random
 import runpy
+from unittest.mock import patch
 from test_packet_tools import RepositoryFixture, tool
 
 
@@ -14,6 +15,9 @@ class TriageTests(RepositoryFixture):
             self.write(decision, 'Accepted decision at the base.\n')
         self.write(tool.VENV_RELEASE, 'Core hold release.\n')
         self.rev = self.commit('triage pointers')
+        self.archive_pins = patch.object(tool, 'TRIAGE_DECISION_REVISIONS', {})
+        self.archive_pins.start()
+        self.addCleanup(self.archive_pins.stop)
         self.origins = {'closed': {'state': 'complete'}, 'retired': {'state': 'triaged'}}
         self.registry = {'cases': [{'id': 'case.one'}]}
         self.leaves = [{'leaf': True, 'path': ['suite', 'leaf'], 'verdict': 'passed'}]
@@ -41,6 +45,18 @@ class TriageTests(RepositoryFixture):
             self.check('covered_elsewhere', covered_by=[])
         with self.assertRaisesRegex(tool.CheckError, 'existing scheduled registry case'):
             self.check('covered_elsewhere', covered_by=[self.leaf(), {'kind': 'case', 'id': 'missing'}])
+
+    def test_archived_decision_uses_only_its_fixed_pin(self):
+        decision = tool.TRIAGE_DECISIONS[-1]
+        archived = self.rev
+        (self.root / decision).unlink()
+        self.rev = self.commit('decision archived')
+        with patch.object(tool, 'TRIAGE_DECISION_REVISIONS', {decision: archived}):
+            self.check('superseded', decision=decision)
+            with self.assertRaisesRegex(tool.CheckError, 'listed superseding decision'):
+                self.check('superseded', decision=archived + ':' + decision)
+        with self.assertRaises(tool.CheckError):
+            self.check('superseded', decision=decision)
 
     def test_unknown_class(self):
         with self.assertRaisesRegex(tool.CheckError, 'retirement class'):

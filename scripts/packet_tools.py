@@ -150,7 +150,14 @@ TRIAGE_DECISIONS = (
     'docs/development/work/K1.3/design-01.md',
     'docs/development/work/K1.2-correction-01/integration-01.md',
     'docs/development/work/TOOLS-01/design-02.md',
+    'docs/development/work/K1.1-correction-01/decision-01.md',
 )
+# Archived accepted decisions use the repository's fixed retention snapshot, never a
+# manifest-selected revision or a restored copy of historical evidence.
+TRIAGE_DECISION_REVISIONS = {
+    'docs/development/work/K1.1-correction-01/decision-01.md':
+        '9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49',
+}
 TRIAGE_LIMITS = 'docs/development/017-known-limitations.md'
 TRIAGE_CLASSES = ('not_a_counterexample', 'covered_elsewhere', 'superseded', 'recorded_limit')
 
@@ -3555,7 +3562,7 @@ def triage_origin(git, rev, key, row, origins, registry, context):
         require(bool(decisions), 'mixed supersession has at least one decision: ' + key)
         for decision in decisions:
             require(decision in TRIAGE_DECISIONS, 'a retirement names a listed superseding decision: ' + key)
-            git.blob(rev, decision)
+            git.blob(TRIAGE_DECISION_REVISIONS.get(decision, rev), decision)
             if decision == 'docs/development/work/BINDING-01/design-01.md':
                 git.blob(rev, VENV_RELEASE)
     elif kind == 'recorded_limit':
