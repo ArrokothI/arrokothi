@@ -498,8 +498,16 @@
         "k12-mutation-b10",
         "k12-mutation-b11",
         "k12-mutation-b15",
-        "k12-mutation-b20"
-      ]
+        "k12-mutation-b20",
+        "k12-mutation-a2",
+        "k12-mutation-b3",
+        "k12-mutation-b4",
+        "k12-mutation-b7",
+        "k12-mutation-b12",
+        "k12-mutation-b13",
+        "k12-mutation-b14"
+      ],
+      "reconciliation": "group-review-07.md"
     }
   },
   "reconsidered_extractions": [
@@ -871,7 +879,9 @@
         ]
       },
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
-      "work_kind": "mutation_adoption"
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-a6",
+      "registry_mutant": "mutation-4e006eda2ea14ad2275c44e7bde6872bddba9ddbd0557ef3a2e5f4229dc95edf"
     },
     "k12-mutation-a9": {
       "family": "family.k12.ablations",
@@ -888,7 +898,9 @@
         ]
       },
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
-      "work_kind": "mutation_adoption"
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-a9",
+      "registry_mutant": "mutation-d449e21c5d85ad71a4c1786ee83bf993c17b976ebab2dfb799aea1c98ca40a16"
     },
     "k12-mutation-a11": {
       "family": "family.k12.ablations",
@@ -904,7 +916,9 @@
         ]
       },
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
-      "work_kind": "mutation_adoption"
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-a11",
+      "registry_mutant": "mutation-ff504c560619828dd0184d6b0a1ac897a89d1566d506f3581f4f5aacc8d6e900"
     },
     "k12-mutation-a12": {
       "family": "family.k12.ablations",
@@ -921,7 +935,9 @@
         ]
       },
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
-      "work_kind": "mutation_adoption"
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-a12",
+      "registry_mutant": "mutation-0566166667cf5b392d257b744dbe8712c82afcbacab4c0665dd3f6ac089cb6f1"
     },
     "k12-mutation-a13": {
       "family": "family.k12.ablations",
@@ -938,7 +954,9 @@
         ]
       },
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
-      "work_kind": "mutation_adoption"
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-a13",
+      "registry_mutant": "mutation-fda7a1adb51a5a7f26d06659c99e3c16fc5dd6d4c3c25ef492fe0583d2ef4cab"
     },
     "k12-mutation-a14": {
       "family": "family.k12.ablations",
@@ -955,7 +973,9 @@
         ]
       },
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
-      "work_kind": "mutation_adoption"
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-a14",
+      "registry_mutant": "mutation-c37ea3957d429b4be6105b7bd88d0f92cbfaa0901235f7f1a153f31f6b826950"
     },
     "k12-mutation-b9": {
       "family": "family.k12.ablations",
@@ -972,7 +992,9 @@
         ]
       },
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
-      "work_kind": "mutation_adoption"
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-b9",
+      "registry_mutant": "mutation-e1bd0a43ecc3a560a26da47d66f5a5926b9af575cd476d234c0fcd3079ad340f"
     },
     "k12-mutation-b10": {
       "family": "family.k12.ablations",
@@ -989,7 +1011,9 @@
         ]
       },
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
-      "work_kind": "mutation_adoption"
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-b10",
+      "registry_mutant": "mutation-ad312f631fdfd771a4e2cf6adc15036266503489ba873310bd4419f0bfd144e2"
     },
     "k12-mutation-b11": {
       "family": "family.k12.ablations",
@@ -1006,7 +1030,9 @@
         ]
       },
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
-      "work_kind": "mutation_adoption"
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-b11",
+      "registry_mutant": "mutation-e9cf4cecc7e79b3c5c0d4f7f99fcf8eb347fdf9b74b54b3486fa48e88434c13e"
     },
     "k12-mutation-b15": {
       "family": "family.k12.ablations",
@@ -1023,7 +1049,9 @@
         ]
       },
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
-      "work_kind": "mutation_adoption"
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-b15",
+      "registry_mutant": "mutation-192fec61e839de9e3f6c8c53530dfdc8685bb28dc6fcd5e8756f96dcc11eaa6c"
     },
     "k12-mutation-b20": {
       "family": "family.k12.ablations",
@@ -1040,7 +1068,142 @@
         ]
       },
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
-      "work_kind": "mutation_adoption"
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-b20",
+      "registry_mutant": "mutation-b14f138c1d88776b85bf216744626d345991b2027ec861783c56b449cf8ca18c"
+    },
+    "k12-mutation-a2": {
+      "family": "family.k12.ablations",
+      "member": "A2 replay only while no exchange is open and the Execution is live (validation effectively first)",
+      "required_result": "Replay remains answerable with a new exchange open or after termination",
+      "gap": "The oracle exact-replay arm replays a continue before a new exchange; it does not exercise the conditional old replay gate.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+        "test_path": [
+          "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+          "a replay is answered even after the next exchange has started, and the new exchange is untouched"
+        ]
+      },
+      "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-a2",
+      "registry_mutant": "mutation-b2d44f2580e4694aef0282ab3de820356952ef0734f3df48ee129643edc59be7"
+    },
+    "k12-mutation-b3": {
+      "family": "family.k12.ablations",
+      "member": "B3 permitted-action inspection desynchronized (protocol hold lists declaration instead of takeover)",
+      "required_result": "Protocol hold lists takeover and submission, not code declaration",
+      "gap": "The oracle compares returned and retained hold lists without an independent exact permitted-action list.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/hold-permitted.test.ts",
+        "test_path": [
+          "K12-R1-HOLD-01 permitted actions predict the controls that work",
+          "b) protocol hold alone permits request_takeover and submit_outcome; redeliver refused, takeover clears"
+        ]
+      },
+      "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-b3",
+      "registry_mutant": "mutation-852484bba799ab0b4a75b8c3fbfd7fb9842a7b3f95c486cd173be8d79700e7f6"
+    },
+    "k12-mutation-b4": {
+      "family": "family.k12.ablations",
+      "member": "B4 delivery attribution lost (every delivery pinned to epoch 1)",
+      "required_result": "Delivery evidence retains the epoch of each actual delivery",
+      "gap": "No oracle redelivery schedule checks multiple deliveries across takeover and late reports.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/delivery-attribution.test.ts",
+        "test_path": [
+          "K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact attribution",
+          "Test A \"mixed redeliveries across takeover retain exact attribution\""
+        ]
+      },
+      "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-b4",
+      "registry_mutant": "mutation-1db700d2d8da717a0a98fb12506d011e2d6e22a528ff5c2c8d8da4e63c77aafd"
+    },
+    "k12-mutation-b7": {
+      "family": "family.k12.ablations",
+      "member": "B7 Outcome hold-ending history built but never appended (resolves yet explains nothing)",
+      "required_result": "An Outcome ending a hold appends its History in the same decision",
+      "gap": "The apply model copies reference History; outcomeAnswer does not independently require the hold-ending History append.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/transaction.test.ts",
+        "test_path": [
+          "K12-R1-DOC-01 an Outcome ending one hold commits its history atomically",
+          "Test E \"Outcome ending one hold commits history in the same decision\""
+        ]
+      },
+      "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-b7",
+      "registry_mutant": "mutation-9447fc5d73aeb5f4663bf1f9d58d28d876045b3ae128324429aa7c1c123107ce"
+    },
+    "k12-mutation-b12": {
+      "family": "family.k12.ablations",
+      "member": "B12 content validated before submission authority (grant check moved after content, K12-R9-EVID-01)",
+      "required_result": "No grant plus invalid content refuses authority before disclosing content",
+      "gap": "No sweep arm crosses missing authority with invalid content to distinguish the ordering.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/submission-authority.test.ts",
+        "test_path": [
+          "K12-R9 authority before content on a well-formed current claim (Case A)",
+          "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+        ]
+      },
+      "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-b12",
+      "registry_mutant": "mutation-86b76c972f56d502c688dc7025cd17c334db3f7fcba2ec87c1833a4c3bdcea8e"
+    },
+    "k12-mutation-b13": {
+      "family": "family.k12.ablations",
+      "member": "B13 capacity validated before submission authority (capacity check moved before grant check, K12-R9-ORDER-01 neighbor)",
+      "required_result": "No grant plus excess capacity refuses authority before disclosing capacity",
+      "gap": "No sweep arm crosses missing authority with an over-capacity proposal.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/submission-authority.test.ts",
+        "test_path": [
+          "K12-R9 authority before content on a well-formed current claim (Case A)",
+          "over-capacity proposals without authority are unauthorized, not capacity disclosures"
+        ]
+      },
+      "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-b13",
+      "registry_mutant": "mutation-647a91765d04c10a0f15784c9d4efd260920393256f42de5091ffc2166e74201"
+    },
+    "k12-mutation-b14": {
+      "family": "family.k12.ablations",
+      "member": "B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01)",
+      "required_result": "After authority, malformed claim diagnostics retain all independent content defects",
+      "gap": "The sweep does not cross a malformed numeric claim with independently invalid content and assert all diagnostic categories.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/submission-authority.test.ts",
+        "test_path": [
+          "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+          "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+        ]
+      },
+      "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
+      "work_kind": "mutation_adoption",
+      "registry_case": "k12.adopt-b14",
+      "registry_mutant": "mutation-a976f84d56bc0a2c6bd80ee5795e254f6edd1f293e1581fd8a3b24082cfa01ed"
     }
   },
   "resume_origin": "artifact-fb7a16748e389543ef6bf980",

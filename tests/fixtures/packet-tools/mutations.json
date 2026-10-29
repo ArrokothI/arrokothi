@@ -7064,6 +7064,897 @@
           "id": "mutation-7527eac76917ad66599913cbcf3b3df0648da236924de3ed93d8e2c80a35e772"
         }
       ]
+    },
+    {
+      "id": "k12.adopt-a6",
+      "source": "K1.2/ablations.mjs A6 Effects silently stripped instead of refusing the Outcome; TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-a6",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/outcome-acceptance.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/outcome-acceptance.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.a6",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#A6",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+              "path": [
+                "K1.2-C7 Effects, obligations and waits are refused whole",
+                "an Effect-bearing Outcome is refused at envelope validation and leaves no action record"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/outcome.ts",
+          "before": "  if (length !== null && length > 0) {",
+          "after": "  if (false) {",
+          "id": "mutation-4e006eda2ea14ad2275c44e7bde6872bddba9ddbd0557ef3a2e5f4229dc95edf"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "A6 Effects silently stripped instead of refusing the Outcome",
+        "required_result": "Effects are refused whole"
+      }
+    },
+    {
+      "id": "k12.adopt-a9",
+      "source": "K1.2/ablations.mjs A9 redelivery ignores recovery holds; TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-a9",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/recovery.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/recovery.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.a9",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#A9",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/recovery.test.ts",
+              "path": [
+                "K1.2-C9 unavailable pinned code holds the exchange, visibly",
+                "while held, redelivery and takeover are refused; nothing is resent"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    const hold = intent.codeHold ?? intent.protocolFailureHold;",
+          "after": "    const hold = null as RecoveryHoldView | null;",
+          "id": "mutation-d449e21c5d85ad71a4c1786ee83bf993c17b976ebab2dfb799aea1c98ca40a16"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "A9 redelivery ignores recovery holds",
+        "required_result": "Recovery holds block redelivery"
+      }
+    },
+    {
+      "id": "k12.adopt-a11",
+      "source": "K1.2/ablations.mjs A11 unknown envelope fields ignored; TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-a11",
+      "files": [
+        "packages/kernel/tests/activation-identity.test.ts",
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/activation-identity.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.a11",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#A11",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/activation-identity.test.ts",
+              "path": [
+                "O3 unknown envelope field long: bounded diagnostic, whole refusal"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/outcome.ts",
+          "before": "  let reported = 0;",
+          "after": "  let reported = 0;\n  if (reported === 0) return;",
+          "id": "mutation-ff504c560619828dd0184d6b0a1ac897a89d1566d506f3581f4f5aacc8d6e900"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "A11 unknown envelope fields ignored",
+        "required_result": "Unknown envelope fields are rejected"
+      }
+    },
+    {
+      "id": "k12.adopt-a12",
+      "source": "K1.2/ablations.mjs A12 Emission identity from a coordinator-wide counter; TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-a12",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/outcome-acceptance.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/outcome-acceptance.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.a12",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#A12",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+              "path": [
+                "K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step",
+                "Emission identity is a pure function of accepted identities"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "const DEFAULT_MAILBOX_CAPACITY = 1_024;",
+              "after": "let globalEmissionCounter = 0;\nconst DEFAULT_MAILBOX_CAPACITY = 1_024;"
+            },
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "      const emissionId = `emission-${packIdentity([record.executionId, activationId, emission.emissionKey])}`;",
+              "after": "      globalEmissionCounter += 1;\n      const emissionId = `emission-${globalEmissionCounter}`;"
+            }
+          ],
+          "id": "mutation-0566166667cf5b392d257b744dbe8712c82afcbacab4c0665dd3f6ac089cb6f1"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "A12 Emission identity from a coordinator-wide counter",
+        "required_result": "Emission identity does not use a shared counter"
+      }
+    },
+    {
+      "id": "k12.adopt-a13",
+      "source": "K1.2/ablations.mjs A13 progress observed twice (validation and retention read separately); TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-a13",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/outcome-hostile.test.ts",
+        "packages/sdk/tests/capture-instruments.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/outcome-hostile.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.a13",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#A13",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/outcome-hostile.test.ts",
+              "path": [
+                "K1.2-C13 envelope fields are own data, observed once",
+                "each field is read exactly once, and the accepted decision is the one reading"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/outcome.ts",
+          "before": "  const progress = progressField.ok ? acceptRoot(progressField.observed, \"progress\", issues) : null;",
+          "after": "  observeField(envelope, \"progress\", \"progress\", issues);\n  const progress = progressField.ok ? acceptRoot(progressField.observed, \"progress\", issues) : null;",
+          "id": "mutation-fda7a1adb51a5a7f26d06659c99e3c16fc5dd6d4c3c25ef492fe0583d2ef4cab"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "A13 progress observed twice (validation and retention read separately)",
+        "required_result": "Progress is observed once"
+      }
+    },
+    {
+      "id": "k12.adopt-a14",
+      "source": "K1.2/ablations.mjs A14 Emission capacity checked only after every element is read; TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-a14",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/outcome-acceptance.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/outcome-acceptance.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.a14",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#A14",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+              "path": [
+                "K1.2-C3 a new proposal must answer the open exchange, or it is refused whole",
+                "an over-limit Emission list is refused without reading any element"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/outcome.ts",
+              "before": "  if (length > limit) return { emissions, overCapacity: { count: length, limit } };",
+              "after": ""
+            },
+            {
+              "path": "packages/kernel/src/outcome.ts",
+              "before": "    appendOwn(emissions, PrimordialObjectFreeze({ emissionKey, value }));\n  }\n  return { emissions, overCapacity: null };",
+              "after": "    appendOwn(emissions, PrimordialObjectFreeze({ emissionKey, value }));\n  }\n  if (length > limit) return { emissions, overCapacity: { count: length, limit } };\n  return { emissions, overCapacity: null };"
+            }
+          ],
+          "id": "mutation-c37ea3957d429b4be6105b7bd88d0f92cbfaa0901235f7f1a153f31f6b826950"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "A14 Emission capacity checked only after every element is read",
+        "required_result": "Emission capacity stops before element observation"
+      }
+    },
+    {
+      "id": "k12.adopt-b9",
+      "source": "K1.2/ablations.mjs B9 hold-ending History claims control power for a Runtime submission; TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-b9",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/history-attribution.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/history-attribution.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.b9",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#B9",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/history-attribution.test.ts",
+              "path": [
+                "K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully",
+                "ended_by_outcome records attempt_submission, never a control claim"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "          cause: \"pinned_code_unavailable\" as const,\n          transition: \"ended_by_outcome\" as const,\n          authority: \"attempt_submission\" as const,",
+          "after": "          cause: \"pinned_code_unavailable\" as const,\n          transition: \"ended_by_outcome\" as const,\n          authority: \"control\" as const,",
+          "id": "mutation-e1bd0a43ecc3a560a26da47d66f5a5926b9af575cd476d234c0fcd3079ad340f"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "B9 hold-ending History claims control power for a Runtime submission",
+        "required_result": "Hold-ending history names attempt submission authority"
+      }
+    },
+    {
+      "id": "k12.adopt-b10",
+      "source": "K1.2/ablations.mjs B10 ordinary redelivery rotates the Runtime attempt grant; TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-b10",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/submission-lifetime.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/submission-lifetime.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.b10",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#B10",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/submission-lifetime.test.ts",
+              "path": [
+                "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+                "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/state.ts",
+          "before": "    appendOwn(exchange.deliveries, attempt);",
+          "after": "    if (plan.attempt > 1 && (readAt(exchange.deliveries, exchange.deliveries.length - 1) as DeliveryAttempt).writerEpoch === plan.writerEpoch) {\n      exchange.submission = PrimordialObjectFreeze({ ...exchange.submission });\n    }\n    appendOwn(exchange.deliveries, attempt);",
+          "id": "mutation-ad312f631fdfd771a4e2cf6adc15036266503489ba873310bd4419f0bfd144e2"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "B10 ordinary redelivery rotates the Runtime attempt grant",
+        "required_result": "The initial attempt grant survives redelivery"
+      }
+    },
+    {
+      "id": "k12.adopt-b11",
+      "source": "K1.2/ablations.mjs B11 redelivery rotates only a takeover attempt grant; TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-b11",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/submission-lifetime.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/submission-lifetime.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.b11",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#B11",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/submission-lifetime.test.ts",
+              "path": [
+                "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+                "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/state.ts",
+          "before": "    appendOwn(exchange.deliveries, attempt);",
+          "after": "    if (plan.writerEpoch > 1 && plan.attempt > 1 && (readAt(exchange.deliveries, exchange.deliveries.length - 1) as DeliveryAttempt).writerEpoch === plan.writerEpoch) {\n      exchange.submission = PrimordialObjectFreeze({ ...exchange.submission });\n    }\n    appendOwn(exchange.deliveries, attempt);",
+          "id": "mutation-e9cf4cecc7e79b3c5c0d4f7f99fcf8eb347fdf9b74b54b3486fa48e88434c13e"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "B11 redelivery rotates only a takeover attempt grant",
+        "required_result": "A takeover attempt grant survives redelivery"
+      }
+    },
+    {
+      "id": "k12.adopt-b15",
+      "source": "K1.2/ablations.mjs B15 skip all currency when either numeric claim member is malformed (K12-R11-ORDER-01 defective family); TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-b15",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/outcome-partial-claim.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/outcome-partial-claim.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.b15",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#B15",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+              "path": [
+                "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+                "stale epoch 1 + base missing + current grant + valid content -> stale_exchange"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/outcome.ts",
+          "before": "    return PrimordialObjectFreeze({ claim, epochForCurrency: writerEpoch, baseForCurrency: baseProgressRevision, issues, overCapacity: captured.overCapacity, outcome: null });",
+          "after": "    return PrimordialObjectFreeze({ claim, epochForCurrency: null, baseForCurrency: null, issues, overCapacity: captured.overCapacity, outcome: null });",
+          "id": "mutation-192fec61e839de9e3f6c8c53530dfdc8685bb28dc6fcd5e8756f96dcc11eaa6c"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "B15 skip all currency when either numeric claim member is malformed (K12-R11-ORDER-01 defective family)",
+        "required_result": "A usable stale coordinate still fences a partial claim"
+      }
+    },
+    {
+      "id": "k12.adopt-b20",
+      "source": "K1.2/ablations.mjs B20 malformed Activation identity rendered in a pre-content refusal reason (decision-02 disclosure); TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-b20",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/outcome-partial-claim.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/outcome-partial-claim.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.b20",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#B20",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+              "path": [
+                "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+                "current coordinates + identity missing + absent grant + valid content -> unauthorized_submission"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "          `The proposal's Activation identity was not usable; the proposal presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,",
+          "after": "          `Outcome for Activation ${activationId} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,",
+          "id": "mutation-b14f138c1d88776b85bf216744626d345991b2027ec861783c56b449cf8ca18c"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "B20 malformed Activation identity rendered in a pre-content refusal reason (decision-02 disclosure)",
+        "required_result": "Pre-authority refusal does not render unusable Activation identity"
+      }
+    },
+    {
+      "id": "k12.adopt-a2",
+      "source": "K1.2/ablations.mjs A2 replay only while no exchange is open and the Execution is live (validation effectively first); TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-a2",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/outcome-acceptance.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/outcome-acceptance.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.a2",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#A2",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+              "path": [
+                "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+                "a replay is answered even after the next exchange has started, and the new exchange is untouched"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "      const already = record.acceptedOutcome(activationId);",
+          "after": "      const already = record.activation === null && !isTerminal(record.state) ? record.acceptedOutcome(activationId) : null;",
+          "id": "mutation-b2d44f2580e4694aef0282ab3de820356952ef0734f3df48ee129643edc59be7"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "A2 replay only while no exchange is open and the Execution is live (validation effectively first)",
+        "required_result": "Replay remains answerable with a new exchange open or after termination"
+      }
+    },
+    {
+      "id": "k12.adopt-b3",
+      "source": "K1.2/ablations.mjs B3 permitted-action inspection desynchronized (protocol hold lists declaration instead of takeover); TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-b3",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/hold-permitted.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/hold-permitted.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.b3",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#B3",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/hold-permitted.test.ts",
+              "path": [
+                "K12-R1-HOLD-01 permitted actions predict the controls that work",
+                "b) protocol hold alone permits request_takeover and submit_outcome; redeliver refused, takeover clears"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/plan.ts",
+          "before": "  return PrimordialObjectFreeze([REQUEST_TAKEOVER, SUBMIT_OUTCOME]);",
+          "after": "  return PrimordialObjectFreeze([DECLARE_CODE_AVAILABILITY, SUBMIT_OUTCOME]);",
+          "id": "mutation-852484bba799ab0b4a75b8c3fbfd7fb9842a7b3f95c486cd173be8d79700e7f6"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "B3 permitted-action inspection desynchronized (protocol hold lists declaration instead of takeover)",
+        "required_result": "Protocol hold lists takeover and submission, not code declaration"
+      }
+    },
+    {
+      "id": "k12.adopt-b4",
+      "source": "K1.2/ablations.mjs B4 delivery attribution lost (every delivery pinned to epoch 1); TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-b4",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/delivery-attribution.test.ts",
+        "packages/kernel/tests/harness.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/delivery-attribution.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.b4",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#B4",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/delivery-attribution.test.ts",
+              "path": [
+                "K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact attribution",
+                "Test A \"mixed redeliveries across takeover retain exact attribution\""
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/state.ts",
+          "before": "      activationId: plan.activationId,\n      writerEpoch: plan.writerEpoch,\n    };",
+          "after": "      activationId: plan.activationId,\n      writerEpoch: 1,\n    };",
+          "id": "mutation-1db700d2d8da717a0a98fb12506d011e2d6e22a528ff5c2c8d8da4e63c77aafd"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "B4 delivery attribution lost (every delivery pinned to epoch 1)",
+        "required_result": "Delivery evidence retains the epoch of each actual delivery"
+      }
+    },
+    {
+      "id": "k12.adopt-b7",
+      "source": "K1.2/ablations.mjs B7 Outcome hold-ending history built but never appended (resolves yet explains nothing); TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-b7",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/transaction.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/transaction.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.b7",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#B7",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/transaction.test.ts",
+              "path": [
+                "K12-R1-DOC-01 an Outcome ending one hold commits its history atomically",
+                "Test E \"Outcome ending one hold commits history in the same decision\""
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/state.ts",
+          "before": "    appendAllOwn(record.recoveryHistory, historyToAppend);",
+          "after": "    void historyToAppend;",
+          "id": "mutation-9447fc5d73aeb5f4663bf1f9d58d28d876045b3ae128324429aa7c1c123107ce"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "B7 Outcome hold-ending history built but never appended (resolves yet explains nothing)",
+        "required_result": "An Outcome ending a hold appends its History in the same decision"
+      }
+    },
+    {
+      "id": "k12.adopt-b12",
+      "source": "K1.2/ablations.mjs B12 content validated before submission authority (grant check moved after content, K12-R9-EVID-01); TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-b12",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/submission-authority.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/submission-authority.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.b12",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#B12",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/submission-authority.test.ts",
+              "path": [
+                "K12-R9 authority before content on a well-formed current claim (Case A)",
+                "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "    if (submission !== intent.submission) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"unauthorized_submission\",\n            `Outcome for Activation ${diagnosticIdentity(activationId)} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `The proposal's Activation identity was not usable; the proposal presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n",
+              "after": ""
+            },
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "    return ok(this.#accept(record, intent, capture.outcome, caller, reading, basis));",
+              "after": "    if (submission !== intent.submission) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"unauthorized_submission\",\n            `Outcome for Activation ${diagnosticIdentity(activationId)} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `The proposal's Activation identity was not usable; the proposal presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n    return ok(this.#accept(record, intent, capture.outcome, caller, reading, basis));"
+            }
+          ],
+          "id": "mutation-86b76c972f56d502c688dc7025cd17c334db3f7fcba2ec87c1833a4c3bdcea8e"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "B12 content validated before submission authority (grant check moved after content, K12-R9-EVID-01)",
+        "required_result": "No grant plus invalid content refuses authority before disclosing content"
+      }
+    },
+    {
+      "id": "k12.adopt-b13",
+      "source": "K1.2/ablations.mjs B13 capacity validated before submission authority (capacity check moved before grant check, K12-R9-ORDER-01 neighbor); TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-b13",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/submission-authority.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/submission-authority.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.b13",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#B13",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/submission-authority.test.ts",
+              "path": [
+                "K12-R9 authority before content on a well-formed current claim (Case A)",
+                "over-capacity proposals without authority are unauthorized, not capacity disclosures"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "    if (submission !== intent.submission) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"unauthorized_submission\",\n            `Outcome for Activation ${diagnosticIdentity(activationId)} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `The proposal's Activation identity was not usable; the proposal presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n",
+              "after": ""
+            },
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "    if (!identityUsable || capture.outcome === null) {",
+              "after": "    if (submission !== intent.submission) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"unauthorized_submission\",\n            `Outcome for Activation ${diagnosticIdentity(activationId)} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"unauthorized_submission\",\n          `The proposal's Activation identity was not usable; the proposal presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n          record,\n        ),\n      );\n    }\n    if (!identityUsable || capture.outcome === null) {"
+            }
+          ],
+          "id": "mutation-647a91765d04c10a0f15784c9d4efd260920393256f42de5091ffc2166e74201"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "B13 capacity validated before submission authority (capacity check moved before grant check, K12-R9-ORDER-01 neighbor)",
+        "required_result": "No grant plus excess capacity refuses authority before disclosing capacity"
+      }
+    },
+    {
+      "id": "k12.adopt-b14",
+      "source": "K1.2/ablations.mjs B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01); TOOLS-02 group-review-07.md",
+      "assertion": "k12-mutation-b14",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/submission-authority.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/submission-authority.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 1048576,
+      "mutants": [
+        {
+          "name": "k12.b14",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.ablations#B14",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/submission-authority.test.ts",
+              "path": [
+                "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+                "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "        this.#refusal(\"malformed_envelope\", `Outcome for Activation ${diagnosticIdentity(activationId)} refused whole: ${explainOutcomeIssues(combined)}`, record),",
+              "after": "        this.#refusal(\"malformed_envelope\", `Outcome for Activation ${diagnosticIdentity(activationId)} refused whole: ${explainOutcomeIssues(combined.filter((issue) => issue.path === \"writerEpoch\" || issue.path === \"baseProgressRevision\"))}`, record),"
+            },
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "          `The proposal's Activation identity was not usable; the Outcome is refused whole: ${explainOutcomeIssues(combined)}`,",
+              "after": "          `The proposal's Activation identity was not usable; the Outcome is refused whole: ${explainOutcomeIssues(combined.filter((issue) => issue.path === \"writerEpoch\" || issue.path === \"baseProgressRevision\"))}`,"
+            }
+          ],
+          "id": "mutation-a976f84d56bc0a2c6bd80ee5795e254f6edd1f293e1581fd8a3b24082cfa01ed"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01)",
+        "required_result": "After authority, malformed claim diagnostics retain all independent content defects"
+      }
     }
   ],
   "source_trees": [

@@ -2,6 +2,21 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 K1.2 family reconciliation — origin 431:** three test groups and
+  **eighteen mutation adoptions**. [Group review 07](group-review-07.md) reads each
+  absent anchor individually: seven moved live obligations need adoptions; six have
+  existing oracle/registry coverage. The prior eleven stay counted once each.
+  - Added eighteen target-set cases to the existing mutations.json registry, including
+    current source anchors, exact existing leaf paths and static test import closures.
+    B10/B11 move their grant-rotation edit into the state-owner delivery arm; assigning
+    the old reader getter would only cause a TypeError and is not the intended mutant.
+  - Fresh-clone controls, reach and qualified kills are next. No kill or family closure
+    is claimed yet. Then resume at K1.2/blocker-01.md in source order; checkpoint 731
+    still requires both projections and measured added registry runtime.
+  - No product/historical evidence or derived adoption data changed. Local runtime is
+    Node v26.10.0 at the handover path. GitHub connectivity checked after interruption;
+    origin/codex/tools-02 remains 8acfc06e. No final C/H, CI dispatch or review-ready claim.
+
 - **2026-10-29 owner choice 08 — resumed at origin 431:** [Owner choice 08](owner-choice-08.md)
   answers projection 06 at `8acfc06e`. The current fourteen groups are **three test
   groups and eleven mutation adoptions**. Projected caps are 12 and 60 respectively;
