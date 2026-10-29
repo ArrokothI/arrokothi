@@ -493,7 +493,51 @@
     "mention-f18d4aab0921926d66963317",
     "mention-9c250c7a7c94afee5d61166f",
     "mention-3a7b9f6b9274306307638bea",
-    "mention-24879e4c83d820cc41ab9e8f"
+    "mention-24879e4c83d820cc41ab9e8f",
+    "mention-eec4a6daf8cbd15a87f16b76",
+    "mention-3dc5efd11956ae0058157b25",
+    "mention-7a90af3b2828bc083168db36",
+    "mention-990dcd875fa950cad88f7c04",
+    "mention-61b0fa159a65df6ec02bb3f9",
+    "mention-f6f49f6c4ed88c4cc10c29c8",
+    "mention-cc5cc5c9fb51625dac17d7bf",
+    "mention-4990328d7e92c4062e04e64e",
+    "mention-76f9a71345b867f0634a2b9e",
+    "mention-f9c2b07a190c37b2090393ae",
+    "mention-e8f04fb206c34802140a4a0b",
+    "mention-ee687d0fc42840697c53a998",
+    "mention-57775374f1b8e952a7d11964",
+    "mention-aa0758fdaee0309bc7f42d11",
+    "mention-54715f68e196734121dc6bc2",
+    "mention-8222d6544c49a8ac311f3607",
+    "mention-ad0a43aef6b2ff15f1657ae0",
+    "mention-9cf127b20fa3c18236ad6461",
+    "mention-cfe681a054cedc24c7d8c5ef",
+    "mention-211abee55f3f2d40771f22b6",
+    "mention-2a506d7db1576d5017051f0c",
+    "mention-3f3c9f7909b56ad13e4a4dce",
+    "mention-253a0314d4c96e5f10808fed",
+    "mention-60d9ca15b247fe5413b9e0bb",
+    "mention-407e0e7767983a4213fd9b1f",
+    "mention-5852e7ae24a160b50ef5ddda",
+    "mention-afe63a7eea8a7821ead56d9b",
+    "mention-f5e29586400a3ecc5ddecaa8",
+    "mention-c040f41dcfe8aba46030e5cb",
+    "mention-0fb411e72533ddbbe2abfdb0",
+    "mention-85e1498dec9c2bec38431b8a",
+    "mention-9e9df43af623a79024777d71",
+    "mention-b54a88452a64344bce2f96ee",
+    "mention-5861807773fb4e44582f58aa",
+    "mention-42fe94116e073eace9acf0fb",
+    "mention-31d2dcca5cafd10fa627ac58",
+    "mention-f7acd2dc46145a0e3c8049bd",
+    "mention-fec20f19f88cf02e06f5c8f2",
+    "mention-581d0b4f0b856a9e36a2c5fd",
+    "mention-3d55b4d1b7e69ed5f52e626d",
+    "mention-6959c62340b0a60694eaeb7c",
+    "mention-360d60520f44cb84fcd2a597",
+    "mention-147531f9fcb30028ef03352a",
+    "mention-3a4c26448820f77c0c45f3c0"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -576,6 +620,63 @@
         "k12-mutation-b14"
       ],
       "reconciliation": "group-review-07.md"
+    },
+    "mention-3e362523d04b9425be98c0e9": {
+      "disposition": "extracted",
+      "source": "K1.2/implementation-11.md:113",
+      "groups": [
+        "k12-review09-r5",
+        "k12-review09-r7",
+        "k12-next-exchange-grant"
+      ],
+      "required_result": "The whole reviewer family R1\u2013R12 was read. R5 and R7 need current registry adoptions; R12 needs a saved old-grant/new-exchange test. R1 joins B12; R2/R3/R4/R6/R8/R9/R10/R11 have current complete-decision distinctions. Historical 12/12 counts do not close these routes.",
+      "reading": "group-review-08.md",
+      "planned_test": "Build the named new tests or registry adoptions after their live-at-C recheck; keep all named variants and provenance. No product edit; stop if a new test exposes a product defect."
+    },
+    "mention-b347456c26d96d4d9a79cf44": {
+      "disposition": "extracted",
+      "source": "K1.2/implementation-11.md:145",
+      "groups": [
+        "k12-cross-execution-grant",
+        "k12-next-exchange-grant"
+      ],
+      "required_result": "The named whole probe-order artifact contains P3 cross-Execution and P4 next-exchange grant reuse negatives, absent from maintained schedules. P1/P2 ordering, P5 replay/conflict, P6 terminal/B-5, P7 grant lifetime/late reports and probe-race have current maintained coverage; the two additional input classes remain extracted.",
+      "reading": "group-review-08.md",
+      "planned_test": "Build the named new tests or registry adoptions after their live-at-C recheck; keep all named variants and provenance. No product edit; stop if a new test exposes a product defect."
+    },
+    "mention-163eeb9a978d22d6c5f980fe": {
+      "disposition": "extracted",
+      "source": "K1.2/implementation-12.md:65",
+      "groups": [
+        "k12-cross-execution-grant",
+        "k12-next-exchange-grant"
+      ],
+      "required_result": "The probe-order P3/P4 negatives remain distinct uncovered input classes despite the report of a passing probe; other P1/P2/P5\u2013P7 and race results have current behavior leaves. Printed probe observations are not maintained assertions.",
+      "reading": "group-review-08.md",
+      "planned_test": "Build the named new tests or registry adoptions after their live-at-C recheck; keep all named variants and provenance. No product edit; stop if a new test exposes a product defect."
+    },
+    "mention-f8810c9235ffce4a7ec895a4": {
+      "disposition": "extracted",
+      "source": "K1.2/implementation-13.md:108",
+      "groups": [
+        "k12-review09-r5",
+        "k12-review09-r7",
+        "k12-next-exchange-grant"
+      ],
+      "required_result": "This prior-family/probe recap retains the reviewer-family R5/R7 adoption gaps and R12 next-exchange grant gap. The absent R2/R6 spellings do not retire their live decisions; current currency/authority oracle scenarios cover those. Prior count and status statements are not closure evidence.",
+      "reading": "group-review-08.md",
+      "planned_test": "Build the named new tests or registry adoptions after their live-at-C recheck; keep all named variants and provenance. No product edit; stop if a new test exposes a product defect."
+    },
+    "mention-68474d44689179ef704f6bdd": {
+      "disposition": "extracted",
+      "source": "K1.2/implementation-13.md:130",
+      "groups": [
+        "k12-cross-execution-grant",
+        "k12-next-exchange-grant"
+      ],
+      "required_result": "The named P1\u2013P7/race replay includes the same P3/P4 grant-transfer negatives as implementation-11:145 and implementation-12:65. Their required outcomes are grouped without treating printed observations as maintained assertions.",
+      "reading": "group-review-08.md",
+      "planned_test": "Build the named new tests or registry adoptions after their live-at-C recheck; keep all named variants and provenance. No product edit; stop if a new test exposes a product defect."
     }
   },
   "reconsidered_extractions": [
@@ -1362,9 +1463,55 @@
         "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
         "result": "qualified_kill"
       }
+    },
+    "k12-next-exchange-grant": {
+      "family": "family.k12.review-09",
+      "work_kind": "new_test",
+      "required_result": "A completed continue followed by a new dispatch mints a distinct grant; the old exchange grant refuses a current-coordinate proposal, with only a refusal appended, and the new grant succeeds.",
+      "gap": "submission-lifetime covers redelivery/takeover within an exchange. exact-coordinates starts another exchange but obtains its grant through the adapting submissionFor helper, without challenging the old grant. No next-exchange/old-grant negative schedule was found.",
+      "reading": "group-review-08.md"
+    },
+    "k12-cross-execution-grant": {
+      "family": "family.k12.review-09",
+      "work_kind": "new_test",
+      "required_result": "A legitimate grant minted for Execution A cannot authorize a current-coordinate Outcome for B on the same coordinator; B stays answerable by its own grant.",
+      "gap": "Forged-look-alike tests reject an unminted object; they do not distinguish a registry-of-any-minted-grant bug. No maintained cross-Execution grant presentation was found.",
+      "reading": "group-review-08.md"
+    },
+    "k12-review09-r5": {
+      "family": "family.k12.review-09",
+      "work_kind": "mutation_adoption",
+      "required_result": "Takeover replaces the old grant, and the old grant cannot authorize current coordinates.",
+      "gap": "The sweep observes the old setup grant with old coordinates, whose stale fence can mask retained grant identity. Its takeoverAnswer does not compare grant references.",
+      "reading": "group-review-08.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/submission-lifetime.test.ts",
+        "test_path": [
+          "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+          "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+        ]
+      }
+    },
+    "k12-review09-r7": {
+      "family": "family.k12.review-09",
+      "work_kind": "mutation_adoption",
+      "required_result": "Changing only the writer epoch under an accepted Activation ID conflicts instead of replaying.",
+      "gap": "The sweep conflicting-replay arm changes progress, not only epoch. No current registry mutates the writer-epoch component of Outcome identity.",
+      "reading": "group-review-08.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+        "test_path": [
+          "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+          "changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
+        ]
+      }
     }
   },
-  "resume_origin": "mention-eec4a6daf8cbd15a87f16b76",
+  "resume_origin": "mention-298932300f2197d8716678bc",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -1372,6 +1519,6 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2/implementation-09.md",
-  "resume_line": 52
+  "resume_path": "docs/development/work/K1.2/review-01.md",
+  "resume_line": 32
 }

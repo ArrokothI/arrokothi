@@ -2,6 +2,21 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 K1.2 implementation records complete — origin 548:** 535 retired;
+  thirteen extraction origins; **five test groups and twenty mutation adoptions**.
+  [Group review 08](group-review-08.md) records two new test groups (cross-Execution
+  grant use; old-exchange grant use after a new dispatch) and two planned adoptions
+  (takeover grant replacement; writer epoch in accepted-Outcome identity).
+  - Resume at `K1.2/review-01.md:32`, `mention-298932300f2197d8716678bc`.
+    Read the reviewer-09 runner and order/race probes as linked context, plus the
+    reviewer-11 partial-claim probe. Their later artifact origins are not yet counted.
+  - Eighteen previously validated members now have semantic mutation-route bindings;
+    the other family readings and the two new adoptions still need final closure work.
+    No new behavior test from this batch has been built or run. The observed counts
+    remain below 12 tests / 60 adoptions; projection 07 is due at origin 731.
+  - Derived tables remain unchanged; no product or historical evidence edited.
+    No final C/H, mappings_complete or CI dispatch. IN_PROGRESS only.
+
 - **2026-10-29 K1.2 through implementation 08 — origin 499:** 491 retired;
   eight extraction origins; **three test groups and eighteen mutation adoptions**.
   Resume at `K1.2/implementation-09.md:52`, `mention-eec4a6daf8cbd15a87f16b76`.

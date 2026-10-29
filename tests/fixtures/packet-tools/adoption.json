@@ -54715,43 +54715,308 @@
     },
     {
       "id": "mention-eec4a6daf8cbd15a87f16b76",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-3dc5efd11956ae0058157b25",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-7a90af3b2828bc083168db36",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. This command-result row names the historical fixed checks-07 gate. Its prior-H6 preservation/link scope is replaced by accepted TOOLS-01 design 02 spec verification; the original evidence stays unchanged.",
+        "decision": "docs/development/work/TOOLS-01/design-02.md"
+      }
     },
     {
       "id": "mention-990dcd875fa950cad88f7c04",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-f6f49f6c4ed88c4cc10c29c8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. These readings name inverse authority/content and capacity/authority ordering and their missing cross-input oracles. Current submission-authority asserts invalid content and over-capacity without authority, with no disclosed diagnostics and unchanged accepted state. Existing k12.adopt-b12/b13 now distinguish both inversions.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "over-capacity proposals without authority are unauthorized, not capacity disclosures"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b12"
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b13"
+          }
+        ]
+      }
     },
     {
       "id": "mention-cc5cc5c9fb51625dac17d7bf",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. These readings name inverse authority/content and capacity/authority ordering and their missing cross-input oracles. Current submission-authority asserts invalid content and over-capacity without authority, with no disclosed diagnostics and unchanged accepted state. Existing k12.adopt-b12/b13 now distinguish both inversions.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "over-capacity proposals without authority are unauthorized, not capacity disclosures"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b12"
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b13"
+          }
+        ]
+      }
     },
     {
       "id": "mention-e8f04fb206c34802140a4a0b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Eager once-per-field capture and reentrant getter ordering remain in the SDK binding path and are asserted by single-observation and reentrant takeover/Outcome leaves; moving capture did not retire the obligation.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 envelope fields are own data, observed once",
+              "each field is read exactly once, and the accepted decision is the one reading"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 envelope fields are own data, observed once",
+              "a missing, non-text or throwing activationId still reads every other field once (decision-02)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 a getter that reenters the Kernel is ordered before this decision",
+              "a takeover made from inside observation fences the Outcome being observed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 a getter that reenters the Kernel is ordered before this decision",
+              "an identical Outcome accepted from inside observation makes the outer one a replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 a getter that reenters the Kernel is ordered before this decision",
+              "a different Outcome accepted from inside observation makes the outer one a conflict"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ee687d0fc42840697c53a998",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The forged-grant exact replay leaf asserts retained receipt identity with no fresh authority requirement; next-exchange and terminal replay leaves preserve the outer ordering.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing",
+              "exact replay answers from retained evidence even with a forged grant"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "a replay is answered even after the next exchange has started, and the new exchange is untouched"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C5 a terminal lifetime never reopens",
+              "an exact replay of the terminal Outcome still returns its receipt: the lookup precedes the terminal check"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-57775374f1b8e952a7d11964",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. This oracle description names classification, returned/retained diagnostics, whole-state equality and continued answerability for the preceding authority/content cross-product. The actual current Case B/C/capacity leaves assert these fields, including the later corrected genuine surrogate fixture.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "the same invalid content with the current grant reaches content validation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "over-capacity proposals without authority are unauthorized, not capacity disclosures"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "base -1 with effects and no grant is unauthorized, not an effect disclosure (P2c)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-61b0fa159a65df6ec02bb3f9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-3e362523d04b9425be98c0e9",
@@ -54759,11 +55024,111 @@
     },
     {
       "id": "mention-4990328d7e92c4062e04e64e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. These readings name inverse authority/content and capacity/authority ordering and their missing cross-input oracles. Current submission-authority asserts invalid content and over-capacity without authority, with no disclosed diagnostics and unchanged accepted state. Existing k12.adopt-b12/b13 now distinguish both inversions.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "over-capacity proposals without authority are unauthorized, not capacity disclosures"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b12"
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b13"
+          }
+        ]
+      }
     },
     {
       "id": "mention-76f9a71345b867f0634a2b9e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. These readings name inverse authority/content and capacity/authority ordering and their missing cross-input oracles. Current submission-authority asserts invalid content and over-capacity without authority, with no disclosed diagnostics and unchanged accepted state. Existing k12.adopt-b12/b13 now distinguish both inversions.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "over-capacity proposals without authority are unauthorized, not capacity disclosures"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b12"
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b13"
+          }
+        ]
+      }
     },
     {
       "id": "mention-b347456c26d96d4d9a79cf44",
@@ -54771,35 +55136,257 @@
     },
     {
       "id": "mention-f9c2b07a190c37b2090393ae",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. These readings name inverse authority/content and capacity/authority ordering and their missing cross-input oracles. Current submission-authority asserts invalid content and over-capacity without authority, with no disclosed diagnostics and unchanged accepted state. Existing k12.adopt-b12/b13 now distinguish both inversions.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "over-capacity proposals without authority are unauthorized, not capacity disclosures"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b12"
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b13"
+          }
+        ]
+      }
     },
     {
       "id": "mention-aa0758fdaee0309bc7f42d11",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-54715f68e196734121dc6bc2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The corrected genuine lone-surrogate fixture and paired malformed-claim/no-grant versus current-grant schedule require all four diagnostics only after authority, retained equality and whole refusal state. Current Case B/C asserts these specific categories and k12.adopt-b14 qualifies the claim-only-filter kill. The old U+0001 observation is explicitly corrected, not treated as surrogate evidence.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b14"
+          }
+        ]
+      }
     },
     {
       "id": "mention-8222d6544c49a8ac311f3607",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The corrected genuine lone-surrogate fixture and paired malformed-claim/no-grant versus current-grant schedule require all four diagnostics only after authority, retained equality and whole refusal state. Current Case B/C asserts these specific categories and k12.adopt-b14 qualifies the claim-only-filter kill. The old U+0001 observation is explicitly corrected, not treated as surrogate evidence.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b14"
+          }
+        ]
+      }
     },
     {
       "id": "mention-ad0a43aef6b2ff15f1657ae0",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The corrected genuine lone-surrogate fixture and paired malformed-claim/no-grant versus current-grant schedule require all four diagnostics only after authority, retained equality and whole refusal state. Current Case B/C asserts these specific categories and k12.adopt-b14 qualifies the claim-only-filter kill. The old U+0001 observation is explicitly corrected, not treated as surrogate evidence.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b14"
+          }
+        ]
+      }
     },
     {
       "id": "mention-9cf127b20fa3c18236ad6461",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The corrected genuine lone-surrogate fixture and paired malformed-claim/no-grant versus current-grant schedule require all four diagnostics only after authority, retained equality and whole refusal state. Current Case B/C asserts these specific categories and k12.adopt-b14 qualifies the claim-only-filter kill. The old U+0001 observation is explicitly corrected, not treated as surrogate evidence.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b14"
+          }
+        ]
+      }
     },
     {
       "id": "mention-cfe681a054cedc24c7d8c5ef",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The corrected genuine lone-surrogate fixture and paired malformed-claim/no-grant versus current-grant schedule require all four diagnostics only after authority, retained equality and whole refusal state. Current Case B/C asserts these specific categories and k12.adopt-b14 qualifies the claim-only-filter kill. The old U+0001 observation is explicitly corrected, not treated as surrogate evidence.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b14"
+          }
+        ]
+      }
     },
     {
       "id": "mention-211abee55f3f2d40771f22b6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The corrected genuine lone-surrogate fixture and paired malformed-claim/no-grant versus current-grant schedule require all four diagnostics only after authority, retained equality and whole refusal state. Current Case B/C asserts these specific categories and k12.adopt-b14 qualifies the claim-only-filter kill. The old U+0001 observation is explicitly corrected, not treated as surrogate evidence.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b14"
+          }
+        ]
+      }
     },
     {
       "id": "mention-163eeb9a978d22d6c5f980fe",
@@ -54807,47 +55394,907 @@
     },
     {
       "id": "mention-2a506d7db1576d5017051f0c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The corrected genuine lone-surrogate fixture and paired malformed-claim/no-grant versus current-grant schedule require all four diagnostics only after authority, retained equality and whole refusal state. Current Case B/C asserts these specific categories and k12.adopt-b14 qualifies the claim-only-filter kill. The old U+0001 observation is explicitly corrected, not treated as surrogate evidence.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b14"
+          }
+        ]
+      }
     },
     {
       "id": "mention-3f3c9f7909b56ad13e4a4dce",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The corrected genuine lone-surrogate fixture and paired malformed-claim/no-grant versus current-grant schedule require all four diagnostics only after authority, retained equality and whole refusal state. Current Case B/C asserts these specific categories and k12.adopt-b14 qualifies the claim-only-filter kill. The old U+0001 observation is explicitly corrected, not treated as surrogate evidence.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b14"
+          }
+        ]
+      }
     },
     {
       "id": "mention-253a0314d4c96e5f10808fed",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S1. The numbered acceptance order retains replay/conflict, terminal, per-coordinate currency, reference authority and content refusal. Current partial-claim matrices and replay leaves assert these distinctions. The neighboring old O6 paragraph explicitly records an unresolved historical exception; current decision-02 tests assert its accepted replacement, not the obsolete early malformed-ID behavior.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "an exact duplicate returns the original receipt and decision, and changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "a replay is answered even after the next exchange has started, and the new exchange is untouched"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C5 a terminal lifetime never reopens",
+              "an exact replay of the terminal Outcome still returns its receipt: the lookup precedes the terminal check"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "over-capacity proposals without authority are unauthorized, not capacity disclosures"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and no grant is unauthorized with no claim disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and the current grant reaches malformed content validation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "fully malformed claim with no grant stays unauthorized; with grant stays malformed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "an uncapturable partial claim under an accepted Activation ID conflicts, not stale/malformed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "terminal execution refuses a fresh partial-stale proposal as terminal, with no content leak"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity missing + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity missing + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + current grant + valid content -> malformed_envelope"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-60d9ca15b247fe5413b9e0bb",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S1. The numbered acceptance order retains replay/conflict, terminal, per-coordinate currency, reference authority and content refusal. Current partial-claim matrices and replay leaves assert these distinctions. The neighboring old O6 paragraph explicitly records an unresolved historical exception; current decision-02 tests assert its accepted replacement, not the obsolete early malformed-ID behavior.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "an exact duplicate returns the original receipt and decision, and changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "a replay is answered even after the next exchange has started, and the new exchange is untouched"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C5 a terminal lifetime never reopens",
+              "an exact replay of the terminal Outcome still returns its receipt: the lookup precedes the terminal check"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "over-capacity proposals without authority are unauthorized, not capacity disclosures"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and no grant is unauthorized with no claim disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and the current grant reaches malformed content validation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "fully malformed claim with no grant stays unauthorized; with grant stays malformed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "an uncapturable partial claim under an accepted Activation ID conflicts, not stale/malformed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "terminal execution refuses a fresh partial-stale proposal as terminal, with no content leak"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity missing + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity missing + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + current grant + valid content -> malformed_envelope"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-407e0e7767983a4213fd9b1f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-5852e7ae24a160b50ef5ddda",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-afe63a7eea8a7821ead56d9b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The eight-arm reviewer probe and both partial-claim branches are present in maintained stale epoch/base matrices, with authority/content crossing, future epoch, low base and over-capacity neighbors. B15 is adopted against the malformed-other-coordinate leaf; complete-decision coverage of the base fence does not erase these distinct input arms. Old anchor spelling and OPEN-5 chronology grant no new credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "future epoch 5 with base missing and no grant is stale, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch with over-capacity content and no grant is stale, not a capacity disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale-low base on the second exchange with missing epoch is stale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and no grant is unauthorized with no claim disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and the current grant reaches malformed content validation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "fully malformed claim with no grant stays unauthorized; with grant stays malformed"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b15"
+          }
+        ]
+      }
     },
     {
       "id": "mention-5861807773fb4e44582f58aa",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Inspect-only control refusal, fail-closed safety and each post-callback revalidation arm are explicitly covered by control-authority and takeover-reentrancy.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer takeover refused unauthorized_control; author takeover succeeds epoch 2"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer recover refused unauthorized_control; author recover creates hold"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer report refused unauthorized_control; author report creates hold"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 takeover safe-replacement",
+              "unsafeDriver refused unsafe_replacement with zero mutation except refusal"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 takeover safe-replacement",
+              "driver lacking isSafeToReplace refused unsafe_replacement"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 takeover safe-replacement",
+              "throwing isSafeToReplace refused unsafe_replacement"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 a nested takeover inside isSafeToReplace commits once",
+              "inner takeover commits epoch 2; the outer stale arm refuses with no orphan receipt or delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first",
+              "a current continue Outcome resolves; the outer takeover refuses with no receipt or delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first",
+              "a terminal complete inside the callback ends the Execution; the outer takeover is refused"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 a code hold inside isSafeToReplace blocks the outer takeover",
+              "recoverExecution establishes the hold during the callback; the outer arm is refused"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-f5e29586400a3ecc5ddecaa8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The eight-arm reviewer probe and both partial-claim branches are present in maintained stale epoch/base matrices, with authority/content crossing, future epoch, low base and over-capacity neighbors. B15 is adopted against the malformed-other-coordinate leaf; complete-decision coverage of the base fence does not erase these distinct input arms. Old anchor spelling and OPEN-5 chronology grant no new credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "future epoch 5 with base missing and no grant is stale, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch with over-capacity content and no grant is stale, not a capacity disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale-low base on the second exchange with missing epoch is stale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and no grant is unauthorized with no claim disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and the current grant reaches malformed content validation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "fully malformed claim with no grant stays unauthorized; with grant stays malformed"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b15"
+          }
+        ]
+      }
     },
     {
       "id": "mention-c040f41dcfe8aba46030e5cb",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The eight-arm reviewer probe and both partial-claim branches are present in maintained stale epoch/base matrices, with authority/content crossing, future epoch, low base and over-capacity neighbors. B15 is adopted against the malformed-other-coordinate leaf; complete-decision coverage of the base fence does not erase these distinct input arms. Old anchor spelling and OPEN-5 chronology grant no new credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "future epoch 5 with base missing and no grant is stale, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch with over-capacity content and no grant is stale, not a capacity disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale-low base on the second exchange with missing epoch is stale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and no grant is unauthorized with no claim disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and the current grant reaches malformed content validation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "fully malformed claim with no grant stays unauthorized; with grant stays malformed"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b15"
+          }
+        ]
+      }
     },
     {
       "id": "mention-0fb411e72533ddbbe2abfdb0",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The eight-arm reviewer probe and both partial-claim branches are present in maintained stale epoch/base matrices, with authority/content crossing, future epoch, low base and over-capacity neighbors. B15 is adopted against the malformed-other-coordinate leaf; complete-decision coverage of the base fence does not erase these distinct input arms. Old anchor spelling and OPEN-5 chronology grant no new credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "future epoch 5 with base missing and no grant is stale, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch with over-capacity content and no grant is stale, not a capacity disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale-low base on the second exchange with missing epoch is stale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and no grant is unauthorized with no claim disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and the current grant reaches malformed content validation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "fully malformed claim with no grant stays unauthorized; with grant stays malformed"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b15"
+          }
+        ]
+      }
     },
     {
       "id": "mention-f8810c9235ffce4a7ec895a4",
@@ -54855,7 +56302,89 @@
     },
     {
       "id": "mention-85e1498dec9c2bec38431b8a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The eight-arm reviewer probe and both partial-claim branches are present in maintained stale epoch/base matrices, with authority/content crossing, future epoch, low base and over-capacity neighbors. B15 is adopted against the malformed-other-coordinate leaf; complete-decision coverage of the base fence does not erase these distinct input arms. Old anchor spelling and OPEN-5 chronology grant no new credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "future epoch 5 with base missing and no grant is stale, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch with over-capacity content and no grant is stale, not a capacity disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale-low base on the second exchange with missing epoch is stale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and no grant is unauthorized with no claim disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and the current grant reaches malformed content validation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "fully malformed claim with no grant stays unauthorized; with grant stays malformed"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b15"
+          }
+        ]
+      }
     },
     {
       "id": "mention-68474d44689179ef704f6bdd",
@@ -54863,51 +56392,961 @@
     },
     {
       "id": "mention-9e9df43af623a79024777d71",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The eight-arm reviewer probe and both partial-claim branches are present in maintained stale epoch/base matrices, with authority/content crossing, future epoch, low base and over-capacity neighbors. B15 is adopted against the malformed-other-coordinate leaf; complete-decision coverage of the base fence does not erase these distinct input arms. Old anchor spelling and OPEN-5 chronology grant no new credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "future epoch 5 with base missing and no grant is stale, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch with over-capacity content and no grant is stale, not a capacity disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale-low base on the second exchange with missing epoch is stale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and no grant is unauthorized with no claim disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and the current grant reaches malformed content validation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "fully malformed claim with no grant stays unauthorized; with grant stays malformed"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b15"
+          }
+        ]
+      }
     },
     {
       "id": "mention-b54a88452a64344bce2f96ee",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The eight-arm reviewer probe and both partial-claim branches are present in maintained stale epoch/base matrices, with authority/content crossing, future epoch, low base and over-capacity neighbors. B15 is adopted against the malformed-other-coordinate leaf; complete-decision coverage of the base fence does not erase these distinct input arms. Old anchor spelling and OPEN-5 chronology grant no new credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "future epoch 5 with base missing and no grant is stale, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch with over-capacity content and no grant is stale, not a capacity disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale-low base on the second exchange with missing epoch is stale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and no grant is unauthorized with no claim disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and the current grant reaches malformed content validation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "fully malformed claim with no grant stays unauthorized; with grant stays malformed"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b15"
+          }
+        ]
+      }
     },
     {
       "id": "mention-42fe94116e073eace9acf0fb",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-f7acd2dc46145a0e3c8049bd",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Decision-02 explicitly distinguishes unaddressable identities across terminal/no-exchange/stale/current states, every grant/content arm, and later-exchange/terminal replay attempts; it also requires single observation and undisclosing reasons. The named current C3/C2 and hostile leaves assert those results. B20 now has a qualified adopted mutant; the other current family decisions are individually read in group-review-07.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity missing + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity missing + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing changed resubmission is terminal, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 envelope fields are own data, observed once",
+              "a missing, non-text or throwing activationId still reads every other field once (decision-02)"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b20"
+          }
+        ]
+      }
     },
     {
       "id": "mention-31d2dcca5cafd10fa627ac58",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-fec20f19f88cf02e06f5c8f2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Decision-02 explicitly distinguishes unaddressable identities across terminal/no-exchange/stale/current states, every grant/content arm, and later-exchange/terminal replay attempts; it also requires single observation and undisclosing reasons. The named current C3/C2 and hostile leaves assert those results. B20 now has a qualified adopted mutant; the other current family decisions are individually read in group-review-07.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity missing + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity missing + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing changed resubmission is terminal, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 envelope fields are own data, observed once",
+              "a missing, non-text or throwing activationId still reads every other field once (decision-02)"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b20"
+          }
+        ]
+      }
     },
     {
       "id": "mention-581d0b4f0b856a9e36a2c5fd",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Decision-02 explicitly distinguishes unaddressable identities across terminal/no-exchange/stale/current states, every grant/content arm, and later-exchange/terminal replay attempts; it also requires single observation and undisclosing reasons. The named current C3/C2 and hostile leaves assert those results. B20 now has a qualified adopted mutant; the other current family decisions are individually read in group-review-07.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity missing + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity missing + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing changed resubmission is terminal, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 envelope fields are own data, observed once",
+              "a missing, non-text or throwing activationId still reads every other field once (decision-02)"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b20"
+          }
+        ]
+      }
     },
     {
       "id": "mention-3d55b4d1b7e69ed5f52e626d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Decision-02 explicitly distinguishes unaddressable identities across terminal/no-exchange/stale/current states, every grant/content arm, and later-exchange/terminal replay attempts; it also requires single observation and undisclosing reasons. The named current C3/C2 and hostile leaves assert those results. B20 now has a qualified adopted mutant; the other current family decisions are individually read in group-review-07.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity missing + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity missing + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing changed resubmission is terminal, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 envelope fields are own data, observed once",
+              "a missing, non-text or throwing activationId still reads every other field once (decision-02)"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b20"
+          }
+        ]
+      }
     },
     {
       "id": "mention-6959c62340b0a60694eaeb7c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Decision-02 explicitly distinguishes unaddressable identities across terminal/no-exchange/stale/current states, every grant/content arm, and later-exchange/terminal replay attempts; it also requires single observation and undisclosing reasons. The named current C3/C2 and hostile leaves assert those results. B20 now has a qualified adopted mutant; the other current family decisions are individually read in group-review-07.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity missing + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity missing + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing changed resubmission is terminal, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 envelope fields are own data, observed once",
+              "a missing, non-text or throwing activationId still reads every other field once (decision-02)"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b20"
+          }
+        ]
+      }
     },
     {
       "id": "mention-147531f9fcb30028ef03352a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The retained eight-arm R11 probe is covered by maintained partial stale-epoch and stale-base matrices, including retired/absent/current grants, future epoch and malformed other coordinate. No fresh evidence is inferred from old run counts.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "future epoch 5 with base missing and no grant is stale, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale-low base on the second exchange with missing epoch is stale"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-3a4c26448820f77c0c45f3c0",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The retained eight-arm R11 probe is covered by maintained partial stale-epoch and stale-base matrices, including retired/absent/current grants, future epoch and malformed other coordinate. No fresh evidence is inferred from old run counts.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "future epoch 5 with base missing and no grant is stale, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale-low base on the second exchange with missing epoch is stale"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-360d60520f44cb84fcd2a597",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Decision-02 explicitly distinguishes unaddressable identities across terminal/no-exchange/stale/current states, every grant/content arm, and later-exchange/terminal replay attempts; it also requires single observation and undisclosing reasons. The named current C3/C2 and hostile leaves assert those results. B20 now has a qualified adopted mutant; the other current family decisions are individually read in group-review-07.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity missing + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity missing + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing changed resubmission is terminal, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 envelope fields are own data, observed once",
+              "a missing, non-text or throwing activationId still reads every other field once (decision-02)"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12.adopt-b20"
+          }
+        ]
+      }
     },
     {
       "id": "mention-298932300f2197d8716678bc",
@@ -68788,7 +71227,9 @@
         {
           "label": "A2 replay only while no exchange is open and the Execution is live (validation effectively first)",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-a2",
+            "mutant": "mutation-b2d44f2580e4694aef0282ab3de820356952ef0734f3df48ee129643edc59be7"
           }
         },
         {
@@ -68812,7 +71253,9 @@
         {
           "label": "A6 Effects silently stripped instead of refusing the Outcome",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-a6",
+            "mutant": "mutation-4e006eda2ea14ad2275c44e7bde6872bddba9ddbd0557ef3a2e5f4229dc95edf"
           }
         },
         {
@@ -68830,7 +71273,9 @@
         {
           "label": "A9 redelivery ignores recovery holds",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-a9",
+            "mutant": "mutation-d449e21c5d85ad71a4c1786ee83bf993c17b976ebab2dfb799aea1c98ca40a16"
           }
         },
         {
@@ -68842,25 +71287,33 @@
         {
           "label": "A11 unknown envelope fields ignored",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-a11",
+            "mutant": "mutation-ff504c560619828dd0184d6b0a1ac897a89d1566d506f3581f4f5aacc8d6e900"
           }
         },
         {
           "label": "A12 Emission identity from a coordinator-wide counter",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-a12",
+            "mutant": "mutation-0566166667cf5b392d257b744dbe8712c82afcbacab4c0665dd3f6ac089cb6f1"
           }
         },
         {
           "label": "A13 progress observed twice (validation and retention read separately)",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-a13",
+            "mutant": "mutation-fda7a1adb51a5a7f26d06659c99e3c16fc5dd6d4c3c25ef492fe0583d2ef4cab"
           }
         },
         {
           "label": "A14 Emission capacity checked only after every element is read",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-a14",
+            "mutant": "mutation-c37ea3957d429b4be6105b7bd88d0f92cbfaa0901235f7f1a153f31f6b826950"
           }
         },
         {
@@ -68890,13 +71343,17 @@
         {
           "label": "B3 permitted-action inspection desynchronized (protocol hold lists declaration instead of takeover)",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-b3",
+            "mutant": "mutation-852484bba799ab0b4a75b8c3fbfd7fb9842a7b3f95c486cd173be8d79700e7f6"
           }
         },
         {
           "label": "B4 delivery attribution lost (every delivery pinned to epoch 1)",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-b4",
+            "mutant": "mutation-1db700d2d8da717a0a98fb12506d011e2d6e22a528ff5c2c8d8da4e63c77aafd"
           }
         },
         {
@@ -68914,7 +71371,9 @@
         {
           "label": "B7 Outcome hold-ending history built but never appended (resolves yet explains nothing)",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-b7",
+            "mutant": "mutation-9447fc5d73aeb5f4663bf1f9d58d28d876045b3ae128324429aa7c1c123107ce"
           }
         },
         {
@@ -68926,43 +71385,57 @@
         {
           "label": "B9 hold-ending History claims control power for a Runtime submission",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-b9",
+            "mutant": "mutation-e1bd0a43ecc3a560a26da47d66f5a5926b9af575cd476d234c0fcd3079ad340f"
           }
         },
         {
           "label": "B10 ordinary redelivery rotates the Runtime attempt grant",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-b10",
+            "mutant": "mutation-ad312f631fdfd771a4e2cf6adc15036266503489ba873310bd4419f0bfd144e2"
           }
         },
         {
           "label": "B11 redelivery rotates only a takeover attempt grant",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-b11",
+            "mutant": "mutation-e9cf4cecc7e79b3c5c0d4f7f99fcf8eb347fdf9b74b54b3486fa48e88434c13e"
           }
         },
         {
           "label": "B12 content validated before submission authority (grant check moved after content, K12-R9-EVID-01)",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-b12",
+            "mutant": "mutation-86b76c972f56d502c688dc7025cd17c334db3f7fcba2ec87c1833a4c3bdcea8e"
           }
         },
         {
           "label": "B13 capacity validated before submission authority (capacity check moved before grant check, K12-R9-ORDER-01 neighbor)",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-b13",
+            "mutant": "mutation-647a91765d04c10a0f15784c9d4efd260920393256f42de5091ffc2166e74201"
           }
         },
         {
           "label": "B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01)",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-b14",
+            "mutant": "mutation-a976f84d56bc0a2c6bd80ee5795e254f6edd1f293e1581fd8a3b24082cfa01ed"
           }
         },
         {
           "label": "B15 skip all currency when either numeric claim member is malformed (K12-R11-ORDER-01 defective family)",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-b15",
+            "mutant": "mutation-192fec61e839de9e3f6c8c53530dfdc8685bb28dc6fcd5e8756f96dcc11eaa6c"
           }
         },
         {
@@ -68992,7 +71465,9 @@
         {
           "label": "B20 malformed Activation identity rendered in a pre-content refusal reason (decision-02 disclosure)",
           "route": {
-            "kind": "pending"
+            "kind": "mutation",
+            "case": "k12.adopt-b20",
+            "mutant": "mutation-b14f138c1d88776b85bf216744626d345991b2027ec861783c56b449cf8ca18c"
           }
         }
       ]
