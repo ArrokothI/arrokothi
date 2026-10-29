@@ -149,6 +149,7 @@ TRIAGE_DECISIONS = (
     'docs/development/work/K1.2/decision-05.md',
     'docs/development/work/K1.3/design-01.md',
     'docs/development/work/K1.2-correction-01/integration-01.md',
+    'docs/development/work/TOOLS-01/design-02.md',
 )
 TRIAGE_LIMITS = 'docs/development/017-known-limitations.md'
 TRIAGE_CLASSES = ('not_a_counterexample', 'covered_elsewhere', 'superseded', 'recorded_limit')

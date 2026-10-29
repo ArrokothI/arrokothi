@@ -1,7 +1,7 @@
 {
   "source_base": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
   "source_packet": "K1.1",
-  "state": "partial",
+  "state": "packet_complete",
   "retirement_readings": [
     "mention-b43188cfa39f39ae809510de",
     "mention-6f40e8f1a46ba505eb1dc0e2",
@@ -268,7 +268,43 @@
     "mention-805112372bee9ca01b0d64d0",
     "mention-ee57c44d0bdc42c0d75ec38e",
     "mention-db780dc81588383a2ba36e77",
-    "mention-12a686397d3d798e77edea0c"
+    "mention-12a686397d3d798e77edea0c",
+    "mention-b0c41fbcaade9e8948060edf",
+    "mention-db7c66e919e8d66a8192b9c1",
+    "mention-364cf744da4479b0826e5079",
+    "mention-f178fb03881c014434defd08",
+    "mention-a7a95c9d79febdf409ceced2",
+    "mention-6f550bdd9b57a5f7e9ab08ec",
+    "mention-24746110c41e2e619aa7a758",
+    "mention-884afc2869e077978ebd9c39",
+    "mention-ba2bcc556031987e751750f9",
+    "mention-26e0d797cd15cabe168482b4",
+    "mention-52835ffa31cd3c1f76c69e9d",
+    "mention-d58d3669af4892ae4a41bfcd",
+    "mention-55343abf2814592eeef528a6",
+    "mention-8eeff962a334739af81c6fff",
+    "mention-48017e5a81931cb348c758da",
+    "mention-d28f30021cee83bdfd38b974",
+    "mention-d12d8245b1021470440f4fbf",
+    "mention-86b9630ec574b2388d1bfa22",
+    "mention-bfb75be1c59744824a7abd8b",
+    "mention-395573aeb4e04b31a68fabc2",
+    "mention-2c5b963b6495b9e2b237b8ac",
+    "mention-6c4632c093b9a754587cedbe",
+    "mention-3ba74d63ec4d9890c72ac092",
+    "mention-522feda80e9982aae1ee6fdd",
+    "mention-994ba4f869ca734a1895c21b",
+    "mention-b0d9d94d03cc64e87a368010",
+    "mention-1eafda4b2764f22c255fc898",
+    "mention-d111e6a1813ab1cfd6e935ef",
+    "mention-8b372e5917d25f2452ff6e8a",
+    "mention-fe3b5436ee50c032006b6e13",
+    "mention-0b34394de89d86a95328715b",
+    "mention-13a66136c3f79482bdbb72cf",
+    "mention-84bc00b6fc46e3ac38e19d33",
+    "mention-7411537407f2d84b8e02ea06",
+    "mention-91b13f72c5b91e7c2389a7f7",
+    "mention-62c560a517e575f2b949edd4"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -301,13 +337,6 @@
       "planned_test": "Exercise shifting own getters on creation scope/key/pins/initial input fields and ingress key/kind/subscription/payload, count observations, and inspect/replay the retained result. Use core byte roots directly; stop if a new regression exposes a product defect.",
       "group": "mention-bc970277f23ef1e97995b21f"
     },
-    "mention-b0c41fbcaade9e8948060edf": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-12.md:134",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs."
-    },
     "mention-5b74744b8699ebace1b4c0c3": {
       "disposition": "extracted",
       "source": "K1.1/implementation-13.md:118",
@@ -323,150 +352,6 @@
       "planned_test": "Add a separate pre-first-creation hidden window to the nondisclosure harness and a maintained control/interleaved transcript comparison; assert the window ran before A's first create. Stop if it exposes a product defect.",
       "group": "mention-5b74744b8699ebace1b4c0c3"
     },
-    "mention-db7c66e919e8d66a8192b9c1": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-13.md:201",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-364cf744da4479b0826e5079": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-13.md:208",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-f178fb03881c014434defd08": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-14.md:91",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-a7a95c9d79febdf409ceced2": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-14.md:144",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-6f550bdd9b57a5f7e9ab08ec": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-14.md:151",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-24746110c41e2e619aa7a758": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-14.md:166",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-884afc2869e077978ebd9c39": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-14.md:167",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-ba2bcc556031987e751750f9": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-15.md:163",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-26e0d797cd15cabe168482b4": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-15.md:168",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-52835ffa31cd3c1f76c69e9d": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-15.md:169",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-d58d3669af4892ae4a41bfcd": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-15.md:176",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-55343abf2814592eeef528a6": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-16.md:145",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-8eeff962a334739af81c6fff": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-16.md:153",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-48017e5a81931cb348c758da": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-16.md:160",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-d28f30021cee83bdfd38b974": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-17.md:145",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-d12d8245b1021470440f4fbf": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-17.md:153",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-86b9630ec574b2388d1bfa22": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-17.md:154",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-bfb75be1c59744824a7abd8b": {
-      "disposition": "extracted",
-      "source": "K1.1/implementation-17.md:160",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
     "mention-675b78ea2886233a8576c776": {
       "disposition": "extracted",
       "source": "K1.1/review-01.md:85",
@@ -474,70 +359,359 @@
       "gap": "The maintained visibleExecutions leaf checks only a positive read count and visible-ID shape. It does not assert equal read counts for early/late/no-match scans. The single-ID lookup leaves do not execute the listing path.",
       "planned_test": "A separate kernel scope-listing regression compares equal-size early-match, late-match and no-match scope arrays over the same record population and checks returned IDs, then binds it through P1. No product change; stop if it fails.",
       "group": "mention-194ad35e98b1396a9d84c97f"
-    },
-    "mention-395573aeb4e04b31a68fabc2": {
-      "disposition": "extracted",
-      "source": "K1.1/review-10.md:69",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-2c5b963b6495b9e2b237b8ac": {
-      "disposition": "extracted",
-      "source": "K1.1/review-10.md:114",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-6c4632c093b9a754587cedbe": {
-      "disposition": "extracted",
-      "source": "K1.1/review-13.md:108",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-3ba74d63ec4d9890c72ac092": {
-      "disposition": "extracted",
-      "source": "K1.1/validation-12/MANIFEST.md:79",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-522feda80e9982aae1ee6fdd": {
-      "disposition": "extracted",
-      "source": "K1.1/validation-13/MANIFEST.md:77",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-994ba4f869ca734a1895c21b": {
-      "disposition": "extracted",
-      "source": "K1.1/validation-14/MANIFEST.md:85",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-b0d9d94d03cc64e87a368010": {
-      "disposition": "extracted",
-      "source": "K1.1/validation-14/MANIFEST.md:93",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
-    },
-    "mention-1eafda4b2764f22c255fc898": {
-      "disposition": "extracted",
-      "source": "K1.1/validation-14/MANIFEST.md:166",
-      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
-      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
-      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
-      "group": "mention-b0c41fbcaade9e8948060edf"
     }
-  }
+  },
+  "reconsidered_extractions": [
+    {
+      "origin": "mention-b0c41fbcaade9e8948060edf",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-12.md:134",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs."
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-db7c66e919e8d66a8192b9c1",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-13.md:201",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-364cf744da4479b0826e5079",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-13.md:208",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-f178fb03881c014434defd08",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-14.md:91",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-a7a95c9d79febdf409ceced2",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-14.md:144",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-6f550bdd9b57a5f7e9ab08ec",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-14.md:151",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-24746110c41e2e619aa7a758",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-14.md:166",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-884afc2869e077978ebd9c39",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-14.md:167",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-ba2bcc556031987e751750f9",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-15.md:163",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-26e0d797cd15cabe168482b4",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-15.md:168",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-52835ffa31cd3c1f76c69e9d",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-15.md:169",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-d58d3669af4892ae4a41bfcd",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-15.md:176",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-55343abf2814592eeef528a6",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-16.md:145",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-8eeff962a334739af81c6fff",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-16.md:153",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-48017e5a81931cb348c758da",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-16.md:160",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-d28f30021cee83bdfd38b974",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-17.md:145",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-d12d8245b1021470440f4fbf",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-17.md:153",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-86b9630ec574b2388d1bfa22",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-17.md:154",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-bfb75be1c59744824a7abd8b",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/implementation-17.md:160",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-395573aeb4e04b31a68fabc2",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/review-10.md:69",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-2c5b963b6495b9e2b237b8ac",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/review-10.md:114",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-6c4632c093b9a754587cedbe",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/review-13.md:108",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-3ba74d63ec4d9890c72ac092",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/validation-12/MANIFEST.md:79",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-522feda80e9982aae1ee6fdd",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/validation-13/MANIFEST.md:77",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-994ba4f869ca734a1895c21b",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/validation-14/MANIFEST.md:85",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-b0d9d94d03cc64e87a368010",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/validation-14/MANIFEST.md:93",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    },
+    {
+      "origin": "mention-1eafda4b2764f22c255fc898",
+      "previous_plan": {
+        "disposition": "extracted",
+        "source": "K1.1/validation-14/MANIFEST.md:166",
+        "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+        "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+        "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+        "group": "mention-b0c41fbcaade9e8948060edf"
+      },
+      "reason": "The concrete 11-file count gate is an uncommitted /tmp K1.1 generation script, not a current candidate input or maintained command. Accepted TOOLS-01 design-02 replaces per-round ad hoc evidence composition with a declared clean-C verify specification. Its acceptance/integration precede base 335ae7e6 (H a50c3886; integration 8f829003). No current fixed eleven-file gate exists. This retires that operation, not the current obligation to measure and report evidence faithfully; see group-review-05.md.",
+      "record": "docs/development/work/TOOLS-02/group-review-05.md"
+    }
+  ],
+  "next_source_packet": "K1.1-correction-01"
 }

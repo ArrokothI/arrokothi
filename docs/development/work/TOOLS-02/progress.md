@@ -2,6 +2,19 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 K1.1 complete — 309 origins:** 302 retired; seven planned extraction
+  origins in **three distinct groups**. Resume with `K1.1-correction-01/blocker-01.md`.
+  - Owner choice 07's pre-build check removed the count-gate group: its temporary
+    fixed-eleven-file operation was replaced by accepted TOOLS-01 composition.
+    [Group recheck](group-review-05.md) records the source, accepted design, current
+    mechanism and first-use superseding-table row. Mixed Kernel behaviors retain
+    passing leaf pointers. Original plans remain as reconsideration evidence.
+  - The final nine K1.1 origins were read in order; previously complete origins stayed
+    untouched. Projection 05 remains the original stop; no replacement estimate is
+    claimed before the scheduled origin-600 projection 06.
+  - Focused triage checks: 15 passed in 3.457 s under Node v26.10.0.
+  - No product or historical evidence changed; derived preservation data is unchanged.
+
 - **2026-10-29 owner choice 07 — resumed:** [Owner choice 07](owner-choice-07.md)
   answers projection 05 at `c357d821` and authorizes grouped extraction. The cap is
   now the projected total of distinct P1-G extraction groups; stop if it exceeds 12.
