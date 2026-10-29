@@ -2,6 +2,19 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 owner choice 07 — resumed:** [Owner choice 07](owner-choice-07.md)
+  answers projection 05 at `c357d821` and authorizes grouped extraction. The cap is
+  now the projected total of distinct P1-G extraction groups; stop if it exceeds 12.
+  Other stop conditions, S1–S6 and audit parameters are unchanged.
+  - Current count: four planned groups after 300 origins (34 extraction origins).
+    Re-estimate after origin 600 in projection 06, showing groups so far, new groups
+    per 300 origins and projected total. Confirm each group is live at C, uncovered
+    and not superseded before building, especially the count-gate group.
+  - Resume at `K1.1/validation-15/MANIFEST.md:71`,
+    `mention-d111e6a1813ab1cfd6e935ef`, then remaining sources in order.
+    Worktree and Node path remain the handover paths below. Census, corpus, regenerate
+    and verify run only in a fresh `git clone --no-local` with `npm ci`.
+
 - **2026-10-28 first-300 stop — owner decision required:** 300 eligible origins read
   in source-file order; 266 retired and 34 planned extraction origins in four groups.
   [Re-estimate and evidence](projection-05.md): `34 / 300 × 1,518 = 172.04`, rounded

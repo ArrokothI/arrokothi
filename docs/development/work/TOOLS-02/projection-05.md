@@ -1,5 +1,7 @@
 # TOOLS-02 first-300 re-estimate — owner decision required
 
+Continuation authorized by [owner choice 07](owner-choice-07.md); the original stop below is preserved.
+
 2026-10-28; implementing Codex GPT-6 session under owner choice 06.
 This is the design 01 §5.6 checkpoint, not an implementation handoff or acceptance.
 
