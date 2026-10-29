@@ -1,5 +1,7 @@
 # Projection 06 — early group-cap stop before origin 600
 
+Subsequent owner disposition: [owner choice 08](owner-choice-08.md) separates the test-group and mutation-adoption caps and resumes this stop.
+
 2026-10-29, implementing Codex GPT-6 session. Governing change: [owner choice 07](owner-choice-07.md).
 
 **Stop: at least 14 distinct extraction groups, exceeding the cap of 12.** This is an

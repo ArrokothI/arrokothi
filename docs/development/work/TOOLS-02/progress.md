@@ -2,6 +2,18 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 owner choice 08 — resumed at origin 431:** [Owner choice 08](owner-choice-08.md)
+  answers projection 06 at `8acfc06e`. The current fourteen groups are **three test
+  groups and eleven mutation adoptions**. Projected caps are 12 and 60 respectively;
+  stop early if an observed count exceeds its cap. Family rule, S1–S6 and audit unchanged.
+  - Resume at `K1.2/ablations.mjs:1`, `artifact-fb7a16748e389543ef6bf980`.
+    Read each absent anchor for supersession or relocation; a relocated adoption still
+    counts once. Reconcile remaining family routes, then continue in source order.
+  - Projection 07 after origin **731**: both counts, new counts per 300 origins,
+    projected totals and added registry runtime. This replaces the earlier scheduled
+    origin-600 checkpoint. Use existing registries; confirm each control and kill in
+    a fresh clone. No final C/H, mappings_complete or CI dispatch yet.
+
 - **2026-10-29 group-cap stop — origin 431:** 423 retired; eight planned extraction
   origins; **at least 14 distinct groups**. [Projection 06](projection-06.md) records
   the early trigger before the scheduled origin-600 checkpoint (still outstanding).
