@@ -2,6 +2,18 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 correction-01 Z family — origin 695:** 674 retired; 21 extraction
+  origins; **five test groups and 55 mutation adoptions**. [Group review 10](group-review-10.md)
+  adds sixteen exact-coordinate production adoptions against existing passing leaves.
+  Every absent anchor has an individual relocation reading; no member is retired
+  merely because its old spelling disappeared.
+  - Resume at `K1.2-correction-01/ablations-06.mjs:1`,
+    `artifact-89a6c743f27e1e2697eab84d`. Stop early if either observed count exceeds
+    its cap; otherwise the required checkpoint remains origin 731.
+  - Eighteen adoptions are validated and 37 planned. No new mutant or behavior test
+    was run, no derived adoption data changed, and no product/historical evidence
+    changed. No final C/H, CI dispatch or review-ready claim.
+
 - **2026-10-29 correction-01 base/rebound families — origin 694:** 674 retired;
   twenty extraction origins; **five test groups and 39 mutation adoptions**.
   [Group review 09](group-review-09.md) records nineteen shared new adoptions:

@@ -928,6 +928,31 @@
       "required_result": "X8-X23 exact-coordinate and V1-V3 diagnostic mutation adoptions remain live. V4 has RC-OWN-EXPLAIN coverage in value-cost.c1.value-refusal-cost; V5 is the accepted equivalent survivor and adds no adoption. Rebound and base share all nineteen obligations.",
       "reading": "group-review-09.md",
       "planned_test": "Adopt into existing registries against the named passing leaves; validate each fresh control and qualified kill before binding P1-M. No kill or family closure claimed."
+    },
+    "artifact-ca6184769b762384a49e1d67": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/ablations-04.mjs:1",
+      "groups": [
+        "k12c1-coordinate-z1",
+        "k12c1-coordinate-z2",
+        "k12c1-coordinate-z3",
+        "k12c1-coordinate-z4",
+        "k12c1-coordinate-z5",
+        "k12c1-coordinate-z6",
+        "k12c1-coordinate-z7",
+        "k12c1-coordinate-z8",
+        "k12c1-coordinate-z9",
+        "k12c1-coordinate-z10",
+        "k12c1-coordinate-z11",
+        "k12c1-coordinate-z12",
+        "k12c1-coordinate-z13",
+        "k12c1-coordinate-z14",
+        "k12c1-coordinate-z15",
+        "k12c1-coordinate-z16"
+      ],
+      "required_result": "Z1-Z16 exact-coordinate production edits remain live, with separate current re-anchors for every absent old span. Existing exact-coordinate leaf covers each ordinary behavior but no current mutation route was found.",
+      "reading": "group-review-10.md",
+      "planned_test": "Add only to existing registries; run each fresh control and qualified kill before claiming closure. No mutant executed in this reading."
     }
   },
   "reconsidered_extractions": [
@@ -2161,9 +2186,346 @@
         "const count = occurrences ?? 1;"
       ],
       "relocation_reading": "The Kernel aggregate formatter still owns the count assignment. Existing own-only and charging cases do not replace occurrences with one."
+    },
+    "k12c1-coordinate-z1": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z1-mint-receipt-token",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at mint-receipt-token for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "const receipt = mintReceipt(\"input_ingress\", position, record.executionId);",
+        "const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);\n    const activation: Activation"
+      ],
+      "relocation_reading": "The mutating #mint helper was removed. Its two old callers were input_ingress and initial dispatch; both now prebuild their receipt. Re-anchor those two calls as the one historical adoption, excluding takeover and Outcome receipt sites."
+    },
+    "k12c1-coordinate-z2": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z2-creation-receipt-token",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at creation-receipt-token for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "const receipt = mintReceipt(\"creation\", 1, executionId);"
+      ],
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    "k12c1-coordinate-z3": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z3-activation-executionId",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at activation-executionId for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "      executionId: record.executionId,\n      activationId,\n"
+      ],
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    "k12c1-coordinate-z4": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z4-activation-activationId",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at activation-activationId for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "      executionId: record.executionId,\n      activationId,\n"
+      ],
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    "k12c1-coordinate-z5": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z5-takeover-activation-copy",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at takeover-activation-copy for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "PrimordialObjectFreeze({ ...exchange.activation, writerEpoch });"
+      ],
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    "k12c1-coordinate-z6": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z6-replay-map-key",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at replay-map-key for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchors": [
+        "    mapSet(record.acceptedOutcomes, activationId, stored);"
+      ],
+      "relocation_reading": "The accepted-Outcomes map insertion moved into the owner Outcome arm; the exact Activation-ID key is unchanged. Mutate this insertion, not the lookup or a type-only site."
+    },
+    "k12c1-coordinate-z7": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z7-event-destination",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at event-destination for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchors": [
+        "  const base = {\n    eventId: entry.eventId,\n    destination: entry.destination,"
+      ],
+      "relocation_reading": "Activation Event conversion moved into state.ts, and application entries now hold destination directly. Re-anchor the application-input branch; the new timeout branch is outside the historical input class."
+    },
+    "k12c1-coordinate-z8": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z8-redeliver-answer",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at redeliver-answer for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "      activationId: resent.activationId,"
+      ],
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    "k12c1-coordinate-z9": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z9-dispatch-grant-exec",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at dispatch-grant-exec for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "const submission = mintSubmission(record.executionId, activationId, 1);"
+      ],
+      "relocation_reading": "Initial grant construction moved from an ActivationRecord object field into a prebuilt submission local. Its Execution-ID field remains visible to the Driver and tested exactly."
+    },
+    "k12c1-coordinate-z10": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z10-acknowledged-ids",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at acknowledged-ids for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "        appendOwn(acknowledgedIds, entry.eventId);"
+      ],
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    "k12c1-coordinate-z11": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z11-takeover-answer-batch-receipt",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at takeover-answer-batch-receipt for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "      supersededEpoch: currentEpoch,\n      writerEpoch,\n      baseProgressRevision: activation.baseProgressRevision,\n      batch: exchange.batch,\n      receipt,"
+      ],
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    "k12c1-coordinate-z12": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z12-view-activation-id",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at view-activation-id for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchors": [
+        "const toActivationView = (intent: ActivationRecord): ActivationView => ({\n  activationId: intent.activation.activationId,"
+      ],
+      "relocation_reading": "toActivationView moved intact to state.ts; the Activation-ID projection remains current."
+    },
+    "k12c1-coordinate-z13": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z13-view-execution-id",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at view-execution-id for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchors": [
+        "    executionId: record.executionId,\n    state: record.state,"
+      ],
+      "relocation_reading": "viewOf moved to state.ts; its Execution-ID projection remains current."
+    },
+    "k12c1-coordinate-z14": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z14-view-queued-ids",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at view-queued-ids for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchors": [
+        "if (entry.disposition.kind === \"queued\") appendOwn(queued, entry.eventId);"
+      ],
+      "relocation_reading": "viewOf queued-ID collection moved to state.ts; the exact Event-ID projection remains current."
+    },
+    "k12c1-coordinate-z15": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z15-view-mailbox-destination",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at view-mailbox-destination for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchors": [
+        "    inputId: { ...(entry.inputId as InputId) },"
+      ],
+      "relocation_reading": "Mailbox projection moved to state.ts and its application branch adds an InputId cast because timeout Events have no input ID. Preserve the application input destination projection; do not mutate the timeout branch."
+    },
+    "k12c1-coordinate-z16": {
+      "family": "family.k12c1.ablations-04",
+      "member": "Z16-view-hold-activation",
+      "work_kind": "mutation_adoption",
+      "required_result": "Exact retained/returned coordinate at view-hold-activation for long and non-ASCII identities, derived independently from inputs.",
+      "gap": "No current registered production mutation changes this field/operation. The complete-decision scenarios use short ASCII identities and its generic controls do not exercise this lossy projection. Distinct from X8-X23 fields/operations.",
+      "reading": "group-review-10.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "current_target": "packages/kernel/src/plan.ts",
+      "current_anchors": [
+        "    const stored = intent.codeHold;\n    appendOwn(\n      holds,\n      PrimordialObjectFreeze({\n        cause: stored.cause,\n        reason: stored.reason,\n        activationId: stored.activationId,"
+      ],
+      "relocation_reading": "holdsOf moved to plan.ts; the code-hold Activation-ID projection remains exact. This differs from X11 changing retained hold state."
     }
   },
-  "resume_origin": "artifact-ca6184769b762384a49e1d67",
+  "resume_origin": "artifact-89a6c743f27e1e2697eab84d",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
