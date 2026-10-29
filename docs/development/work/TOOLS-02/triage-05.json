@@ -190,7 +190,36 @@
     "artifact-dbf5c4bd47aafe731d44ac00",
     "mention-9dbb768e4553a19afe59dad8",
     "mention-20f2d41d77780395cc7606ef",
-    "mention-8cecee00fe2238e9cd9ff9f9"
+    "mention-8cecee00fe2238e9cd9ff9f9",
+    "mention-5f8071b2fde17e5aa87b0075",
+    "mention-5f3d92382877c999c9e855a6",
+    "mention-ba47c969fa9d51a8ab955c0b",
+    "mention-e61f4d52041c30086f075d2d",
+    "mention-4ec7f4847ce2aea9a2a55b75",
+    "mention-47f915156802f3c234a91a35",
+    "mention-7e8f5c115462e0b7ff40bdd4",
+    "mention-f07e78c6959d261ce298a5aa",
+    "mention-ddcfc02cf9eeeb793313c45b",
+    "mention-921bf5112a9519c1da2c06f5",
+    "mention-a285418ca5465100c9395772",
+    "mention-40399c23b73a10734063fb8c",
+    "mention-35ac772ebd3e2ceeecda29e7",
+    "mention-d2b5f0fc710131e5531e3eca",
+    "mention-34a236d558a3b677915ccfc9",
+    "mention-f3229a96b67bb55419e990a1",
+    "mention-60da583efa956cf3254b1a03",
+    "mention-eb9c1f665dfc02c0c885f292",
+    "mention-0fbf43fd015523897ec6e86a",
+    "mention-f26b9af6cb25079c1c0625e8",
+    "mention-3ba3a977f158b9942549cce3",
+    "mention-df7b09a616e73e44d65c30b7",
+    "mention-aac7521ba6d9789b3189916a",
+    "mention-7e6f94138b76b59d5b724e38",
+    "mention-f179fd60082311293c75b05d",
+    "mention-359e8cbe771004a8815f18bd",
+    "mention-349dd6a18af9026ab2b1caba",
+    "mention-bd7b51530762d1ea31016f35",
+    "mention-b6b495517fe372ab171aafa9"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -396,6 +425,30 @@
       "gap": "The maintained visibleExecutions leaf checks only a positive read count and visible-ID shape. It does not assert equal read counts for early/late/no-match scans. The single-ID lookup leaves do not execute the listing path.",
       "planned_test": "A separate kernel scope-listing regression compares equal-size early-match, late-match and no-match scope arrays over the same record population and checks returned IDs, then binds it through P1. No product change; stop if it fails.",
       "group": "mention-194ad35e98b1396a9d84c97f"
+    },
+    "mention-395573aeb4e04b31a68fabc2": {
+      "disposition": "extracted",
+      "source": "K1.1/review-10.md:69",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-2c5b963b6495b9e2b237b8ac": {
+      "disposition": "extracted",
+      "source": "K1.1/review-10.md:114",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-6c4632c093b9a754587cedbe": {
+      "disposition": "extracted",
+      "source": "K1.1/review-13.md:108",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
     }
   }
 }

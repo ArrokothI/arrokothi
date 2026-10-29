@@ -2,6 +2,15 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 K1.1 reviews 08–16 checkpoint:** 246 origins read in source-file
+  order; 217 retired and 29 planned extraction origins in four groups.
+  - Later count-gate references join the existing extraction. Nondisclosure, ordinary
+    limit/canonicalization and malformed-identity diagnostic results map to current
+    passing leaves; old always-refusing successor surfaces are superseded.
+  - No derived table regenerated; no product or historical evidence changed.
+    Resume at validation 01/MANIFEST, then remaining manifests in order. Their preliminary
+    readings are not dispositions. Re-estimate at exactly the first 300 origins.
+
 - **2026-10-28 K1.1 reviews 01–07 checkpoint:** 214 origins read in source-file
   order; 188 retired and 26 planned extraction origins in four groups.
   - Included the review 03 and 06 supplements and their concrete fenced witnesses.
