@@ -2,6 +2,21 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 first-300 stop — owner decision required:** 300 eligible origins read
+  in source-file order; 266 retired and 34 planned extraction origins in four groups.
+  [Re-estimate and evidence](projection-05.md): `34 / 300 × 1,518 = 172.04`, rounded
+  up to **173**, exceeding design 01 §5.6/§9's limit of 60. Stop dependent work here.
+  - The four groups are listing work (3 origins), creation/ingress field observation (2),
+    evidence count gate (27), and hidden activity before A's first creation (2).
+    Repetition makes the linear estimate low-confidence but does not waive the stop.
+  - Last disposition: `K1.1/validation-15/MANIFEST.md:65`. After an owner decision,
+    resume at line 71 (`mention-d111e6a1813ab1cfd6e935ef`), then validation 16–17.
+    Earlier complete origins were excluded, not re-triaged.
+  - Coverage pointers resolve to the fresh-clone passing catalog; preserved data, transfers
+    and legacy mappings remain unchanged. No product/historical evidence changed.
+    No extraction tests, P3 builds or self-audit are claimed complete; no final C/H or CI run.
+    IN_PROGRESS; no review-ready or acceptance claim.
+
 - **2026-10-28 K1.1 reviews 08–16 checkpoint:** 246 origins read in source-file
   order; 217 retired and 29 planned extraction origins in four groups.
   - Later count-gate references join the existing extraction. Nondisclosure, ordinary
