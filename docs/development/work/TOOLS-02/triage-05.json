@@ -1,7 +1,7 @@
 {
   "source_base": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
-  "source_packet": "K1.1-correction-02",
-  "state": "packet_complete",
+  "source_packet": "K1.2",
+  "state": "stopped_group_cap",
   "retirement_readings": [
     "mention-b43188cfa39f39ae809510de",
     "mention-6f40e8f1a46ba505eb1dc0e2",
@@ -480,6 +480,26 @@
       "gap": "The maintained visibleExecutions leaf checks only a positive read count and visible-ID shape. It does not assert equal read counts for early/late/no-match scans. The single-ID lookup leaves do not execute the listing path.",
       "planned_test": "A separate kernel scope-listing regression compares equal-size early-match, late-match and no-match scope arrays over the same record population and checks returned IDs, then binds it through P1. No product change; stop if it fails.",
       "group": "mention-194ad35e98b1396a9d84c97f"
+    },
+    "artifact-fb7a16748e389543ef6bf980": {
+      "disposition": "extracted",
+      "source": "K1.2/ablations.mjs:1",
+      "required_result": "The live family members listed in groups have maintained, executable mutation evidence under the family rule, beyond their ordinary behavior leaves.",
+      "gap": "Design 01 section 5.4 requires family S5 coverage by a current registry or complete-decision oracle mutating the same decision. Eleven live members lack that route in the bounded search recorded in group-review-06.md.",
+      "planned_test": "Reuse existing passing behavior leaves as target-set oracles; add registry cases and P1-M routes only after the owner resolves the group-cap stop.",
+      "groups": [
+        "k12-mutation-a6",
+        "k12-mutation-a9",
+        "k12-mutation-a11",
+        "k12-mutation-a12",
+        "k12-mutation-a13",
+        "k12-mutation-a14",
+        "k12-mutation-b9",
+        "k12-mutation-b10",
+        "k12-mutation-b11",
+        "k12-mutation-b15",
+        "k12-mutation-b20"
+      ]
     }
   },
   "reconsidered_extractions": [
@@ -834,5 +854,183 @@
       "record": "docs/development/work/TOOLS-02/group-review-05.md"
     }
   ],
-  "next_source_packet": "K1.2"
+  "next_source_packet": "K1.2",
+  "extraction_groups": {
+    "k12-mutation-a6": {
+      "family": "family.k12.ablations",
+      "member": "A6 Effects silently stripped instead of refusing the Outcome",
+      "required_result": "Effects are refused whole",
+      "gap": "The sweep has no Effect-bearing scenario; its malformed-content scenario uses invalid progress bytes.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+        "test_path": [
+          "K1.2-C7 Effects, obligations and waits are refused whole",
+          "an Effect-bearing Outcome is refused at envelope validation and leaves no action record"
+        ]
+      },
+      "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building."
+    },
+    "k12-mutation-a9": {
+      "family": "family.k12.ablations",
+      "member": "A9 redelivery ignores recovery holds",
+      "required_result": "Recovery holds block redelivery",
+      "gap": "The complete-decision sweep covers recovery, protocol report, takeover and Outcome, not redeliver.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/recovery.test.ts",
+        "test_path": [
+          "K1.2-C9 unavailable pinned code holds the exchange, visibly",
+          "while held, redelivery and takeover are refused; nothing is resent"
+        ]
+      },
+      "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building."
+    },
+    "k12-mutation-a11": {
+      "family": "family.k12.ablations",
+      "member": "A11 unknown envelope fields ignored",
+      "required_result": "Unknown envelope fields are rejected",
+      "gap": "No sweep scenario supplies an unknown envelope field. Existing diagnostic-cost edits change traversal order/short-circuiting, not this unknown-field decision.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/activation-identity.test.ts",
+        "test_path": [
+          "O3 unknown envelope field long: bounded diagnostic, whole refusal"
+        ]
+      },
+      "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building."
+    },
+    "k12-mutation-a12": {
+      "family": "family.k12.ablations",
+      "member": "A12 Emission identity from a coordinator-wide counter",
+      "required_result": "Emission identity does not use a shared counter",
+      "gap": "The oracle compares the answer with the Emissions retained by that same decision; a shared counter can make both agree. It has no cross-scope counterfactual for Emission identity.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+        "test_path": [
+          "K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step",
+          "Emission identity is a pure function of accepted identities"
+        ]
+      },
+      "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building."
+    },
+    "k12-mutation-a13": {
+      "family": "family.k12.ablations",
+      "member": "A13 progress observed twice (validation and retention read separately)",
+      "required_result": "Progress is observed once",
+      "gap": "The sweep prepares plain byte progress before the call, so it does not count repeated envelope getter observations.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/outcome-hostile.test.ts",
+        "test_path": [
+          "K1.2-C13 envelope fields are own data, observed once",
+          "each field is read exactly once, and the accepted decision is the one reading"
+        ]
+      },
+      "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building."
+    },
+    "k12-mutation-a14": {
+      "family": "family.k12.ablations",
+      "member": "A14 Emission capacity checked only after every element is read",
+      "required_result": "Emission capacity stops before element observation",
+      "gap": "The sweep supplies ordinary over-capacity elements and checks the refusal; it does not measure element observations before that refusal.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+        "test_path": [
+          "K1.2-C3 a new proposal must answer the open exchange, or it is refused whole",
+          "an over-limit Emission list is refused without reading any element"
+        ]
+      },
+      "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building."
+    },
+    "k12-mutation-b9": {
+      "family": "family.k12.ablations",
+      "member": "B9 hold-ending History claims control power for a Runtime submission",
+      "required_result": "Hold-ending history names attempt submission authority",
+      "gap": "The complete-decision oracle uses the reference history when constructing the apply model; no control changes the authority field on an ended_by_outcome record.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/history-attribution.test.ts",
+        "test_path": [
+          "K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully",
+          "ended_by_outcome records attempt_submission, never a control claim"
+        ]
+      },
+      "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building."
+    },
+    "k12-mutation-b10": {
+      "family": "family.k12.ablations",
+      "member": "B10 ordinary redelivery rotates the Runtime attempt grant",
+      "required_result": "The initial attempt grant survives redelivery",
+      "gap": "No redeliver scenario exists in the complete-decision sweep; its setup-grant probe cannot by itself establish the grant retained before ordinary resend.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/submission-lifetime.test.ts",
+        "test_path": [
+          "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+          "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+        ]
+      },
+      "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building."
+    },
+    "k12-mutation-b11": {
+      "family": "family.k12.ablations",
+      "member": "B11 redelivery rotates only a takeover attempt grant",
+      "required_result": "A takeover attempt grant survives redelivery",
+      "gap": "The epoch>1 conditional mutant distinguishes this schedule from B10: correct ordinary resend can coexist with wrong resend after takeover.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/submission-lifetime.test.ts",
+        "test_path": [
+          "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+          "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+        ]
+      },
+      "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building."
+    },
+    "k12-mutation-b15": {
+      "family": "family.k12.ablations",
+      "member": "B15 skip all currency when either numeric claim member is malformed (K12-R11-ORDER-01 defective family)",
+      "required_result": "A usable stale coordinate still fences a partial claim",
+      "gap": "The sweep has stale epoch/base and unusable Activation identity scenarios, but does not cross one stale numeric coordinate with the other numeric coordinate malformed.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+        "test_path": [
+          "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+          "stale epoch 1 + base missing + current grant + valid content -> stale_exchange"
+        ]
+      },
+      "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building."
+    },
+    "k12-mutation-b20": {
+      "family": "family.k12.ablations",
+      "member": "B20 malformed Activation identity rendered in a pre-content refusal reason (decision-02 disclosure)",
+      "required_result": "Pre-authority refusal does not render unusable Activation identity",
+      "gap": "The sweep checks the expected refusal classification, position, Execution and state. For a named refusal it accepts the returned reason as that refusal; it does not compare the reason to an independent undisclosing literal.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+        "test_path": [
+          "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+          "current coordinates + identity missing + absent grant + valid content -> unauthorized_submission"
+        ]
+      },
+      "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building."
+    }
+  },
+  "resume_origin": "artifact-fb7a16748e389543ef6bf980"
 }

@@ -2,6 +2,24 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 group-cap stop — origin 431:** 423 retired; eight planned extraction
+  origins; **at least 14 distinct groups**. [Projection 06](projection-06.md) records
+  the early trigger before the scheduled origin-600 checkpoint (still outstanding).
+  - K1.2's 36-member runner has 23 applicable edits at checked revision `91175053`.
+    Eleven distinct live mutation-adoption obligations lack the registry/oracle route
+    required by the family rule; ordinary behavior leaves exist and are recorded.
+    [Group review 06](group-review-06.md) and `family-applicability-06.json` give the
+    bounded search and per-member evidence. The other routes remain unreconciled.
+  - Resume after an owner disposition at `K1.2/ablations.mjs:1`,
+    `artifact-fb7a16748e389543ef6bf980`, then `blocker-01.md` in source order.
+    Preliminary later-file reads are not dispositions and do not count toward 600.
+  - The fresh `git clone --no-local` at `/private/tmp/tools02-range4-20261029` ran
+    `npm ci` successfully. A pointer-only check of all 423 retirements resolved against
+    the prior passing repository catalog; no corpus/verify/regenerate is claimed here.
+  - No product or historical evidence changed; no new mutant or behavior test executed.
+    No P3 completion, self-audit, mappings_complete, final C/H or CI dispatch. Stop
+    dependent work under owner choice 07; IN_PROGRESS, not review-ready or accepted.
+
 - **2026-10-29 correction-02 complete — 430 origins:** 423 retired; seven planned
   extraction origins in **three distinct groups**. Resume with `K1.2/ablations.mjs`,
   then source files in order. Projection 06 is due after 170 more origins (600 total).
