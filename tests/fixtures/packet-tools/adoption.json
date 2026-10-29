@@ -4112,11 +4112,149 @@
     },
     {
       "id": "artifact-46f9465ef82ea4870cbf256c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-7e86db304c1eca97401a83b3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member is accepted, and counted in full at every place it appears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one long string shared across shared arrays is refused before a second megabyte is read"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member refused for another reason is not re-read without bound either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an array listing more names than any accepted array owns is refused without classifying each"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-580251cfb343edeaf49a8661",
@@ -46893,159 +47031,1557 @@
     },
     {
       "id": "mention-6e893291468d98875f6a3be8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-761f9dc18fea77d2169c8c88",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-0e8a9db17344ff7cb1f5012d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member is accepted, and counted in full at every place it appears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one long string shared across shared arrays is refused before a second megabyte is read"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member refused for another reason is not re-read without bound either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an array listing more names than any accepted array owns is refused without classifying each"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-737b2b60406f8808457be4f9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member is accepted, and counted in full at every place it appears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one long string shared across shared arrays is refused before a second megabyte is read"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member refused for another reason is not re-read without bound either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an array listing more names than any accepted array owns is refused without classifying each"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-4c1eabfde7565b4d572771c1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-a72df5f6ad9ac74382728f6a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member is accepted, and counted in full at every place it appears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one long string shared across shared arrays is refused before a second megabyte is read"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member refused for another reason is not re-read without bound either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an array listing more names than any accepted array owns is refused without classifying each"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-52c33d00143e32ef185d43c8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-66391524a3d9c36797d6f0c2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member is accepted, and counted in full at every place it appears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one long string shared across shared arrays is refused before a second megabyte is read"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member refused for another reason is not re-read without bound either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an array listing more names than any accepted array owns is refused without classifying each"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ef0a66f21c775a0fc7901788",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ffdbd3acc3158a7d311cc5f3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-c7157e37e00918e1693f6d1d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-73adac7ecfd60d64a2af57ad",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-da3b61a850f8806c6f4784e2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b0776ab0c164ec1a271db4e2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-a54cecfe02fa2cae143b0819",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-1c3ed826f975879299547a1d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-51574691de14e677ad7cf068",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-2ff614c97bc28e0160ef66d6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-9027d93dab039e1e68528ad5",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-f7eb8e5692c655e9848317e7",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-438b9f76b780d3e40aee99fa",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-1911094812cc7d896802b4c3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-b37fd6e7ea2bdb2165a61b9b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-d25269f99fe6edb00a457f32",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-35c4c27edab9850f00b5cdc2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-8918d69946cfceeb06e1b95e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-43e7763b5a9dbcefdbbd5aa7",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member is accepted, and counted in full at every place it appears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one long string shared across shared arrays is refused before a second megabyte is read"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member refused for another reason is not re-read without bound either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an array listing more names than any accepted array owns is refused without classifying each"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-0c4ae314d52801899fbb24b3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-176be3e810d98618e812b7c3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-9394ae99b287a704aea76316",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-aa322743133486385a65b668",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-6b940b42548834d906ec48ac",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-e050c551a11a699aee95daa8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-ab40a8b9ea3e80785d25b695",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member is accepted, and counted in full at every place it appears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one long string shared across shared arrays is refused before a second megabyte is read"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member refused for another reason is not re-read without bound either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an array listing more names than any accepted array owns is refused without classifying each"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-6c98b650223077d4eaa3b0d9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member is accepted, and counted in full at every place it appears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one long string shared across shared arrays is refused before a second megabyte is read"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member refused for another reason is not re-read without bound either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an array listing more names than any accepted array owns is refused without classifying each"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-2328635a68c1cc279481f091",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member is accepted, and counted in full at every place it appears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one long string shared across shared arrays is refused before a second megabyte is read"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member refused for another reason is not re-read without bound either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an array listing more names than any accepted array owns is refused without classifying each"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-d2260539c3fb513161a41d3d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current SDK refusal-cost suite asserts exact running-byte acceptance at the limit/one over, full per-occurrence sharing and bounded string/key/descriptor traversal within a visit, including 33,554,432-unit strings, shared oversized strings and 550,000 names. It preserves the required bounded traversal outcome after capture moved to the wrapper. Original Proxy observation is superseded by DESIGN-AUDIT-01 decision-01; converted plain-object tracked observations remain tested. Historical timings and exact observed run counts are not current universal guarantees (L-03); no historical ablation gains fresh P1 credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member is accepted, and counted in full at every place it appears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one long string shared across shared arrays is refused before a second megabyte is read"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member refused for another reason is not re-read without bound either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized string is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "one oversized member name is refused after reading about the length limit, not its length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared oversized string is read about once, and a shared long one only until the byte limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an array listing more names than any accepted array owns is refused without classifying each"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-15a0cb88bea636152d54ea43",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. Ordinary accepted snapshot equivalence remains asserted by the sharing/coherence leaves; hostile wrapper primordial/global fidelity is a current L-01 limit. Historical unchanged-source statements grant no new evidence credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member is accepted, and counted in full at every place it appears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (round-5 reconstruction)",
+              "an inherited Object.prototype.toJSON cannot divert canonical bytes from the retained snapshot"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (round-5 reconstruction)",
+              "an inherited Array.prototype.toJSON cannot divert canonical bytes either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (round-5 reconstruction)",
+              "a capture-time side effect installing Object.prototype.toJSON still binds the observed structure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (round-5 reconstruction)",
+              "a legitimate own toJSON data member is still content, not a hook"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (round-5 reconstruction)",
+              "an own-name listing reporting a canonical index outside length with no backing property is refused"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (round-5 reconstruction)",
+              "a backed canonical index outside length is also refused rather than silently dropped"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (round-5 reconstruction)",
+              "a throwing observation whose thrown value is itself hostile to inspection still becomes a refusal"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R2-VAL-02 serializer execution environment is caller-independent (round-6)",
+              "K11-R2-VAL-02 round 6: a one-shot Object.keys replacement live across the call cannot change canonical bytes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R2-VAL-02 serializer execution environment is caller-independent (round-6)",
+              "K11-R2-VAL-02 round 6: an Object.keys replacement that throws, live across the call, neither leaks nor diverts bytes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R2-VAL-02 serializer execution environment is caller-independent (round-6)",
+              "K11-R2-VAL-02 round 6: an Array.prototype.join replacement live across the call cannot change canonical bytes either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R2-VAL-02 serializer execution environment is caller-independent (round-6)",
+              "K11-R5-VAL-03 a prototype observation that swaps the live Object binding cannot pass a foreign prototype as plain"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-1b8921b396e0e5803ee92e6d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-631a89f180f853e6d7e4260f",

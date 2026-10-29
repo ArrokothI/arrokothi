@@ -1,6 +1,6 @@
 {
   "source_base": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
-  "source_packet": "K1.1-correction-01",
+  "source_packet": "K1.1-correction-02",
   "state": "packet_complete",
   "retirement_readings": [
     "mention-b43188cfa39f39ae809510de",
@@ -384,7 +384,48 @@
     "mention-04538ba110369155a987d84f",
     "mention-67f8b4047df9bad14629a386",
     "mention-02f3826ba74ab8b9ba56558e",
-    "mention-6dbc2e2cb5e276f525858a95"
+    "mention-6dbc2e2cb5e276f525858a95",
+    "mention-6e893291468d98875f6a3be8",
+    "mention-761f9dc18fea77d2169c8c88",
+    "mention-0e8a9db17344ff7cb1f5012d",
+    "mention-737b2b60406f8808457be4f9",
+    "mention-4c1eabfde7565b4d572771c1",
+    "mention-52c33d00143e32ef185d43c8",
+    "mention-a72df5f6ad9ac74382728f6a",
+    "mention-66391524a3d9c36797d6f0c2",
+    "mention-ef0a66f21c775a0fc7901788",
+    "mention-ffdbd3acc3158a7d311cc5f3",
+    "mention-73adac7ecfd60d64a2af57ad",
+    "mention-da3b61a850f8806c6f4784e2",
+    "mention-c7157e37e00918e1693f6d1d",
+    "mention-b0776ab0c164ec1a271db4e2",
+    "mention-a54cecfe02fa2cae143b0819",
+    "mention-1c3ed826f975879299547a1d",
+    "mention-51574691de14e677ad7cf068",
+    "mention-2ff614c97bc28e0160ef66d6",
+    "mention-9027d93dab039e1e68528ad5",
+    "mention-f7eb8e5692c655e9848317e7",
+    "mention-438b9f76b780d3e40aee99fa",
+    "mention-1911094812cc7d896802b4c3",
+    "mention-b37fd6e7ea2bdb2165a61b9b",
+    "mention-d25269f99fe6edb00a457f32",
+    "mention-8918d69946cfceeb06e1b95e",
+    "mention-35c4c27edab9850f00b5cdc2",
+    "artifact-46f9465ef82ea4870cbf256c",
+    "artifact-7e86db304c1eca97401a83b3",
+    "mention-43e7763b5a9dbcefdbbd5aa7",
+    "mention-0c4ae314d52801899fbb24b3",
+    "mention-176be3e810d98618e812b7c3",
+    "mention-9394ae99b287a704aea76316",
+    "mention-aa322743133486385a65b668",
+    "mention-6b940b42548834d906ec48ac",
+    "mention-e050c551a11a699aee95daa8",
+    "mention-1b8921b396e0e5803ee92e6d",
+    "mention-ab40a8b9ea3e80785d25b695",
+    "mention-6c98b650223077d4eaa3b0d9",
+    "mention-2328635a68c1cc279481f091",
+    "mention-d2260539c3fb513161a41d3d",
+    "mention-15a0cb88bea636152d54ea43"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -793,5 +834,5 @@
       "record": "docs/development/work/TOOLS-02/group-review-05.md"
     }
   ],
-  "next_source_packet": "K1.1-correction-02"
+  "next_source_packet": "K1.2"
 }

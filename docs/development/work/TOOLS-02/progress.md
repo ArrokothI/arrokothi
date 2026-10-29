@@ -2,6 +2,16 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 correction-02 complete — 430 origins:** 423 retired; seven planned
+  extraction origins in **three distinct groups**. Resume with `K1.2/ablations.mjs`,
+  then source files in order. Projection 06 is due after 170 more origins (600 total).
+  - Read the whole measurement artifact and the review's enclosing string/descriptor
+    section. Current SDK tests retain bounded scans and per-occurrence byte accounting;
+    converted plain-object observations cover descriptor counts after Proxy rejection.
+    Historical exact counts/timeouts are observations, not new universal guarantees.
+  - Source changes are mapping/progress records only. Other adoption tables and derived
+    preservation data remain unchanged; no product or historical evidence changed.
+
 - **2026-10-29 correction-01 complete — 389 origins:** 382 retired; seven planned
   extraction origins in **three distinct groups**. Resume with
   `K1.1-correction-02/cleanup-01.md`; origin 600 remains the projection-06 checkpoint.
