@@ -1,0 +1,933 @@
+{
+  "date": "2026-10-29",
+  "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+  "fresh_clone": "/private/tmp/tools02-adoptions2-20261029",
+  "setup": "git clone --no-local; npm ci (exit 0)",
+  "node": "v26.10.0",
+  "method": "Existing registry entries; packet_tools.target_control, run_targets and target_outcome. No alternate registry.",
+  "raw_sha256": "e9522dc4351f16a6b7b7f3a229aa62e0f719ee6f88e912e1ff689404c693b80a",
+  "raw_local_path": "/private/tmp/tools02-adoption-results.json",
+  "runner_sha256": "9600f73fb838881d9b4b9bfa8ab1051b2288851479f702b93857bc4d6005fa86",
+  "reproduction": "Run the k12.adopt-* entries from the committed mutations.json with packet_tools target_control/run_targets/target_outcome, or the full registered mutations command. This summary is a projection-time measurement; full final-C verification is outstanding.",
+  "seconds": 27.869,
+  "cases": [
+    {
+      "case": "k12.adopt-a6",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 31
+      },
+      "mutation": {
+        "id": "mutation-4e006eda2ea14ad2275c44e7bde6872bddba9ddbd0557ef3a2e5f4229dc95edf",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C7 Effects, obligations and waits are refused whole > an Effect-bearing Outcome is refused at envelope validation and leaves no action record",
+            "site": {
+              "kind": "assert.fail",
+              "module": "packages/kernel/tests/harness.ts",
+              "anchor": {
+                "line": 559,
+                "column": 18,
+                "expression": "assert.fail"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+                "fullName": "K1.2-C7 Effects, obligations and waits are refused whole > an Effect-bearing Outcome is refused at envelope validation and leaves no action record"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C7 Effects, obligations and waits are refused whole > an Effect-bearing Outcome is refused at envelope validation and leaves no action record",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 5
+      },
+      "seconds": 1.84
+    },
+    {
+      "case": "k12.adopt-a9",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 14
+      },
+      "mutation": {
+        "id": "mutation-d449e21c5d85ad71a4c1786ee83bf993c17b976ebab2dfb799aea1c98ca40a16",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/recovery.test.ts > K1.2-C9 unavailable pinned code holds the exchange, visibly > while held, redelivery and takeover are refused; nothing is resent",
+            "site": {
+              "kind": "assert.fail",
+              "module": "packages/kernel/tests/harness.ts",
+              "anchor": {
+                "line": 559,
+                "column": 18,
+                "expression": "assert.fail"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/recovery.test.ts",
+                "fullName": "K1.2-C9 unavailable pinned code holds the exchange, visibly > while held, redelivery and takeover are refused; nothing is resent"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/recovery.test.ts > K1.2-C9 unavailable pinned code holds the exchange, visibly > while held, redelivery and takeover are refused; nothing is resent",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 2
+      },
+      "seconds": 1.428
+    },
+    {
+      "case": "k12.adopt-a11",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 495
+      },
+      "mutation": {
+        "id": "mutation-ff504c560619828dd0184d6b0a1ac897a89d1566d506f3581f4f5aacc8d6e900",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/activation-identity.test.ts > O3 unknown envelope field long: bounded diagnostic, whole refusal",
+            "site": {
+              "kind": "assert.fail",
+              "module": "packages/kernel/tests/harness.ts",
+              "anchor": {
+                "line": 559,
+                "column": 18,
+                "expression": "assert.fail"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/activation-identity.test.ts",
+                "fullName": "O3 unknown envelope field long: bounded diagnostic, whole refusal"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/activation-identity.test.ts > O3 unknown envelope field long: bounded diagnostic, whole refusal",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 15
+      },
+      "seconds": 2.396
+    },
+    {
+      "case": "k12.adopt-a12",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 31
+      },
+      "mutation": {
+        "id": "mutation-0566166667cf5b392d257b744dbe8712c82afcbacab4c0665dd3f6ac089cb6f1",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step > Emission identity is a pure function of accepted identities",
+            "site": {
+              "kind": "assert.deepEqual",
+              "module": "packages/kernel/tests/outcome-acceptance.test.ts",
+              "anchor": {
+                "line": 466,
+                "column": 5,
+                "expression": "assert.deepEqual"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+                "fullName": "K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step > Emission identity is a pure function of accepted identities"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step > Emission identity is a pure function of accepted identities",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 1
+      },
+      "seconds": 1.492
+    },
+    {
+      "case": "k12.adopt-a13",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 10
+      },
+      "mutation": {
+        "id": "mutation-fda7a1adb51a5a7f26d06659c99e3c16fc5dd6d4c3c25ef492fe0583d2ef4cab",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/outcome-hostile.test.ts > K1.2-C13 envelope fields are own data, observed once > each field is read exactly once, and the accepted decision is the one reading",
+            "site": {
+              "kind": "assert.deepEqual",
+              "module": "packages/kernel/tests/outcome-hostile.test.ts",
+              "anchor": {
+                "line": 132,
+                "column": 5,
+                "expression": "assert.deepEqual"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/outcome-hostile.test.ts",
+                "fullName": "K1.2-C13 envelope fields are own data, observed once > each field is read exactly once, and the accepted decision is the one reading"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/outcome-hostile.test.ts > K1.2-C13 envelope fields are own data, observed once > each field is read exactly once, and the accepted decision is the one reading",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 2
+      },
+      "seconds": 1.684
+    },
+    {
+      "case": "k12.adopt-a14",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 31
+      },
+      "mutation": {
+        "id": "mutation-c37ea3957d429b4be6105b7bd88d0f92cbfaa0901235f7f1a153f31f6b826950",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C3 a new proposal must answer the open exchange, or it is refused whole > an over-limit Emission list is refused without reading any element",
+            "site": {
+              "kind": "assert.equal",
+              "module": "packages/kernel/tests/outcome-acceptance.test.ts",
+              "anchor": {
+                "line": 331,
+                "column": 5,
+                "expression": "assert.equal"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+                "fullName": "K1.2-C3 a new proposal must answer the open exchange, or it is refused whole > an over-limit Emission list is refused without reading any element"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C3 a new proposal must answer the open exchange, or it is refused whole > an over-limit Emission list is refused without reading any element",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 1
+      },
+      "seconds": 1.433
+    },
+    {
+      "case": "k12.adopt-b9",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 5
+      },
+      "mutation": {
+        "id": "mutation-e1bd0a43ecc3a560a26da47d66f5a5926b9af575cd476d234c0fcd3079ad340f",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/history-attribution.test.ts > K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully > ended_by_outcome records attempt_submission, never a control claim",
+            "site": {
+              "kind": "assert.equal",
+              "module": "packages/kernel/tests/history-attribution.test.ts",
+              "anchor": {
+                "line": 80,
+                "column": 5,
+                "expression": "assert.equal"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/history-attribution.test.ts",
+                "fullName": "K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully > ended_by_outcome records attempt_submission, never a control claim"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/history-attribution.test.ts > K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully > ended_by_outcome records attempt_submission, never a control claim",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 2
+      },
+      "seconds": 1.357
+    },
+    {
+      "case": "k12.adopt-b10",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 2
+      },
+      "mutation": {
+        "id": "mutation-ad312f631fdfd771a4e2cf6adc15036266503489ba873310bd4419f0bfd144e2",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/submission-lifetime.test.ts > K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > the first send's grant still accepts after two redeliveries, including hold-ending submission",
+            "site": {
+              "kind": "assert.fail",
+              "module": "packages/kernel/tests/harness.ts",
+              "anchor": {
+                "line": 552,
+                "column": 5,
+                "expression": "assert.fail"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/submission-lifetime.test.ts",
+                "fullName": "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > the first send's grant still accepts after two redeliveries, including hold-ending submission"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/submission-lifetime.test.ts > K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > the first send's grant still accepts after two redeliveries, including hold-ending submission",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 2
+      },
+      "seconds": 1.368
+    },
+    {
+      "case": "k12.adopt-b11",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 2
+      },
+      "mutation": {
+        "id": "mutation-e9cf4cecc7e79b3c5c0d4f7f99fcf8eb347fdf9b74b54b3486fa48e88434c13e",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/submission-lifetime.test.ts > K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced",
+            "site": {
+              "kind": "assert.fail",
+              "module": "packages/kernel/tests/harness.ts",
+              "anchor": {
+                "line": 552,
+                "column": 5,
+                "expression": "assert.fail"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/submission-lifetime.test.ts",
+                "fullName": "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/submission-lifetime.test.ts > K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 1
+      },
+      "seconds": 1.294
+    },
+    {
+      "case": "k12.adopt-b15",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 184
+      },
+      "mutation": {
+        "id": "mutation-192fec61e839de9e3f6c8c53530dfdc8685bb28dc6fcd5e8756f96dcc11eaa6c",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/outcome-partial-claim.test.ts > K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority > stale epoch 1 + base missing + current grant + valid content -> stale_exchange",
+            "site": {
+              "kind": "assert.equal",
+              "module": "packages/kernel/tests/outcome-partial-claim.test.ts",
+              "anchor": {
+                "line": 126,
+                "column": 11,
+                "expression": "assert.equal"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+                "fullName": "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority > stale epoch 1 + base missing + current grant + valid content -> stale_exchange"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/outcome-partial-claim.test.ts > K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority > stale epoch 1 + base missing + current grant + valid content -> stale_exchange",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 79
+      },
+      "seconds": 1.83
+    },
+    {
+      "case": "k12.adopt-b20",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 184
+      },
+      "mutation": {
+        "id": "mutation-b14f138c1d88776b85bf216744626d345991b2027ec861783c56b449cf8ca18c",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/outcome-partial-claim.test.ts > K1.2 decision-02 malformed Activation identity distinguishing schedules (C3) > current coordinates + identity missing + absent grant + valid content -> unauthorized_submission",
+            "site": {
+              "kind": "assert.match",
+              "module": "packages/kernel/tests/outcome-partial-claim.test.ts",
+              "anchor": {
+                "line": 596,
+                "column": 11,
+                "expression": "assert.match"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+                "fullName": "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3) > current coordinates + identity missing + absent grant + valid content -> unauthorized_submission"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/outcome-partial-claim.test.ts > K1.2 decision-02 malformed Activation identity distinguishing schedules (C3) > current coordinates + identity missing + absent grant + valid content -> unauthorized_submission",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 24
+      },
+      "seconds": 1.791
+    },
+    {
+      "case": "k12.adopt-a2",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 31
+      },
+      "mutation": {
+        "id": "mutation-b2d44f2580e4694aef0282ab3de820356952ef0734f3df48ee129643edc59be7",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts > a replay is answered even after the next exchange has started, and the new exchange is untouched",
+            "site": {
+              "kind": "assert.fail",
+              "module": "packages/kernel/tests/harness.ts",
+              "anchor": {
+                "line": 552,
+                "column": 5,
+                "expression": "assert.fail"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+                "fullName": "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts > a replay is answered even after the next exchange has started, and the new exchange is untouched"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts > a replay is answered even after the next exchange has started, and the new exchange is untouched",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 1
+      },
+      "seconds": 1.588
+    },
+    {
+      "case": "k12.adopt-b3",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 7
+      },
+      "mutation": {
+        "id": "mutation-852484bba799ab0b4a75b8c3fbfd7fb9842a7b3f95c486cd173be8d79700e7f6",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/hold-permitted.test.ts > K12-R1-HOLD-01 permitted actions predict the controls that work > b) protocol hold alone permits request_takeover and submit_outcome; redeliver refused, takeover clears",
+            "site": {
+              "kind": "assert.deepEqual",
+              "module": "packages/kernel/tests/hold-permitted.test.ts",
+              "anchor": {
+                "line": 122,
+                "column": 5,
+                "expression": "assert.deepEqual"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/hold-permitted.test.ts",
+                "fullName": "K12-R1-HOLD-01 permitted actions predict the controls that work > b) protocol hold alone permits request_takeover and submit_outcome; redeliver refused, takeover clears"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/hold-permitted.test.ts > K12-R1-HOLD-01 permitted actions predict the controls that work > b) protocol hold alone permits request_takeover and submit_outcome; redeliver refused, takeover clears",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 3
+      },
+      "seconds": 1.359
+    },
+    {
+      "case": "k12.adopt-b4",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 4
+      },
+      "mutation": {
+        "id": "mutation-1db700d2d8da717a0a98fb12506d011e2d6e22a528ff5c2c8d8da4e63c77aafd",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/delivery-attribution.test.ts > K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact attribution > Test A \"mixed redeliveries across takeover retain exact attribution\"",
+            "site": {
+              "kind": "assert.deepEqual",
+              "module": "packages/kernel/tests/delivery-attribution.test.ts",
+              "anchor": {
+                "line": 59,
+                "column": 5,
+                "expression": "assert.deepEqual"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/delivery-attribution.test.ts",
+                "fullName": "K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact attribution > Test A \"mixed redeliveries across takeover retain exact attribution\""
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/delivery-attribution.test.ts > K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact attribution > Test A \"mixed redeliveries across takeover retain exact attribution\"",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 4
+      },
+      "seconds": 1.349
+    },
+    {
+      "case": "k12.adopt-b7",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 6
+      },
+      "mutation": {
+        "id": "mutation-9447fc5d73aeb5f4663bf1f9d58d28d876045b3ae128324429aa7c1c123107ce",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/transaction.test.ts > K12-R1-DOC-01 an Outcome ending one hold commits its history atomically > Test E \"Outcome ending one hold commits history in the same decision\"",
+            "site": {
+              "kind": "assert.equal",
+              "module": "packages/kernel/tests/transaction.test.ts",
+              "anchor": {
+                "line": 294,
+                "column": 5,
+                "expression": "assert.equal"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/transaction.test.ts",
+                "fullName": "K12-R1-DOC-01 an Outcome ending one hold commits its history atomically > Test E \"Outcome ending one hold commits history in the same decision\""
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/transaction.test.ts > K12-R1-DOC-01 an Outcome ending one hold commits its history atomically > Test E \"Outcome ending one hold commits history in the same decision\"",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 2
+      },
+      "seconds": 1.36
+    },
+    {
+      "case": "k12.adopt-b12",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 15
+      },
+      "mutation": {
+        "id": "mutation-86b76c972f56d502c688dc7025cd17c334db3f7fcba2ec87c1833a4c3bdcea8e",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/submission-authority.test.ts > K12-R9 authority before content on a well-formed current claim (Case A) > grant-less and forged current proposals with invalid content are unauthorized without content disclosure",
+            "site": {
+              "kind": "assert.equal",
+              "module": "packages/kernel/tests/submission-authority.test.ts",
+              "anchor": {
+                "line": 352,
+                "column": 9,
+                "expression": "assert.equal"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/submission-authority.test.ts",
+                "fullName": "K12-R9 authority before content on a well-formed current claim (Case A) > grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/submission-authority.test.ts > K12-R9 authority before content on a well-formed current claim (Case A) > grant-less and forged current proposals with invalid content are unauthorized without content disclosure",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 4
+      },
+      "seconds": 1.467
+    },
+    {
+      "case": "k12.adopt-b13",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 15
+      },
+      "mutation": {
+        "id": "mutation-647a91765d04c10a0f15784c9d4efd260920393256f42de5091ffc2166e74201",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/submission-authority.test.ts > K12-R9 authority before content on a well-formed current claim (Case A) > over-capacity proposals without authority are unauthorized, not capacity disclosures",
+            "site": {
+              "kind": "assert.equal",
+              "module": "packages/kernel/tests/submission-authority.test.ts",
+              "anchor": {
+                "line": 401,
+                "column": 7,
+                "expression": "assert.equal"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/submission-authority.test.ts",
+                "fullName": "K12-R9 authority before content on a well-formed current claim (Case A) > over-capacity proposals without authority are unauthorized, not capacity disclosures"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/submission-authority.test.ts > K12-R9 authority before content on a well-formed current claim (Case A) > over-capacity proposals without authority are unauthorized, not capacity disclosures",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 1
+      },
+      "seconds": 1.396
+    },
+    {
+      "case": "k12.adopt-b14",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true,
+        "source_policy": true,
+        "leaves": 15
+      },
+      "mutation": {
+        "id": "mutation-a976f84d56bc0a2c6bd80ee5795e254f6edd1f293e1581fd8a3b24082cfa01ed",
+        "reached": true,
+        "run_status": "finished",
+        "exit": 1,
+        "source_policy": true,
+        "status": "killed",
+        "killed_by": [
+          {
+            "target": "packages/kernel/tests/submission-authority.test.ts > K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C) > valid grant with malformed claim and invalid content is malformed, not unauthorized",
+            "site": {
+              "kind": "assert.match",
+              "module": "packages/kernel/tests/submission-authority.test.ts",
+              "anchor": {
+                "line": 494,
+                "column": 5,
+                "expression": "assert.match"
+              },
+              "invocation": {
+                "file": "packages/kernel/tests/submission-authority.test.ts",
+                "fullName": "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C) > valid grant with malformed claim and invalid content is malformed, not unauthorized"
+              }
+            }
+          }
+        ],
+        "targets": [
+          {
+            "target": "packages/kernel/tests/submission-authority.test.ts > K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C) > valid grant with malformed claim and invalid content is malformed, not unauthorized",
+            "outcome": "assertion",
+            "failure_type": "testCodeFailure",
+            "cause": {
+              "name": "AssertionError",
+              "code": "ERR_ASSERTION"
+            },
+            "provenance": "frames",
+            "origin": "not established"
+          }
+        ],
+        "failures": 2
+      },
+      "seconds": 1.437
+    }
+  ]
+}

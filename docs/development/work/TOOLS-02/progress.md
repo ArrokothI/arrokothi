@@ -2,6 +2,28 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 K1.2 through implementation 08 — origin 499:** 491 retired;
+  eight extraction origins; **three test groups and eighteen mutation adoptions**.
+  Resume at `K1.2/implementation-09.md:52`, `mention-eec4a6daf8cbd15a87f16b76`.
+  - All eighteen adoption controls passed and all eighteen current mutants earned
+    qualified kills at `51d945149ceb46fd3a4547ec811313e868f951a8` in fresh clone
+    `/private/tmp/tools02-adoptions2-20261029` (`git clone --no-local`, `npm ci`,
+    Node v26.10.0). [Measurement](adoption-controls-08.json): **27.869 seconds**
+    for controls plus mutants, about 1.55 seconds per adoption. Final-C rerun remains.
+  - The family member readings are in group-review-07; no complete family/P1 closure
+    is claimed. All 150 pre-existing registry cases retain exactly the same copied
+    Git paths and dependency pins after moving the shared historical probe tree into
+    their case files. The eighteen validated member route bindings are next.
+  - Read and triaged blocker, checks 06/07, contract, decisions 03/04 and implementation
+    01–08 in source order. Current grant, History, reentrancy, immutable evidence and
+    plain-data diagnostic obligations map to maintained leaves; obsolete round gates
+    use the accepted TOOLS-01 replacement. No additional group was found in this batch.
+  - Projection 07 remains due at origin 731. No product/historical evidence or derived
+    preservation data changed. The semantic-record save was approved after proving
+    that design 01 §2.2 leaves these states/rationales to the human under §5.3; all
+    generated tables remain identical. No P3 completion, self-audit, mappings_complete,
+    final C/H or CI dispatch; IN_PROGRESS, not review-ready or independently accepted.
+
 - **2026-10-29 K1.2 family reconciliation — origin 431:** three test groups and
   **eighteen mutation adoptions**. [Group review 07](group-review-07.md) reads each
   absent anchor individually: seven moved live obligations need adoptions; six have

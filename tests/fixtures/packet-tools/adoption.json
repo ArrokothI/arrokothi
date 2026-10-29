@@ -4914,15 +4914,29 @@
     },
     {
       "id": "artifact-df2537864f7163e488daff7e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The whole script is a fixed-round preservation/link gate against H5/H6 and a fixed list of then-active files. That candidate gate is no longer an operation of the current packet: accepted TOOLS-01 design 02 replaced one-off round gates with declared candidate/spec verification. This retires the historical gate, not the general preservation or link-validity obligations. Original scripts and logs are retained unchanged.",
+        "decision": "docs/development/work/TOOLS-01/design-02.md"
+      }
     },
     {
       "id": "artifact-e122b0baefbfb6850805f341",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The whole script is a fixed-round preservation/link gate against H5/H6 and a fixed list of then-active files. That candidate gate is no longer an operation of the current packet: accepted TOOLS-01 design 02 replaced one-off round gates with declared candidate/spec verification. This retires the historical gate, not the general preservation or link-validity obligations. Original scripts and logs are retained unchanged.",
+        "decision": "docs/development/work/TOOLS-01/design-02.md"
+      }
     },
     {
       "id": "artifact-a6c994a415970d4701bfcee6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "artifact-07994bb5ac64edda6b671fa6",
@@ -51193,263 +51207,3511 @@
     },
     {
       "id": "mention-c1a98f49f6e36206b9b31774",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This paragraph stops canonical changes and permits separate evidence work pending an owner decision; it specifies process and status, not a new input/operation/result. The linked authority dispute is read in its own origins."
+      }
     },
     {
       "id": "mention-15ada67f80c2105b3fc15cea",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The enclosing C2 clause requires replay after resolution, a new exchange and termination, plus conflict for changed content/epoch. The named leaves assert the next-exchange, exact-duplicate, terminal replay and invalid/changed-epoch conflict distinctions; no generic passing count is used.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "an exact duplicate returns the original receipt and decision, and changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "a replay is answered even after the next exchange has started, and the new exchange is untouched"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C5 a terminal lifetime never reopens",
+              "an exact replay of the terminal Outcome still returns its receipt: the lookup precedes the terminal check"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-683a81b3959c14d11e522ed9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The enclosing C2 clause requires replay after resolution, a new exchange and termination, plus conflict for changed content/epoch. The named leaves assert the next-exchange, exact-duplicate, terminal replay and invalid/changed-epoch conflict distinctions; no generic passing count is used.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "an exact duplicate returns the original receipt and decision, and changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "a replay is answered even after the next exchange has started, and the new exchange is untouched"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C5 a terminal lifetime never reopens",
+              "an exact replay of the terminal Outcome still returns its receipt: the lookup precedes the terminal check"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-78fea43de2f1977b2505f97d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. C12 combines immutable returned/inspected/replayed records with scope-local evidence. Outcome-evidence directly attempts edits and re-inspects/replays; recovery-evidence covers hold/delivery lists and cross-scope positions. These are the same exposed record classes, not a claim of hostile same-process isolation.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-evidence.test.ts",
+            "test_path": [
+              "K1.2-C12 retained Outcome evidence is immutable",
+              "editing the returned answer changes neither the replay nor inspection"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-evidence.test.ts",
+            "test_path": [
+              "K1.2-C12 retained Outcome evidence is immutable",
+              "the caller's own progress, Emission and result objects are captured, not retained"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-evidence.test.ts",
+            "test_path": [
+              "K1.2-C12 retained Outcome evidence is immutable",
+              "every record inspection exposes is frozen, and every list around them is a fresh copy"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-evidence.test.ts",
+            "test_path": [
+              "K1.2-C12 retained Outcome evidence is immutable",
+              "the Activation that carries accepted progress is frozen through the progress it carries"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-evidence.test.ts",
+            "test_path": [
+              "K1.2-C12 retained Outcome evidence is immutable",
+              "a recovery hold record is frozen and edits to a returned decision do not reach the Kernel"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1 HISTORY/HOLD/DELIVERY/AUTH scoped non-disclosure for new records",
+              "B create/dispatch/recover/report/takeover/outcome discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 history records are immutable snapshots",
+              "a) list push/pop/truncate and record edits leave next inspect unchanged, records frozen"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-HOLD-01 holds and permitted lists are frozen snapshots",
+              "b) hold frozen, permitted frozen, edits leave next inspect unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-DELIVERY-01 delivery rows are fresh copies, not caller-mutable",
+              "c) activation deliveries: push/edit leave next inspect unchanged, views are fresh copies"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-DELIVERY-01 delivery rows are fresh copies, not caller-mutable",
+              "c) resolved exchange deliveries: edits leave next inspect and replay unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 control refusals are frozen retained evidence",
+              "d) unauthorized_control frozen; mutating returned or inspected copy leaves record unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 control refusals are frozen retained evidence",
+              "d) unsafe_replacement frozen; mutation leaves inspect unchanged and mints no receipt/delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1 per-Execution positions for new ops (recover/report consume none)",
+              "B accepts/refusals including control refusals do not shift A's positions"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b43c5a32c9a140f19c1aea81",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Current/forged/absent and retired grants, invalid content before authority, partial numeric claims and redelivery/takeover lifetimes remain explicit maintained schedules. The submission-authority and submission-lifetime leaves assert whole refusal state and preserved/retired reference authority; partial-claim tests exercise the malformed numeric cross-product.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only continuing Outcome is refused",
+              "correct-looking continue with a forged grant commits nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only terminal Outcome is refused",
+              "correct-looking complete commits no result, no B-5, and leaves the attempt answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing",
+              "forged grant after takeover is unauthorized, retired grant is stale or silent"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only hold-ending Outcome is refused",
+              "holds and history survive a fabricated current-looking Outcome"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 the grant-holding attempt proposal is accepted",
+              "the same valid Outcome with the current grant commits normally"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 old attempt authority dies with its epoch",
+              "after takeover the retired grant cannot commit while the new grant can"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 submission authority is undiscoverable and unforgeable",
+              "hidden and missing stay indistinguishable, and views expose no grant"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "over-capacity proposals without authority are unauthorized, not capacity disclosures"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 neighboring currency ordering: retired grant with stale exchange (Case D)",
+              "currency refusal still precedes authority, even with invalid content"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-38ad16911b006053f663bc7b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-32b3835802a7e6e9320b59e6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S2. The current all-or-none and no-callback decision obligation is covered by state-owner apply/preparation and reachable-call checks plus transaction hold-history tests. Accepted COORD-REFACTOR-01 design 01 replaced the coordinator-local build/apply implementation; literal old construction ordering is not a new invariant on the new owner. No product change is inferred from historical wording.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "every call resolves to zone code, a classified primordial or an inventoried foreign call; the owner reaches none"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "#applyOutcome: prepares without changing anything, then commits exactly its declared statements"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "each record field has fixed arms, and the coordinator changes accepted state only by handing plans over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "#applyOutcome: admits one successor of its own record before any write, and commits exactly its changes from it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending one hold commits its history atomically",
+              "Test E \"Outcome ending one hold commits history in the same decision\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending both holds commits both history records atomically",
+              "Test F \"Outcome ending both holds commits both history records\""
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-429ba6a85d259146b29b35c9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S2. The current all-or-none and no-callback decision obligation is covered by state-owner apply/preparation and reachable-call checks plus transaction hold-history tests. Accepted COORD-REFACTOR-01 design 01 replaced the coordinator-local build/apply implementation; literal old construction ordering is not a new invariant on the new owner. No product change is inferred from historical wording.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "every call resolves to zone code, a classified primordial or an inventoried foreign call; the owner reaches none"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "#applyOutcome: prepares without changing anything, then commits exactly its declared statements"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "each record field has fixed arms, and the coordinator changes accepted state only by handing plans over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "#applyOutcome: admits one successor of its own record before any write, and commits exactly its changes from it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending one hold commits its history atomically",
+              "Test E \"Outcome ending one hold commits history in the same decision\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending both holds commits both history records atomically",
+              "Test F \"Outcome ending both holds commits both history records\""
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-acfa6711c8ccaea8a033fc14",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The enclosing control-scope clause distinguishes three explicit controls from attempt submission and scope visibility. Control-authority exercises inspect-only denial and hidden/missing ordering; submission-authority exercises visible grant holders and grants absent from views.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer takeover refused unauthorized_control; author takeover succeeds epoch 2"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer recover refused unauthorized_control; author recover creates hold"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer report refused unauthorized_control; author report creates hold"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visibility before control",
+              "outsider gets unknown_destination for all three controls, hidden\u2261missing, no record"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 observer Outcome without grant is refused (K12-R3-AUTH-02)",
+              "visibility-only caller submitting at a valid epoch is refused without the attempt grant"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 the grant-holding attempt proposal is accepted",
+              "the same valid Outcome with the current grant commits normally"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 submission authority is undiscoverable and unforgeable",
+              "hidden and missing stay indistinguishable, and views expose no grant"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-c8e3d6ea5dfaa592ba967cb8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Current/forged/absent and retired grants, invalid content before authority, partial numeric claims and redelivery/takeover lifetimes remain explicit maintained schedules. The submission-authority and submission-lifetime leaves assert whole refusal state and preserved/retired reference authority; partial-claim tests exercise the malformed numeric cross-product.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only continuing Outcome is refused",
+              "correct-looking continue with a forged grant commits nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only terminal Outcome is refused",
+              "correct-looking complete commits no result, no B-5, and leaves the attempt answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing",
+              "forged grant after takeover is unauthorized, retired grant is stale or silent"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only hold-ending Outcome is refused",
+              "holds and history survive a fabricated current-looking Outcome"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 the grant-holding attempt proposal is accepted",
+              "the same valid Outcome with the current grant commits normally"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 old attempt authority dies with its epoch",
+              "after takeover the retired grant cannot commit while the new grant can"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 submission authority is undiscoverable and unforgeable",
+              "hidden and missing stay indistinguishable, and views expose no grant"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "over-capacity proposals without authority are unauthorized, not capacity disclosures"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 malformed coordinates crossed with authority failure and invalid content (Case B)",
+              "missing, fractional, and negative epoch/base variants never leak content before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C)",
+              "valid grant with malformed claim and invalid content is malformed, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 neighboring currency ordering: retired grant with stale exchange (Case D)",
+              "currency refusal still precedes authority, even with invalid content"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-81ac926292c2ed755be2343a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S2/S3. Current plain-object/array and thrown-value diagnostic lookup bounds remain at the SDK wrapper and are asserted by the named deep-chain and converted descriptor-probe leaves. DESIGN-AUDIT-01 decision 01 superseded Proxy acceptance with refusal before traps; decision-03 timing observations are not a wall-clock guarantee (L-03). Counts are retained for the current plain-data operation, not retired merely because capture moved.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): the probe's Proxy is refused with zero traps; plain rows keep depth-independent bounded observations and exact acceptance"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): the byte stop bounds observations before later rows"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): one and eight eager roots keep bounded observations before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-34af6eeff0f24bb970324d60",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S2/S3. Plain values retain the selected-observation and diagnostic bounds, asserted by the converted handler-chain and eager-root leaves. DESIGN-AUDIT-01 decision 01 replaced live Proxy processing with zero-trap refusal; timing was observational and remains L-03. No Proxy-exemption behavior is newly claimed.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-04 handler probe (item 5 superseded by decision-01 item 2): a handler-chain Proxy is refused with no trap lookup; plain rows keep Kernel-selected observations and exact acceptance"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-04 handler probe (item 5 superseded by decision-01 item 2): the byte stop bounds Kernel-selected observations"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-04 handler probe (item 5 superseded by decision-01 item 2): eager roots preserve selected counts and whole state before authority"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-8f6c4d635d99c314f6610406",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The table names the exact next-exchange/terminal replay and invalid or changed-epoch conflict obligations; these current leaves still assert all of them. The family member A2 has its separate adoption route.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "a replay is answered even after the next exchange has started, and the new exchange is untouched"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C5 a terminal lifetime never reopens",
+              "an exact replay of the terminal Outcome still returns its receipt: the lookup precedes the terminal check"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ebc9f960b67992baba1aadd7",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S2. The enclosing section includes the live redelivery/reentrant-takeover answer bug, covered by the named takeover leaf. The old bare-directory historical runner was replaced by registry target discovery/control validation; target-assertion-shape and wrong-kill mechanisms distinguish runner errors and failures outside the expected leaf. This does not count an old runner error as a kill.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover.test.ts",
+            "test_path": [
+              "K1.2-C8 the takeover is ordered against the Outcome it could race",
+              "a redelivery answer describes the attempt it resent, even when the Driver takes over during it"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "result.target-assertion-shape"
+          },
+          {
+            "kind": "case",
+            "id": "result.target-wrong-kill"
+          }
+        ]
+      }
     },
     {
       "id": "mention-b4ae33c1703d6c1bbd25938f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-36ce32e04de50ecf952927ad",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-8ceaf4a9e348d9732f6474aa",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-8f065a802e48ee36bb6c4819",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The C8 row specifies takeover identity/epoch/reentrancy, stale fencing, inspect-only denial and unsafe/absent/throwing safety refusal; current takeover and control-authority leaves assert those distinct arms.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover.test.ts",
+            "test_path": [
+              "K1.2-C8 an accepted takeover advances the epoch within the same exchange",
+              "same Activation ID, same batch and progress, epoch + 1, a dispatch-intent receipt, a fresh delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover.test.ts",
+            "test_path": [
+              "K1.2-C8 an accepted takeover advances the epoch within the same exchange",
+              "the superseded epoch is fenced at once, and the new epoch commits (WS ID-9 case 3)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover.test.ts",
+            "test_path": [
+              "K1.2-C8 an accepted takeover advances the epoch within the same exchange",
+              "a takeover names the attempt it supersedes: a repeat cannot advance twice"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover.test.ts",
+            "test_path": [
+              "K1.2-C8 the takeover is ordered against the Outcome it could race",
+              "a takeover that reenters from inside the Driver's delivery is fenced like any other"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer takeover refused unauthorized_control; author takeover succeeds epoch 2"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 takeover safe-replacement",
+              "unsafeDriver refused unsafe_replacement with zero mutation except refusal"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 takeover safe-replacement",
+              "driver lacking isSafeToReplace refused unsafe_replacement"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 takeover safe-replacement",
+              "throwing isSafeToReplace refused unsafe_replacement"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-09b1cc20a1286f38be46f7f7",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. C12 names frozen returned/inspected evidence and scope-local activity/positions. The maintained evidence leaves attempt those mutations and compare the next observation; cross-scope controls cover the newly added recovery records.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-evidence.test.ts",
+            "test_path": [
+              "K1.2-C12 retained Outcome evidence is immutable",
+              "editing the returned answer changes neither the replay nor inspection"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-evidence.test.ts",
+            "test_path": [
+              "K1.2-C12 retained Outcome evidence is immutable",
+              "every record inspection exposes is frozen, and every list around them is a fresh copy"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-evidence.test.ts",
+            "test_path": [
+              "K1.2-C12 retained Outcome evidence is immutable",
+              "a recovery hold record is frozen and edits to a returned decision do not reach the Kernel"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1 HISTORY/HOLD/DELIVERY/AUTH scoped non-disclosure for new records",
+              "B create/dispatch/recover/report/takeover/outcome discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 history records are immutable snapshots",
+              "a) list push/pop/truncate and record edits leave next inspect unchanged, records frozen"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-HOLD-01 holds and permitted lists are frozen snapshots",
+              "b) hold frozen, permitted frozen, edits leave next inspect unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-DELIVERY-01 delivery rows are fresh copies, not caller-mutable",
+              "c) activation deliveries: push/edit leave next inspect unchanged, views are fresh copies"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-DELIVERY-01 delivery rows are fresh copies, not caller-mutable",
+              "c) resolved exchange deliveries: edits leave next inspect and replay unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 control refusals are frozen retained evidence",
+              "d) unauthorized_control frozen; mutating returned or inspected copy leaves record unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 control refusals are frozen retained evidence",
+              "d) unsafe_replacement frozen; mutation leaves inspect unchanged and mints no receipt/delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1 per-Execution positions for new ops (recover/report consume none)",
+              "B accepts/refusals including control refusals do not shift A's positions"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-eff2e39ab332185c1a15decb",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The finding distinguishes visibility from control and fail-closed safe replacement, with hidden/missing ordering. The current control-authority leaves exercise all three inspect-only controls and unsafe/absent/throwing Drivers.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer takeover refused unauthorized_control; author takeover succeeds epoch 2"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer recover refused unauthorized_control; author recover creates hold"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer report refused unauthorized_control; author report creates hold"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 takeover safe-replacement",
+              "unsafeDriver refused unsafe_replacement with zero mutation except refusal"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 takeover safe-replacement",
+              "driver lacking isSafeToReplace refused unsafe_replacement"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 takeover safe-replacement",
+              "throwing isSafeToReplace refused unsafe_replacement"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visibility before control",
+              "outsider gets unknown_destination for all three controls, hidden\u2261missing, no record"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-9de8af7e5af4c10be896ff58",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Exact code/protocol/both permitted lists, corresponding refusals/transitions and frozen snapshots are asserted by hold-permitted. B3 remains a separate family adoption.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/hold-permitted.test.ts",
+            "test_path": [
+              "K12-R1-HOLD-01 permitted actions predict the controls that work",
+              "a) code hold permits declare_code_availability and submit_outcome; redeliver/takeover refused, declaration clears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/hold-permitted.test.ts",
+            "test_path": [
+              "K12-R1-HOLD-01 permitted actions predict the controls that work",
+              "b) protocol hold alone permits request_takeover and submit_outcome; redeliver refused, takeover clears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/hold-permitted.test.ts",
+            "test_path": [
+              "K12-R1-HOLD-01 permitted actions predict the controls that work",
+              "c) both holds read declare_code_availability + submit_outcome; takeover blocked until code clears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/hold-permitted.test.ts",
+            "test_path": [
+              "K12-R1-HOLD-01 permitted actions predict the controls that work",
+              "d) permitted lists are frozen snapshots: mutation throws or leaves the next inspect unchanged"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-060997ad9290154491d0f88d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Recovery-history asserts entered/updated/cleared and ended-by-Outcome lifecycles, retention through later dispatch/termination, duplicate no-op and immutable/scoped history. The B2/B7 family mechanisms are reconciled separately.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "a) code hold lifecycle: entered, updated on reason change, cleared_by_declaration; all retained"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "b) protocol hold via takeover: entered, then cleared_by_takeover with resultingEpoch"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "c) ended_by_outcome: code hold ends with the exchange, history survives dispatch and completion"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "d) both holds plus Outcome: 2 entered + 2 ended_by_outcome"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "e) idempotent duplicates append nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "f) history is immutable: list edits and record edits leave the next inspect unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "g) cross-scope: control activity on B leaves A's history unchanged and undisclosed"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-adea733aa8f88aaf0bd95c19",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Delivery-attribution covers mixed epochs with late reports, resolved retention and next-exchange separation; the family adoption keeps the old epoch-1 mutation live at its moved state-owner site.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/delivery-attribution.test.ts",
+            "test_path": [
+              "K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact attribution",
+              "Test A \"mixed redeliveries across takeover retain exact attribution\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/delivery-attribution.test.ts",
+            "test_path": [
+              "K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact attribution",
+              "Test B \"late reports settle only their own row across epochs\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/delivery-attribution.test.ts",
+            "test_path": [
+              "K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact attribution",
+              "Test C \"resolved exchange retains per-delivery epochs\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/delivery-attribution.test.ts",
+            "test_path": [
+              "K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact attribution",
+              "Test D \"new exchange after continue has its own attribution\""
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-4f43b483fa039b66370603aa",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S2. Receipt contiguity, hostile observation and reentrant whole-decision ordering are explicit transaction leaves. The current state-owner preflight/apply guards replace the coordinator-local transaction mechanism under COORD-REFACTOR-01 design 01; historical prose does not mandate obsolete field access.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 refusals consume no acceptance position",
+              "Test A \"refusals consume no acceptance position\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 replay and redelivery consume no position",
+              "Test B \"replay and redelivery consume no position\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 hostile pollution during observation cannot split the commit",
+              "Test C \"hostile pollution during observation cannot split the commit\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 reentrant Outcome during observation ordered before outer checks",
+              "Test D \"reentrant Outcome during observation ordered before outer checks\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "#applyOutcome: prepares without changing anything, then commits exactly its declared statements"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-3c8174ddf8e55d66175509b6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-e62bab5f149f190b26a46365",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-b2b2057f9e502c9ccbe44d0d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-d0d7d262b057e1479ad7c7e1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S2. One- and two-hold Outcome History and contiguous receipts are asserted by transaction E/F; the current state-owner preparation/apply check protects the moved commit. COORD-REFACTOR-01 replaces the literal coordinator-local prebuild mechanism. The B7 adoption tests omission at its current append.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending one hold commits its history atomically",
+              "Test E \"Outcome ending one hold commits history in the same decision\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending both holds commits both history records atomically",
+              "Test F \"Outcome ending both holds commits both history records\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "#applyOutcome: prepares without changing anything, then commits exactly its declared statements"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-3658c31dd47e5494e53f6bea",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-e4e7ce3a85240afd3a8e745a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Nested takeover, resolving Outcome, terminal Outcome and callback-established code hold are explicit reentrancy leaves. The duplicate hold checks explain the historical paired A10 edit; the live after-callback refusal is independently asserted.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 a nested takeover inside isSafeToReplace commits once",
+              "inner takeover commits epoch 2; the outer stale arm refuses with no orphan receipt or delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first",
+              "a current continue Outcome resolves; the outer takeover refuses with no receipt or delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first",
+              "a terminal complete inside the callback ends the Execution; the outer takeover is refused"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 a code hold inside isSafeToReplace blocks the outer takeover",
+              "recoverExecution establishes the hold during the callback; the outer arm is refused"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-8a237a0375d047757da48b73",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S2. One- and two-hold Outcome History and contiguous receipts are asserted by transaction E/F; the current state-owner preparation/apply check protects the moved commit. COORD-REFACTOR-01 replaces the literal coordinator-local prebuild mechanism. The B7 adoption tests omission at its current append.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending one hold commits its history atomically",
+              "Test E \"Outcome ending one hold commits history in the same decision\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending both holds commits both history records atomically",
+              "Test F \"Outcome ending both holds commits both history records\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "#applyOutcome: prepares without changing anything, then commits exactly its declared statements"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-f5ab82ad9a4de6ed146d1290",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S1. The prior-finding summary names callback revalidation and hold-history transaction counterexamples, covered by their maintained leaves. Per-file evidence metadata, reporter formatting and review status are process statements. No new runtime counterexample is hidden by the aggregate results.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 a nested takeover inside isSafeToReplace commits once",
+              "inner takeover commits epoch 2; the outer stale arm refuses with no orphan receipt or delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first",
+              "a current continue Outcome resolves; the outer takeover refuses with no receipt or delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first",
+              "a terminal complete inside the callback ends the Execution; the outer takeover is refused"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 a code hold inside isSafeToReplace blocks the outer takeover",
+              "recoverExecution establishes the hold during the callback; the outer arm is refused"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending one hold commits its history atomically",
+              "Test E \"Outcome ending one hold commits history in the same decision\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending both holds commits both history records atomically",
+              "Test F \"Outcome ending both holds commits both history records\""
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-83d153d3c40f09e62535d1fe",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Nested takeover, resolving Outcome, terminal Outcome and callback-established code hold are explicit reentrancy leaves. The duplicate hold checks explain the historical paired A10 edit; the live after-callback refusal is independently asserted.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 a nested takeover inside isSafeToReplace commits once",
+              "inner takeover commits epoch 2; the outer stale arm refuses with no orphan receipt or delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first",
+              "a current continue Outcome resolves; the outer takeover refuses with no receipt or delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first",
+              "a terminal complete inside the callback ends the Execution; the outer takeover is refused"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 a code hold inside isSafeToReplace blocks the outer takeover",
+              "recoverExecution establishes the hold during the callback; the outer arm is refused"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-1fe9965f32a6758ce5ccefea",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-5585b63d0d0d16c8f5149f8e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-36f61b2e6d0d171529e11991",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-d4ad46eb949b484a1597bd10",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The grant-mint/delivery/submission and fencing clauses distinguish reference authority from inspected coordinates, exact replay before authority, retired-grant fencing, scope-first refusal and no state change for fabricated terminal/hold-ending Outcomes. Existing submission-authority and lifetime leaves exercise these schedules; current family B8 uses the same authority decision.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only continuing Outcome is refused",
+              "correct-looking continue with a forged grant commits nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only terminal Outcome is refused",
+              "correct-looking complete commits no result, no B-5, and leaves the attempt answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing",
+              "exact replay answers from retained evidence even with a forged grant"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing",
+              "forged grant after takeover is unauthorized, retired grant is stale or silent"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only hold-ending Outcome is refused",
+              "holds and history survive a fabricated current-looking Outcome"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 the grant-holding attempt proposal is accepted",
+              "the same valid Outcome with the current grant commits normally"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 old attempt authority dies with its epoch",
+              "after takeover the retired grant cannot commit while the new grant can"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 submission authority is undiscoverable and unforgeable",
+              "hidden and missing stay indistinguishable, and views expose no grant"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 neighboring currency ordering: retired grant with stale exchange (Case D)",
+              "currency refusal still precedes authority, even with invalid content"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b4290aa52aad11606aceeb8c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S2. The old pre-apply inventory names coupled Outcome fields including retained replay evidence. Current state-owner preparation/commit checks and whole transaction tests cover the same decision; COORD-REFACTOR-01 design 01 replaces the literal coordinator-local record construction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "#applyOutcome: prepares without changing anything, then commits exactly its declared statements"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending one hold commits its history atomically",
+              "Test E \"Outcome ending one hold commits history in the same decision\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending both holds commits both history records atomically",
+              "Test F \"Outcome ending both holds commits both history records\""
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-a3e4287254fce918ce6b8da5",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The grant-mint/delivery/submission and fencing clauses distinguish reference authority from inspected coordinates, exact replay before authority, retired-grant fencing, scope-first refusal and no state change for fabricated terminal/hold-ending Outcomes. Existing submission-authority and lifetime leaves exercise these schedules; current family B8 uses the same authority decision.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only continuing Outcome is refused",
+              "correct-looking continue with a forged grant commits nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only terminal Outcome is refused",
+              "correct-looking complete commits no result, no B-5, and leaves the attempt answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing",
+              "exact replay answers from retained evidence even with a forged grant"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing",
+              "forged grant after takeover is unauthorized, retired grant is stale or silent"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only hold-ending Outcome is refused",
+              "holds and history survive a fabricated current-looking Outcome"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 the grant-holding attempt proposal is accepted",
+              "the same valid Outcome with the current grant commits normally"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 old attempt authority dies with its epoch",
+              "after takeover the retired grant cannot commit while the new grant can"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 submission authority is undiscoverable and unforgeable",
+              "hidden and missing stay indistinguishable, and views expose no grant"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 neighboring currency ordering: retired grant with stale exchange (Case D)",
+              "currency refusal still precedes authority, even with invalid content"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-97c50046b5b908d65f97e709",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The grant-mint/delivery/submission and fencing clauses distinguish reference authority from inspected coordinates, exact replay before authority, retired-grant fencing, scope-first refusal and no state change for fabricated terminal/hold-ending Outcomes. Existing submission-authority and lifetime leaves exercise these schedules; current family B8 uses the same authority decision.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only continuing Outcome is refused",
+              "correct-looking continue with a forged grant commits nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only terminal Outcome is refused",
+              "correct-looking complete commits no result, no B-5, and leaves the attempt answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing",
+              "exact replay answers from retained evidence even with a forged grant"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing",
+              "forged grant after takeover is unauthorized, retired grant is stale or silent"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only hold-ending Outcome is refused",
+              "holds and history survive a fabricated current-looking Outcome"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 the grant-holding attempt proposal is accepted",
+              "the same valid Outcome with the current grant commits normally"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 old attempt authority dies with its epoch",
+              "after takeover the retired grant cannot commit while the new grant can"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 submission authority is undiscoverable and unforgeable",
+              "hidden and missing stay indistinguishable, and views expose no grant"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 authority before content on a well-formed current claim (Case A)",
+              "grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R9 neighboring currency ordering: retired grant with stale exchange (Case D)",
+              "currency refusal still precedes authority, even with invalid content"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-6e315c4af83716a1f25a071e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. History-attribution requires attempt_submission for a no-control Runtime submitter and no false control claim; recovery-history covers all transitions and retained/frozen lifecycle. The named B9 mutation remains live and adopted separately.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/history-attribution.test.ts",
+            "test_path": [
+              "K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully",
+              "ended_by_outcome records attempt_submission, never a control claim"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/history-attribution.test.ts",
+            "test_path": [
+              "K12-R3-HISTORY-02 explicit control transitions still record control authority",
+              "entered, protocol entered, and cleared_by_takeover are control-origin"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/history-attribution.test.ts",
+            "test_path": [
+              "K12-R3-HISTORY-02 replay and refused submissions grow no History",
+              "exact replay after a hold-ending Outcome appends nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/history-attribution.test.ts",
+            "test_path": [
+              "K12-R3-HISTORY-02 replay and refused submissions grow no History",
+              "an unauthorized Outcome submission appends no History"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/history-attribution.test.ts",
+            "test_path": [
+              "K12-R3-HISTORY-02 history records stay frozen snapshots",
+              "editing a returned ended_by_outcome record changes no retained evidence"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "a) code hold lifecycle: entered, updated on reason change, cleared_by_declaration; all retained"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "b) protocol hold via takeover: entered, then cleared_by_takeover with resultingEpoch"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "c) ended_by_outcome: code hold ends with the exchange, history survives dispatch and completion"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "d) both holds plus Outcome: 2 entered + 2 ended_by_outcome"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "e) idempotent duplicates append nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "f) history is immutable: list edits and record edits leave the next inspect unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-history.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+              "g) cross-scope: control activity on B leaves A's history unchanged and undisclosed"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-6ff03ec98c6c174e893a537b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-53fb5c9f76293a1e5b590c3e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-83b46c617dbd727ba2f209fe",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The label explanation names three actual mutation obligations: control/visibility separation, submission authority and truthful hold-ending History. The current control, submission and attribution leaves assert each distinction; corresponding family routes are read separately.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer takeover refused unauthorized_control; author takeover succeeds epoch 2"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer recover refused unauthorized_control; author recover creates hold"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-authority.test.ts",
+            "test_path": [
+              "K12-R1-AUTH-01 visible caller without control vs control on all three controls",
+              "observer report refused unauthorized_control; author report creates hold"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only continuing Outcome is refused",
+              "correct-looking continue with a forged grant commits nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only terminal Outcome is refused",
+              "correct-looking complete commits no result, no B-5, and leaves the attempt answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 visibility-only hold-ending Outcome is refused",
+              "holds and history survive a fabricated current-looking Outcome"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/history-attribution.test.ts",
+            "test_path": [
+              "K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully",
+              "ended_by_outcome records attempt_submission, never a control claim"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-894db94ed281136a25cfac73",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-37ed2a48e235074cfd9996ca",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-b0c4285c4938c5797ea93121",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Replay/conflict precedence with absent/retired authority, later exchange/terminal and zero new receipt are covered by the exact replay and transaction leaves.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "an exact duplicate returns the original receipt and decision, and changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "a replay is answered even after the next exchange has started, and the new exchange is untouched"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C5 a terminal lifetime never reopens",
+              "an exact replay of the terminal Outcome still returns its receipt: the lookup precedes the terminal check"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing",
+              "exact replay answers from retained evidence even with a forged grant"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 replay and redelivery consume no position",
+              "Test B \"replay and redelivery consume no position\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-26336b607fd533f2d1f5b739",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The row names scope-local output identities, positions, immutable History/evidence, grant nondisclosure and lifetime. Existing Emission counterfactual, recovery evidence and saved-reference tests assert those results. Named family mutations are separate adoption obligations.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step",
+              "Emission identity is a pure function of accepted identities"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1 HISTORY/HOLD/DELIVERY/AUTH scoped non-disclosure for new records",
+              "B create/dispatch/recover/report/takeover/outcome discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 history records are immutable snapshots",
+              "a) list push/pop/truncate and record edits leave next inspect unchanged, records frozen"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-HOLD-01 holds and permitted lists are frozen snapshots",
+              "b) hold frozen, permitted frozen, edits leave next inspect unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-DELIVERY-01 delivery rows are fresh copies, not caller-mutable",
+              "c) activation deliveries: push/edit leave next inspect unchanged, views are fresh copies"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-DELIVERY-01 delivery rows are fresh copies, not caller-mutable",
+              "c) resolved exchange deliveries: edits leave next inspect and replay unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1 per-Execution positions for new ops (recover/report consume none)",
+              "B accepts/refusals including control refusals do not shift A's positions"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-6623c021e88c845389c246f0",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S2. Own single-observation and hostile/reentrant whole-decision behavior remain in outcome-hostile and transaction. Its A15 label refers to the old always-refuse-await subject, replaced by K1.3 design 01; it does not remove current observation/reentry requirements.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 envelope fields are own data, observed once",
+              "each field is read exactly once, and the accepted decision is the one reading"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 hostile pollution during observation cannot split the commit",
+              "Test C \"hostile pollution during observation cannot split the commit\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 reentrant Outcome during observation ordered before outer checks",
+              "Test D \"reentrant Outcome during observation ordered before outer checks\""
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-688ccb10bf44f26d36cfcfd9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S1. The paragraph states exact saved-reference failures for B10/B11 as well as historical run counts and packaging. The live lifetime distinction is asserted by the two saved-first-grant leaves. Counts and evidence placement are process, not new universal results.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-65c1b326bfb93e3196d1405e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-ddd2caaa85d1e7aeef28e54f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S1. Saved-reference redelivery at initial and takeover epochs distinguishes grant rotation, asserted by submission-lifetime. Historical output equality, counts and evidence packaging grant no new execution credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-70c13d86796438be8686e44a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-a9a3dbfebaa43d2f8a8f051a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Exact replay with absent/retired authority precedes terminal/currency/content, with no new receipt; maintained next-exchange, terminal, forged-grant replay and position leaves assert these results.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "an exact duplicate returns the original receipt and decision, and changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "a replay is answered even after the next exchange has started, and the new exchange is untouched"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+              "changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C5 a terminal lifetime never reopens",
+              "an exact replay of the terminal Outcome still returns its receipt: the lookup precedes the terminal check"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-authority.test.ts",
+            "test_path": [
+              "K12-R3-AUTH-02 replay needs no grant; refusal order preserves fencing",
+              "exact replay answers from retained evidence even with a forged grant"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 replay and redelivery consume no position",
+              "Test B \"replay and redelivery consume no position\""
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-19c7cfd3da47018a11159fd2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Pure output identities, per-Execution positions, immutable records and non-exposed saved grants are asserted by the current Emission counterfactual, recovery evidence and lifetime leaves.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+            "test_path": [
+              "K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step",
+              "Emission identity is a pure function of accepted identities"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1 HISTORY/HOLD/DELIVERY/AUTH scoped non-disclosure for new records",
+              "B create/dispatch/recover/report/takeover/outcome discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-HISTORY-01 history records are immutable snapshots",
+              "a) list push/pop/truncate and record edits leave next inspect unchanged, records frozen"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-HOLD-01 holds and permitted lists are frozen snapshots",
+              "b) hold frozen, permitted frozen, edits leave next inspect unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-DELIVERY-01 delivery rows are fresh copies, not caller-mutable",
+              "c) activation deliveries: push/edit leave next inspect unchanged, views are fresh copies"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1-DELIVERY-01 delivery rows are fresh copies, not caller-mutable",
+              "c) resolved exchange deliveries: edits leave next inspect and replay unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-evidence.test.ts",
+            "test_path": [
+              "K12-R1 per-Execution positions for new ops (recover/report consume none)",
+              "B accepts/refusals including control refusals do not shift A's positions"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-cfa18099853a9100f4132822",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S2. Current own-field single observation, hostile pollution and reentrant ordering are asserted. K1.3 supersedes the old A15 always-refuse-await subject; the remaining live obligations persist.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-hostile.test.ts",
+            "test_path": [
+              "K1.2-C13 envelope fields are own data, observed once",
+              "each field is read exactly once, and the accepted decision is the one reading"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 hostile pollution during observation cannot split the commit",
+              "Test C \"hostile pollution during observation cannot split the commit\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 reentrant Outcome during observation ordered before outer checks",
+              "Test D \"reentrant Outcome during observation ordered before outer checks\""
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-590dee1bc13d0e4de3dfc327",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. This command-result row names the fixed-round checks-07 preservation/link gate, whose old candidate/H6 scope is replaced by accepted TOOLS-01 spec verification. It does not identify a separate Kernel counterexample. Historical evidence remains untouched.",
+        "decision": "docs/development/work/TOOLS-01/design-02.md"
+      }
     },
     {
       "id": "mention-4b1c12d2601864e8d40801ab",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S1. Saved-reference redelivery at initial and takeover epochs distinguishes grant rotation, asserted by submission-lifetime. Historical output equality, counts and evidence packaging grant no new execution credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-8c1d19406c1a58f371f79cb3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-f18d4aab0921926d66963317",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S1. The source explicitly names saved first-send grant survival at both initial and takeover epochs and retirement of the old grant, so it is covered by those exact maintained leaves. Reproduced output hashes and counts are historical observations, not independent claims.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-d65f3575d27dbe077177f91f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-a4fe6588a2289713021bd184",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-24879e4c83d820cc41ab9e8f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The command row runs the same fixed H6/checks-07 candidate preservation/link gate, replaced by TOOLS-01 design 02 spec-driven verification. It creates no new product behavior obligation.",
+        "decision": "docs/development/work/TOOLS-01/design-02.md"
+      }
     },
     {
       "id": "mention-9c250c7a7c94afee5d61166f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S1. The source explicitly names saved first-send grant survival at both initial and takeover epochs and retirement of the old grant, so it is covered by those exact maintained leaves. Reproduced output hashes and counts are historical observations, not independent claims.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-3a7b9f6b9274306307638bea",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed S5/S1. The source explicitly names saved first-send grant survival at both initial and takeover epochs and retirement of the old grant, so it is covered by those exact maintained leaves. Reproduced output hashes and counts are historical observations, not independent claims.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "the first send's grant still accepts after two redeliveries, including hold-ending submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/submission-lifetime.test.ts",
+            "test_path": [
+              "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+              "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-eec4a6daf8cbd15a87f16b76",

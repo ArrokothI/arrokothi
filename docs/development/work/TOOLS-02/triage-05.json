@@ -425,7 +425,75 @@
     "mention-6c98b650223077d4eaa3b0d9",
     "mention-2328635a68c1cc279481f091",
     "mention-d2260539c3fb513161a41d3d",
-    "mention-15a0cb88bea636152d54ea43"
+    "mention-15a0cb88bea636152d54ea43",
+    "mention-c1a98f49f6e36206b9b31774",
+    "artifact-df2537864f7163e488daff7e",
+    "artifact-e122b0baefbfb6850805f341",
+    "artifact-a6c994a415970d4701bfcee6",
+    "mention-38ad16911b006053f663bc7b",
+    "mention-15ada67f80c2105b3fc15cea",
+    "mention-683a81b3959c14d11e522ed9",
+    "mention-78fea43de2f1977b2505f97d",
+    "mention-b43c5a32c9a140f19c1aea81",
+    "mention-c8e3d6ea5dfaa592ba967cb8",
+    "mention-32b3835802a7e6e9320b59e6",
+    "mention-429ba6a85d259146b29b35c9",
+    "mention-acfa6711c8ccaea8a033fc14",
+    "mention-81ac926292c2ed755be2343a",
+    "mention-34af6eeff0f24bb970324d60",
+    "mention-8f6c4d635d99c314f6610406",
+    "mention-ebc9f960b67992baba1aadd7",
+    "mention-b4ae33c1703d6c1bbd25938f",
+    "mention-36ce32e04de50ecf952927ad",
+    "mention-8ceaf4a9e348d9732f6474aa",
+    "mention-3c8174ddf8e55d66175509b6",
+    "mention-8f065a802e48ee36bb6c4819",
+    "mention-09b1cc20a1286f38be46f7f7",
+    "mention-eff2e39ab332185c1a15decb",
+    "mention-9de8af7e5af4c10be896ff58",
+    "mention-060997ad9290154491d0f88d",
+    "mention-adea733aa8f88aaf0bd95c19",
+    "mention-4f43b483fa039b66370603aa",
+    "mention-e62bab5f149f190b26a46365",
+    "mention-b2b2057f9e502c9ccbe44d0d",
+    "mention-3658c31dd47e5494e53f6bea",
+    "mention-1fe9965f32a6758ce5ccefea",
+    "mention-d0d7d262b057e1479ad7c7e1",
+    "mention-8a237a0375d047757da48b73",
+    "mention-e4e7ce3a85240afd3a8e745a",
+    "mention-83d153d3c40f09e62535d1fe",
+    "mention-f5ab82ad9a4de6ed146d1290",
+    "mention-5585b63d0d0d16c8f5149f8e",
+    "mention-36f61b2e6d0d171529e11991",
+    "mention-6ff03ec98c6c174e893a537b",
+    "mention-d4ad46eb949b484a1597bd10",
+    "mention-a3e4287254fce918ce6b8da5",
+    "mention-97c50046b5b908d65f97e709",
+    "mention-b4290aa52aad11606aceeb8c",
+    "mention-6e315c4af83716a1f25a071e",
+    "mention-53fb5c9f76293a1e5b590c3e",
+    "mention-894db94ed281136a25cfac73",
+    "mention-83b46c617dbd727ba2f209fe",
+    "mention-37ed2a48e235074cfd9996ca",
+    "mention-b0c4285c4938c5797ea93121",
+    "mention-26336b607fd533f2d1f5b739",
+    "mention-6623c021e88c845389c246f0",
+    "mention-688ccb10bf44f26d36cfcfd9",
+    "mention-65c1b326bfb93e3196d1405e",
+    "mention-70c13d86796438be8686e44a",
+    "mention-ddd2caaa85d1e7aeef28e54f",
+    "mention-4b1c12d2601864e8d40801ab",
+    "mention-a9a3dbfebaa43d2f8a8f051a",
+    "mention-19c7cfd3da47018a11159fd2",
+    "mention-cfa18099853a9100f4132822",
+    "mention-590dee1bc13d0e4de3dfc327",
+    "mention-8c1d19406c1a58f371f79cb3",
+    "mention-d65f3575d27dbe077177f91f",
+    "mention-a4fe6588a2289713021bd184",
+    "mention-f18d4aab0921926d66963317",
+    "mention-9c250c7a7c94afee5d61166f",
+    "mention-3a7b9f6b9274306307638bea",
+    "mention-24879e4c83d820cc41ab9e8f"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -881,7 +949,12 @@
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-a6",
-      "registry_mutant": "mutation-4e006eda2ea14ad2275c44e7bde6872bddba9ddbd0557ef3a2e5f4229dc95edf"
+      "registry_mutant": "mutation-4e006eda2ea14ad2275c44e7bde6872bddba9ddbd0557ef3a2e5f4229dc95edf",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-a9": {
       "family": "family.k12.ablations",
@@ -900,7 +973,12 @@
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-a9",
-      "registry_mutant": "mutation-d449e21c5d85ad71a4c1786ee83bf993c17b976ebab2dfb799aea1c98ca40a16"
+      "registry_mutant": "mutation-d449e21c5d85ad71a4c1786ee83bf993c17b976ebab2dfb799aea1c98ca40a16",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-a11": {
       "family": "family.k12.ablations",
@@ -918,7 +996,12 @@
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-a11",
-      "registry_mutant": "mutation-ff504c560619828dd0184d6b0a1ac897a89d1566d506f3581f4f5aacc8d6e900"
+      "registry_mutant": "mutation-ff504c560619828dd0184d6b0a1ac897a89d1566d506f3581f4f5aacc8d6e900",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-a12": {
       "family": "family.k12.ablations",
@@ -937,7 +1020,12 @@
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-a12",
-      "registry_mutant": "mutation-0566166667cf5b392d257b744dbe8712c82afcbacab4c0665dd3f6ac089cb6f1"
+      "registry_mutant": "mutation-0566166667cf5b392d257b744dbe8712c82afcbacab4c0665dd3f6ac089cb6f1",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-a13": {
       "family": "family.k12.ablations",
@@ -956,7 +1044,12 @@
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-a13",
-      "registry_mutant": "mutation-fda7a1adb51a5a7f26d06659c99e3c16fc5dd6d4c3c25ef492fe0583d2ef4cab"
+      "registry_mutant": "mutation-fda7a1adb51a5a7f26d06659c99e3c16fc5dd6d4c3c25ef492fe0583d2ef4cab",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-a14": {
       "family": "family.k12.ablations",
@@ -975,7 +1068,12 @@
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-a14",
-      "registry_mutant": "mutation-c37ea3957d429b4be6105b7bd88d0f92cbfaa0901235f7f1a153f31f6b826950"
+      "registry_mutant": "mutation-c37ea3957d429b4be6105b7bd88d0f92cbfaa0901235f7f1a153f31f6b826950",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-b9": {
       "family": "family.k12.ablations",
@@ -994,7 +1092,12 @@
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-b9",
-      "registry_mutant": "mutation-e1bd0a43ecc3a560a26da47d66f5a5926b9af575cd476d234c0fcd3079ad340f"
+      "registry_mutant": "mutation-e1bd0a43ecc3a560a26da47d66f5a5926b9af575cd476d234c0fcd3079ad340f",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-b10": {
       "family": "family.k12.ablations",
@@ -1013,7 +1116,12 @@
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-b10",
-      "registry_mutant": "mutation-ad312f631fdfd771a4e2cf6adc15036266503489ba873310bd4419f0bfd144e2"
+      "registry_mutant": "mutation-ad312f631fdfd771a4e2cf6adc15036266503489ba873310bd4419f0bfd144e2",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-b11": {
       "family": "family.k12.ablations",
@@ -1032,7 +1140,12 @@
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-b11",
-      "registry_mutant": "mutation-e9cf4cecc7e79b3c5c0d4f7f99fcf8eb347fdf9b74b54b3486fa48e88434c13e"
+      "registry_mutant": "mutation-e9cf4cecc7e79b3c5c0d4f7f99fcf8eb347fdf9b74b54b3486fa48e88434c13e",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-b15": {
       "family": "family.k12.ablations",
@@ -1051,7 +1164,12 @@
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-b15",
-      "registry_mutant": "mutation-192fec61e839de9e3f6c8c53530dfdc8685bb28dc6fcd5e8756f96dcc11eaa6c"
+      "registry_mutant": "mutation-192fec61e839de9e3f6c8c53530dfdc8685bb28dc6fcd5e8756f96dcc11eaa6c",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-b20": {
       "family": "family.k12.ablations",
@@ -1070,7 +1188,12 @@
       "planned_case": "Adopt this live mutation as a registered target-set case against its existing maintained oracle, then bind its family route under P1-M. No duplicate behavior test is proposed. Recheck applicability and coverage at the eventual C before building.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-b20",
-      "registry_mutant": "mutation-b14f138c1d88776b85bf216744626d345991b2027ec861783c56b449cf8ca18c"
+      "registry_mutant": "mutation-b14f138c1d88776b85bf216744626d345991b2027ec861783c56b449cf8ca18c",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-a2": {
       "family": "family.k12.ablations",
@@ -1089,7 +1212,12 @@
       "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-a2",
-      "registry_mutant": "mutation-b2d44f2580e4694aef0282ab3de820356952ef0734f3df48ee129643edc59be7"
+      "registry_mutant": "mutation-b2d44f2580e4694aef0282ab3de820356952ef0734f3df48ee129643edc59be7",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-b3": {
       "family": "family.k12.ablations",
@@ -1108,7 +1236,12 @@
       "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-b3",
-      "registry_mutant": "mutation-852484bba799ab0b4a75b8c3fbfd7fb9842a7b3f95c486cd173be8d79700e7f6"
+      "registry_mutant": "mutation-852484bba799ab0b4a75b8c3fbfd7fb9842a7b3f95c486cd173be8d79700e7f6",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-b4": {
       "family": "family.k12.ablations",
@@ -1127,7 +1260,12 @@
       "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-b4",
-      "registry_mutant": "mutation-1db700d2d8da717a0a98fb12506d011e2d6e22a528ff5c2c8d8da4e63c77aafd"
+      "registry_mutant": "mutation-1db700d2d8da717a0a98fb12506d011e2d6e22a528ff5c2c8d8da4e63c77aafd",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-b7": {
       "family": "family.k12.ablations",
@@ -1146,7 +1284,12 @@
       "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-b7",
-      "registry_mutant": "mutation-9447fc5d73aeb5f4663bf1f9d58d28d876045b3ae128324429aa7c1c123107ce"
+      "registry_mutant": "mutation-9447fc5d73aeb5f4663bf1f9d58d28d876045b3ae128324429aa7c1c123107ce",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-b12": {
       "family": "family.k12.ablations",
@@ -1165,7 +1308,12 @@
       "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-b12",
-      "registry_mutant": "mutation-86b76c972f56d502c688dc7025cd17c334db3f7fcba2ec87c1833a4c3bdcea8e"
+      "registry_mutant": "mutation-86b76c972f56d502c688dc7025cd17c334db3f7fcba2ec87c1833a4c3bdcea8e",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-b13": {
       "family": "family.k12.ablations",
@@ -1184,7 +1332,12 @@
       "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-b13",
-      "registry_mutant": "mutation-647a91765d04c10a0f15784c9d4efd260920393256f42de5091ffc2166e74201"
+      "registry_mutant": "mutation-647a91765d04c10a0f15784c9d4efd260920393256f42de5091ffc2166e74201",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     },
     "k12-mutation-b14": {
       "family": "family.k12.ablations",
@@ -1203,15 +1356,22 @@
       "planned_case": "Adopt the relocated mutation against the existing passing leaf. Validate its control, reach and qualifying kill in a fresh clone before binding P1-M.",
       "work_kind": "mutation_adoption",
       "registry_case": "k12.adopt-b14",
-      "registry_mutant": "mutation-a976f84d56bc0a2c6bd80ee5795e254f6edd1f293e1581fd8a3b24082cfa01ed"
+      "registry_mutant": "mutation-a976f84d56bc0a2c6bd80ee5795e254f6edd1f293e1581fd8a3b24082cfa01ed",
+      "control_and_kill": {
+        "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+        "record": "docs/development/work/TOOLS-02/adoption-controls-08.json",
+        "result": "qualified_kill"
+      }
     }
   },
-  "resume_origin": "artifact-fb7a16748e389543ef6bf980",
+  "resume_origin": "mention-eec4a6daf8cbd15a87f16b76",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
     "baseline_test_groups": 3,
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
-  }
+  },
+  "resume_path": "docs/development/work/K1.2/implementation-09.md",
+  "resume_line": 52
 }
