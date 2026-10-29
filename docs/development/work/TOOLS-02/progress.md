@@ -10,6 +10,10 @@ The resume point for any session continuing this packet. Newest facts first with
     current source anchors, exact existing leaf paths and static test import closures.
     B10/B11 move their grant-rotation edit into the state-owner delivery arm; assigning
     the old reader getter would only cause a TypeError and is not the intended mutant.
+  - First fresh-clone controls at 9d71834e refused setup: shared historical hop probes
+    have computed module requests. Moved that probe tree to explicit per-case files for
+    every pre-existing registry case, preserving their exact copied inputs. Target sets
+    still certify their entire copied production tree; no policy exemption was added.
   - Fresh-clone controls, reach and qualified kills are next. No kill or family closure
     is claimed yet. Then resume at K1.2/blocker-01.md in source order; checkpoint 731
     still requires both projections and measured added registry runtime.
