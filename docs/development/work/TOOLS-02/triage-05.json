@@ -102,7 +102,37 @@
     "mention-f6187867490fa9a6f76746ec",
     "mention-2e7d62792ce70c8840671f84",
     "mention-eb7f000d33c9b12307874f0d",
-    "mention-1bf40f247ee74b58f60804ac"
+    "mention-1bf40f247ee74b58f60804ac",
+    "mention-376006ab2c4d85804e897648",
+    "mention-8b07edae8dae079b003d4191",
+    "mention-2b510754473f7c08a83ef296",
+    "mention-ff955edc1be300a41d83f994",
+    "mention-1e050c516d332548fb8f8c6a",
+    "mention-ddabc82cebedeb11c141ef4b",
+    "mention-5ed6997b133e688994e97dc1",
+    "mention-e9413605ee4c03d7daead4cd",
+    "mention-13177ca02c5dc97cc784af69",
+    "mention-5867216741f94de515d5cb58",
+    "mention-d5e55c449cd263a54909022d",
+    "mention-161388c78b64dd0a989b1cb1",
+    "mention-76c645b2236adace429379d2",
+    "mention-5a8558fe5eb2e59cf4dd167f",
+    "mention-ebeae827bf8b669769037d9e",
+    "mention-e2e694204c7ba458f374a7aa",
+    "mention-b631b0f7ca671b9131cab19f",
+    "mention-4b9e3c00afc6eb0526b38a42",
+    "mention-a946a825d173e00e21bab471",
+    "mention-d07f60640bc1926c79ae7bf7",
+    "mention-6b64cdc7b2f0250dc519a93b",
+    "mention-f7f0d6ae5d6502299b287461",
+    "mention-34ef114054e3f3b65e12c9a9",
+    "mention-205316a34ca914dcf0f187c6",
+    "mention-92f368df4bcc2fbd271034ca",
+    "mention-6a98714a6c5ca0be15975afa",
+    "mention-11678d80749c976cabd69cfc",
+    "mention-9f5601a1956295d36bdc0865",
+    "mention-ccd852a9149439eba3e5c9fc",
+    "mention-32aa9a206b524e0c76cf7806"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -134,6 +164,172 @@
       "gap": "The source requires single observation across scope authorization, key packing and retained creation/ingress fields. The current ordering leaf uses stable scope values; payload mutation and Outcome field-count leaves test different inputs/paths. A bounded search of packages/kernel/tests and packages/sdk/tests found no shifting-getter matrix asserting each creation/ingress field count and its retained first value. Source reading therefore cannot retire this obligation on those weaker pointers.",
       "planned_test": "Exercise shifting own getters on creation scope/key/pins/initial input fields and ingress key/kind/subscription/payload, count observations, and inspect/replay the retained result. Use core byte roots directly; stop if a new regression exposes a product defect.",
       "group": "mention-bc970277f23ef1e97995b21f"
+    },
+    "mention-b0c41fbcaade9e8948060edf": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-12.md:134",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs."
+    },
+    "mention-5b74744b8699ebace1b4c0c3": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-13.md:118",
+      "required_result": "Hidden activity completed before caller A's first creation must not alter A's complete creation-through-inspection transcript.",
+      "gap": "The maintained leaf titled hidden activity before A's first operation calls runArm, which creates A and its replay before invoking hidden(..., 0). Bounded search of current packages/kernel/tests found no two-arm transcript test placing B before A's first creation. Other interleaved and per-Execution obligations have passing tests; the title alone cannot cover this schedule.",
+      "planned_test": "Add a separate pre-first-creation hidden window to the nondisclosure harness and a maintained control/interleaved transcript comparison; assert the window ran before A's first create. Stop if it exposes a product defect."
+    },
+    "mention-5bbc44327807bd9a9a95eb00": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-13.md:127",
+      "required_result": "Hidden activity completed before caller A's first creation must not alter A's complete creation-through-inspection transcript.",
+      "gap": "The maintained leaf titled hidden activity before A's first operation calls runArm, which creates A and its replay before invoking hidden(..., 0). Bounded search of current packages/kernel/tests found no two-arm transcript test placing B before A's first creation. Other interleaved and per-Execution obligations have passing tests; the title alone cannot cover this schedule.",
+      "planned_test": "Add a separate pre-first-creation hidden window to the nondisclosure harness and a maintained control/interleaved transcript comparison; assert the window ran before A's first create. Stop if it exposes a product defect.",
+      "group": "mention-5b74744b8699ebace1b4c0c3"
+    },
+    "mention-db7c66e919e8d66a8192b9c1": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-13.md:201",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-364cf744da4479b0826e5079": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-13.md:208",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-f178fb03881c014434defd08": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-14.md:91",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-a7a95c9d79febdf409ceced2": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-14.md:144",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-6f550bdd9b57a5f7e9ab08ec": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-14.md:151",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-24746110c41e2e619aa7a758": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-14.md:166",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-884afc2869e077978ebd9c39": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-14.md:167",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-ba2bcc556031987e751750f9": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-15.md:163",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-26e0d797cd15cabe168482b4": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-15.md:168",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-52835ffa31cd3c1f76c69e9d": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-15.md:169",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-d58d3669af4892ae4a41bfcd": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-15.md:176",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-55343abf2814592eeef528a6": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-16.md:145",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-8eeff962a334739af81c6fff": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-16.md:153",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-48017e5a81931cb348c758da": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-16.md:160",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-d28f30021cee83bdfd38b974": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-17.md:145",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-d12d8245b1021470440f4fbf": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-17.md:153",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-86b9630ec574b2388d1bfa22": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-17.md:154",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
+    },
+    "mention-bfb75be1c59744824a7abd8b": {
+      "disposition": "extracted",
+      "source": "K1.1/implementation-17.md:160",
+      "required_result": "An evidence inventory gate derives its observed count from the actual tracked-file list and rejects both a wrong expected count and an extra observed entry; echoed command text must not contaminate the measurement.",
+      "gap": "The pinned F0/F1/F2 probes exercise a file-list count gate, including the earlier tautological 11==11 failure. Current family-census controls cover mutation-member counts; current candidate controls cover path allowlists. Neither exercises this file-list/echo/count dataflow. Mixed contexts also cite current nondisclosure and unchanged ablation results, which have maintained behavioral tests.",
+      "planned_test": "Add a maintained evidence-tooling regression reproducing the corrected tracked-list gate with passing control, altered expectation, extra observed line, and command-echo separation. Bind the required result under P1; preserve historical scripts and logs.",
+      "group": "mention-b0c41fbcaade9e8948060edf"
     }
   }
 }

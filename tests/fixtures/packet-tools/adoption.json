@@ -15532,15 +15532,103 @@
     },
     {
       "id": "mention-376006ab2c4d85804e897648",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This paragraph describes payload identity, changed files, fixture development or record-generation choices and aggregate rerun counts. It states no additional system input/operation/result; historical counts are not current validation credit."
+      }
     },
     {
       "id": "mention-13177ca02c5dc97cc784af69",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The recorded X4 witness reintroduces an ordinary indexed write at mailbox append. The current ingress leaf keeps the inherited setter live and requires the accepted Event to be retained; the boundary leaf forbids indexed writes outside the owned primitive. The other statements concern reproducible recording and unclaimed scratch edit-site probes (S1).",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/ingress.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 accepted input is retained as own data",
+              "an inherited setter at the next mailbox index cannot make an accepted Event go unretained"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-5867216741f94de515d5cb58",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The recorded X4 witness reintroduces an ordinary indexed write at mailbox append. The current ingress leaf keeps the inherited setter live and requires the accepted Event to be retained; the boundary leaf forbids indexed writes outside the owned primitive. The other statements concern reproducible recording and unclaimed scratch edit-site probes (S1).",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/ingress.test.ts",
+            "test_path": [
+              "K11-R6-STATE-02 accepted input is retained as own data",
+              "an inherited setter at the next mailbox index cannot make an accepted Event go unretained"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b0c41fbcaade9e8948060edf",
@@ -15548,15 +15636,155 @@
     },
     {
       "id": "mention-8b07edae8dae079b003d4191",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This paragraph describes payload identity, changed files, fixture development or record-generation choices and aggregate rerun counts. It states no additional system input/operation/result; historical counts are not current validation credit."
+      }
     },
     {
       "id": "mention-2b510754473f7c08a83ef296",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This paragraph describes payload identity, changed files, fixture development or record-generation choices and aggregate rerun counts. It states no additional system input/operation/result; historical counts are not current validation credit."
+      }
     },
     {
       "id": "mention-d5e55c449cd263a54909022d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current scoped nondisclosure suite compares complete caller-A transcripts, deterministic IDs, receipt/refusal positions, replay/conflict data, inspection/listing and serialization against hidden accepts/refusals; it also asserts per-Execution refusal isolation and unmasked hidden-versus-missing results. These are the source counterexamples, including null-record probes and hidden capacity/exchange paths. Future-surface advice and historical test counts are S1. The separately explicit pre-first-A schedule at lines 118/127 is planned for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-5b74744b8699ebace1b4c0c3",
@@ -15568,15 +15796,283 @@
     },
     {
       "id": "mention-161388c78b64dd0a989b1cb1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current scoped nondisclosure suite compares complete caller-A transcripts, deterministic IDs, receipt/refusal positions, replay/conflict data, inspection/listing and serialization against hidden accepts/refusals; it also asserts per-Execution refusal isolation and unmasked hidden-versus-missing results. These are the source counterexamples, including null-record probes and hidden capacity/exchange paths. Future-surface advice and historical test counts are S1. The separately explicit pre-first-A schedule at lines 118/127 is planned for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ff955edc1be300a41d83f994",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This paragraph describes payload identity, changed files, fixture development or record-generation choices and aggregate rerun counts. It states no additional system input/operation/result; historical counts are not current validation credit."
+      }
     },
     {
       "id": "mention-76c645b2236adace429379d2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current scoped nondisclosure suite compares complete caller-A transcripts, deterministic IDs, receipt/refusal positions, replay/conflict data, inspection/listing and serialization against hidden accepts/refusals; it also asserts per-Execution refusal isolation and unmasked hidden-versus-missing results. These are the source counterexamples, including null-record probes and hidden capacity/exchange paths. Future-surface advice and historical test counts are S1. The separately explicit pre-first-A schedule at lines 118/127 is planned for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-db7c66e919e8d66a8192b9c1",
@@ -15588,31 +16084,827 @@
     },
     {
       "id": "mention-5a8558fe5eb2e59cf4dd167f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current scoped nondisclosure suite compares complete caller-A transcripts, deterministic IDs, receipt/refusal positions, replay/conflict data, inspection/listing and serialization against hidden accepts/refusals; it also asserts per-Execution refusal isolation and unmasked hidden-versus-missing results. These are the source counterexamples, including null-record probes and hidden capacity/exchange paths. Future-surface advice and historical test counts are S1. The separately explicit pre-first-A schedule at lines 118/127 is planned for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ebeae827bf8b669769037d9e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current scoped nondisclosure suite compares complete caller-A transcripts, deterministic IDs, receipt/refusal positions, replay/conflict data, inspection/listing and serialization against hidden accepts/refusals; it also asserts per-Execution refusal isolation and unmasked hidden-versus-missing results. These are the source counterexamples, including null-record probes and hidden capacity/exchange paths. Future-surface advice and historical test counts are S1. The separately explicit pre-first-A schedule at lines 118/127 is planned for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-e2e694204c7ba458f374a7aa",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current scoped nondisclosure suite compares complete caller-A transcripts, deterministic IDs, receipt/refusal positions, replay/conflict data, inspection/listing and serialization against hidden accepts/refusals; it also asserts per-Execution refusal isolation and unmasked hidden-versus-missing results. These are the source counterexamples, including null-record probes and hidden capacity/exchange paths. Future-surface advice and historical test counts are S1. The separately explicit pre-first-A schedule at lines 118/127 is planned for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b631b0f7ca671b9131cab19f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current scoped nondisclosure suite compares complete caller-A transcripts, deterministic IDs, receipt/refusal positions, replay/conflict data, inspection/listing and serialization against hidden accepts/refusals; it also asserts per-Execution refusal isolation and unmasked hidden-versus-missing results. These are the source counterexamples, including null-record probes and hidden capacity/exchange paths. Future-surface advice and historical test counts are S1. The separately explicit pre-first-A schedule at lines 118/127 is planned for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-4b9e3c00afc6eb0526b38a42",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current scoped nondisclosure suite compares complete caller-A transcripts, deterministic IDs, receipt/refusal positions, replay/conflict data, inspection/listing and serialization against hidden accepts/refusals; it also asserts per-Execution refusal isolation and unmasked hidden-versus-missing results. These are the source counterexamples, including null-record probes and hidden capacity/exchange paths. Future-surface advice and historical test counts are S1. The separately explicit pre-first-A schedule at lines 118/127 is planned for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-a946a825d173e00e21bab471",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. The current scoped nondisclosure suite compares complete caller-A transcripts, deterministic IDs, receipt/refusal positions, replay/conflict data, inspection/listing and serialization against hidden accepts/refusals; it also asserts per-Execution refusal isolation and unmasked hidden-versus-missing results. These are the source counterexamples, including null-record probes and hidden capacity/exchange paths. Future-surface advice and historical test counts are S1. The separately explicit pre-first-A schedule at lines 118/127 is planned for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-1e050c516d332548fb8f8c6a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This paragraph describes payload identity, changed files, fixture development or record-generation choices and aggregate rerun counts. It states no additional system input/operation/result; historical counts are not current validation credit."
+      }
     },
     {
       "id": "mention-f178fb03881c014434defd08",
@@ -15620,11 +16912,275 @@
     },
     {
       "id": "mention-d07f60640bc1926c79ae7bf7",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. This names the unchanged K11-R12-ID-01 oracle/X9 as evidence for per-Execution ordering and cross-principal nondisclosure. The maintained suite asserts the complete transcript and exact per-Execution positions under hidden accepts/refusals and hidden-versus-missing probes. Payload ancestry, rerun cardinalities and review status are S1, not present evidence. The explicit pre-first-creation variant is separately retained for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-6b64cdc7b2f0250dc519a93b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. This names the unchanged K11-R12-ID-01 oracle/X9 as evidence for per-Execution ordering and cross-principal nondisclosure. The maintained suite asserts the complete transcript and exact per-Execution positions under hidden accepts/refusals and hidden-versus-missing probes. Payload ancestry, rerun cardinalities and review status are S1, not present evidence. The explicit pre-first-creation variant is separately retained for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-a7a95c9d79febdf409ceced2",
@@ -15644,15 +17200,283 @@
     },
     {
       "id": "mention-ddabc82cebedeb11c141ef4b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This paragraph describes payload identity, changed files, fixture development or record-generation choices and aggregate rerun counts. It states no additional system input/operation/result; historical counts are not current validation credit."
+      }
     },
     {
       "id": "mention-f7f0d6ae5d6502299b287461",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. This names the unchanged K11-R12-ID-01 oracle/X9 as evidence for per-Execution ordering and cross-principal nondisclosure. The maintained suite asserts the complete transcript and exact per-Execution positions under hidden accepts/refusals and hidden-versus-missing probes. Payload ancestry, rerun cardinalities and review status are S1, not present evidence. The explicit pre-first-creation variant is separately retained for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-34ef114054e3f3b65e12c9a9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. This names the unchanged K11-R12-ID-01 oracle/X9 as evidence for per-Execution ordering and cross-principal nondisclosure. The maintained suite asserts the complete transcript and exact per-Execution positions under hidden accepts/refusals and hidden-versus-missing probes. Payload ancestry, rerun cardinalities and review status are S1, not present evidence. The explicit pre-first-creation variant is separately retained for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ba2bcc556031987e751750f9",
@@ -15672,19 +17496,419 @@
     },
     {
       "id": "mention-205316a34ca914dcf0f187c6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. This names the unchanged K11-R12-ID-01 oracle/X9 as evidence for per-Execution ordering and cross-principal nondisclosure. The maintained suite asserts the complete transcript and exact per-Execution positions under hidden accepts/refusals and hidden-versus-missing probes. Payload ancestry, rerun cardinalities and review status are S1, not present evidence. The explicit pre-first-creation variant is separately retained for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-5ed6997b133e688994e97dc1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This paragraph describes payload identity, changed files, fixture development or record-generation choices and aggregate rerun counts. It states no additional system input/operation/result; historical counts are not current validation credit."
+      }
     },
     {
       "id": "mention-92f368df4bcc2fbd271034ca",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. This names the unchanged K11-R12-ID-01 oracle/X9 as evidence for per-Execution ordering and cross-principal nondisclosure. The maintained suite asserts the complete transcript and exact per-Execution positions under hidden accepts/refusals and hidden-versus-missing probes. Payload ancestry, rerun cardinalities and review status are S1, not present evidence. The explicit pre-first-creation variant is separately retained for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-6a98714a6c5ca0be15975afa",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. This names the unchanged K11-R12-ID-01 oracle/X9 as evidence for per-Execution ordering and cross-principal nondisclosure. The maintained suite asserts the complete transcript and exact per-Execution positions under hidden accepts/refusals and hidden-versus-missing probes. Payload ancestry, rerun cardinalities and review status are S1, not present evidence. The explicit pre-first-creation variant is separately retained for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-55343abf2814592eeef528a6",
@@ -15700,19 +17924,419 @@
     },
     {
       "id": "mention-11678d80749c976cabd69cfc",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. This names the unchanged K11-R12-ID-01 oracle/X9 as evidence for per-Execution ordering and cross-principal nondisclosure. The maintained suite asserts the complete transcript and exact per-Execution positions under hidden accepts/refusals and hidden-versus-missing probes. Payload ancestry, rerun cardinalities and review status are S1, not present evidence. The explicit pre-first-creation variant is separately retained for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-e9413605ee4c03d7daead4cd",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This paragraph describes payload identity, changed files, fixture development or record-generation choices and aggregate rerun counts. It states no additional system input/operation/result; historical counts are not current validation credit."
+      }
     },
     {
       "id": "mention-9f5601a1956295d36bdc0865",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. This names the unchanged K11-R12-ID-01 oracle/X9 as evidence for per-Execution ordering and cross-principal nondisclosure. The maintained suite asserts the complete transcript and exact per-Execution positions under hidden accepts/refusals and hidden-versus-missing probes. Payload ancestry, rerun cardinalities and review status are S1, not present evidence. The explicit pre-first-creation variant is separately retained for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ccd852a9149439eba3e5c9fc",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. This names the unchanged K11-R12-ID-01 oracle/X9 as evidence for per-Execution ordering and cross-principal nondisclosure. The maintained suite asserts the complete transcript and exact per-Execution positions under hidden accepts/refusals and hidden-versus-missing probes. Payload ancestry, rerun cardinalities and review status are S1, not present evidence. The explicit pre-first-creation variant is separately retained for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-d28f30021cee83bdfd38b974",
@@ -15732,7 +18356,139 @@
     },
     {
       "id": "mention-32aa9a206b524e0c76cf7806",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5, mixed. This names the unchanged K11-R12-ID-01 oracle/X9 as evidence for per-Execution ordering and cross-principal nondisclosure. The maintained suite asserts the complete transcript and exact per-Execution positions under hidden accepts/refusals and hidden-versus-missing probes. Payload ancestry, rerun cardinalities and review status are S1, not present evidence. The explicit pre-first-creation variant is separately retained for extraction.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-cd1b56724421d3f6282f9285",

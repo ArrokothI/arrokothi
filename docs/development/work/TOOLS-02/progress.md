@@ -2,6 +2,19 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-28 K1.1 implementation 12–17 checkpoint:** 155 origins read in
+  source-file order; 130 retired and 25 planned extraction origins in four groups.
+  - Added the pre-first-creation nondisclosure schedule: the existing leaf with that
+    title invokes its hidden window after A's creation/replay, so its title is not
+    coverage of the explicit earlier schedule. No product defect is claimed.
+  - Added the evidence-inventory count-gate group, including F0/F1/F2 and the
+    tautological-count/command-echo failure. Current mutation-family counts and
+    candidate allowlists do not exercise that exact file-list count dataflow.
+    Repeated mentions share one extraction; sealed generators/logs remain unchanged.
+  - Other nondisclosure variants map to the passing current transcript suite.
+    Derived adoption data is unchanged. Resume at review 01 (preliminary reading
+    of reviews 01–02 is not yet a disposition). Re-estimate after 300 origins.
+
 - **2026-10-28 K1.1 implementation 08–11 checkpoint:** 104 origins read in
   source-file order; 100 retired and 4 planned extraction origins in two groups.
   Read the linked validation/ablation evidence for 08–10; implementation 11 only
