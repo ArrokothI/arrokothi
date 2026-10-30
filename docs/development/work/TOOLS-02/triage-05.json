@@ -966,7 +966,30 @@
     "artifact-9e7397d5f07f1bbe4b2fa2d4",
     "artifact-3e2c3a822fd99541b52f06e5",
     "artifact-7fcd24fd4de8e2db87f8ec5f",
-    "artifact-3d28b841cb049f74205b0b5c"
+    "artifact-3d28b841cb049f74205b0b5c",
+    "mention-17421d7ff0194ec25119f971",
+    "mention-d7632038cf9c9e976d68430e",
+    "mention-fe9ebe10b4adfbef31dbe127",
+    "mention-fdce827752ecaf7944c1992c",
+    "mention-eb149b8af51f8e2dc10edf7b",
+    "mention-30531abd8580e13547b01abc",
+    "mention-ab514b36c8ddcbc09c6d957c",
+    "artifact-c9cc769a30eca18b1f10d3d0",
+    "artifact-927ac471693384f2a7f96305",
+    "mention-1877ba4341a3753385113de1",
+    "mention-a6483e3ed72b180dde2e1a2c",
+    "mention-bf5f53760e5be8aa1917eb90",
+    "mention-eb89e5115c455caa3087a36d",
+    "mention-882017f63f8fe0199a6ef998",
+    "mention-ede549bebfb02d14163038bc",
+    "mention-19b06f6aa3d4bbe83c1c32d1",
+    "mention-7af5f4d188e9ece9234652e9",
+    "artifact-9172dfd325520b067ddf6ebf",
+    "artifact-c22d61a12e31e895fb291943",
+    "mention-c708ddc11e4b23e266a5b223",
+    "mention-5a8dd1738a03563a7a3b9164",
+    "mention-5829d3cff3cece3724269873",
+    "mention-0b25bcee1cdf4e812dcdd5ba"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -2861,6 +2884,242 @@
       "reading": "triage-batch-20.md",
       "required_result": "S6 (mixed). The explicit Error.prototype.name setter/own-name result is the current R10 adoption already planned. H-only source-guard failures and test counts remain historical provenance; no new group or current kill.",
       "planned_test": "Reuse existing groups, retained source variants and current passing leaves; require final P1 closure. No new group."
+    },
+    "mention-11513ac2be645ffef9d417eb": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01.md:88",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed). Probe-identity P2b has the current opaque-comparison gap documented here. P1 producer limits/surrogates, P2 replay/conflict, P3 exact derived coordinates and P4 bounded diagnostics already have maintained counterparts. One new test group, with its variants retained.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-a0461181559068f0467db262": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01.md:128",
+      "groups": [
+        "k12-mutation-a6",
+        "k12-mutation-a9",
+        "k12-mutation-a11",
+        "k12-mutation-a12",
+        "k12-mutation-a13",
+        "k12-mutation-a14",
+        "k12-mutation-b9",
+        "k12-mutation-b10",
+        "k12-mutation-b11",
+        "k12-mutation-b15",
+        "k12-mutation-b20",
+        "k12-mutation-a2",
+        "k12-mutation-b3",
+        "k12-mutation-b4",
+        "k12-mutation-b7",
+        "k12-mutation-b12",
+        "k12-mutation-b13",
+        "k12-mutation-b14"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed). Original 36-member ablations retain the eighteen already-counted live adoption cases and group-review-07 current owner readings. Partial-claim behavior is maintained; old green totals grant no fresh kills.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-127426bd1909e5abe1b00776": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01.md:280",
+      "groups": [
+        "k12-mutation-a6",
+        "k12-mutation-a9",
+        "k12-mutation-a11",
+        "k12-mutation-a12",
+        "k12-mutation-a13",
+        "k12-mutation-a14",
+        "k12-mutation-b9",
+        "k12-mutation-b10",
+        "k12-mutation-b11",
+        "k12-mutation-b15",
+        "k12-mutation-b20",
+        "k12-mutation-a2",
+        "k12-mutation-b3",
+        "k12-mutation-b4",
+        "k12-mutation-b7",
+        "k12-mutation-b12",
+        "k12-mutation-b13",
+        "k12-mutation-b14"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed). Original 36-member ablations retain the eighteen already-counted live adoption cases and group-review-07 current owner readings. Partial-claim behavior is maintained; old green totals grant no fresh kills.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-4b2f62765259bcb153a8d2cf": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01.md:248",
+      "groups": [
+        "k12c1-base-d3",
+        "k12c1-base-d6",
+        "k12c1-base-d27"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6. The requested inverse unbounded interpolation belongs to the already-counted base diagnostic adoptions for huge wrong identities on no-exchange/stale/control routes. Keep the shared 21-case behavior schedule and renderer inventory, without another adoption count.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-a69de69275695483d68953ba": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01.md:272",
+      "groups": [
+        "k12c1-base-i1",
+        "k12c1-base-i3",
+        "k12c1-base-i4",
+        "k12c1-base-i5"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed). I1/I3/I4/I5 have the existing current predicate/consumer adoption plans; all five producer schedules remain covered and O1 is the canonical allocation qualification.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-b631cd6ea144cb9e8b6e6122": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01.md:274",
+      "groups": [
+        "k12c1-base-i1"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6. I2 is the generic primitive-string predicate variant sharing I1 under its P1-G input/operation/result reading. Preserve I2 as a separate variant, without adding a group.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-03186d994403a0c1b9007740": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01/README.md:11",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The named identity probe includes P2b opaque-comparison variants, retained in one new test group. The same paragraph also names maintained diagnostic schedules, historical failure/provenance and the explicit engine qualification; those add no group.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-7f5815a4b729a6de11b83e71": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01/README.md:12",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The named identity probe includes P2b opaque-comparison variants, retained in one new test group. The same paragraph also names maintained diagnostic schedules, historical failure/provenance and the explicit engine qualification; those add no group.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-4eee92b6077945e4e817354f": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01/README.md:13",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The named identity probe includes P2b opaque-comparison variants, retained in one new test group. The same paragraph also names maintained diagnostic schedules, historical failure/provenance and the explicit engine qualification; those add no group.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-7dff89894acbcb2c1068eb3a": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01/README.md:14",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The named identity probe includes P2b opaque-comparison variants, retained in one new test group. The same paragraph also names maintained diagnostic schedules, historical failure/provenance and the explicit engine qualification; those add no group.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-b34b29e381ea27cc99c2a297": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01/README.md:15",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The named identity probe includes P2b opaque-comparison variants, retained in one new test group. The same paragraph also names maintained diagnostic schedules, historical failure/provenance and the explicit engine qualification; those add no group.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-4510bd0ccd83d1d87f78c0e5": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01/README.md:16",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The named identity probe includes P2b opaque-comparison variants, retained in one new test group. The same paragraph also names maintained diagnostic schedules, historical failure/provenance and the explicit engine qualification; those add no group.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-756dd747a8e160839edab027": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01/README.md:17",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The named identity probe includes P2b opaque-comparison variants, retained in one new test group. The same paragraph also names maintained diagnostic schedules, historical failure/provenance and the explicit engine qualification; those add no group.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-a15ebc4571384b4aa6edbb06": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01/README.md:18",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The named identity probe includes P2b opaque-comparison variants, retained in one new test group. The same paragraph also names maintained diagnostic schedules, historical failure/provenance and the explicit engine qualification; those add no group.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-3a6b84640dd57beeea2115b8": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01/README.md:19",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The named identity probe includes P2b opaque-comparison variants, retained in one new test group. The same paragraph also names maintained diagnostic schedules, historical failure/provenance and the explicit engine qualification; those add no group.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "artifact-5b32015b1b29cc63ffe851ad": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01/probe-identity.ts:1",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed). P2b requires the new current-exchange opaque identity comparison. P1/P2/P3/P4 are maintained by activation-identity, exact-coordinates and refusal-diagnostics. The exchange-10 truncation which is byte-for-byte exchange-1 is an accepted-ID conflicting-content replay, already covered by earlier accepted-ID/conflicting-content schedules; no second group.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-270fc582f2c18c717c3d73cb": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01/reviewer-coverage-before-report.md:17",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6. R5 explicitly requires exact equality without prefix/truncation/normalization. The canonically equivalent and case-transformed P2b inputs require the single new test group; accepted-ID conflicting replay is already covered.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-dad45e42d9655817f865e4db": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-01/reviewer-coverage-before-report.md:22",
+      "groups": [
+        "k12-mutation-a6",
+        "k12-mutation-a9",
+        "k12-mutation-a11",
+        "k12-mutation-a12",
+        "k12-mutation-a13",
+        "k12-mutation-a14",
+        "k12-mutation-b9",
+        "k12-mutation-b10",
+        "k12-mutation-b11",
+        "k12-mutation-b15",
+        "k12-mutation-b20",
+        "k12-mutation-a2",
+        "k12-mutation-b3",
+        "k12-mutation-b4",
+        "k12-mutation-b7",
+        "k12-mutation-b12",
+        "k12-mutation-b13",
+        "k12-mutation-b14"
+      ],
+      "reading": "group-review-18.md",
+      "required_result": "S6 (mixed). Named original ablation family shares its current eighteen adoption groups; generic suite status is not family closure.",
+      "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
     }
   },
   "reconsidered_extractions": [
@@ -7212,9 +7471,20 @@
       ],
       "current_replacement": "    const summary: Pick<ExecutionReader, \"executionId\"> = record;\n    (summary as { executionId: string; resultingEpoch: number }).resultingEpoch;\n    return ok(record.inspection());",
       "relocation_reading": "The old viewOf(record) return and ExecutionRecord planner type were replaced by ExecutionReader.inspection(). The reader owns no resultingEpoch and its class chain still reaches Object.prototype. Preserve the Pick cast and unused property read at the current unique return. No missing-anchor retirement."
+    },
+    "k12c1-opaque-identity-normalization": {
+      "work_kind": "new_test",
+      "source": "K1.2-correction-01/review-01/probe-identity.ts P2b; review-01/reviewer-coverage-before-report.md R5",
+      "required_result": "For one current exchange minted from creation key caf\u00e9, prefix, suffix, NFD and uppercase Activation-ID variants must refuse stale_exchange with exactly one refusal and no other state/delivery change. A code-unit-equal reconstructed primitive string remains answerable with the current grant.",
+      "gap": "Current aggregate-refusal suffix probes distinguish lossy diagnostic projection, but no maintained fixture compares canonically equivalent NFC/NFD Activation coordinates or case variants. Existing opaque text matrices vary unusable/stale identity classes, not equivalence transformations.",
+      "current_mechanism": "coordinator.ts submitOutcome uses acceptedOutcome(activationId) then strict code-unit comparison with intent.activation.activationId; mental-model/concepts/identity.md requires opaque exact UTF-16 equality. The operation remains live and has no superseding design.",
+      "bounded_search": "All Kernel and SDK maintained tests, fault scenarios, both registry mutation bodies, activation-identity, aggregate-refusal, exact-coordinates and outcome-acceptance. Search terms included normalize/NFC/NFD/0301/caf\u00e9/case/truncation/prefix and direct slice/upper calls; assertions and relevant fixtures read.",
+      "reading": "group-review-18.md",
+      "build_status": "planned_not_built_or_run",
+      "planned_test_file": "packages/kernel/tests/activation-identity.test.ts"
     }
   },
-  "resume_origin": "mention-17421d7ff0194ec25119f971",
+  "resume_origin": "mention-d87c57dd5c1c87aa76807e45",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -7222,8 +7492,8 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2-correction-01/reconstruction.md",
-  "resume_line": 9,
+  "resume_path": "docs/development/work/K1.2-correction-01/review-02.md",
+  "resume_line": 43,
   "cap_stop_07": {
     "origins_reached": 696,
     "origins_before_current_family": 695,

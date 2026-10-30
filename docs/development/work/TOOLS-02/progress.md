@@ -2,6 +2,14 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 reviewer-01 identity/cost records — through origin 1,090:** 987
+  retired and 103 extraction-origin plans. [Group review 18](group-review-18.md):
+  **six test groups / 131 adoptions**. One new planned test for opaque NFC/NFD and
+  case/prefix identity comparison; the depth/byte witness already exists. Cumulative
+  projections 9/183, latest-300 projections 8/134, within the caps. Runtime remains
+  250.717 seconds. Resume `K1.2-correction-01/review-02.md:43`,
+  `mention-d87c57dd5c1c87aa76807e45` (origin 1,091). No new execution or final closure.
+
 - **2026-10-30 correction adapters/probes — through origin 1,049:** 964 retired
   and 85 extraction-origin plans. [Batch 20](triage-batch-20.md): **five test groups /
   131 adoptions**, unchanged; measured runtime 250.717 seconds. No new execution or
