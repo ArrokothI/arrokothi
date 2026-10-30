@@ -676,7 +676,27 @@
     "mention-9f62cf1c1d9dea8cc07f7f95",
     "mention-9b2124af1ace05cb0d8d459a",
     "mention-4a7a1fcb82be65803c6c76a3",
-    "mention-927f05394ee9ffb82abb8ba1"
+    "mention-927f05394ee9ffb82abb8ba1",
+    "mention-631a89f180f853e6d7e4260f",
+    "mention-40861635d927903cd505f3d6",
+    "mention-6b18d41edf7005aff960215e",
+    "mention-67a0a8e11bc3db3217be5ff6",
+    "mention-5c0b66eb468e5660e5004739",
+    "mention-c2465612b8d4480d6655a17b",
+    "mention-0dc47d0046584b67f6226bab",
+    "mention-b5bb8b9477a24959bb08999f",
+    "mention-6c12ad052ad3828cb21b088d",
+    "artifact-1ad2b2a0e120c37b9ce6ec26",
+    "mention-b95ecb413eea86d11aa914ad",
+    "mention-03453ebc2d5e937ee708bbf8",
+    "mention-11bbb33ef5aed2e9e3e8c3d6",
+    "mention-b9c07d55aa1ad5a5ee78d41a",
+    "mention-93a0338fcec2d4b8c2cba367",
+    "mention-ff18739b3ebc86b7983665ee",
+    "mention-e105a48350cc5bda50e723cb",
+    "mention-8ff1dcc6955f36d5fccabede",
+    "mention-1304e84e6db2d673a10e73ad",
+    "mention-676846f0ddcc89f62fa2e80a"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -5366,7 +5386,7 @@
       ]
     }
   },
-  "resume_origin": "mention-631a89f180f853e6d7e4260f",
+  "resume_origin": "mention-8d27f2828d8cca113b831364",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -5374,8 +5394,8 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2-correction-01/amendment-02.md",
-  "resume_line": 32,
+  "resume_path": "docs/development/work/K1.2-correction-01/contract.md",
+  "resume_line": 49,
   "cap_stop_07": {
     "origins_reached": 696,
     "origins_before_current_family": 695,

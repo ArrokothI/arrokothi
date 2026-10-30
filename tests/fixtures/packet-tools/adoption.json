@@ -4282,7 +4282,11 @@
     },
     {
       "id": "artifact-1ad2b2a0e120c37b9ce6ec26",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Whole artifact read: fixed-revision ancestry, sealed-record hashes/diffs, changed-file allowlists and local link checks for a completed correction report. These are packet-specific process/preservation checks, not a current product behavior or portable negative control. No historical record is edited or reused as live execution evidence."
+      }
     },
     {
       "id": "artifact-877aada38cc20e894783c9d4",
@@ -49235,79 +49239,280 @@
     },
     {
       "id": "mention-631a89f180f853e6d7e4260f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The paragraph preserves scope and requirements while lifting a historical production freeze; no independent input/operation/result is added. The concrete recovery matrix is retained separately in the H-family reading."
+      }
     },
     {
       "id": "mention-40861635d927903cd505f3d6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The numbered policy changes the proof method and limits the static analyzer claim; its concrete historical mutants and maintained sweeps retain their own origins. No universal analyzer-soundness credit is claimed."
+      }
     },
     {
       "id": "mention-6b18d41edf7005aff960215e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The linked descriptor-chain probe requires accepting and repeatedly observing a coherent Proxy, including its trap-produced descriptor chain. PROXY-01 now refuses every Proxy before those traps; its direct weighted-issue and Outcome schedules no longer perform that operation. Wall-clock observations are also outside L-03, not evidence of a current bound.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      }
     },
     {
       "id": "mention-67a0a8e11bc3db3217be5ff6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The linked descriptor-chain probe requires accepting and repeatedly observing a coherent Proxy, including its trap-produced descriptor chain. PROXY-01 now refuses every Proxy before those traps; its direct weighted-issue and Outcome schedules no longer perform that operation. Wall-clock observations are also outside L-03, not evidence of a current bound.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      }
     },
     {
       "id": "mention-5c0b66eb468e5660e5004739",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The linked descriptor-chain probe requires accepting and repeatedly observing a coherent Proxy, including its trap-produced descriptor chain. PROXY-01 now refuses every Proxy before those traps; its direct weighted-issue and Outcome schedules no longer perform that operation. Wall-clock observations are also outside L-03, not evidence of a current bound.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      }
     },
     {
       "id": "mention-c2465612b8d4480d6655a17b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The linked handler-chain probe requires repeated discovery of a Proxy handler through a caller-sized chain, with 32,768 undefined observations. PROXY-01 replaces the operation with pre-trap Proxy refusal. This does not retire ordinary-object weighted diagnostics or pre-authority nondisclosure.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      }
     },
     {
       "id": "mention-b5bb8b9477a24959bb08999f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. A historical exploratory timing table (Node 25.2.1), expressly an observation rather than a pass threshold; its separate concrete Proxy schedule is superseded at lines 21/36."
+      }
     },
     {
       "id": "mention-0dc47d0046584b67f6226bab",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The linked handler-chain probe requires repeated discovery of a Proxy handler through a caller-sized chain, with 32,768 undefined observations. PROXY-01 replaces the operation with pre-trap Proxy refusal. This does not retire ordinary-object weighted diagnostics or pre-authority nondisclosure.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      }
     },
     {
       "id": "mention-6c12ad052ad3828cb21b088d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The paragraph records research provenance and absence of copied code; no executable counterexample."
+      }
     },
     {
       "id": "mention-b95ecb413eea86d11aa914ad",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Cleanup records the independent verdict and transferred/deferred obligations. It adds no distinguishing input or expected behavior; cited probes/families retain their separate origins."
+      }
     },
     {
       "id": "mention-03453ebc2d5e937ee708bbf8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Cleanup records the independent verdict and transferred/deferred obligations. It adds no distinguishing input or expected behavior; cited probes/families retain their separate origins."
+      }
     },
     {
       "id": "mention-11bbb33ef5aed2e9e3e8c3d6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The paragraph reports aggregate historical suite/sweep counts, versions and liveness totals. It is a run-result record, not an additional scenario or executable proof at C."
+      }
     },
     {
       "id": "mention-b9c07d55aa1ad5a5ee78d41a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Explicit inspected-not-rerun inventory and limitations; no new execution or counterexample is claimed."
+      }
     },
     {
       "id": "mention-93a0338fcec2d4b8c2cba367",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Explicit inspected-not-rerun inventory and limitations; no new execution or counterexample is claimed."
+      }
     },
     {
       "id": "mention-ff18739b3ebc86b7983665ee",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The weighted aggregate-refusal behavior remains live: every occurrence contributes a detail or exact count, bounded storage and authority/forbidden-mutation order remain. Current aggregate leaves assert these results; G9 and edge renderer mutant obligations additionally remain in extraction origin artifact-defc1c19533790036d5d14f3, group-review-15 (not closed yet).",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "aggregate content stays behind currency and authority; capture retains bounded weighted diagnostics"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-e105a48350cc5bda50e723cb",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The weighted aggregate-refusal behavior remains live: every occurrence contributes a detail or exact count, bounded storage and authority/forbidden-mutation order remain. Current aggregate leaves assert these results; G9 and edge renderer mutant obligations additionally remain in extraction origin artifact-defc1c19533790036d5d14f3, group-review-15 (not closed yet).",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "aggregate content stays behind currency and authority; capture retains bounded weighted diagnostics"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-8ff1dcc6955f36d5fccabede",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Exact-coordinate schedule for non-ASCII/lone-surrogate namespace, long keys, complete/fail, grants, hold clearing, all retained/returned coordinates and late reports is maintained in the four exact-coordinate leaves. X/Z mutation routes stay in the separately read families; this prose grants no family closure.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-1304e84e6db2d673a10e73ad",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Exact-coordinate schedule for non-ASCII/lone-surrogate namespace, long keys, complete/fail, grants, hold clearing, all retained/returned coordinates and late reports is maintained in the four exact-coordinate leaves. X/Z mutation routes stay in the separately read families; this prose grants no family closure.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-676846f0ddcc89f62fa2e80a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Record/version reconciliation and no-rewriting statement, not a distinct behavior claim."
+      }
     },
     {
       "id": "mention-8d27f2828d8cca113b831364",

@@ -2,6 +2,16 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 correction records — through origin 718:** twenty more readings;
+  694 retired origins and 24 extraction-origin plans. Five test groups / **129
+  adoption cases** remain; measured adoption runtime is 250.717 seconds.
+  Descriptor/handler Proxy schedules receive their explicit PROXY-01 superseding
+  reading; weighted diagnostics and exact coordinates point to maintained leaves.
+  Only human origin dispositions changed in adoption.json; every derived table was
+  compared and preserved. No regeneration, new execution or closure is claimed.
+  Resume `K1.2-correction-01/contract.md:49`, `mention-8d27f2828d8cca113b831364`
+  (origin 719). Owner choice 10 continues to 1,031; IN_PROGRESS.
+
 - **2026-10-30 correction identity/diagnostic family — origin 698:** five test groups
   / **129 adoption cases**. [Group review 15](group-review-15.md): 67 live variants in
   55 new cases, with input/operation/result grouping and ten individual moved-anchor
