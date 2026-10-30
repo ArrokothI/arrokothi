@@ -1,5 +1,7 @@
 # Projection 08 — early projected-adoption stop within origin 697
 
+Subsequent owner disposition: [owner choice 10](owner-choice-10.md) authorizes continuing through origin 1,031 despite the adoption projection, retaining the test and measured-runtime stops.
+
 2026-10-29, implementing Codex GPT-6 session. Governing instruction:
 [owner choice 09](owner-choice-09.md), answering projection 07 at `8e9a8b8f`.
 

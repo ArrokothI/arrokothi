@@ -2,6 +2,16 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 owner choice 10 — resume through origin 1,031:** the owner explicitly
+  answered “Yes—continue to 1,031, then re-estimate” to continuing despite the
+  253-adoption projection while retaining the 12-test-group and 10-minute measured
+  runtime stops. [Decision](owner-choice-10.md). The original projection-08 stop is
+  preserved; the checkpoint will be projection-09.md. Current counts: five test
+  groups / at least 70 adoptions; all measured adoption runs 250.717 seconds.
+  Resume within `K1.2-correction-01/ablations-07.mjs:1`,
+  `artifact-d3c77a74ad17db7c908e8b60`, at R11, then source order. Worktree/Node paths
+  remain below. Remote and local HEAD verified at `5d6fe41f`; IN_PROGRESS.
+
 - **2026-10-29 owner-choice-09 projection stop — within origin 697:**
   **five test groups / at least 70 mutation adoptions**. [Projection 08](projection-08.md)
   gives cumulative/recent adoption estimates **153/253**; 253 exceeds the owner's 250
