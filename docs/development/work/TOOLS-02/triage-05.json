@@ -750,7 +750,43 @@
     "mention-9bc5d6fe96e6d0e0bfe24cbc",
     "mention-b7f392afe2cea7158616f163",
     "mention-815b25da339ca843c6f24b5d",
-    "mention-71606c805783c79aa69e642d"
+    "mention-71606c805783c79aa69e642d",
+    "mention-91681e75e0b51a8ad966774d",
+    "mention-2d3630aebedf8ecb66e3719f",
+    "mention-239e60e7afc5b212be7d7390",
+    "mention-156306c818f53bd251cfa267",
+    "mention-d2b53d004dd6cf7da27d5fbf",
+    "mention-5cb36a49129ced2d37c17efb",
+    "mention-62ade21e5ddb1cc1d4bf0865",
+    "mention-0b8be4a0f350c2c654c4e9ce",
+    "mention-859eb1fe7308e4a320a9d3cb",
+    "mention-37f16f832c45110e23d3ea6a",
+    "mention-7d8ad1fda575bf846ab49474",
+    "mention-293df0352143279522f733eb",
+    "mention-148775599de1021a1d3fa9e1",
+    "mention-27c9fa6328d6a4d94441dd17",
+    "mention-b39cef4bf28b53839c8ec7e2",
+    "mention-9fc94366818be22dd8280774",
+    "mention-75d5b6f994db680d34d18d26",
+    "mention-0da9d0c36cb43e9b2a39216a",
+    "artifact-21c568ca0763aa60737754d6",
+    "mention-bcd1270ef44a61605794ccae",
+    "mention-9f0e9f8c9ba818402e6e8a9f",
+    "mention-5610976dab1a662f60ce6194",
+    "mention-c3bfc4ba3bccf33a5306c5b2",
+    "mention-124faa3ce55d5350e39ecaf6",
+    "mention-dd8ed9414489124875a77796",
+    "mention-803672f9d3f52752b65edf28",
+    "mention-494959ce24ee16335acd7e67",
+    "mention-40e32b71654c28c73ecc8457",
+    "mention-90bd0e7f0c287ca1378788d1",
+    "mention-9c7a714e238f6a8295280978",
+    "mention-a5676a25af09a2f118a11e34",
+    "mention-928e6e2e27186e84337565e6",
+    "mention-ed60a92ea7760668f8a12967",
+    "mention-a70fde93cb0b10fd4525df37",
+    "mention-e5cd2223f13cf8aed38abbfa",
+    "mention-2dc5e4b39dcd344bab93df7d"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -2011,6 +2047,16 @@
       "reading": "triage-batch-17.md",
       "required_result": "S6. The concrete name-as-own-field change has the live R10 inverse and maintained Error.prototype.name leaf. Reuse k12c1-round7-r10; the no-other-production-change statement is historical planning only.",
       "planned_test": "Reuse already counted adoption groups and preserve source variants; no new group. P1 closure remains pending."
+    },
+    "artifact-877aada38cc20e894783c9d4": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/diagnostic-ablations-04.mjs:1",
+      "groups": [
+        "k12c1-diagnostic-t4"
+      ],
+      "reading": "group-review-16.md",
+      "required_result": "T1/T2 constructor/name diagnostic lookups and T3 array classification are covered by existing value-cost.c1.value-diagnostic-work registry mutations. T4 needs one adoption of the live two-layer string preflight, with no new test. Every member still needs final P1-M binding.",
+      "planned_test": "Add T4 only to existing mutations.json against the passing SDK UTF-16 edge leaf, retain both guard edits, validate control and kill in a fresh clone."
     }
   },
   "reconsidered_extractions": [
@@ -6317,9 +6363,31 @@
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
       ]
+    },
+    "k12c1-diagnostic-t4": {
+      "family": "family.k12c1.diagnostic-ablations-04",
+      "member": "T4 remove the pre-read oversized-string guard",
+      "work_kind": "mutation_adoption",
+      "required_result": "A 131073-unit string that cannot fit is string_too_long before the first character read, with the declared precedence and unchanged accepted scalar edges.",
+      "gap": "Current registry MD1/MD7/VAL diagnostic edits cover T1-T3, but neither registry removes both live string preflight guards. SC7 bypasses the meter while retaining scanBoundaryString preflight, so it is not this counterexample.",
+      "reading": "group-review-16.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+        "test_path": [
+          "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values"
+        ]
+      },
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchors": [
+        "  if (units > 2 * BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;\n",
+        "  if (units > STRING_SCAN_LIMIT) return TOO_LONG;\n"
+      ],
+      "relocation_reading": "Kernel values capture moved to SDK. The historical guard survives inside scanBoundaryString, now called only by scanText, which adds the same preflight outside. Restore the no-preflight decision by removing both guards in one mutant; removing the redundant inner guard alone is not evidence that the subject disappeared."
     }
   },
-  "resume_origin": "mention-91681e75e0b51a8ad966774d",
+  "resume_origin": "mention-2696c4955e5bfef4fd03a598",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -6327,8 +6395,8 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2-correction-01/cumulative-audit-04.md",
-  "resume_line": 41,
+  "resume_path": "docs/development/work/K1.2-correction-01/implementation-01.md",
+  "resume_line": 56,
   "cap_stop_07": {
     "origins_reached": 696,
     "origins_before_current_family": 695,

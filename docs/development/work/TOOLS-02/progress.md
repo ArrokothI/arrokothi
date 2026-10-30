@@ -2,6 +2,16 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 cumulative/diagnostic records — through origin 838:** 784 retired
+  and 54 extraction-origin plans. **Five test groups / 130 adoption cases**.
+  [Group review 16](group-review-16.md) adds one T4 adoption: the SDK now has two
+  string preflight guards, both of which must be disabled to restore the old unsafe
+  decision. T1–T3 have current registry counterparts. No new test or mutant run;
+  measured adoption runtime remains 250.717 seconds. Resume
+  `K1.2-correction-01/implementation-01.md:56`, `mention-2696c4955e5bfef4fd03a598`
+  (origin 839). Owner choice 10 continues to 1,031. Derived tables unchanged;
+  no final P1-M closure, regeneration, P3 completion, audit or C/H/CI claimed.
+
 - **2026-10-30 correction coverage maps — through origin 801:** forty more readings;
   748 retired and 53 extraction-origin plans. [Batch 17](triage-batch-17.md) reuses
   existing adoption groups, preserves moved capture/control obligations, and separates
