@@ -989,7 +989,29 @@
     "mention-c708ddc11e4b23e266a5b223",
     "mention-5a8dd1738a03563a7a3b9164",
     "mention-5829d3cff3cece3724269873",
-    "mention-0b25bcee1cdf4e812dcdd5ba"
+    "mention-0b25bcee1cdf4e812dcdd5ba",
+    "mention-d87c57dd5c1c87aa76807e45",
+    "mention-583b17ef9aca2091e10df24d",
+    "mention-6e37500c63f5546c44141aa8",
+    "mention-d431269c19861cbaaf3c558c",
+    "mention-ad5bde5e69cdf2a0bdf31e85",
+    "mention-1b3fa47fd6025e128677b561",
+    "mention-a756ddb94f809c1e6a102129",
+    "mention-5ba2e36c220b0d6a2e9132ff",
+    "mention-de8e0da420f6111235aa36ff",
+    "mention-506b24623f550b0bf4976779",
+    "mention-207f9767942cbf228b54e9c9",
+    "mention-dec22ce9a29523c2da54e04c",
+    "mention-c64074ec328bd9b44b906bf9",
+    "mention-ffddd703f122d810315b692a",
+    "mention-1197d5b69160697eb36f6737",
+    "mention-14f76a514ea044bf344b3d57",
+    "mention-6695e24db58ec4614cf52112",
+    "mention-6e8980171364e1137c6120be",
+    "mention-672a27825f4a3427329799b5",
+    "artifact-131a517795ea55aee47692de",
+    "artifact-42edc8cdfc687dbcb95e30c3",
+    "artifact-f83cfd8c20c9d031c00c98ba"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -3120,6 +3142,308 @@
       "reading": "group-review-18.md",
       "required_result": "S6 (mixed). Named original ablation family shares its current eighteen adoption groups; generic suite status is not family closure.",
       "planned_test": "Build only the new opaque-identity comparison test; reuse other current leaves and already counted adoption groups. Final-C applicability/control and P1 closure remain required."
+    },
+    "mention-2cf803de75493f10d2cab3eb": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02.md:71",
+      "groups": [
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g6",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed). The named R1-R12 family keeps its already-counted base adoption cases. R3 old eager root-projection span moved: the same 128-unit value-relative path result is retained by G13 in the g6 group; R9 shares d31 and R10 shares d32. Current paths/anchors are individually read, not retired for absence. Existing behavior leaves cover the observations but do not replace family routes.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-add2c2fc278f072d2afea467": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02.md:113",
+      "groups": [
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g6",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed). The named R1-R12 family keeps its already-counted base adoption cases. R3 old eager root-projection span moved: the same 128-unit value-relative path result is retained by G13 in the g6 group; R9 shares d31 and R10 shares d32. Current paths/anchors are individually read, not retired for absence. Existing behavior leaves cover the observations but do not replace family routes.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-c4ce0e74e92b6c0f06305433": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02.md:156",
+      "groups": [
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g6",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed). The named R1-R12 family keeps its already-counted base adoption cases. R3 old eager root-projection span moved: the same 128-unit value-relative path result is retained by G13 in the g6 group; R9 shares d31 and R10 shares d32. Current paths/anchors are individually read, not retired for absence. Existing behavior leaves cover the observations but do not replace family routes.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-a9597de06789fbac74dbb71c": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02.md:286",
+      "groups": [
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g6",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed). The named R1-R12 family keeps its already-counted base adoption cases. R3 old eager root-projection span moved: the same 128-unit value-relative path result is retained by G13 in the g6 group; R9 shares d31 and R10 shares d32. Current paths/anchors are individually read, not retired for absence. Existing behavior leaves cover the observations but do not replace family routes.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-a6b867bc7a5391547beca384": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02.md:293",
+      "groups": [
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g6",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed). The named R1-R12 family keeps its already-counted base adoption cases. R3 old eager root-projection span moved: the same 128-unit value-relative path result is retained by G13 in the g6 group; R9 shares d31 and R10 shares d32. Current paths/anchors are individually read, not retired for absence. Existing behavior leaves cover the observations but do not replace family routes.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-9d4ff0454b200d21f460e034": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02.md:297",
+      "groups": [
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g6",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed). The named R1-R12 family keeps its already-counted base adoption cases. R3 old eager root-projection span moved: the same 128-unit value-relative path result is retained by G13 in the g6 group; R9 shares d31 and R10 shares d32. Current paths/anchors are individually read, not retired for absence. Existing behavior leaves cover the observations but do not replace family routes.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-58f537085a3b0fa66dd45bc6": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02.md:306",
+      "groups": [
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g6",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed). The named R1-R12 family keeps its already-counted base adoption cases. R3 old eager root-projection span moved: the same 128-unit value-relative path result is retained by G13 in the g6 group; R9 shares d31 and R10 shares d32. Current paths/anchors are individually read, not retired for absence. Existing behavior leaves cover the observations but do not replace family routes.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-19001b3329f13f52764343d2": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02.md:74",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed). The referenced identity probe includes the P2b opaque-comparison fixture already planned as one test group. Other producer/replay/diagnostic behavior is maintained; historical rerun counts supply no new credit.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-6907d13cad47194314c45efc": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02.md:120",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed). The referenced identity probe includes the P2b opaque-comparison fixture already planned as one test group. Other producer/replay/diagnostic behavior is maintained; historical rerun counts supply no new credit.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-6d8ee672d0d1565714d35307": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02.md:258",
+      "groups": [
+        "k12c1-base-g1"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6. The requested inverse unbounded aggregate rendering shares the existing G1/G2/G4/G5/G10 nine-issue case, retaining the unbounded-renderer variant and exact eight-detail/ordered-suffix result.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-b31cf27dabdb002d4becb2fe": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02.md:367",
+      "groups": [
+        "k12c1-base-i1",
+        "k12c1-base-i3",
+        "k12c1-base-i4",
+        "k12c1-base-i5",
+        "k12c1-base-i6",
+        "k12c1-base-i7",
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed). I1-I7 share their existing predicate/consumer plans and I2 variant; the linked identity probe also retains its one new P2b test. No duplicate cases.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-b26ff5b65dbb101d7e99bd30": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02/README.md:11",
+      "groups": [
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g6",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8",
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The guide names the identity fixture, all twelve reviewer mutants and aggregate/cost probes; retain their existing most-demanding plans and one test group rather than retire executable references as filenames.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-180d070361967fda88a7669a": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02/README.md:12",
+      "groups": [
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g6",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8",
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The guide names the identity fixture, all twelve reviewer mutants and aggregate/cost probes; retain their existing most-demanding plans and one test group rather than retire executable references as filenames.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-3f049eb1763b439b36b14db8": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02/README.md:14",
+      "groups": [
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g6",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8",
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The guide names the identity fixture, all twelve reviewer mutants and aggregate/cost probes; retain their existing most-demanding plans and one test group rather than retire executable references as filenames.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-137379956c05e16c4ac6b6a8": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02/README.md:15",
+      "groups": [
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g6",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8",
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 (mixed enclosing artifact-guide paragraph). The guide names the identity fixture, all twelve reviewer mutants and aggregate/cost probes; retain their existing most-demanding plans and one test group rather than retire executable references as filenames.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "artifact-f46f2cacc6a5b8a104a0f706": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-02/reviewer-ablations.mjs:1",
+      "groups": [
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g6",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8"
+      ],
+      "reading": "triage-batch-21.md",
+      "required_result": "S6 family. All R1-R12 and sealed control/result rows read. Eleven original mutants correspond directly to the base-family plans (R9=d31, R10=d32); R3 old eager capture path no longer exists but its still-live pre-root projection result maps to G13 in g6. The same 128-unit path input and required retained prefix share that case. No missing-anchor retirement, duplicate group or family closure.",
+      "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
     }
   },
   "reconsidered_extractions": [
@@ -7484,7 +7808,7 @@
       "planned_test_file": "packages/kernel/tests/activation-identity.test.ts"
     }
   },
-  "resume_origin": "mention-d87c57dd5c1c87aa76807e45",
+  "resume_origin": "mention-5536315b6de4f22d95c9ae02",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -7492,8 +7816,8 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2-correction-01/review-02.md",
-  "resume_line": 43,
+  "resume_path": "docs/development/work/K1.2-correction-01/review-03.md",
+  "resume_line": 48,
   "cap_stop_07": {
     "origins_reached": 696,
     "origins_before_current_family": 695,

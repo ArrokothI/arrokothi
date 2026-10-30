@@ -6456,20 +6456,782 @@
     },
     {
       "id": "artifact-131a517795ea55aee47692de",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Current ordinary-value aggregate and several-root fixtures retain bounded weighted diagnostics and later valid calls; SDK refuses invalid live roots before core submission, while malformed byte-core requests have their separate refusal/state assertions. The inherited constructor is not inspected. Historical engine/time observations carry no new gate.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 distinct long Emission keys both render omitted and both accept"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 distinct non-ASCII Emission keys both render omitted and both accept"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 value-relative path 128 before adding root label"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 value-relative path 129 before adding root label"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 renderer message 1024; capture uses fixed type labels"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 renderer message 1025; capture uses fixed type labels"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 all recovery roots and the two other malformed controls return and retain"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 detail count edge 0"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 detail count edge 8"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 detail count edge 9"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 late codes and counts contribute to the same combined refusal in first occurrence order"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "aggregate content stays behind currency and authority; capture retains bounded weighted diagnostics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "O-R2-2 redelivery code hold bounds minted Activation but preserves explicit payload"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "O-R2-2 redelivery protocol hold bounds minted Activation but preserves explicit payload"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 bound proof: fixed code vocabulary and maximum-size details plus all summary codes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 root metadata is own-only under ambient pollution"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: undefined array members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: nonfinite"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: unsupported primitive"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: foreign object prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: foreign array prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: lone surrogate"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array excess length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array extra member"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array symbol"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object symbol"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object nonenumerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object undefined"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object accessor"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object bad key"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 eight SDK roots: every position once, no core submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 wrapper creation, ingress, recovery, complete and fail roots consume weighted evidence without core calls"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-42edc8cdfc687dbcb95e30c3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). The exact wide numeric acceptance witness is in capture-work; undefined/foreign-prototype refusal families and eager root composition are in value-refusal-cost. Wall-clock/heap are only observations under L-03. BINDING moved invalid live-object capture before a core submission; no historical core authority ordering is imposed on the wrapper.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-2 B is derived from the limits and covers the costliest acceptances",
+              "the costliest acceptance found: 30 singleton arrays around 0, 98.4% of B"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-2 B is derived from the limits and covers the costliest acceptances",
+              "the empty-array-leaf variant: 29 wrappers around []"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-2 B is derived from the limits and covers the costliest acceptances",
+              "other at-limit families stay well below B and are accepted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "depth 2: refused at the meter after the derived number of positions"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "depth 16: refused at the meter after the derived number of positions"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "depth 31: refused at the meter after the derived number of positions"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "each of the eight eager Outcome roots does the work of one direct capture, no more (packet review BM-03)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "eight wrapper roots each stop at their own budget before any core call"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: undefined array members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: nonfinite"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: unsupported primitive"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: foreign object prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: foreign array prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: lone surrogate"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array excess length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array extra member"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array symbol"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object symbol"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object nonenumerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object undefined"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object accessor"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object bad key"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 eight SDK roots: every position once, no core submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 wrapper creation, ingress, recovery, complete and fail roots consume weighted evidence without core calls"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-f83cfd8c20c9d031c00c98ba",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "E1/E2 distinct long identities that both render omitted map to aggregate-refusal.test.ts EVID-01 Outcome/takeover negative vectors; E3 distinct 129-unit Emission keys maps to its distinct long keys test. These assert stale_exchange, unchanged whole state except the refusal, later answerability and distinct stored emission IDs.",
         "targets": [
           "suite.packages/kernel/tests/aggregate-refusal.test.ts"
+        ]
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Aggregate-refusal EVID-01 asserts precisely E1/E2 wrong long current identity refusal and E3 distinct 129-unit Emission-key acceptance with exact state changes; diagnostic omission never substitutes for identity.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 distinct long Emission keys both render omitted and both accept"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 distinct non-ASCII Emission keys both render omitted and both accept"
+            ]
+          }
         ]
       }
     },
@@ -134715,15 +135477,27 @@
     },
     {
       "id": "mention-d87c57dd5c1c87aa76807e45",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-583b17ef9aca2091e10df24d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-6e37500c63f5546c44141aa8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-2cf803de75493f10d2cab3eb",
@@ -134731,7 +135505,1669 @@
     },
     {
       "id": "mention-de8e0da420f6111235aa36ff",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The maintained partial-claim matrices require independently usable stale coordinates to win over malformed companions, with refusal-only state.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "future epoch 5 with base missing and no grant is stale, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch with over-capacity content and no grant is stale, not a capacity disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + absent grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + forged grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch fractional + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch fractional + absent grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch fractional + forged grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch negative + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch negative + absent grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch negative + forged grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch string + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch string + absent grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch string + forged grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale-low base on the second exchange with missing epoch is stale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and no grant is unauthorized with no claim disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and the current grant reaches malformed content validation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "fully malformed claim with no grant stays unauthorized; with grant stays malformed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "wrong Activation ID with a partial-stale claim is stale, naming the exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "non-text Activation ID with the current grant is content-group malformed (decision-02)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "an uncapturable partial claim under an accepted Activation ID conflicts, not stale/malformed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "terminal execution refuses a fresh partial-stale proposal as terminal, with no content leak"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "terminal execution with a new Activation ID refuses partial-stale as terminal, not stale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "outsider partial-stale proposals stay unknown_destination and indistinguishable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity missing + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity missing + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + forged grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + absent grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity missing + invalid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity missing + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + retired grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + forged grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + absent grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + current grant + invalid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity number + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity number + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + forged grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + absent grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity number + invalid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity number + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + retired grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + forged grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + absent grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + current grant + invalid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity object + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity object + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + forged grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + absent grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity object + invalid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity object + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + retired grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + forged grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + absent grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + current grant + invalid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity throwing + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity throwing + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + forged grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + absent grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity throwing + invalid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity throwing + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + retired grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + forged grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + absent grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + current grant + invalid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing changed resubmission is terminal, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity number identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity number changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity number identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity number changed resubmission is terminal, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity object identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity object changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity object identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity object changed resubmission is terminal, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity throwing identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity throwing changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity throwing identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity throwing changed resubmission is terminal, not conflict"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-19001b3329f13f52764343d2",
@@ -134739,43 +137175,911 @@
     },
     {
       "id": "mention-506b24623f550b0bf4976779",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Current shared DIAG-01 leaves retain huge/surrogate wrong identities, all 21 boundary schedules, returned/retained frozen bounded reasons, exact refusal-only state, one observation and later valid answers. Near-engine size follows the same pre-concatenation length branch.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone high surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone low surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-207f9767942cbf228b54e9c9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Current shared DIAG-01 leaves retain huge/surrogate wrong identities, all 21 boundary schedules, returned/retained frozen bounded reasons, exact refusal-only state, one observation and later valid answers. Near-engine size follows the same pre-concatenation length branch.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone high surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone low surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-c64074ec328bd9b44b906bf9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The namespace observation is the explicit engine allocation/composition qualification already present in the canonical identity owner, not a successful oversized allocation or a mandated exception guarantee."
+      }
     },
     {
       "id": "mention-1197d5b69160697eb36f6737",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). Current SDK bounded issue collection and weighted root composition preserve the ordinary bad-value aggregate without unbounded constructor text; Kernel byte-content aggregate refusals retain bounded reasons and later answerability. The old live-object core entry moved to the wrapper; wrapper refusals make no core call. Current aggregate, per-family and eager-root controls cover the required diagnostic counts/results.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 distinct long Emission keys both render omitted and both accept"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 distinct non-ASCII Emission keys both render omitted and both accept"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 value-relative path 128 before adding root label"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 value-relative path 129 before adding root label"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 renderer message 1024; capture uses fixed type labels"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 renderer message 1025; capture uses fixed type labels"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 all recovery roots and the two other malformed controls return and retain"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 detail count edge 0"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 detail count edge 8"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 detail count edge 9"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 late codes and counts contribute to the same combined refusal in first occurrence order"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "aggregate content stays behind currency and authority; capture retains bounded weighted diagnostics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "O-R2-2 redelivery code hold bounds minted Activation but preserves explicit payload"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "O-R2-2 redelivery protocol hold bounds minted Activation but preserves explicit payload"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 bound proof: fixed code vocabulary and maximum-size details plus all summary codes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 root metadata is own-only under ambient pollution"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: undefined array members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: nonfinite"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: unsupported primitive"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: foreign object prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: foreign array prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: lone surrogate"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array excess length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array extra member"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array symbol"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object symbol"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object nonenumerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object undefined"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object accessor"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object bad key"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 eight SDK roots: every position once, no core submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 wrapper creation, ingress, recovery, complete and fail roots consume weighted evidence without core calls"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-6695e24db58ec4614cf52112",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The three same-class probes are now explicit aggregate-refusal EVID-01 leaves: two distinct unrenderable current/wrong identities refuse across Outcome and all controls, and two distinct long Emission keys both accept.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 distinct long Emission keys both render omitted and both accept"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 distinct non-ASCII Emission keys both render omitted and both accept"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-6e8980171364e1137c6120be",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). The original time/heap measurements have no current wall-clock gate (L-03). Ordinary accepted numeric arrays, bounded diagnostics and per-root eager observations have maintained metered capture-work/value-refusal-cost assertions; capture moved into SDK before a core call. The old unbounded/eager text projection is not claimed by those timing figures.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-2 B is derived from the limits and covers the costliest acceptances",
+              "the costliest acceptance found: 30 singleton arrays around 0, 98.4% of B"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-2 B is derived from the limits and covers the costliest acceptances",
+              "the empty-array-leaf variant: 29 wrappers around []"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-2 B is derived from the limits and covers the costliest acceptances",
+              "other at-limit families stay well below B and are accepted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "depth 2: refused at the meter after the derived number of positions"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "depth 16: refused at the meter after the derived number of positions"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "depth 31: refused at the meter after the derived number of positions"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "each of the eight eager Outcome roots does the work of one direct capture, no more (packet review BM-03)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "eight wrapper roots each stop at their own budget before any core call"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: undefined array members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: nonfinite"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: unsupported primitive"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: foreign object prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: foreign array prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: lone surrogate"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array excess length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array extra member"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array symbol"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object symbol"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object nonenumerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object undefined"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object accessor"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object bad key"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 eight SDK roots: every position once, no core submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 wrapper creation, ingress, recovery, complete and fail roots consume weighted evidence without core calls"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-d431269c19861cbaaf3c558c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-ad5bde5e69cdf2a0bdf31e85",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-1b3fa47fd6025e128677b561",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-dec22ce9a29523c2da54e04c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Current shared DIAG-01 leaves retain huge/surrogate wrong identities, all 21 boundary schedules, returned/retained frozen bounded reasons, exact refusal-only state, one observation and later valid answers. Near-engine size follows the same pre-concatenation length branch.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone high surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone low surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-add2c2fc278f072d2afea467",
@@ -134787,7 +138091,11 @@
     },
     {
       "id": "mention-ffddd703f122d810315b692a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The namespace observation is the explicit engine allocation/composition qualification already present in the canonical identity owner, not a successful oversized allocation or a mandated exception guarantee."
+      }
     },
     {
       "id": "mention-c4ce0e74e92b6c0f06305433",
@@ -134795,7 +138103,413 @@
     },
     {
       "id": "mention-14f76a514ea044bf344b3d57",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). Current SDK bounded issue collection and weighted root composition preserve the ordinary bad-value aggregate without unbounded constructor text; Kernel byte-content aggregate refusals retain bounded reasons and later answerability. The old live-object core entry moved to the wrapper; wrapper refusals make no core call. Current aggregate, per-family and eager-root controls cover the required diagnostic counts/results.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 distinct long Emission keys both render omitted and both accept"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 distinct non-ASCII Emission keys both render omitted and both accept"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 value-relative path 128 before adding root label"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 value-relative path 129 before adding root label"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 renderer message 1024; capture uses fixed type labels"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 renderer message 1025; capture uses fixed type labels"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 all recovery roots and the two other malformed controls return and retain"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 detail count edge 0"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 detail count edge 8"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 detail count edge 9"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 late codes and counts contribute to the same combined refusal in first occurrence order"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "aggregate content stays behind currency and authority; capture retains bounded weighted diagnostics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "O-R2-2 redelivery code hold bounds minted Activation but preserves explicit payload"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "O-R2-2 redelivery protocol hold bounds minted Activation but preserves explicit payload"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 bound proof: fixed code vocabulary and maximum-size details plus all summary codes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 root metadata is own-only under ambient pollution"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: undefined array members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: nonfinite"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: unsupported primitive"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: foreign object prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: foreign array prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: lone surrogate"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array excess length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array extra member"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array symbol"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object symbol"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object nonenumerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object undefined"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object accessor"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object bad key"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 eight SDK roots: every position once, no core submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 wrapper creation, ingress, recovery, complete and fail roots consume weighted evidence without core calls"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-6d8ee672d0d1565714d35307",
@@ -134803,11 +138517,19 @@
     },
     {
       "id": "mention-a756ddb94f809c1e6a102129",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-5ba2e36c220b0d6a2e9132ff",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-a9597de06789fbac74dbb71c",
@@ -134827,7 +138549,213 @@
     },
     {
       "id": "mention-672a27825f4a3427329799b5",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). The original time/heap measurements have no current wall-clock gate (L-03). Ordinary accepted numeric arrays, bounded diagnostics and per-root eager observations have maintained metered capture-work/value-refusal-cost assertions; capture moved into SDK before a core call. The old unbounded/eager text projection is not claimed by those timing figures.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-2 B is derived from the limits and covers the costliest acceptances",
+              "the costliest acceptance found: 30 singleton arrays around 0, 98.4% of B"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-2 B is derived from the limits and covers the costliest acceptances",
+              "the empty-array-leaf variant: 29 wrappers around []"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-2 B is derived from the limits and covers the costliest acceptances",
+              "other at-limit families stay well below B and are accepted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "depth 2: refused at the meter after the derived number of positions"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "depth 16: refused at the meter after the derived number of positions"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "depth 31: refused at the meter after the derived number of positions"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "each of the eight eager Outcome roots does the work of one direct capture, no more (packet review BM-03)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "eight wrapper roots each stop at their own budget before any core call"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: undefined array members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: nonfinite"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: unsupported primitive"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: foreign object prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: foreign array prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: lone surrogate"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array excess length"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array extra member"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: array symbol"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object symbol"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object nonenumerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object undefined"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object accessor"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: object bad key"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 eight SDK roots: every position once, no core submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 wrapper creation, ingress, recovery, complete and fail roots consume weighted evidence without core calls"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b31cf27dabdb002d4becb2fe",

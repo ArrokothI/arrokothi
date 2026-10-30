@@ -2,6 +2,12 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 reviewer-02 records — through origin 1,128:** 1,009 retired and
+  119 extraction-origin plans. [Batch 21](triage-batch-21.md): **six test groups /
+  131 adoptions**, unchanged, with every R1–R12 route retained. Measured runtime
+  remains 250.717 seconds. Resume `K1.2-correction-01/review-03.md:48`,
+  `mention-5536315b6de4f22d95c9ae02` (origin 1,129). No new execution or closure.
+
 - **2026-10-30 reviewer-01 identity/cost records — through origin 1,090:** 987
   retired and 103 extraction-origin plans. [Group review 18](group-review-18.md):
   **six test groups / 131 adoptions**. One new planned test for opaque NFC/NFD and
