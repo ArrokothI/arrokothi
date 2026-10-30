@@ -54326,11 +54326,45 @@
     },
     {
       "id": "mention-13abcabf5339ec9133f6b04f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Table header only; the adjacent behavior rows retain separate dispositions."
+      }
     },
     {
       "id": "mention-5accd2f7ece1190c45fdf13c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The exact 21-case boundary schedule is shared by the current wrong-50-million/lone-high/lone-low tests and the historical max-length probe. All oversized strings take diagnosticText length >128 omission before any identity concatenation, so the maintained oversized class asserts returned/frozen/retained bounded refusal, whole-state equality and answerability; no new engine-allocation guarantee is inferred.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone high surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone low surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-4ef4cfcb038a4fbc1ac191ae",
@@ -54338,19 +54372,226 @@
     },
     {
       "id": "mention-f5e2e4207fd5e49fa8debd3d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The required outcome is documenting the engine-allocation qualification, already explicit in identity.md runtime-attempt and the baseline. The namespace probe illustrates that qualification; this row does not require oversized derived allocations to succeed or prescribe RangeError as product behavior."
+      }
     },
     {
       "id": "mention-8d7578250553962284956860",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). Atomic acceptance, B-5, late physical-delivery attribution and immutable evidence remain in maintained transaction/terminal/delivery tests. The old refusal of await is superseded by accepted K1.3, while unsupported Effects remain refused. The generic full-suite command list creates no new scenario.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 refusals consume no acceptance position",
+              "Test A \"refusals consume no acceptance position\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 replay and redelivery consume no position",
+              "Test B \"replay and redelivery consume no position\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 hostile pollution during observation cannot split the commit",
+              "Test C \"hostile pollution during observation cannot split the commit\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 reentrant Outcome during observation ordered before outer checks",
+              "Test D \"reentrant Outcome during observation ordered before outer checks\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending one hold commits its history atomically",
+              "Test E \"Outcome ending one hold commits history in the same decision\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/transaction.test.ts",
+            "test_path": [
+              "K12-R1-DOC-01 an Outcome ending both holds commits both history records atomically",
+              "Test F \"Outcome ending both holds commits both history records\""
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C6 B-5: an accepted `complete` or `fail` disposes of every Event still unacknowledged",
+              "`complete` acknowledges the batch and gives the rest a terminal disposition, in one decision"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C6 B-5: an accepted `complete` or `fail` disposes of every Event still unacknowledged",
+              "`fail` acknowledges the batch and gives the rest a terminal disposition, in one decision"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C6 B-5: an accepted `complete` or `fail` disposes of every Event still unacknowledged",
+              "`continue` disposes of nothing: queued input stays queued for the next exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C6 B-5: an accepted `complete` or `fail` disposes of every Event still unacknowledged",
+              "a refused terminal proposal disposes of nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C6 live terminal ingress",
+              "new input to an ended Execution is refused and not queued; earlier input keeps its record"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C6 live terminal ingress",
+              "the same holds after `fail`, and an acknowledged Event replays as acknowledged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C5 a terminal lifetime never reopens",
+              "dispatch, redelivery, a new Outcome, takeover, recovery and protocol reports are all refused"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C5 a terminal lifetime never reopens",
+              "an exact replay of the terminal Outcome still returns its receipt: the lookup precedes the terminal check"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C5 the terminal result is typed",
+              "`complete` records a result and `fail` an error, distinguishable by kind and retained as captured"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/terminal.test.ts",
+            "test_path": [
+              "K1.2-C5 the terminal result is typed",
+              "a `continue` records no result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/late-reports.test.ts",
+            "test_path": [
+              "K1.2-C11 a late delivery report settles only its own original attempt record",
+              "after the exchange resolved: the resolved exchange's attempt settles, and nothing logical moves"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/late-reports.test.ts",
+            "test_path": [
+              "K1.2-C11 a late delivery report settles only its own original attempt record",
+              "after the next exchange started: the old report cannot touch the new exchange's attempts"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/late-reports.test.ts",
+            "test_path": [
+              "K1.2-C11 a late delivery report settles only its own original attempt record",
+              "after a takeover: the superseded attempt's report settles its record, not the replacement's"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/late-reports.test.ts",
+            "test_path": [
+              "K1.2-C11 a late delivery report settles only its own original attempt record",
+              "after the Execution ended: the report still lands only on its record"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/late-reports.test.ts",
+            "test_path": [
+              "K1.2-C11 a late Outcome for a resolved Activation never commits into the new exchange",
+              "exact: the original receipt; changed: refused; either way the open exchange is untouched"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b9c6972014f305979350f416",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical explanation of how earlier tests missed multiplicity and equal omitted renderings. The following concrete AGG/EVID rows keep their evidence obligations."
+      }
     },
     {
       "id": "mention-88671842d77aa3af368514a8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Table header, not a counterexample."
+      }
     },
     {
       "id": "mention-520be5c6fb6bb960f3f73456",
@@ -54366,63 +54607,868 @@
     },
     {
       "id": "mention-bb8c9e0c3e2a6f7e9c47c7c4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). Ordinary SDK capture preserves eight-root counts, authority nondisclosure and whole-state refusal, with current aggregate currency/authority assertions. Hidden core byte operations are still scope-gated; BINDING-01 intentionally moves live-object capture to the caller-side wrapper, so wrapper-before-core capture is not treated as removed behavior.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "aggregate content stays behind currency and authority; capture retains bounded weighted diagnostics"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-26f72849f397afdcb03debf2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Capture issue-family bounds, exact suffix order/multiplicity and eight-root observations moved to SDK maintained cost/diagnostic tests. The restored unbounded collector is already represented by the existing k12c1.adopt-diagnostics-v1 registry case; timing remains an observation.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 P5: 532480 invalid positions retain nine records and exact ordered details"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 suffix counts preserve late codes and first occurrence order across root consumers"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 own-only multiplicity under ambient pollution and capture-time mutation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12c1.adopt-diagnostics-v1"
+          }
+        ]
+      }
     },
     {
       "id": "mention-b137ce580b0fddf3b37652c4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Exact Outcome/accepted lookup/resolved-exchange coordinates and replay identity remain directly asserted in exact-coordinates (four complete/fail namespace schedules).",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-50141feb770ddcb072bcb10d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This paragraph is a cumulative audit/run/report plan and preserves scope. It supplies no independent schedule beyond the concrete interaction rows already read."
+      }
     },
     {
       "id": "mention-1cdb73c78905a93d8e07e522",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). Fixed type-only labels and zero diagnostic property walks, including deep foreign/thrown shapes and eager eight roots, remain SDK-owned and explicitly measured by value-diagnostic-work. Proxy acceptance/traversal is superseded separately; current Proxy leaves assert untouched refusal. The current group-review-09 diagnostic-lookup mutations remain planned.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-aa8ea78c79e3d2bf7dd751d4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). Fixed type-only labels and zero diagnostic property walks, including deep foreign/thrown shapes and eager eight roots, remain SDK-owned and explicitly measured by value-diagnostic-work. Proxy acceptance/traversal is superseded separately; current Proxy leaves assert untouched refusal. The current group-review-09 diagnostic-lookup mutations remain planned.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-a97c9408d2a630189e7167d1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The four exact-coordinate leaves independently derive full tokens and cover both Executions, redelivery, holds, takeover, Outcome and terminal. Z1\u2013Z16 inverse variants keep their separately planned family routes; this leaf pointer is ordinary-behavior credit only.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-59c6c64abeb13cf625b44059",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Cumulative audit scope and the instruction to replace weak/shared oracles and disclose equivalent mutants; concrete diagnostics/coordinates are in the separate rows, not a new input here."
+      }
     },
     {
       "id": "mention-a6c0c65221db10d26ccf0353",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Cumulative audit scope and the instruction to replace weak/shared oracles and disclose equivalent mutants; concrete diagnostics/coordinates are in the separate rows, not a new input here."
+      }
     },
     {
       "id": "mention-4a78016e940d3870d864095d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Cumulative audit scope and the instruction to replace weak/shared oracles and disclose equivalent mutants; concrete diagnostics/coordinates are in the separate rows, not a new input here."
+      }
     },
     {
       "id": "mention-99ec39a824291e7168bb6088",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Mutable ambient resultingEpoch, prebuilt History and causal hold ordering retain the review-09 matrix, caller-object mutation checks and complete fault decisions. H-family inverse routes remain separately recorded; state-owner relocation does not retire the obligation.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-098bc9ed3967480b00640e33",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Mutable ambient resultingEpoch, prebuilt History and causal hold ordering retain the review-09 matrix, caller-object mutation checks and complete fault decisions. H-family inverse routes remain separately recorded; state-owner relocation does not retire the obligation.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-346ca55dd23289e9f1ff8ad4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The three self-found inherited safety/controlScopes/options schedules are maintained by host-members with refused authority/unsafe replacement and unchanged 1024/256 defaults; legitimate host methods stay accepted. H15\u2013H21 cases are already built.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a Driver without the method is refused even when the request's getter installs an inherited one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "residue pollution left before the call establishes nothing either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a function-object Driver is not answered by Function.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver's own prototype method is honored (trusted host structure)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a method inherited from the host's own prototype object is honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver without the method is not answered by Object.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "controlScopes inherited from the host's own prototype object is still honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "a limit the host supplies through its own options prototype is honored"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-70b79d2735975b026d9daca1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Host getter/control callback observation must precede the control owner apply; the planner checks forbid foreign calls after the answer/basis is bound, with current fault-sweep callback baselines and prebuild checks. Required trusted-host members remain owned by contract; no arbitrary hostile-host promise is inferred.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "requestTakeover: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-58aed12a8681df5c4069df59",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The three self-found inherited safety/controlScopes/options schedules are maintained by host-members with refused authority/unsafe replacement and unchanged 1024/256 defaults; legitimate host methods stay accepted. H15\u2013H21 cases are already built.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a Driver without the method is refused even when the request's getter installs an inherited one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "residue pollution left before the call establishes nothing either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a function-object Driver is not answered by Function.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver's own prototype method is honored (trusted host structure)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a method inherited from the host's own prototype object is honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver without the method is not answered by Object.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "controlScopes inherited from the host's own prototype object is still honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "a limit the host supplies through its own options prototype is honored"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-494094004e44aed36dcb2508",
@@ -54434,7 +55480,67 @@
     },
     {
       "id": "mention-9bc5d6fe96e6d0e0bfe24cbc",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The maintained retained-evidence test mutates the inherited foreign object after return and requires no resultingEpoch field or changed inspection.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-2398b27e5f81134412339478",
@@ -54442,7 +55548,11 @@
     },
     {
       "id": "mention-b7f392afe2cea7158616f163",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Provenance and reconstruction status, with no executable criterion."
+      }
     },
     {
       "id": "mention-7904c1fd43869b728d1f51f5",
@@ -54458,7 +55568,11 @@
     },
     {
       "id": "mention-815b25da339ca843c6f24b5d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Analysis of the prior validation mechanism and proposed closed-world strategy. Its concrete forms occur in the separate evidence rows; no universal analyzer guarantee is adopted."
+      }
     },
     {
       "id": "mention-515ef63dc019b318d75b1679",
@@ -54478,7 +55592,65 @@
     },
     {
       "id": "mention-71606c805783c79aa69e642d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Duplicate/no-change controls, refusals and Driver callback revalidation are concrete maintained fault-sweep and takeover-reentrancy schedules. Their successful final state is not substituted for the separate mutation-order guard.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 a nested takeover inside isSafeToReplace commits once",
+              "inner takeover commits epoch 2; the outer stale arm refuses with no orphan receipt or delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first",
+              "a current continue Outcome resolves; the outer takeover refuses with no receipt or delivery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 an Outcome inside isSafeToReplace resolves first",
+              "a terminal complete inside the callback ends the Execution; the outer takeover is refused"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/takeover-reentrancy.test.ts",
+            "test_path": [
+              "K12-R2-TAKEOVER-01 a code hold inside isSafeToReplace blocks the outer takeover",
+              "recoverExecution establishes the hold during the callback; the outer arm is refused"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b2a9066c866c7345b3fad23f",

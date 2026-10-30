@@ -2,6 +2,15 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 correction coverage maps — through origin 801:** forty more readings;
+  748 retired and 53 extraction-origin plans. [Batch 17](triage-batch-17.md) reuses
+  existing adoption groups, preserves moved capture/control obligations, and separates
+  the documented allocation qualification from bounded-refusal behavior. Five test
+  groups / **129 adoption cases**, measured runtime 250.717 seconds, unchanged.
+  Resume `K1.2-correction-01/cumulative-audit-04.md:41`,
+  `mention-91681e75e0b51a8ad966774d` (origin 802). Human origin records only;
+  derived tables compared unchanged, no regeneration or new execution. IN_PROGRESS.
+
 - **2026-10-30 correction contract — through origin 761:** 43 readings, now 723
   retired and 38 extraction-origin plans. [Batch 16](triage-batch-16.md) retains
   concrete family references with the already counted adoption groups, and resolves
