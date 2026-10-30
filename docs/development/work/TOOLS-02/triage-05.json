@@ -1,7 +1,7 @@
 {
   "source_base": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
   "source_packet": "K1.2-correction-01",
-  "state": "triage_in_progress",
+  "state": "stopped_for_owner_choice_09_projection",
   "retirement_readings": [
     "mention-b43188cfa39f39ae809510de",
     "mention-6f40e8f1a46ba505eb1dc0e2",
@@ -975,6 +975,20 @@
       "reading": "group-review-11.md",
       "planned_test": "Build twelve cases in the existing registry, retaining H2/H19 as separate mutants of their shared P1-G cases. Fresh controls and qualified kills required; preserve all attributed limits.",
       "reconciliation": "group-review-12.md"
+    },
+    "artifact-d3c77a74ad17db7c908e8b60": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/ablations-07.mjs:1",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8",
+        "k12c1-round7-r10"
+      ],
+      "reading": "group-review-13.md",
+      "required_result": "R1-R6 share existing host-member groups; R7/R8/R10 require three new adoption cases. R9 has an individual BINDING-01 relocation/supersession reading. R11-R12/C1-C16 are pending reconciliation at the explicit projection stop. No family closure is claimed.",
+      "planned_test": "After owner disposition, build in existing registry, preserve all variants and validate controls/kills; no new maintained test currently required."
     }
   },
   "reconsidered_extractions": [
@@ -1914,12 +1928,22 @@
       "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
       "registry_case": "k12c1.adopt-coordinate-x10",
       "registry_mutant": "mutation-5dc3984622d7a72e92fbe3d44dc13c5f958c17db0c48b53f6480f47ba6706fef",
+      "validation_history": [
+        {
+          "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+          "record": "adoption-controls-09.json",
+          "control_valid": true,
+          "outcomes": [
+            "observed"
+          ]
+        }
+      ],
       "validation": {
-        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
-        "record": "adoption-controls-09.json",
+        "revision": "b804e986f5be2f39bd5f2d75dcc6673534ff870b",
+        "record": "adoption-controls-10.json",
         "control_valid": true,
         "outcomes": [
-          "observed"
+          "killed"
         ]
       }
     },
@@ -2039,12 +2063,22 @@
       "relocation_reading": "ResolvedExchange construction became prebuilt ResolvedFacts plus the state-owner append. The exact coordinate is still supplied by this builder; re-anchor its activationId field.",
       "registry_case": "k12c1.adopt-coordinate-x14",
       "registry_mutant": "mutation-36b0828203edf086e5b273f8dc3c927c55ed8e2032159e2bba9c885b3a00dee7",
+      "validation_history": [
+        {
+          "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+          "record": "adoption-controls-09.json",
+          "control_valid": true,
+          "outcomes": [
+            "observed"
+          ]
+        }
+      ],
       "validation": {
-        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
-        "record": "adoption-controls-09.json",
+        "revision": "b804e986f5be2f39bd5f2d75dcc6673534ff870b",
+        "record": "adoption-controls-10.json",
         "control_valid": true,
         "outcomes": [
-          "observed"
+          "killed"
         ]
       }
     },
@@ -2506,12 +2540,22 @@
       "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
       "registry_case": "k12c1.adopt-coordinate-z3",
       "registry_mutant": "mutation-4e589609f7613f6e0e827ff22c240ba071a54814358480d69851e8bcc3717015",
+      "validation_history": [
+        {
+          "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+          "record": "adoption-controls-09.json",
+          "control_valid": true,
+          "outcomes": [
+            "observed"
+          ]
+        }
+      ],
       "validation": {
-        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
-        "record": "adoption-controls-09.json",
+        "revision": "b804e986f5be2f39bd5f2d75dcc6673534ff870b",
+        "record": "adoption-controls-10.json",
         "control_valid": true,
         "outcomes": [
-          "observed"
+          "killed"
         ]
       }
     },
@@ -2568,12 +2612,22 @@
       "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
       "registry_case": "k12c1.adopt-coordinate-z5",
       "registry_mutant": "mutation-33c689898dc3bbc3b07b5d9289c2d36f0162cd44fa51a27519cc3d5018ba2d0c",
+      "validation_history": [
+        {
+          "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+          "record": "adoption-controls-09.json",
+          "control_valid": true,
+          "outcomes": [
+            "observed"
+          ]
+        }
+      ],
       "validation": {
-        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
-        "record": "adoption-controls-09.json",
+        "revision": "b804e986f5be2f39bd5f2d75dcc6673534ff870b",
+        "record": "adoption-controls-10.json",
         "control_valid": true,
         "outcomes": [
-          "observed"
+          "killed"
         ]
       }
     },
@@ -3084,14 +3138,62 @@
       "relocation_reading": "The hostMember call remains unique. Ordinary caller.controlScopes would consult ambient inheritance; current registry/oracle control-authority scenarios do not introduce this inherited scope. The maintained pollution leaf names the actual distinguishing input.",
       "registry_case": "k12c1.adopt-recovery-h15",
       "registry_mutant": "mutation-f497faffa4b48efc161fda566ef674b5654781fa5943f68d7d958c15e26967cf",
+      "validation_history": [
+        {
+          "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+          "record": "adoption-controls-09.json",
+          "control_valid": true,
+          "outcomes": [
+            "observed"
+          ]
+        }
+      ],
       "validation": {
-        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
-        "record": "adoption-controls-09.json",
+        "revision": "b804e986f5be2f39bd5f2d75dcc6673534ff870b",
+        "record": "adoption-controls-10.json",
         "control_valid": true,
         "outcomes": [
-          "observed"
+          "killed"
         ]
-      }
+      },
+      "additional_members": [
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R1 quoted binding name reads the optional controlScopes",
+          "reading": "group-review-13.md",
+          "status": "variant_planned_not_built"
+        },
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R2 computed binding name reads the optional controlScopes",
+          "reading": "group-review-13.md",
+          "status": "variant_planned_not_built"
+        },
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R3 assignment destructuring reads the optional controlScopes",
+          "reading": "group-review-13.md",
+          "status": "variant_planned_not_built"
+        },
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R4 bare binding reads the optional controlScopes",
+          "reading": "group-review-13.md",
+          "status": "variant_planned_not_built"
+        },
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R5 a cast makes the optional controlScopes required",
+          "reading": "group-review-13.md",
+          "status": "variant_planned_not_built"
+        },
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R6 a rest copy then an optional read",
+          "reading": "group-review-13.md",
+          "status": "variant_planned_not_built"
+        }
+      ]
     },
     "k12c1-recovery-h16": {
       "family": "family.k12c1.ablations-06",
@@ -3131,13 +3233,24 @@
           "mutation": "mutation-632b434c60781a49063d54e051cb2b5c497f02e11655e2eed8dad1b15bc295f4"
         }
       ],
+      "validation_history": [
+        {
+          "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+          "record": "adoption-controls-09.json",
+          "control_valid": true,
+          "outcomes": [
+            "observed",
+            "observed"
+          ]
+        }
+      ],
       "validation": {
-        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
-        "record": "adoption-controls-09.json",
+        "revision": "b804e986f5be2f39bd5f2d75dcc6673534ff870b",
+        "record": "adoption-controls-10.json",
         "control_valid": true,
         "outcomes": [
-          "observed",
-          "observed"
+          "killed",
+          "killed"
         ]
       }
     },
@@ -3164,12 +3277,22 @@
       "relocation_reading": "The recovery answer is prebuilt before handing its plan to the state owner. Re-anchor the post-apply return; the old applyControlCommit helper is removed.",
       "registry_case": "state-owner.tools02-h7",
       "registry_mutant": "mutation-31b8db55bc82d15e2cac1e99cee73bad9effa301e674a38aa8a6fd0fe914ab45",
+      "validation_history": [
+        {
+          "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+          "record": "adoption-controls-09.json",
+          "control_valid": true,
+          "outcomes": [
+            "setup_error"
+          ]
+        }
+      ],
       "validation": {
-        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
-        "record": "adoption-controls-09.json",
+        "revision": "b804e986f5be2f39bd5f2d75dcc6673534ff870b",
+        "record": "adoption-controls-10.json",
         "control_valid": true,
         "outcomes": [
-          "setup_error"
+          "killed"
         ]
       }
     },
@@ -3260,12 +3383,22 @@
       "relocation_reading": "A function-object Driver must not inherit safety from Function.prototype.",
       "registry_case": "k12c1.adopt-recovery-h20",
       "registry_mutant": "mutation-ebc784cdb97248253092436607f0223c320e8d886372e6d216bf9a9f16e8caae",
+      "validation_history": [
+        {
+          "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+          "record": "adoption-controls-09.json",
+          "control_valid": true,
+          "outcomes": [
+            "observed"
+          ]
+        }
+      ],
       "validation": {
-        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
-        "record": "adoption-controls-09.json",
+        "revision": "b804e986f5be2f39bd5f2d75dcc6673534ff870b",
+        "record": "adoption-controls-10.json",
         "control_valid": true,
         "outcomes": [
-          "observed"
+          "killed"
         ]
       }
     },
@@ -3299,7 +3432,15 @@
         "outcomes": [
           "killed"
         ]
-      }
+      },
+      "additional_members": [
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R6 a rest copy then an optional read",
+          "reading": "group-review-13.md",
+          "status": "positive-host-prototype variant must also remain attributed; not built"
+        }
+      ]
     },
     "k12c1-recovery-h22": {
       "family": "family.k12c1.ablations-06",
@@ -3332,6 +3473,73 @@
           "killed"
         ]
       }
+    },
+    "k12c1-round7-r7": {
+      "family": "family.k12c1.ablations-07",
+      "member": "R7 an in-operator guard consults the prototype chain",
+      "work_kind": "mutation_adoption",
+      "required_result": "The current source guard reports the in-operator syntax; this is structural regression evidence, not a claim that in invokes a getter.",
+      "gap": "No registry member mutates this in-operator decision. The poison oracle explicitly cannot observe HasProperty.",
+      "reading": "group-review-13.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/ambient-reads.test.ts",
+        "test_path": [
+          "correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned",
+          "the zone uses only permitted syntax"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "  const controls = hostMember(caller, \"controlScopes\") as readonly string[] | undefined;"
+      ],
+      "relocation_reading": "All original anchors remain unique at b804e986f5be2f39bd5f2d75dcc6673534ff870b. No supersession or new test is required; build and control/kill validation remain pending."
+    },
+    "k12c1-round7-r8": {
+      "family": "family.k12c1.ablations-07",
+      "member": "R8 a String.prototype method replaces an index read",
+      "work_kind": "mutation_adoption",
+      "required_result": "A post-load String.prototype.startsWith read must be reported as a non-inventoried built-in access.",
+      "gap": "The current renderer keeps the index read; neither registry mutates this decision. The complete-decision oracle does not assert this access-inventory obligation.",
+      "reading": "group-review-13.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/ambient-reads.test.ts",
+        "test_path": [
+          "correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned",
+          "every reported site is inventoried, at its exact count, with a reason"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "    const bracketed = issue.path.length > 0 && (issue.path[0] as string) === \"[\";"
+      ],
+      "relocation_reading": "All original anchors remain unique at b804e986f5be2f39bd5f2d75dcc6673534ff870b. No supersession or new test is required; build and control/kill validation remain pending."
+    },
+    "k12c1-round7-r10": {
+      "family": "family.k12c1.ablations-07",
+      "member": "R10 SELF-R7-UNSUPPORTED-01 restored: name written through [[Set]]",
+      "work_kind": "mutation_adoption",
+      "required_result": "UnsupportedKernelSurfaceError owns its name without calling an ambient Error.prototype.name setter.",
+      "gap": "The error mechanism remains even though current coordinator surfaces no longer use it. Its maintained runtime leaf calls refuseUnsupportedSurface directly; no registry covers the class-field to Set mutation, and the poison sweep excludes Error.prototype.",
+      "reading": "group-review-13.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/ambient-reads.test.ts",
+        "test_path": [
+          "correction DEC-8 at runtime: the unsupported-surface error owns its name (SELF-R7-UNSUPPORTED-01)",
+          "an accessor installed on Error.prototype.name receives nothing, and the error still names itself"
+        ]
+      },
+      "current_target": "packages/kernel/src/unsupported.ts",
+      "current_anchors": [
+        "  override readonly name = \"UnsupportedKernelSurfaceError\";\n",
+        "    this.surface = surface;"
+      ],
+      "relocation_reading": "All original anchors remain unique at b804e986f5be2f39bd5f2d75dcc6673534ff870b. No supersession or new test is required; build and control/kill validation remain pending."
     }
   },
   "resume_origin": "artifact-d3c77a74ad17db7c908e8b60",
@@ -3342,7 +3550,7 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2-correction-01/ablations-03-rebound-06.mjs",
+  "resume_path": "docs/development/work/K1.2-correction-01/ablations-07.mjs",
   "resume_line": 1,
   "cap_stop_07": {
     "origins_reached": 696,
@@ -3363,5 +3571,22 @@
     "projected_adoption_cap": 250,
     "measured_runtime_cap_seconds": 600,
     "next_checkpoint": 1031
+  },
+  "cap_stop_08": {
+    "origins_reached": 697,
+    "origins_before_current_family": 696,
+    "test_groups": 5,
+    "mutation_adoptions_lower_bound": 70,
+    "validated_adoptions": 67,
+    "planned_adoptions_lower_bound": 3,
+    "cumulative_adoption_projection": 153,
+    "recent_adoption_projection": 253,
+    "measured_adoption_runtime_seconds": 250.717,
+    "pending_family": "family.k12c1.ablations-07",
+    "resume_member": "R11",
+    "reading": "group-review-13.md",
+    "projection": "projection-08.md",
+    "scheduled_checkpoint": 1031,
+    "scheduled_checkpoint_completed": false
   }
 }

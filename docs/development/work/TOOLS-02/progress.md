@@ -2,6 +2,29 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 owner-choice-09 projection stop — within origin 697:**
+  **five test groups / at least 70 mutation adoptions**. [Projection 08](projection-08.md)
+  gives cumulative/recent adoption estimates **153/253**; 253 exceeds the owner's 250
+  cap. Test projections 11/12 remain within 12. All four measured adoption runs total
+  **250.717 seconds**, below 600; [ledger](adoption-runtime-09.json) includes failures
+  and retries, plus the separately disclosed pre-execution launcher refusal.
+  - [Group review 13](group-review-13.md): three new cases R7/R8/R10; R1–R6 share
+    existing host-member cases with variants retained. R9 has an individual relocation
+    reading. Resume after owner disposition within `K1.2-correction-01/ablations-07.mjs:1`,
+    `artifact-d3c77a74ad17db7c908e8b60`, at R11, then R12/C1–C16 and source order.
+    The scheduled origin-1,031 checkpoint is not complete (334 origins remain).
+  - At `b804e986`, eight retry controls and nine mutants pass their qualification;
+    typecheck exits 0. [Results 10](adoption-controls-10.json). The 67 built cases have
+    69 validated mutants across recorded revisions; the three new cases and newly
+    planned shared variants remain unbuilt. Final-C rerun remains required.
+  - Worktree `/Users/rex-shih/.codex/worktrees/tools-02-gpt6-handover/arrokothi`;
+    Node PATH prefix `/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin`.
+    GitHub fetch and npm ci work; remote was `8e9a8b8f` before this continuation.
+    No product/historical evidence or derived adoption tables changed. Test leaf
+    moves must be carried only by regenerate in a fresh clone when work resumes.
+    No P3 completion, self-audit, mappings_complete, final C/H or CI dispatch claimed.
+    IN_PROGRESS, stopped for owner disposition; not review-ready or accepted.
+
 - **2026-10-29 adoption validation / assertion repair:** at `f9e9c540`, all 49 new
   controls passed; 42 of 51 mutants qualified, eight remained observed, and H7's
   probe refused the wrong named killer. [Results](adoption-controls-09.json) and

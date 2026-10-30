@@ -672,9 +672,82 @@
           ]
         }
       ]
+    },
+    {
+      "revision": "b804e986f5be2f39bd5f2d75dcc6673534ff870b",
+      "raw_local_path": "/private/tmp/tools02-correction-results-b804e986.json",
+      "raw_sha256": "4c7bde00ee774e75053d2dfae8545bb2d2a4649e1dcb8461f2b28e083fd889da",
+      "seconds": 69.278,
+      "cases": [
+        {
+          "case": "k12c1.adopt-coordinate-x10",
+          "control_valid": true,
+          "seconds": 1.958,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x14",
+          "control_valid": true,
+          "seconds": 1.502,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z3",
+          "control_valid": true,
+          "seconds": 1.44,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z5",
+          "control_valid": true,
+          "seconds": 1.521,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h15",
+          "control_valid": true,
+          "seconds": 1.411,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h16",
+          "control_valid": true,
+          "seconds": 1.894,
+          "outcomes": [
+            "killed",
+            "killed"
+          ]
+        },
+        {
+          "case": "state-owner.tools02-h7",
+          "control_valid": true,
+          "seconds": 58.178,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h20",
+          "control_valid": true,
+          "seconds": 1.374,
+          "outcomes": [
+            "killed"
+          ]
+        }
+      ]
     }
   ],
-  "seconds": 181.439,
+  "seconds": 250.717,
   "launcher_errors": [
     {
       "revision": "11887628",
