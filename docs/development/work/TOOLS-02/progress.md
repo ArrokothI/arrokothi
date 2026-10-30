@@ -2,6 +2,22 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 recovery family reconciled / adoption build — origin 696:**
+  **five test groups and 67 adoption cases**. [Group review 12](group-review-12.md)
+  adds six cases; H2 and H19 share H1/H16 cases as separately retained mutation
+  variants under P1-G. The remaining History/order routes have current mechanism
+  or complete-decision readings, with final P1-M binding still pending.
+  - Added 49 cases / 51 mutants to the existing mutations.json, with exact current
+    anchors and static test closures. H7/H22 use the existing structural probe and
+    two new control-spec entries, because their targets read source as data.
+  - Fresh clone/npm-ci controls and kills are next. Earlier measured adoption runs
+    total **33.805 seconds**, including the failed setup attempts; the complete
+    [runtime ledger](adoption-runtime-09.json) retains both runs. No new kills claimed yet.
+  - Resume triage at `K1.2-correction-01/ablations-07.mjs:1`,
+    `artifact-d3c77a74ad17db7c908e8b60`. Current adoption projections 147/241 stay
+    below 250; test projections 11/12 stay within 12. Next scheduled checkpoint 1,031.
+    No product/historical evidence or generated adoption tables changed; IN_PROGRESS.
+
 - **2026-10-29 owner choice 09 — resumed within origin 696:**
   [Owner choice 09](owner-choice-09.md) answers projection 07 at `8e9a8b8f`.
   The projected mutation-adoption cap is now **250**, with a separate stop if

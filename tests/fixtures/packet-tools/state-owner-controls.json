@@ -3,7 +3,10 @@
   "source": "COORD-REFACTOR-01 CR1-4 (brief 01; design 01 revision 1): one case per bypass family; a kill is an assertion failure of a named killer",
   "families": {
     "write-outside-apply": {
-      "files": ["packages/kernel/tests/control-commits.test.ts", "packages/kernel/tests/state-plans.test.ts"],
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts",
+        "packages/kernel/tests/state-plans.test.ts"
+      ],
       "test_count": 118,
       "killers": [
         "each record field has fixed arms, and the coordinator changes accepted state only by handing plans over",
@@ -11,7 +14,9 @@
       ]
     },
     "dropped-coupled-field": {
-      "files": ["packages/kernel/tests/control-commits.test.ts"],
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts"
+      ],
       "test_count": 98,
       "killers": [
         "#applyControl: prepares without changing anything, then commits exactly its declared statements",
@@ -19,7 +24,11 @@
       ]
     },
     "callback-inside-apply": {
-      "files": ["packages/kernel/tests/control-commits.test.ts", "packages/kernel/tests/state-plans.test.ts", "tests/conformance/architecture/kernel-state-ownership.test.ts"],
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts",
+        "packages/kernel/tests/state-plans.test.ts",
+        "tests/conformance/architecture/kernel-state-ownership.test.ts"
+      ],
       "test_count": 127,
       "killers": [
         "every call resolves to zone code, a classified primordial or an inventoried foreign call; the owner reaches none",
@@ -28,11 +37,31 @@
       ]
     },
     "view-aliases-state": {
-      "files": ["packages/kernel/tests/state-plans.test.ts"],
+      "files": [
+        "packages/kernel/tests/state-plans.test.ts"
+      ],
       "test_count": 20,
       "killers": [
         "every reader member returns a primitive, a reader, frozen data or a fresh list of frozen values",
         "editing every container of a returned view changes neither the next view nor the Execution"
+      ]
+    },
+    "tools02-h7": {
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts"
+      ],
+      "test_count": 98,
+      "killers": [
+        "createExecution: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+      ]
+    },
+    "tools02-h22": {
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts"
+      ],
+      "test_count": 47,
+      "killers": [
+        "every guarded descriptor read follows its own-value check in the same function"
       ]
     }
   }

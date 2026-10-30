@@ -9832,6 +9832,2436 @@
         "member": "B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01)",
         "required_result": "After authority, malformed claim diagnostics retain all independent content defects"
       }
+    },
+    {
+      "id": "k12.adopt-review09-r5",
+      "source": "family.k12.review-09 R5 Takeover replaces the old grant, and the old grant cannot authorize current coordinates.; TOOLS-02 group-review-08.md",
+      "assertion": "k12-review09-r5",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/submission-lifetime.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/submission-lifetime.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12-review09-r5",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.review-09#R5",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/submission-lifetime.test.ts",
+              "path": [
+                "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
+                "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const submission = mintSubmission(record.executionId, named.activationId, writerEpoch);",
+          "after": "const submission = exchange.submission;",
+          "id": "mutation-6060d7a974870ac00c1c6ab5ee32fd69420043c264d84c3fc9132144d01d3546"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "R5 Takeover replaces the old grant, and the old grant cannot authorize current coordinates.",
+        "required_result": "Takeover replaces the old grant, and the old grant cannot authorize current coordinates."
+      }
+    },
+    {
+      "id": "k12.adopt-review09-r7",
+      "source": "family.k12.review-09 R7 Changing only the writer epoch under an accepted Activation ID conflicts instead of replaying.; TOOLS-02 group-review-08.md",
+      "assertion": "k12-review09-r7",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/outcome-acceptance.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/outcome-acceptance.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12-review09-r7",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12.review-09#R7",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+              "path": [
+                "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
+                "changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/outcome.ts",
+          "before": "    `${claim.writerEpoch}`,\n",
+          "after": "    \"0\",\n",
+          "id": "mutation-8d864793a9a0272c220ab34fb4fef524289a74c2b872e3fd6c94aae5597a7df8"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "R7 Changing only the writer epoch under an accepted Activation ID conflicts instead of replaying.",
+        "required_result": "Changing only the writer epoch under an accepted Activation ID conflicts instead of replaying."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x8",
+      "source": "family.k12c1.ablations-03 X8 Emission ID derived from diagnostic Activation spelling; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x8",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x8",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X8",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const emissionId = `emission-${packIdentity([record.executionId, activationId, emission.emissionKey])}`;",
+          "after": "const emissionId = `emission-${packIdentity([record.executionId, diagnosticIdentity(activationId), emission.emissionKey])}`;",
+          "id": "mutation-509390623b0b674dd29837ae3716602076db314ffa2e349a65e155149b665ca9"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X8 Emission ID derived from diagnostic Activation spelling",
+        "required_result": "X8 Emission ID derived from exact Activation spelling"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x9",
+      "source": "family.k12c1.ablations-03 X9 result ID derived from diagnostic Activation spelling; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x9",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x9",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X9",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "resultId: `result-${packIdentity([record.executionId, activationId])}`,",
+          "after": "resultId: `result-${packIdentity([record.executionId, diagnosticIdentity(activationId)])}`,",
+          "id": "mutation-dcf4e6cd8919bd695e587219ba88441d7af6383cb0d8b538b1706b125bfc790e"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X9 result ID derived from diagnostic Activation spelling",
+        "required_result": "X9 result ID derived from exact Activation spelling"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x10",
+      "source": "family.k12c1.ablations-03 X10 acknowledged disposition names diagnostic Activation spelling; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x10",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x10",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X10",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "PrimordialObjectFreeze({ kind: \"acknowledged\" as const, activationId });",
+          "after": "PrimordialObjectFreeze({ kind: \"acknowledged\" as const, activationId: diagnosticIdentity(activationId) });",
+          "id": "mutation-5dc3984622d7a72e92fbe3d44dc13c5f958c17db0c48b53f6480f47ba6706fef"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X10 acknowledged disposition names diagnostic Activation spelling",
+        "required_result": "X10 acknowledged disposition names exact Activation spelling"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x11",
+      "source": "family.k12c1.ablations-03 X11 code hold stores diagnostic Activation spelling; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x11",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x11",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X11",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "        reason: missing,\n        activationId: pinned.activationId,",
+          "after": "        reason: missing,\n        activationId: diagnosticIdentity(pinned.activationId),",
+          "id": "mutation-fa985a368cf5ef02f4e78fa00326b74c32b7eeaa1abce950390c75808f130734"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X11 code hold stores diagnostic Activation spelling",
+        "required_result": "X11 code hold stores exact Activation spelling"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x12",
+      "source": "family.k12c1.ablations-03 X12 recovery history stores diagnostic Activation spelling; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x12",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x12",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X12",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "PrimordialObjectFreeze({ activationId, writerEpoch, cause, transition, reason, authority: \"control\" as const, actorNamespace, actorScope });",
+              "after": "PrimordialObjectFreeze({ activationId: diagnosticIdentity(activationId), writerEpoch, cause, transition, reason, authority: \"control\" as const, actorNamespace, actorScope });"
+            },
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "    activationId,\n    writerEpoch: supersededEpoch,",
+              "after": "    activationId: diagnosticIdentity(activationId),\n    writerEpoch: supersededEpoch,"
+            }
+          ],
+          "id": "mutation-b5abed56212f01872e6ddcfd67168d79b29deee8e0bd1585f11abd0959357481"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X12 recovery history stores diagnostic Activation spelling",
+        "required_result": "X12 recovery history stores exact Activation spelling"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x13",
+      "source": "family.k12c1.ablations-03 X13 delivery row stores diagnostic Activation spelling; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x13",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x13",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X13",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "import type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";",
+              "after": "import { diagnosticIdentity } from \"./envelope.ts\";\nimport type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";"
+            },
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "      activationId: plan.activationId,\n      writerEpoch: plan.writerEpoch,",
+              "after": "      activationId: diagnosticIdentity(plan.activationId),\n      writerEpoch: plan.writerEpoch,"
+            }
+          ],
+          "id": "mutation-7f3af4ce8c787b5dd57f4c91fc742825430127fcd06d58a0138f0663e1cee371"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X13 delivery row stores diagnostic Activation spelling",
+        "required_result": "X13 delivery row stores exact Activation spelling"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x14",
+      "source": "family.k12c1.ablations-03 X14 resolved exchange stores diagnostic Activation spelling; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x14",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x14",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X14",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    const resolved: ResolvedFacts = PrimordialObjectFreeze({\n      activationId,",
+          "after": "    const resolved: ResolvedFacts = PrimordialObjectFreeze({\n      activationId: diagnosticIdentity(activationId),",
+          "id": "mutation-36b0828203edf086e5b273f8dc3c927c55ed8e2032159e2bba9c885b3a00dee7"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X14 resolved exchange stores diagnostic Activation spelling",
+        "required_result": "X14 resolved exchange stores exact Activation spelling"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x15",
+      "source": "family.k12c1.ablations-03 X15 Outcome receipt token uses diagnostic Execution spelling; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x15",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x15",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X15",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const receipt = mintReceipt(\"outcome_acceptance\", acceptancePosition, record.executionId);",
+          "after": "const receipt = mintReceipt(\"outcome_acceptance\", acceptancePosition, diagnosticIdentity(record.executionId));",
+          "id": "mutation-f1614b10e2ceb7925cc8e8c3ea1189f0c62c5be9b488c6b5141f04072e5a1159"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X15 Outcome receipt token uses diagnostic Execution spelling",
+        "required_result": "X15 Outcome receipt token uses exact Execution spelling"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x16",
+      "source": "family.k12c1.ablations-03 X16 history actor namespace rendered lossy; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x16",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x16",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X16",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "          actorNamespace: caller.namespace,\n          actorScope: record.scope,\n        }),\n      );\n    }\n    if (intent.protocolFailureHold !== null) {",
+          "after": "          actorNamespace: diagnosticIdentity(caller.namespace),\n          actorScope: record.scope,\n        }),\n      );\n    }\n    if (intent.protocolFailureHold !== null) {",
+          "id": "mutation-3627d5555ef77b5f5c8ec256160af0bb0c62adad2e0fb982f899c5452a78a454"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X16 history actor namespace rendered lossy",
+        "required_result": "X16 history actor namespace remains exact"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x17",
+      "source": "family.k12c1.ablations-03 X17 decision answer activationId rendered lossy; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x17",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x17",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X17",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    const decision: Omit<OutcomeAccepted, \"replayed\"> = PrimordialObjectFreeze({\n      receipt,\n      activationId,",
+          "after": "    const decision: Omit<OutcomeAccepted, \"replayed\"> = PrimordialObjectFreeze({\n      receipt,\n      activationId: diagnosticIdentity(activationId),",
+          "id": "mutation-733bfe5eb4dcded7480d9cd0bab7869db4bcc3fd9ef40d696cd6733cc712c3b9"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X17 decision answer activationId rendered lossy",
+        "required_result": "X17 decision answer activationId remains exact"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x18",
+      "source": "family.k12c1.ablations-03 X18 takeover answer activationId rendered lossy; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x18",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x18",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X18",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    const answer = ok({\n      activationId: named.activationId,\n      supersededEpoch: currentEpoch,",
+          "after": "    const answer = ok({\n      activationId: diagnosticIdentity(named.activationId),\n      supersededEpoch: currentEpoch,",
+          "id": "mutation-2c244a0838cb7c24c9a101f056566959c7e3ebafc18dae5a0fb0768159d3b446"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X18 takeover answer activationId rendered lossy",
+        "required_result": "X18 takeover answer activationId remains exact"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x19",
+      "source": "family.k12c1.ablations-03 X19 recovery answer activationId rendered lossy; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x19",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x19",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X19",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "return ok({ activationId: pinned.activationId, writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(exchange), changed: false });",
+              "after": "return ok({ activationId: diagnosticIdentity(pinned.activationId), writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(exchange), changed: false });"
+            },
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "const answer = ok({ activationId: pinned.activationId, writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(commit), changed: true });",
+              "after": "const answer = ok({ activationId: diagnosticIdentity(pinned.activationId), writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(commit), changed: true });"
+            }
+          ],
+          "id": "mutation-050f4ad1253b124c1394cd34ae85a00505e0586f0b72159c8084037d75eabcbd"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X19 recovery answer activationId rendered lossy",
+        "required_result": "X19 recovery answer activationId remains exact"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x20",
+      "source": "family.k12c1.ablations-03 X20 protocol answer activationId rendered lossy; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x20",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x20",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X20",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const answer = ok({ activationId: named.activationId, writerEpoch: currentEpoch, recoveryHolds: holdsOf(commit), changed: true });",
+          "after": "const answer = ok({ activationId: diagnosticIdentity(named.activationId), writerEpoch: currentEpoch, recoveryHolds: holdsOf(commit), changed: true });",
+          "id": "mutation-5b24938ef334efd47fa0010b2296a88f9242a1ee1d34c68903a63d1ea994b911"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X20 protocol answer activationId rendered lossy",
+        "required_result": "X20 protocol answer activationId remains exact"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x21",
+      "source": "family.k12c1.ablations-03 X21 protocol hold stores diagnostic Activation spelling; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x21",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x21",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X21",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "      reason,\n      activationId: named.activationId,\n      writerEpoch: currentEpoch,\n    });",
+          "after": "      reason,\n      activationId: diagnosticIdentity(named.activationId),\n      writerEpoch: currentEpoch,\n    });",
+          "id": "mutation-cf3743ddf6f5e6d36c298fbb6ddb9dcf09357236088abb6f02841bcc27cdf0b4"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X21 protocol hold stores diagnostic Activation spelling",
+        "required_result": "X21 protocol hold stores exact Activation spelling"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x22",
+      "source": "family.k12c1.ablations-03 X22 Emission record activationId rendered lossy; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x22",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x22",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X22",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "PrimordialObjectFreeze({ emissionId, emissionKey: emission.emissionKey, activationId, value: emission.value.value, receipt }),",
+          "after": "PrimordialObjectFreeze({ emissionId, emissionKey: emission.emissionKey, activationId: diagnosticIdentity(activationId), value: emission.value.value, receipt }),",
+          "id": "mutation-23eee04ca912441b1010d0630e3b561134ba024b27741e948f4dc5e7e6b2e783"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X22 Emission record activationId rendered lossy",
+        "required_result": "X22 Emission record activationId remains exact"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-x23",
+      "source": "family.k12c1.ablations-03 X23 result record activationId rendered lossy; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-coordinate-x23",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-x23",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#X23",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "        value: outcome.next.step === \"complete\" ? outcome.next.result.value : outcome.next.error.value,\n        activationId,",
+          "after": "        value: outcome.next.step === \"complete\" ? outcome.next.result.value : outcome.next.error.value,\n        activationId: diagnosticIdentity(activationId),",
+          "id": "mutation-60c1480634a7d7325cf4761f8998c6f12cf4a374bb5ea266081396b5afcba50d"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "X23 result record activationId rendered lossy",
+        "required_result": "X23 result record activationId remains exact"
+      }
+    },
+    {
+      "id": "k12c1.adopt-diagnostics-v1",
+      "source": "family.k12c1.ablations-03 V1; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-diagnostics-v1",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts",
+        "packages/sdk/tests/capture-instruments.ts",
+        "packages/sdk/tests/value-refusal-cost.test.ts",
+        "packages/sdk/tests/wrapper-roots.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/sdk/tests/value-refusal-cost.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-diagnostics-v1",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#V1",
+          "expected_targets": [
+            {
+              "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+              "path": [
+                "V-D1 every issue family: nonfinite"
+              ]
+            }
+          ],
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "const pushIssue = (issues: ValueIssue[], issue: ValueIssue): void => {\n  // Keep every code occurrence, but never a per-position suffix object/path/message. This\n  // collector is shared by ALL refusal sites, including pre-member structural observations.\n  // Observation and the running byte budget are unchanged: later siblings still run.\n  if (issues.length < 8) {\n    appendOwn(issues, {\n      path: issueText(issue.path, 128, \"<omitted>\"),\n      code: issue.code,\n      message: issueText(issue.message, 1_024, \"<message omitted>\"),\n    });\n    return;\n  }\n  // At most one suffix entry per code: 8 details plus 12 codes bound the search.\n  for (let index = 8; index < issues.length && index < 8 + 12; index += 1) {\n    const entry = readAt(issues, index) as ValueIssue;\n    if (entry.code === issue.code) {\n      // Every suffix entry owns occurrences; no caller or inherited value is consulted.\n      (entry as { occurrences: number }).occurrences += 1;\n      return;\n    }\n  }\n  appendOwn(issues, { path: \"\", code: issue.code, message: \"additional occurrences (locations omitted)\", occurrences: 1 });\n};",
+          "after": "const pushIssue = (issues: ValueIssue[], issue: ValueIssue): void => { appendOwn(issues, issue); };",
+          "id": "mutation-8a0fea43a88d650472448af41701fd332cf6e6e261b11bfcd1f49f642c36d4df"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "V1",
+        "required_result": "Bound diagnostic storage while retaining every observed issue occurrence"
+      }
+    },
+    {
+      "id": "k12c1.adopt-diagnostics-v2",
+      "source": "family.k12c1.ablations-03 V2; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-diagnostics-v2",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts",
+        "packages/sdk/tests/capture-instruments.ts",
+        "packages/sdk/tests/value-refusal-cost.test.ts",
+        "packages/sdk/tests/wrapper-roots.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/sdk/tests/value-refusal-cost.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-diagnostics-v2",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#V2",
+          "expected_targets": [
+            {
+              "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+              "path": [
+                "V-D1 every issue family: nonfinite"
+              ]
+            }
+          ],
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "function capture(value: unknown, path: string, level: number, state: CaptureState): Visited {\n  if (state.stopped) return STOPPED;",
+          "after": "function capture(value: unknown, path: string, level: number, state: CaptureState): Visited {\n  if (state.stopped) return STOPPED;\n  if (state.issues.length >= 8) return REFUSED;",
+          "id": "mutation-2a16e8516cab39583dfbeaa1e85c9e534d1248aa5badda8d88d60c196cc744b5"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "V2",
+        "required_result": "Continue observing siblings after eight diagnostics until a declared cost stop"
+      }
+    },
+    {
+      "id": "k12c1.adopt-diagnostics-v3",
+      "source": "family.k12c1.ablations-03 V3; TOOLS-02 group-review-09.md",
+      "assertion": "k12c1-diagnostics-v3",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts",
+        "packages/sdk/tests/capture-instruments.ts",
+        "packages/sdk/tests/value-refusal-cost.test.ts",
+        "packages/sdk/tests/wrapper-roots.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/sdk/tests/value-refusal-cost.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-diagnostics-v3",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-03#V3",
+          "expected_targets": [
+            {
+              "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+              "path": [
+                "V-D1 suffix counts preserve late codes and first occurrence order across root consumers"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/envelope.ts",
+          "before": "const count = occurrences ?? 1;",
+          "after": "const count = 1;",
+          "id": "mutation-1731cf011f2945325c227caf27a4a3b0f49da3837284db3f5485a547848d40b1"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "V3",
+        "required_result": "Render every suffix occurrence rather than counting each suffix record once"
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z1",
+      "source": "family.k12c1.ablations-04 Z1-mint-receipt-token; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z1",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z1",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z1-mint-receipt-token",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "const receipt = mintReceipt(\"input_ingress\", position, record.executionId);",
+              "after": "const receipt = mintReceipt(\"input_ingress\", position, diagnosticIdentity(record.executionId));"
+            },
+            {
+              "path": "packages/kernel/src/coordinator.ts",
+              "before": "const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);\n    const activation: Activation",
+              "after": "const receipt = mintReceipt(\"dispatch_intent\", position, diagnosticIdentity(record.executionId));\n    const activation: Activation"
+            }
+          ],
+          "id": "mutation-476da72a3801717d261a6bcc5cb97505da6e525128ba45f33344454de5e2652a"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z1-mint-receipt-token",
+        "required_result": "Exact retained/returned coordinate at mint-receipt-token for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z2",
+      "source": "family.k12c1.ablations-04 Z2-creation-receipt-token; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z2",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z2",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z2-creation-receipt-token",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const receipt = mintReceipt(\"creation\", 1, executionId);",
+          "after": "const receipt = mintReceipt(\"creation\", 1, diagnosticIdentity(executionId));",
+          "id": "mutation-f9376ca88b5acb077c60d25e350c7ea027ea371ed225aee4a5a09df0e565e8fd"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z2-creation-receipt-token",
+        "required_result": "Exact retained/returned coordinate at creation-receipt-token for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z3",
+      "source": "family.k12c1.ablations-04 Z3-activation-executionId; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z3",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z3",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z3-activation-executionId",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "      executionId: record.executionId,\n      activationId,\n",
+          "after": "      executionId: diagnosticIdentity(record.executionId),\n      activationId,\n",
+          "id": "mutation-4e589609f7613f6e0e827ff22c240ba071a54814358480d69851e8bcc3717015"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z3-activation-executionId",
+        "required_result": "Exact retained/returned coordinate at activation-executionId for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z4",
+      "source": "family.k12c1.ablations-04 Z4-activation-activationId; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z4",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z4",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z4-activation-activationId",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "      executionId: record.executionId,\n      activationId,\n",
+          "after": "      executionId: record.executionId,\n      activationId: diagnosticIdentity(activationId),\n",
+          "id": "mutation-93c1de368a2af34011a00024b03d9a7bd43edd507b8843d756f13e20e08245b1"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z4-activation-activationId",
+        "required_result": "Exact retained/returned coordinate at activation-activationId for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z5",
+      "source": "family.k12c1.ablations-04 Z5-takeover-activation-copy; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z5",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z5",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z5-takeover-activation-copy",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "PrimordialObjectFreeze({ ...exchange.activation, writerEpoch });",
+          "after": "PrimordialObjectFreeze({ ...exchange.activation, activationId: diagnosticIdentity(exchange.activation.activationId), writerEpoch });",
+          "id": "mutation-33c689898dc3bbc3b07b5d9289c2d36f0162cd44fa51a27519cc3d5018ba2d0c"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z5-takeover-activation-copy",
+        "required_result": "Exact retained/returned coordinate at takeover-activation-copy for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z6",
+      "source": "family.k12c1.ablations-04 Z6-replay-map-key; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z6",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z6",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z6-replay-map-key",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "import type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";",
+              "after": "import { diagnosticIdentity } from \"./envelope.ts\";\nimport type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";"
+            },
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "    mapSet(record.acceptedOutcomes, activationId, stored);",
+              "after": "    mapSet(record.acceptedOutcomes, diagnosticIdentity(activationId), stored);"
+            }
+          ],
+          "id": "mutation-c3919857d924e4ab103ce0a5a1145f25280f96bf519b50b25bfbf0bd4f896989"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z6-replay-map-key",
+        "required_result": "Exact retained/returned coordinate at replay-map-key for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z7",
+      "source": "family.k12c1.ablations-04 Z7-event-destination; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z7",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z7",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z7-event-destination",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "import type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";",
+              "after": "import { diagnosticIdentity } from \"./envelope.ts\";\nimport type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";"
+            },
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "  const base = {\n    eventId: entry.eventId,\n    destination: entry.destination,",
+              "after": "  const base = {\n    eventId: entry.eventId,\n    destination: diagnosticIdentity(entry.destination),"
+            }
+          ],
+          "id": "mutation-e9e71b41f8196a759faec02fc6827782ff827befc30bb1d8ef73be91b36448f6"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z7-event-destination",
+        "required_result": "Exact retained/returned coordinate at event-destination for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z8",
+      "source": "family.k12c1.ablations-04 Z8-redeliver-answer; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z8",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z8",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z8-redeliver-answer",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "      activationId: resent.activationId,",
+          "after": "      activationId: diagnosticIdentity(resent.activationId),",
+          "id": "mutation-210b921a5de485277658dba7eb6132f97252f25407b27771ad35bba37cde86b0"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z8-redeliver-answer",
+        "required_result": "Exact retained/returned coordinate at redeliver-answer for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z9",
+      "source": "family.k12c1.ablations-04 Z9-dispatch-grant-exec; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z9",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z9",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z9-dispatch-grant-exec",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const submission = mintSubmission(record.executionId, activationId, 1);",
+          "after": "const submission = mintSubmission(diagnosticIdentity(record.executionId), activationId, 1);",
+          "id": "mutation-3ed15af54e9f21c973b2aec52714a38e193be86eb077891d504b9455b5402000"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z9-dispatch-grant-exec",
+        "required_result": "Exact retained/returned coordinate at dispatch-grant-exec for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z10",
+      "source": "family.k12c1.ablations-04 Z10-acknowledged-ids; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z10",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z10",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z10-acknowledged-ids",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "        appendOwn(acknowledgedIds, entry.eventId);",
+          "after": "        appendOwn(acknowledgedIds, diagnosticIdentity(entry.eventId));",
+          "id": "mutation-eebb7e8adfee6c3c84c96345b15bff2216ffb0d3274c3d9294cb4f0b6dd46805"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z10-acknowledged-ids",
+        "required_result": "Exact retained/returned coordinate at acknowledged-ids for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z11",
+      "source": "family.k12c1.ablations-04 Z11-takeover-answer-batch-receipt; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z11",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z11",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z11-takeover-answer-batch-receipt",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "      supersededEpoch: currentEpoch,\n      writerEpoch,\n      baseProgressRevision: activation.baseProgressRevision,\n      batch: exchange.batch,\n      receipt,",
+          "after": "      supersededEpoch: currentEpoch,\n      writerEpoch,\n      baseProgressRevision: activation.baseProgressRevision,\n      batch: exchange.batch,\n      receipt: mintReceipt(\"dispatch_intent\", receipt.position, diagnosticIdentity(record.executionId)),",
+          "id": "mutation-3fd9c223ba3c1fc0441fd1ea43fb89f18149c68904f58f3ef267859bc21a7724"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z11-takeover-answer-batch-receipt",
+        "required_result": "Exact retained/returned coordinate at takeover-answer-batch-receipt for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z12",
+      "source": "family.k12c1.ablations-04 Z12-view-activation-id; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z12",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z12",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z12-view-activation-id",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "import type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";",
+              "after": "import { diagnosticIdentity } from \"./envelope.ts\";\nimport type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";"
+            },
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "const toActivationView = (intent: ActivationRecord): ActivationView => ({\n  activationId: intent.activation.activationId,",
+              "after": "const toActivationView = (intent: ActivationRecord): ActivationView => ({\n  activationId: diagnosticIdentity(intent.activation.activationId),"
+            }
+          ],
+          "id": "mutation-874e11f6dc75b5b807cca2698439987d7e34cc377930f79f3634303a8ed36b3f"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z12-view-activation-id",
+        "required_result": "Exact retained/returned coordinate at view-activation-id for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z13",
+      "source": "family.k12c1.ablations-04 Z13-view-execution-id; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z13",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z13",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z13-view-execution-id",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "import type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";",
+              "after": "import { diagnosticIdentity } from \"./envelope.ts\";\nimport type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";"
+            },
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "    executionId: record.executionId,\n    state: record.state,",
+              "after": "    executionId: diagnosticIdentity(record.executionId),\n    state: record.state,"
+            }
+          ],
+          "id": "mutation-58b945a5fc269434cbc522ee6c7278d4245667d25d396b0ee33b3a91dcd65009"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z13-view-execution-id",
+        "required_result": "Exact retained/returned coordinate at view-execution-id for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z14",
+      "source": "family.k12c1.ablations-04 Z14-view-queued-ids; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z14",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z14",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z14-view-queued-ids",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "import type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";",
+              "after": "import { diagnosticIdentity } from \"./envelope.ts\";\nimport type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";"
+            },
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "if (entry.disposition.kind === \"queued\") appendOwn(queued, entry.eventId);",
+              "after": "if (entry.disposition.kind === \"queued\") appendOwn(queued, diagnosticIdentity(entry.eventId));"
+            }
+          ],
+          "id": "mutation-a2088209671a743d9da11ada36108c719f5240bf0b3641837b3d10d3857830b1"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z14-view-queued-ids",
+        "required_result": "Exact retained/returned coordinate at view-queued-ids for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z15",
+      "source": "family.k12c1.ablations-04 Z15-view-mailbox-destination; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z15",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z15",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z15-view-mailbox-destination",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "import type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";",
+              "after": "import { diagnosticIdentity } from \"./envelope.ts\";\nimport type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";"
+            },
+            {
+              "path": "packages/kernel/src/state.ts",
+              "before": "    inputId: { ...(entry.inputId as InputId) },",
+              "after": "    inputId: { ...(entry.inputId as InputId), destination: diagnosticIdentity((entry.inputId as InputId).destination) },"
+            }
+          ],
+          "id": "mutation-a81d3f6d1d502ed37ef5f611560dc29dda01628006cef626eca14a579fa4622d"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z15-view-mailbox-destination",
+        "required_result": "Exact retained/returned coordinate at view-mailbox-destination for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-coordinate-z16",
+      "source": "family.k12c1.ablations-04 Z16-view-hold-activation; TOOLS-02 group-review-10.md",
+      "assertion": "k12c1-coordinate-z16",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-coordinate-z16",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-04#Z16-view-hold-activation",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "edits": [
+            {
+              "path": "packages/kernel/src/plan.ts",
+              "before": "import type { Activation, SubmissionGrant } from \"./driver.ts\";",
+              "after": "import { diagnosticIdentity } from \"./envelope.ts\";\nimport type { Activation, SubmissionGrant } from \"./driver.ts\";"
+            },
+            {
+              "path": "packages/kernel/src/plan.ts",
+              "before": "    const stored = intent.codeHold;\n    appendOwn(\n      holds,\n      PrimordialObjectFreeze({\n        cause: stored.cause,\n        reason: stored.reason,\n        activationId: stored.activationId,",
+              "after": "    const stored = intent.codeHold;\n    appendOwn(\n      holds,\n      PrimordialObjectFreeze({\n        cause: stored.cause,\n        reason: stored.reason,\n        activationId: diagnosticIdentity(stored.activationId),"
+            }
+          ],
+          "id": "mutation-bf5e6b76398915ccfc6982f5b03aedbb8ed67562f11df0b9b33b9fd99c3a863b"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "Z16-view-hold-activation",
+        "required_result": "Exact retained/returned coordinate at view-hold-activation for long and non-ASCII identities, derived independently from inputs."
+      }
+    },
+    {
+      "id": "k12c1.adopt-recovery-h1",
+      "source": "family.k12c1.ablations-06 H1 hold history built from an entry whose resultingEpoch is optional (review 09's read); TOOLS-02 group-review-11.md",
+      "assertion": "k12c1-recovery-h1",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/recovery-ambient.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/recovery-ambient.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-recovery-h1",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H1",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/recovery-ambient.test.ts",
+              "path": [
+                "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+                "protocol-enter / data"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "  PrimordialObjectFreeze({ activationId, writerEpoch, cause, transition, reason, authority: \"control\" as const, actorNamespace, actorScope });",
+          "after": "  ((entry: { readonly activationId: string; readonly writerEpoch: number; readonly cause: RecoveryHistoryRecord[\"cause\"]; readonly transition: RecoveryHistoryRecord[\"transition\"]; readonly reason: string; readonly actorNamespace: string; readonly actorScope: string; readonly resultingEpoch?: number }): RecoveryHistoryRecord =>\n    entry.resultingEpoch === undefined\n      ? PrimordialObjectFreeze({ activationId: entry.activationId, writerEpoch: entry.writerEpoch, cause: entry.cause, transition: entry.transition, reason: entry.reason, authority: \"control\" as const, actorNamespace: entry.actorNamespace, actorScope: entry.actorScope })\n      : PrimordialObjectFreeze({ activationId: entry.activationId, writerEpoch: entry.writerEpoch, cause: entry.cause, transition: entry.transition, reason: entry.reason, authority: \"control\" as const, actorNamespace: entry.actorNamespace, actorScope: entry.actorScope, resultingEpoch: entry.resultingEpoch }))({ activationId, writerEpoch, cause, transition, reason, actorNamespace, actorScope });",
+          "id": "mutation-eceea9554acdeb316acedd7d6791d3cf09152c12b85eb17aa7d6c0d0f3a2cab8"
+        },
+        {
+          "name": "k12c1-recovery-h2",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H2",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/recovery-ambient.test.ts",
+              "path": [
+                "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+                "protocol-enter / data"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/state.ts",
+          "before": "    const stored = plan.history;",
+          "after": "    const optional = (plan as typeof plan & { readonly resultingEpoch?: number }).resultingEpoch;\n    const stored = optional === undefined ? plan.history : PrimordialObjectFreeze({ ...plan.history, resultingEpoch: optional });",
+          "id": "mutation-87d77a4efc5fc0bff25bd6e32e5279deee1da35273fa122fba9d8ff8109b61e0"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "H1 hold history built from an entry whose resultingEpoch is optional (review 09's read)",
+        "required_result": "Hold History does not inherit resultingEpoch from Object.prototype."
+      }
+    },
+    {
+      "id": "k12c1.adopt-recovery-h10",
+      "source": "family.k12c1.ablations-06 H10 takeover record loses its resulting epoch; TOOLS-02 group-review-11.md",
+      "assertion": "k12c1-recovery-h10",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/recovery-history.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/recovery-history.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-recovery-h10",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H10",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/recovery-history.test.ts",
+              "path": [
+                "K12-R1-HISTORY-01 recovery history is retained Execution evidence",
+                "b) protocol hold via takeover: entered, then cleared_by_takeover with resultingEpoch"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    actorScope,\n    resultingEpoch,\n  });",
+          "after": "    actorScope,\n  });",
+          "id": "mutation-df5cbfa6915c7b88066d6e676a674784e16ab3aefeea940c5b09d23704cc7664"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "H10 takeover record loses its resulting epoch",
+        "required_result": "A takeover-clearing History record owns resultingEpoch equal to the new writer epoch."
+      }
+    },
+    {
+      "id": "k12c1.adopt-recovery-h11",
+      "source": "family.k12c1.ablations-06 H11 declaration records claim attempt-submission authority; TOOLS-02 group-review-11.md",
+      "assertion": "k12c1-recovery-h11",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/history-attribution.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/history-attribution.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-recovery-h11",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H11",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/history-attribution.test.ts",
+              "path": [
+                "K12-R3-HISTORY-02 explicit control transitions still record control authority",
+                "entered, protocol entered, and cleared_by_takeover are control-origin"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "authority: \"control\" as const, actorNamespace, actorScope });",
+          "after": "authority: \"attempt_submission\" as const, actorNamespace, actorScope });",
+          "id": "mutation-d39403a1e8e8e47b7d7cd7ee163410a3199b12eecb35ec87253fc6049c4fff45"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "H11 declaration records claim attempt-submission authority",
+        "required_result": "Explicit control declarations retain control authority in History."
+      }
+    },
+    {
+      "id": "k12c1.adopt-recovery-h12",
+      "source": "family.k12c1.ablations-06 H12 takeover receipt token through the diagnostic spelling; TOOLS-02 group-review-11.md",
+      "assertion": "k12c1-recovery-h12",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/exact-coordinates.test.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/refusal-diagnostics-fixture.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/exact-coordinates.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-recovery-h12",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H12",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/exact-coordinates.test.ts",
+              "path": [
+                "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    const writerEpoch = currentEpoch + 1;\n    const position = record.nextAcceptancePosition;\n    const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);",
+          "after": "    const writerEpoch = currentEpoch + 1;\n    const position = record.nextAcceptancePosition;\n    const receipt = mintReceipt(\"dispatch_intent\", position, diagnosticIdentity(record.executionId));",
+          "id": "mutation-e79ecbfda90fa5ca4ea337c0727788f4fc86377092d5226dab797a0e65ff613b"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "H12 takeover receipt token through the diagnostic spelling",
+        "required_result": "Takeover receipt token retains the exact Execution ID in both retained state and its answer."
+      }
+    },
+    {
+      "id": "k12c1.adopt-recovery-h15",
+      "source": "family.k12c1.ablations-06 H15 ordinary optional controlScopes read restored; TOOLS-02 group-review-11.md",
+      "assertion": "k12c1-recovery-h15",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/host-members.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/host-members.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-recovery-h15",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H15",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/host-members.test.ts",
+              "path": [
+                "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+                "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "  const controls = hostMember(caller, \"controlScopes\") as readonly string[] | undefined;",
+          "after": "  const controls = caller.controlScopes;",
+          "id": "mutation-f497faffa4b48efc161fda566ef674b5654781fa5943f68d7d958c15e26967cf"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "H15 ordinary optional controlScopes read restored",
+        "required_result": "Object.prototype.controlScopes cannot authorize a visibility-only caller."
+      }
+    },
+    {
+      "id": "k12c1.adopt-recovery-h16",
+      "source": "family.k12c1.ablations-06 H16 ordinary optional isSafeToReplace call restored; TOOLS-02 group-review-11.md",
+      "assertion": "k12c1-recovery-h16",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/host-members.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/host-members.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-recovery-h16",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H16",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/host-members.test.ts",
+              "path": [
+                "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+                "a Driver without the method is refused even when the request's getter installs an inherited one"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "      const establish = hostMember(this.#driver, \"isSafeToReplace\");\n      safe = typeof establish === \"function\" && PrimordialReflectApply(establish, this.#driver, [exchange.activation]) === true;",
+          "after": "      safe = this.#driver.isSafeToReplace?.(exchange.activation) === true;",
+          "id": "mutation-874f0915d9d35f1e93716f795d30e0372e2839b32bd4da8e8cd59df22f779f91"
+        },
+        {
+          "name": "k12c1-recovery-h19",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H19",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/host-members.test.ts",
+              "path": [
+                "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+                "a Driver without the method is refused even when the request's getter installs an inherited one"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/envelope.ts",
+          "before": "  while (current !== null && current !== PrimordialObjectPrototype && current !== PrimordialFunctionPrototype) {",
+          "after": "  while (current !== null && current !== PrimordialFunctionPrototype) {",
+          "id": "mutation-632b434c60781a49063d54e051cb2b5c497f02e11655e2eed8dad1b15bc295f4"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "H16 ordinary optional isSafeToReplace call restored",
+        "required_result": "Object.prototype.isSafeToReplace cannot establish takeover safety for a Driver without that method."
+      }
+    },
+    {
+      "id": "state-owner.tools02-h7",
+      "source": "family.k12c1.ablations-06 H7 recovery answer projected after the decision is applied; TOOLS-02 group-review-12.md; existing state-owner-probe runs the named structural rule with its complete passing inventory; source is read as data, so executable-source reach is not claimed.",
+      "assertion": "state-owner.tools02-h7.bypass-killed",
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/zone-inventory.ts",
+        "tests/fixtures/packet-tools/state-owner-controls.json",
+        "tests/tooling/assertion-reporter.mjs",
+        "tests/tooling/state-owner-probe.mjs",
+        "tsconfig.json"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-recovery-h7",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H7",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    this.#state.apply(plan);\n    return answer;\n  }\n\n  /**\n   * Holds the unresolved exchange",
+          "after": "    this.#state.apply(plan);\n    return ok({ activationId: pinned.activationId, writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(exchange), changed: true });\n  }\n\n  /**\n   * Holds the unresolved exchange",
+          "id": "mutation-31b8db55bc82d15e2cac1e99cee73bad9effa301e674a38aa8a6fd0fe914ab45"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "H7 recovery answer projected after the decision is applied",
+        "required_result": "The recovery answer is prebuilt before handing its plan to the state owner. Re-anchor the post-apply return; the old applyControlCommit helper is removed."
+      },
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/state-owner-probe.mjs",
+        "tools02-h7"
+      ],
+      "failure_exit": 17
+    },
+    {
+      "id": "k12c1.adopt-recovery-h17",
+      "source": "family.k12c1.ablations-06 H17 ordinary optional mailboxCapacity read restored; TOOLS-02 group-review-12.md",
+      "assertion": "k12c1-recovery-h17",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/host-members.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/host-members.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-recovery-h17",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H17",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/host-members.test.ts",
+              "path": [
+                "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+                "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "hostMember(options, \"mailboxCapacity\")",
+          "after": "options.mailboxCapacity",
+          "id": "mutation-43fa21cebbae4d4b360d3a917d0bf871168fab8253783feeece73813c7113e2f"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "H17 ordinary optional mailboxCapacity read restored",
+        "required_result": "An absent mailboxCapacity option ignores Object.prototype and uses the default capacity."
+      }
+    },
+    {
+      "id": "k12c1.adopt-recovery-h18",
+      "source": "family.k12c1.ablations-06 H18 ordinary optional emissionsPerOutcome read restored; TOOLS-02 group-review-12.md",
+      "assertion": "k12c1-recovery-h18",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/host-members.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/host-members.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-recovery-h18",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H18",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/host-members.test.ts",
+              "path": [
+                "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+                "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "hostMember(options, \"emissionsPerOutcome\")",
+          "after": "options.emissionsPerOutcome",
+          "id": "mutation-396510935970d7695ec7735fb390c64425c144f4bdcee0fe6a8e658cdd0df9b6"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "H18 ordinary optional emissionsPerOutcome read restored",
+        "required_result": "An absent emissionsPerOutcome option ignores Object.prototype and uses the default Emission limit."
+      }
+    },
+    {
+      "id": "k12c1.adopt-recovery-h20",
+      "source": "family.k12c1.ablations-06 H20 hostMember answers from Function.prototype; TOOLS-02 group-review-12.md",
+      "assertion": "k12c1-recovery-h20",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/host-members.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/host-members.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-recovery-h20",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H20",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/host-members.test.ts",
+              "path": [
+                "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+                "a function-object Driver is not answered by Function.prototype"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/envelope.ts",
+          "before": "  while (current !== null && current !== PrimordialObjectPrototype && current !== PrimordialFunctionPrototype) {",
+          "after": "  while (current !== null && current !== PrimordialObjectPrototype) {",
+          "id": "mutation-ebc784cdb97248253092436607f0223c320e8d886372e6d216bf9a9f16e8caae"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "H20 hostMember answers from Function.prototype",
+        "required_result": "A function-object Driver must not inherit safety from Function.prototype."
+      }
+    },
+    {
+      "id": "k12c1.adopt-recovery-h21",
+      "source": "family.k12c1.ablations-06 H21 hostMember ignores members the host's own prototype supplies; TOOLS-02 group-review-12.md",
+      "assertion": "k12c1-recovery-h21",
+      "files": [
+        "packages/kernel/tests/binding-facade.ts",
+        "packages/kernel/tests/harness.ts",
+        "packages/kernel/tests/host-members.test.ts"
+      ],
+      "targets": {
+        "flags": [
+          "--test",
+          "--experimental-strip-types",
+          "--no-warnings"
+        ],
+        "files": [
+          "packages/kernel/tests/host-members.test.ts"
+        ]
+      },
+      "timeout_seconds": 60,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-recovery-h21",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H21",
+          "expected_targets": [
+            {
+              "file": "packages/kernel/tests/host-members.test.ts",
+              "path": [
+                "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+                "a class-based Driver's own prototype method is honored (trusted host structure)"
+              ]
+            }
+          ],
+          "path": "packages/kernel/src/envelope.ts",
+          "before": "    current = PrimordialGetPrototypeOf(current) as object | null;",
+          "after": "    current = null;",
+          "id": "mutation-ade3d79012cee5a7f80377e21878b06f5218db7120ab6ad0fef4751e60d29a34"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "H21 hostMember ignores members the host's own prototype supplies",
+        "required_result": "Host-owned prototype declarations are honored, including Driver safety, control scopes and options."
+      }
+    },
+    {
+      "id": "state-owner.tools02-h22",
+      "source": "family.k12c1.ablations-06 H22 descriptor field read without its own-value check; TOOLS-02 group-review-12.md; existing state-owner-probe runs the named structural rule with its complete passing inventory; source is read as data, so executable-source reach is not claimed.",
+      "assertion": "state-owner.tools02-h22.bypass-killed",
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts",
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/kernel/tests/zone-inventory.ts",
+        "tests/fixtures/packet-tools/state-owner-controls.json",
+        "tests/tooling/assertion-reporter.mjs",
+        "tests/tooling/state-owner-probe.mjs",
+        "tsconfig.json"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 4194304,
+      "mutants": [
+        {
+          "name": "k12c1-recovery-h22",
+          "operator": "historical-decision-ablation",
+          "obligation": "family.k12c1.ablations-06#H22",
+          "path": "packages/kernel/src/own-array.ts",
+          "before": "  if (fieldDescriptor === undefined || !hasOwnValue(fieldDescriptor)) return undefined;\n  return (fieldDescriptor as { readonly value?: unknown }).value;",
+          "after": "  return fieldDescriptor === undefined ? undefined : (fieldDescriptor as { readonly value?: unknown }).value;",
+          "id": "mutation-f5bfebab16fcb55cc90236967d2aadac0b3f6607110dc8c6994b3416f1d2f37c"
+        }
+      ],
+      "category": "historical-family-adoption",
+      "input": {
+        "member": "H22 descriptor field read without its own-value check",
+        "required_result": "Every descriptor-field read follows its own-value guard."
+      },
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/state-owner-probe.mjs",
+        "tools02-h22"
+      ],
+      "failure_exit": 17
     }
   ],
   "source_trees": [

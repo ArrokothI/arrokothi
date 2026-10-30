@@ -1,7 +1,7 @@
 {
   "source_base": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
   "source_packet": "K1.2-correction-01",
-  "state": "stopped_owner_choice_08_cap",
+  "state": "triage_in_progress",
   "retirement_readings": [
     "mention-b43188cfa39f39ae809510de",
     "mention-6f40e8f1a46ba505eb1dc0e2",
@@ -963,11 +963,18 @@
         "k12c1-recovery-h11",
         "k12c1-recovery-h12",
         "k12c1-recovery-h15",
-        "k12c1-recovery-h16"
+        "k12c1-recovery-h16",
+        "k12c1-recovery-h7",
+        "k12c1-recovery-h17",
+        "k12c1-recovery-h18",
+        "k12c1-recovery-h20",
+        "k12c1-recovery-h21",
+        "k12c1-recovery-h22"
       ],
-      "required_result": "At least six live mutation adoptions (H1/H10/H11/H12/H15/H16) need existing-registry cases against current passing leaves. The observed total reaches 61 and triggers owner choice 08 before the remaining routes can be finalized.",
+      "required_result": "Twelve adoption cases cover H1/H2, H7, H10/H11/H12, H15, H16/H19, H17/H18/H20/H21/H22. H3-H6/H8/H9/H13/H14 retain current structural or complete-decision routes as read in group-review-12; no closure until executable/witness bindings validate.",
       "reading": "group-review-11.md",
-      "planned_test": "Stopped at the observed adoption cap. No new registry entry, control/kill or family closure claimed; reconcile the remaining members after owner disposition."
+      "planned_test": "Build twelve cases in the existing registry, retaining H2/H19 as separate mutants of their shared P1-G cases. Fresh controls and qualified kills required; preserve all attributed limits.",
+      "reconciliation": "group-review-12.md"
     }
   },
   "reconsidered_extractions": [
@@ -1783,7 +1790,10 @@
           "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts",
           "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
         ]
-      }
+      },
+      "member": "R5 Takeover replaces the old grant, and the old grant cannot authorize current coordinates.",
+      "registry_case": "k12.adopt-review09-r5",
+      "registry_mutant": "mutation-6060d7a974870ac00c1c6ab5ee32fd69420043c264d84c3fc9132144d01d3546"
     },
     "k12-review09-r7": {
       "family": "family.k12.review-09",
@@ -1799,7 +1809,10 @@
           "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts",
           "changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
         ]
-      }
+      },
+      "member": "R7 Changing only the writer epoch under an accepted Activation ID conflicts instead of replaying.",
+      "registry_case": "k12.adopt-review09-r7",
+      "registry_mutant": "mutation-8d864793a9a0272c220ab34fb4fef524289a74c2b872e3fd6c94aae5597a7df8"
     },
     "k12c1-coordinate-x8": {
       "family": "family.k12c1.ablations-03",
@@ -1820,7 +1833,9 @@
       "current_anchors": [
         "const emissionId = `emission-${packIdentity([record.executionId, activationId, emission.emissionKey])}`;"
       ],
-      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
+      "registry_case": "k12c1.adopt-coordinate-x8",
+      "registry_mutant": "mutation-509390623b0b674dd29837ae3716602076db314ffa2e349a65e155149b665ca9"
     },
     "k12c1-coordinate-x9": {
       "family": "family.k12c1.ablations-03",
@@ -1841,7 +1856,9 @@
       "current_anchors": [
         "resultId: `result-${packIdentity([record.executionId, activationId])}`,"
       ],
-      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
+      "registry_case": "k12c1.adopt-coordinate-x9",
+      "registry_mutant": "mutation-dcf4e6cd8919bd695e587219ba88441d7af6383cb0d8b538b1706b125bfc790e"
     },
     "k12c1-coordinate-x10": {
       "family": "family.k12c1.ablations-03",
@@ -1862,7 +1879,9 @@
       "current_anchors": [
         "PrimordialObjectFreeze({ kind: \"acknowledged\" as const, activationId });"
       ],
-      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
+      "registry_case": "k12c1.adopt-coordinate-x10",
+      "registry_mutant": "mutation-5dc3984622d7a72e92fbe3d44dc13c5f958c17db0c48b53f6480f47ba6706fef"
     },
     "k12c1-coordinate-x11": {
       "family": "family.k12c1.ablations-03",
@@ -1883,7 +1902,9 @@
       "current_anchors": [
         "        reason: missing,\n        activationId: pinned.activationId,"
       ],
-      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
+      "registry_case": "k12c1.adopt-coordinate-x11",
+      "registry_mutant": "mutation-fa985a368cf5ef02f4e78fa00326b74c32b7eeaa1abce950390c75808f130734"
     },
     "k12c1-coordinate-x12": {
       "family": "family.k12c1.ablations-03",
@@ -1905,7 +1926,9 @@
         "PrimordialObjectFreeze({ activationId, writerEpoch, cause, transition, reason, authority: \"control\" as const, actorNamespace, actorScope });",
         "    activationId,\n    writerEpoch: supersededEpoch,"
       ],
-      "relocation_reading": "Removed appendRecoveryHistory was reconstructed as holdHistoryRecord and takeoverHistoryRecord. Rebound-06 already targets both current builders; preserve both edits, not a new group."
+      "relocation_reading": "Removed appendRecoveryHistory was reconstructed as holdHistoryRecord and takeoverHistoryRecord. Rebound-06 already targets both current builders; preserve both edits, not a new group.",
+      "registry_case": "k12c1.adopt-coordinate-x12",
+      "registry_mutant": "mutation-b5abed56212f01872e6ddcfd67168d79b29deee8e0bd1585f11abd0959357481"
     },
     "k12c1-coordinate-x13": {
       "family": "family.k12c1.ablations-03",
@@ -1926,7 +1949,9 @@
       "current_anchors": [
         "      activationId: plan.activationId,\n      writerEpoch: plan.writerEpoch,"
       ],
-      "relocation_reading": "Delivery construction moved to ExecutionStateOwner.#applyDelivery; its retained row still carries the exact plan Activation ID. Re-anchor here; rendering it remains a live defect."
+      "relocation_reading": "Delivery construction moved to ExecutionStateOwner.#applyDelivery; its retained row still carries the exact plan Activation ID. Re-anchor here; rendering it remains a live defect.",
+      "registry_case": "k12c1.adopt-coordinate-x13",
+      "registry_mutant": "mutation-7f3af4ce8c787b5dd57f4c91fc742825430127fcd06d58a0138f0663e1cee371"
     },
     "k12c1-coordinate-x14": {
       "family": "family.k12c1.ablations-03",
@@ -1947,7 +1972,9 @@
       "current_anchors": [
         "    const resolved: ResolvedFacts = PrimordialObjectFreeze({\n      activationId,"
       ],
-      "relocation_reading": "ResolvedExchange construction became prebuilt ResolvedFacts plus the state-owner append. The exact coordinate is still supplied by this builder; re-anchor its activationId field."
+      "relocation_reading": "ResolvedExchange construction became prebuilt ResolvedFacts plus the state-owner append. The exact coordinate is still supplied by this builder; re-anchor its activationId field.",
+      "registry_case": "k12c1.adopt-coordinate-x14",
+      "registry_mutant": "mutation-36b0828203edf086e5b273f8dc3c927c55ed8e2032159e2bba9c885b3a00dee7"
     },
     "k12c1-coordinate-x15": {
       "family": "family.k12c1.ablations-03",
@@ -1968,7 +1995,9 @@
       "current_anchors": [
         "const receipt = mintReceipt(\"outcome_acceptance\", acceptancePosition, record.executionId);"
       ],
-      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
+      "registry_case": "k12c1.adopt-coordinate-x15",
+      "registry_mutant": "mutation-f1614b10e2ceb7925cc8e8c3ea1189f0c62c5be9b488c6b5141f04072e5a1159"
     },
     "k12c1-coordinate-x16": {
       "family": "family.k12c1.ablations-03",
@@ -1989,7 +2018,9 @@
       "current_anchors": [
         "          actorNamespace: caller.namespace,\n          actorScope: record.scope,\n        }),\n      );\n    }\n    if (intent.protocolFailureHold !== null) {"
       ],
-      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
+      "registry_case": "k12c1.adopt-coordinate-x16",
+      "registry_mutant": "mutation-3627d5555ef77b5f5c8ec256160af0bb0c62adad2e0fb982f899c5452a78a454"
     },
     "k12c1-coordinate-x17": {
       "family": "family.k12c1.ablations-03",
@@ -2010,7 +2041,9 @@
       "current_anchors": [
         "    const decision: Omit<OutcomeAccepted, \"replayed\"> = PrimordialObjectFreeze({\n      receipt,\n      activationId,"
       ],
-      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
+      "registry_case": "k12c1.adopt-coordinate-x17",
+      "registry_mutant": "mutation-733bfe5eb4dcded7480d9cd0bab7869db4bcc3fd9ef40d696cd6733cc712c3b9"
     },
     "k12c1-coordinate-x18": {
       "family": "family.k12c1.ablations-03",
@@ -2031,7 +2064,9 @@
       "current_anchors": [
         "    const answer = ok({\n      activationId: named.activationId,\n      supersededEpoch: currentEpoch,"
       ],
-      "relocation_reading": "Takeover now prebuilds the answer before applying its plan. The historical return moved; rebound-06 identifies the current exact Activation-ID field."
+      "relocation_reading": "Takeover now prebuilds the answer before applying its plan. The historical return moved; rebound-06 identifies the current exact Activation-ID field.",
+      "registry_case": "k12c1.adopt-coordinate-x18",
+      "registry_mutant": "mutation-2c244a0838cb7c24c9a101f056566959c7e3ebafc18dae5a0fb0768159d3b446"
     },
     "k12c1-coordinate-x19": {
       "family": "family.k12c1.ablations-03",
@@ -2053,7 +2088,9 @@
         "return ok({ activationId: pinned.activationId, writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(exchange), changed: false });",
         "const answer = ok({ activationId: pinned.activationId, writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(commit), changed: true });"
       ],
-      "relocation_reading": "The old shared return split into no-change and changed prebuilt answers. Preserve both current spans as rebound-06 does; one historical adoption, not two."
+      "relocation_reading": "The old shared return split into no-change and changed prebuilt answers. Preserve both current spans as rebound-06 does; one historical adoption, not two.",
+      "registry_case": "k12c1.adopt-coordinate-x19",
+      "registry_mutant": "mutation-050f4ad1253b124c1394cd34ae85a00505e0586f0b72159c8084037d75eabcbd"
     },
     "k12c1-coordinate-x20": {
       "family": "family.k12c1.ablations-03",
@@ -2074,7 +2111,9 @@
       "current_anchors": [
         "const answer = ok({ activationId: named.activationId, writerEpoch: currentEpoch, recoveryHolds: holdsOf(commit), changed: true });"
       ],
-      "relocation_reading": "Protocol report now prebuilds its changed answer from the commit. Rebound-06 relocates the same coordinate obligation here."
+      "relocation_reading": "Protocol report now prebuilds its changed answer from the commit. Rebound-06 relocates the same coordinate obligation here.",
+      "registry_case": "k12c1.adopt-coordinate-x20",
+      "registry_mutant": "mutation-5b24938ef334efd47fa0010b2296a88f9242a1ee1d34c68903a63d1ea994b911"
     },
     "k12c1-coordinate-x21": {
       "family": "family.k12c1.ablations-03",
@@ -2095,7 +2134,9 @@
       "current_anchors": [
         "      reason,\n      activationId: named.activationId,\n      writerEpoch: currentEpoch,\n    });"
       ],
-      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
+      "registry_case": "k12c1.adopt-coordinate-x21",
+      "registry_mutant": "mutation-cf3743ddf6f5e6d36c298fbb6ddb9dcf09357236088abb6f02841bcc27cdf0b4"
     },
     "k12c1-coordinate-x22": {
       "family": "family.k12c1.ablations-03",
@@ -2116,7 +2157,9 @@
       "current_anchors": [
         "PrimordialObjectFreeze({ emissionId, emissionKey: emission.emissionKey, activationId, value: emission.value.value, receipt }),"
       ],
-      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
+      "registry_case": "k12c1.adopt-coordinate-x22",
+      "registry_mutant": "mutation-23eee04ca912441b1010d0630e3b561134ba024b27741e948f4dc5e7e6b2e783"
     },
     "k12c1-coordinate-x23": {
       "family": "family.k12c1.ablations-03",
@@ -2137,7 +2180,9 @@
       "current_anchors": [
         "        value: outcome.next.step === \"complete\" ? outcome.next.result.value : outcome.next.error.value,\n        activationId,"
       ],
-      "relocation_reading": "The original production anchor remains unique; exact identity is still required."
+      "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
+      "registry_case": "k12c1.adopt-coordinate-x23",
+      "registry_mutant": "mutation-60c1480634a7d7325cf4761f8998c6f12cf4a374bb5ea266081396b5afcba50d"
     },
     "k12c1-diagnostics-v1": {
       "family": "family.k12c1.ablations-03",
@@ -2158,7 +2203,9 @@
       "current_anchors": [
         "const pushIssue = (issues: ValueIssue[], issue: ValueIssue): void => {"
       ],
-      "relocation_reading": "Collector moved from Kernel values.ts to SDK value-capture.ts. Its eight details and per-code suffix remain; replacing the collector with appendOwn would restore per-position storage. No registry edit replaces this collector or removes its detail bound."
+      "relocation_reading": "Collector moved from Kernel values.ts to SDK value-capture.ts. Its eight details and per-code suffix remain; replacing the collector with appendOwn would restore per-position storage. No registry edit replaces this collector or removes its detail bound.",
+      "registry_case": "k12c1.adopt-diagnostics-v1",
+      "registry_mutant": "mutation-8a0fea43a88d650472448af41701fd332cf6e6e261b11bfcd1f49f642c36d4df"
     },
     "k12c1-diagnostics-v2": {
       "family": "family.k12c1.ablations-03",
@@ -2179,7 +2226,9 @@
       "current_anchors": [
         "function capture(value: unknown, path: string, level: number, state: CaptureState): Visited {\n  if (state.stopped) return STOPPED;"
       ],
-      "relocation_reading": "Capture moved to SDK and its declared stop now returns STOPPED. Add a separate issues.length >= 8 early REFUSED return after that guard. The 256 nonfinite input is below the declared work/byte budget; early diagnostic-based termination still loses occurrences. Budget/STOPPED controls do not mutate this decision."
+      "relocation_reading": "Capture moved to SDK and its declared stop now returns STOPPED. Add a separate issues.length >= 8 early REFUSED return after that guard. The 256 nonfinite input is below the declared work/byte budget; early diagnostic-based termination still loses occurrences. Budget/STOPPED controls do not mutate this decision.",
+      "registry_case": "k12c1.adopt-diagnostics-v2",
+      "registry_mutant": "mutation-2a16e8516cab39583dfbeaa1e85c9e534d1248aa5badda8d88d60c196cc744b5"
     },
     "k12c1-diagnostics-v3": {
       "family": "family.k12c1.ablations-03",
@@ -2200,7 +2249,9 @@
       "current_anchors": [
         "const count = occurrences ?? 1;"
       ],
-      "relocation_reading": "The Kernel aggregate formatter still owns the count assignment. Existing own-only and charging cases do not replace occurrences with one."
+      "relocation_reading": "The Kernel aggregate formatter still owns the count assignment. Existing own-only and charging cases do not replace occurrences with one.",
+      "registry_case": "k12c1.adopt-diagnostics-v3",
+      "registry_mutant": "mutation-1731cf011f2945325c227caf27a4a3b0f49da3837284db3f5485a547848d40b1"
     },
     "k12c1-coordinate-z1": {
       "family": "family.k12c1.ablations-04",
@@ -2222,7 +2273,9 @@
         "const receipt = mintReceipt(\"input_ingress\", position, record.executionId);",
         "const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);\n    const activation: Activation"
       ],
-      "relocation_reading": "The mutating #mint helper was removed. Its two old callers were input_ingress and initial dispatch; both now prebuild their receipt. Re-anchor those two calls as the one historical adoption, excluding takeover and Outcome receipt sites."
+      "relocation_reading": "The mutating #mint helper was removed. Its two old callers were input_ingress and initial dispatch; both now prebuild their receipt. Re-anchor those two calls as the one historical adoption, excluding takeover and Outcome receipt sites.",
+      "registry_case": "k12c1.adopt-coordinate-z1",
+      "registry_mutant": "mutation-476da72a3801717d261a6bcc5cb97505da6e525128ba45f33344454de5e2652a"
     },
     "k12c1-coordinate-z2": {
       "family": "family.k12c1.ablations-04",
@@ -2243,7 +2296,9 @@
       "current_anchors": [
         "const receipt = mintReceipt(\"creation\", 1, executionId);"
       ],
-      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
+      "registry_case": "k12c1.adopt-coordinate-z2",
+      "registry_mutant": "mutation-f9376ca88b5acb077c60d25e350c7ea027ea371ed225aee4a5a09df0e565e8fd"
     },
     "k12c1-coordinate-z3": {
       "family": "family.k12c1.ablations-04",
@@ -2264,7 +2319,9 @@
       "current_anchors": [
         "      executionId: record.executionId,\n      activationId,\n"
       ],
-      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
+      "registry_case": "k12c1.adopt-coordinate-z3",
+      "registry_mutant": "mutation-4e589609f7613f6e0e827ff22c240ba071a54814358480d69851e8bcc3717015"
     },
     "k12c1-coordinate-z4": {
       "family": "family.k12c1.ablations-04",
@@ -2285,7 +2342,9 @@
       "current_anchors": [
         "      executionId: record.executionId,\n      activationId,\n"
       ],
-      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
+      "registry_case": "k12c1.adopt-coordinate-z4",
+      "registry_mutant": "mutation-93c1de368a2af34011a00024b03d9a7bd43edd507b8843d756f13e20e08245b1"
     },
     "k12c1-coordinate-z5": {
       "family": "family.k12c1.ablations-04",
@@ -2306,7 +2365,9 @@
       "current_anchors": [
         "PrimordialObjectFreeze({ ...exchange.activation, writerEpoch });"
       ],
-      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
+      "registry_case": "k12c1.adopt-coordinate-z5",
+      "registry_mutant": "mutation-33c689898dc3bbc3b07b5d9289c2d36f0162cd44fa51a27519cc3d5018ba2d0c"
     },
     "k12c1-coordinate-z6": {
       "family": "family.k12c1.ablations-04",
@@ -2327,7 +2388,9 @@
       "current_anchors": [
         "    mapSet(record.acceptedOutcomes, activationId, stored);"
       ],
-      "relocation_reading": "The accepted-Outcomes map insertion moved into the owner Outcome arm; the exact Activation-ID key is unchanged. Mutate this insertion, not the lookup or a type-only site."
+      "relocation_reading": "The accepted-Outcomes map insertion moved into the owner Outcome arm; the exact Activation-ID key is unchanged. Mutate this insertion, not the lookup or a type-only site.",
+      "registry_case": "k12c1.adopt-coordinate-z6",
+      "registry_mutant": "mutation-c3919857d924e4ab103ce0a5a1145f25280f96bf519b50b25bfbf0bd4f896989"
     },
     "k12c1-coordinate-z7": {
       "family": "family.k12c1.ablations-04",
@@ -2348,7 +2411,9 @@
       "current_anchors": [
         "  const base = {\n    eventId: entry.eventId,\n    destination: entry.destination,"
       ],
-      "relocation_reading": "Activation Event conversion moved into state.ts, and application entries now hold destination directly. Re-anchor the application-input branch; the new timeout branch is outside the historical input class."
+      "relocation_reading": "Activation Event conversion moved into state.ts, and application entries now hold destination directly. Re-anchor the application-input branch; the new timeout branch is outside the historical input class.",
+      "registry_case": "k12c1.adopt-coordinate-z7",
+      "registry_mutant": "mutation-e9e71b41f8196a759faec02fc6827782ff827befc30bb1d8ef73be91b36448f6"
     },
     "k12c1-coordinate-z8": {
       "family": "family.k12c1.ablations-04",
@@ -2369,7 +2434,9 @@
       "current_anchors": [
         "      activationId: resent.activationId,"
       ],
-      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
+      "registry_case": "k12c1.adopt-coordinate-z8",
+      "registry_mutant": "mutation-210b921a5de485277658dba7eb6132f97252f25407b27771ad35bba37cde86b0"
     },
     "k12c1-coordinate-z9": {
       "family": "family.k12c1.ablations-04",
@@ -2390,7 +2457,9 @@
       "current_anchors": [
         "const submission = mintSubmission(record.executionId, activationId, 1);"
       ],
-      "relocation_reading": "Initial grant construction moved from an ActivationRecord object field into a prebuilt submission local. Its Execution-ID field remains visible to the Driver and tested exactly."
+      "relocation_reading": "Initial grant construction moved from an ActivationRecord object field into a prebuilt submission local. Its Execution-ID field remains visible to the Driver and tested exactly.",
+      "registry_case": "k12c1.adopt-coordinate-z9",
+      "registry_mutant": "mutation-3ed15af54e9f21c973b2aec52714a38e193be86eb077891d504b9455b5402000"
     },
     "k12c1-coordinate-z10": {
       "family": "family.k12c1.ablations-04",
@@ -2411,7 +2480,9 @@
       "current_anchors": [
         "        appendOwn(acknowledgedIds, entry.eventId);"
       ],
-      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
+      "registry_case": "k12c1.adopt-coordinate-z10",
+      "registry_mutant": "mutation-eebb7e8adfee6c3c84c96345b15bff2216ffb0d3274c3d9294cb4f0b6dd46805"
     },
     "k12c1-coordinate-z11": {
       "family": "family.k12c1.ablations-04",
@@ -2432,7 +2503,9 @@
       "current_anchors": [
         "      supersededEpoch: currentEpoch,\n      writerEpoch,\n      baseProgressRevision: activation.baseProgressRevision,\n      batch: exchange.batch,\n      receipt,"
       ],
-      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+      "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
+      "registry_case": "k12c1.adopt-coordinate-z11",
+      "registry_mutant": "mutation-3fd9c223ba3c1fc0441fd1ea43fb89f18149c68904f58f3ef267859bc21a7724"
     },
     "k12c1-coordinate-z12": {
       "family": "family.k12c1.ablations-04",
@@ -2453,7 +2526,9 @@
       "current_anchors": [
         "const toActivationView = (intent: ActivationRecord): ActivationView => ({\n  activationId: intent.activation.activationId,"
       ],
-      "relocation_reading": "toActivationView moved intact to state.ts; the Activation-ID projection remains current."
+      "relocation_reading": "toActivationView moved intact to state.ts; the Activation-ID projection remains current.",
+      "registry_case": "k12c1.adopt-coordinate-z12",
+      "registry_mutant": "mutation-874e11f6dc75b5b807cca2698439987d7e34cc377930f79f3634303a8ed36b3f"
     },
     "k12c1-coordinate-z13": {
       "family": "family.k12c1.ablations-04",
@@ -2474,7 +2549,9 @@
       "current_anchors": [
         "    executionId: record.executionId,\n    state: record.state,"
       ],
-      "relocation_reading": "viewOf moved to state.ts; its Execution-ID projection remains current."
+      "relocation_reading": "viewOf moved to state.ts; its Execution-ID projection remains current.",
+      "registry_case": "k12c1.adopt-coordinate-z13",
+      "registry_mutant": "mutation-58b945a5fc269434cbc522ee6c7278d4245667d25d396b0ee33b3a91dcd65009"
     },
     "k12c1-coordinate-z14": {
       "family": "family.k12c1.ablations-04",
@@ -2495,7 +2572,9 @@
       "current_anchors": [
         "if (entry.disposition.kind === \"queued\") appendOwn(queued, entry.eventId);"
       ],
-      "relocation_reading": "viewOf queued-ID collection moved to state.ts; the exact Event-ID projection remains current."
+      "relocation_reading": "viewOf queued-ID collection moved to state.ts; the exact Event-ID projection remains current.",
+      "registry_case": "k12c1.adopt-coordinate-z14",
+      "registry_mutant": "mutation-a2088209671a743d9da11ada36108c719f5240bf0b3641837b3d10d3857830b1"
     },
     "k12c1-coordinate-z15": {
       "family": "family.k12c1.ablations-04",
@@ -2516,7 +2595,9 @@
       "current_anchors": [
         "    inputId: { ...(entry.inputId as InputId) },"
       ],
-      "relocation_reading": "Mailbox projection moved to state.ts and its application branch adds an InputId cast because timeout Events have no input ID. Preserve the application input destination projection; do not mutate the timeout branch."
+      "relocation_reading": "Mailbox projection moved to state.ts and its application branch adds an InputId cast because timeout Events have no input ID. Preserve the application input destination projection; do not mutate the timeout branch.",
+      "registry_case": "k12c1.adopt-coordinate-z15",
+      "registry_mutant": "mutation-a81d3f6d1d502ed37ef5f611560dc29dda01628006cef626eca14a579fa4622d"
     },
     "k12c1-coordinate-z16": {
       "family": "family.k12c1.ablations-04",
@@ -2537,7 +2618,9 @@
       "current_anchors": [
         "    const stored = intent.codeHold;\n    appendOwn(\n      holds,\n      PrimordialObjectFreeze({\n        cause: stored.cause,\n        reason: stored.reason,\n        activationId: stored.activationId,"
       ],
-      "relocation_reading": "holdsOf moved to plan.ts; the code-hold Activation-ID projection remains exact. This differs from X11 changing retained hold state."
+      "relocation_reading": "holdsOf moved to plan.ts; the code-hold Activation-ID projection remains exact. This differs from X11 changing retained hold state.",
+      "registry_case": "k12c1.adopt-coordinate-z16",
+      "registry_mutant": "mutation-bf5e6b76398915ccfc6982f5b03aedbb8ed67562f11df0b9b33b9fd99c3a863b"
     },
     "k12c1-recovery-h1": {
       "family": "family.k12c1.ablations-06",
@@ -2559,7 +2642,24 @@
       "current_anchors": [
         "  PrimordialObjectFreeze({ activationId, writerEpoch, cause, transition, reason, authority: \"control\" as const, actorNamespace, actorScope });"
       ],
-      "relocation_reading": "The optional read would admit ambient data into a hold record. Current fixed History builders still require own fields; the ordinary pollution leaf asserts the exact record. No registered production edit restores this optional read."
+      "relocation_reading": "The optional read would admit ambient data into a hold record. Current fixed History builders still require own fields; the ordinary pollution leaf asserts the exact record. No registered production edit restores this optional read.",
+      "additional_members": [
+        {
+          "family": "family.k12c1.ablations-06",
+          "member": "H2 the apply step reads an optional member of the planned commit",
+          "current_target": "packages/kernel/src/state.ts",
+          "current_anchor": "    const stored = plan.history;",
+          "reading": "H2 moved the same inherited resultingEpoch read into the control owner. The protocol-enter/data counterexample has the same required History result as H1; keep it as a second mutant in that adoption, not another case."
+        }
+      ],
+      "registry_case": "k12c1.adopt-recovery-h1",
+      "registry_mutant": "mutation-eceea9554acdeb316acedd7d6791d3cf09152c12b85eb17aa7d6c0d0f3a2cab8",
+      "additional_registry_mutants": [
+        {
+          "member": "family.k12c1.ablations-06#H2",
+          "mutation": "mutation-87d77a4efc5fc0bff25bd6e32e5279deee1da35273fa122fba9d8ff8109b61e0"
+        }
+      ]
     },
     "k12c1-recovery-h10": {
       "family": "family.k12c1.ablations-06",
@@ -2581,7 +2681,9 @@
       "current_anchors": [
         "    actorScope,\n    resultingEpoch,\n  });"
       ],
-      "relocation_reading": "The takeover History builder still owns resultingEpoch. The complete-decision takeover check constrains epochs in the answer/Activation, but not this History field; dropping it requires an adoption against the existing History leaf."
+      "relocation_reading": "The takeover History builder still owns resultingEpoch. The complete-decision takeover check constrains epochs in the answer/Activation, but not this History field; dropping it requires an adoption against the existing History leaf.",
+      "registry_case": "k12c1.adopt-recovery-h10",
+      "registry_mutant": "mutation-df5cbfa6915c7b88066d6e676a674784e16ab3aefeea940c5b09d23704cc7664"
     },
     "k12c1-recovery-h11": {
       "family": "family.k12c1.ablations-06",
@@ -2603,7 +2705,9 @@
       "current_anchors": [
         "authority: \"control\" as const, actorNamespace, actorScope });"
       ],
-      "relocation_reading": "The declaration builder is still current. k12.adopt-b9 mutates Outcome-ending attempt_submission History, the opposite operation/authority boundary, and is not this adoption. The complete-decision oracle does not independently assert this History authority field."
+      "relocation_reading": "The declaration builder is still current. k12.adopt-b9 mutates Outcome-ending attempt_submission History, the opposite operation/authority boundary, and is not this adoption. The complete-decision oracle does not independently assert this History authority field.",
+      "registry_case": "k12c1.adopt-recovery-h11",
+      "registry_mutant": "mutation-d39403a1e8e8e47b7d7cd7ee163410a3199b12eecb35ec87253fc6049c4fff45"
     },
     "k12c1-recovery-h12": {
       "family": "family.k12c1.ablations-06",
@@ -2624,7 +2728,9 @@
       "current_anchors": [
         "    const writerEpoch = currentEpoch + 1;\n    const position = record.nextAcceptancePosition;\n    const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);"
       ],
-      "relocation_reading": "Initial dispatch now has the same mintReceipt line, so scope the current anchor to writerEpoch = currentEpoch + 1. Unlike Z11, this changes the actual minted receipt, not only the returned receipt. Short ASCII sweep identities do not distinguish the lossy spelling."
+      "relocation_reading": "Initial dispatch now has the same mintReceipt line, so scope the current anchor to writerEpoch = currentEpoch + 1. Unlike Z11, this changes the actual minted receipt, not only the returned receipt. Short ASCII sweep identities do not distinguish the lossy spelling.",
+      "registry_case": "k12c1.adopt-recovery-h12",
+      "registry_mutant": "mutation-e79ecbfda90fa5ca4ea337c0727788f4fc86377092d5226dab797a0e65ff613b"
     },
     "k12c1-recovery-h15": {
       "family": "family.k12c1.ablations-06",
@@ -2646,7 +2752,9 @@
       "current_anchors": [
         "  const controls = hostMember(caller, \"controlScopes\") as readonly string[] | undefined;"
       ],
-      "relocation_reading": "The hostMember call remains unique. Ordinary caller.controlScopes would consult ambient inheritance; current registry/oracle control-authority scenarios do not introduce this inherited scope. The maintained pollution leaf names the actual distinguishing input."
+      "relocation_reading": "The hostMember call remains unique. Ordinary caller.controlScopes would consult ambient inheritance; current registry/oracle control-authority scenarios do not introduce this inherited scope. The maintained pollution leaf names the actual distinguishing input.",
+      "registry_case": "k12c1.adopt-recovery-h15",
+      "registry_mutant": "mutation-f497faffa4b48efc161fda566ef674b5654781fa5943f68d7d958c15e26967cf"
     },
     "k12c1-recovery-h16": {
       "family": "family.k12c1.ablations-06",
@@ -2668,10 +2776,171 @@
       "current_anchors": [
         "      const establish = hostMember(this.#driver, \"isSafeToReplace\");\n      safe = typeof establish === \"function\" && PrimordialReflectApply(establish, this.#driver, [exchange.activation]) === true;"
       ],
-      "relocation_reading": "The guarded hostMember/ReflectApply site remains unique. The historical optional call would invoke an inherited ambient method installed during request capture; the maintained leaf refuses it and requires zero calls. No current registry production edit restores this Driver read."
+      "relocation_reading": "The guarded hostMember/ReflectApply site remains unique. The historical optional call would invoke an inherited ambient method installed during request capture; the maintained leaf refuses it and requires zero calls. No current registry production edit restores this Driver read.",
+      "additional_members": [
+        {
+          "family": "family.k12c1.ablations-06",
+          "member": "H19 hostMember answers from Object.prototype",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "  while (current !== null && current !== PrimordialObjectPrototype && current !== PrimordialFunctionPrototype) {",
+          "reading": "H19 restores the Object.prototype read inside hostMember instead of bypassing it at the Driver call. The same Driver-without-method input and no-inherited-call result distinguish both; keep a second mutant and all provenance in H16\u2019s case."
+        }
+      ],
+      "registry_case": "k12c1.adopt-recovery-h16",
+      "registry_mutant": "mutation-874f0915d9d35f1e93716f795d30e0372e2839b32bd4da8e8cd59df22f779f91",
+      "additional_registry_mutants": [
+        {
+          "member": "family.k12c1.ablations-06#H19",
+          "mutation": "mutation-632b434c60781a49063d54e051cb2b5c497f02e11655e2eed8dad1b15bc295f4"
+        }
+      ]
+    },
+    "k12c1-recovery-h7": {
+      "family": "family.k12c1.ablations-06",
+      "member": "H7 recovery answer projected after the decision is applied",
+      "work_kind": "mutation_adoption",
+      "required_result": "The recovery answer is prebuilt before handing its plan to the state owner. Re-anchor the post-apply return; the old applyControlCommit helper is removed.",
+      "gap": "Ordinary structural negative control 28 covers this shape, but no registered production edit or independently specified recovery apply-sequence control binds the late answer projection.",
+      "reading": "group-review-12.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/control-commits.test.ts",
+        "test_path": [
+          "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+          "createExecution: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "    this.#state.apply(plan);\n    return answer;\n  }\n\n  /**\n   * Holds the unresolved exchange"
+      ],
+      "relocation_reading": "The recovery answer is prebuilt before handing its plan to the state owner. Re-anchor the post-apply return; the old applyControlCommit helper is removed.",
+      "registry_case": "state-owner.tools02-h7",
+      "registry_mutant": "mutation-31b8db55bc82d15e2cac1e99cee73bad9effa301e674a38aa8a6fd0fe914ab45"
+    },
+    "k12c1-recovery-h17": {
+      "family": "family.k12c1.ablations-06",
+      "member": "H17 ordinary optional mailboxCapacity read restored",
+      "work_kind": "mutation_adoption",
+      "required_result": "An absent mailboxCapacity option ignores Object.prototype and uses the default capacity.",
+      "gap": "This is construction-time mailbox admission, distinct from control authority and takeover safety.",
+      "reading": "group-review-12.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/host-members.test.ts",
+        "test_path": [
+          "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+          "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "hostMember(options, \"mailboxCapacity\")"
+      ],
+      "relocation_reading": "An absent mailboxCapacity option ignores Object.prototype and uses the default capacity.",
+      "registry_case": "k12c1.adopt-recovery-h17",
+      "registry_mutant": "mutation-43fa21cebbae4d4b360d3a917d0bf871168fab8253783feeece73813c7113e2f"
+    },
+    "k12c1-recovery-h18": {
+      "family": "family.k12c1.ablations-06",
+      "member": "H18 ordinary optional emissionsPerOutcome read restored",
+      "work_kind": "mutation_adoption",
+      "required_result": "An absent emissionsPerOutcome option ignores Object.prototype and uses the default Emission limit.",
+      "gap": "This governs Outcome admission, distinct from mailbox admission even though the maintained leaf checks both.",
+      "reading": "group-review-12.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/host-members.test.ts",
+        "test_path": [
+          "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+          "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "hostMember(options, \"emissionsPerOutcome\")"
+      ],
+      "relocation_reading": "An absent emissionsPerOutcome option ignores Object.prototype and uses the default Emission limit.",
+      "registry_case": "k12c1.adopt-recovery-h18",
+      "registry_mutant": "mutation-396510935970d7695ec7735fb390c64425c144f4bdcee0fe6a8e658cdd0df9b6"
+    },
+    "k12c1-recovery-h20": {
+      "family": "family.k12c1.ablations-06",
+      "member": "H20 hostMember answers from Function.prototype",
+      "work_kind": "mutation_adoption",
+      "required_result": "A function-object Driver must not inherit safety from Function.prototype.",
+      "gap": "The Function.prototype environment is distinct from the Object.prototype H16/H19 counterexample.",
+      "reading": "group-review-12.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/host-members.test.ts",
+        "test_path": [
+          "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+          "a function-object Driver is not answered by Function.prototype"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "  while (current !== null && current !== PrimordialObjectPrototype && current !== PrimordialFunctionPrototype) {"
+      ],
+      "relocation_reading": "A function-object Driver must not inherit safety from Function.prototype.",
+      "registry_case": "k12c1.adopt-recovery-h20",
+      "registry_mutant": "mutation-ebc784cdb97248253092436607f0223c320e8d886372e6d216bf9a9f16e8caae"
+    },
+    "k12c1-recovery-h21": {
+      "family": "family.k12c1.ablations-06",
+      "member": "H21 hostMember ignores members the host's own prototype supplies",
+      "work_kind": "mutation_adoption",
+      "required_result": "Host-owned prototype declarations are honored, including Driver safety, control scopes and options.",
+      "gap": "Positive host inheritance must remain distinct from ambient inheritance refusal; no current registry mutates the prototype traversal to own-only.",
+      "reading": "group-review-12.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/host-members.test.ts",
+        "test_path": [
+          "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+          "a class-based Driver's own prototype method is honored (trusted host structure)"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "    current = PrimordialGetPrototypeOf(current) as object | null;"
+      ],
+      "relocation_reading": "Host-owned prototype declarations are honored, including Driver safety, control scopes and options.",
+      "registry_case": "k12c1.adopt-recovery-h21",
+      "registry_mutant": "mutation-ade3d79012cee5a7f80377e21878b06f5218db7120ab6ad0fef4751e60d29a34"
+    },
+    "k12c1-recovery-h22": {
+      "family": "family.k12c1.ablations-06",
+      "member": "H22 descriptor field read without its own-value check",
+      "work_kind": "mutation_adoption",
+      "required_result": "Every descriptor-field read follows its own-value guard.",
+      "gap": "The structural guard is current. Its existing rule leaf asserts the precondition, but no current registry mutation removes that guard.",
+      "reading": "group-review-12.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/ambient-reads.test.ts",
+        "test_path": [
+          "correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned",
+          "every guarded descriptor read follows its own-value check in the same function"
+        ]
+      },
+      "current_target": "packages/kernel/src/own-array.ts",
+      "current_anchors": [
+        "  if (fieldDescriptor === undefined || !hasOwnValue(fieldDescriptor)) return undefined;\n  return (fieldDescriptor as { readonly value?: unknown }).value;"
+      ],
+      "relocation_reading": "Every descriptor-field read follows its own-value guard.",
+      "registry_case": "state-owner.tools02-h22",
+      "registry_mutant": "mutation-f5bfebab16fcb55cc90236967d2aadac0b3f6607110dc8c6994b3416f1d2f37c"
     }
   },
-  "resume_origin": "artifact-89a6c743f27e1e2697eab84d",
+  "resume_origin": "artifact-d3c77a74ad17db7c908e8b60",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -2693,5 +2962,12 @@
     "projection": "projection-07.md",
     "scheduled_checkpoint": 731,
     "scheduled_checkpoint_completed": false
+  },
+  "active_counting_rule": {
+    "owner_choice": "owner-choice-09.md",
+    "test_group_cap": 12,
+    "projected_adoption_cap": 250,
+    "measured_runtime_cap_seconds": 600,
+    "next_checkpoint": 1031
   }
 }

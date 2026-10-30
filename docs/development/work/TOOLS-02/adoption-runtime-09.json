@@ -1,0 +1,276 @@
+{
+  "version": 1,
+  "owner_choice": "owner-choice-09.md",
+  "scope": "Measured elapsed control plus mutation time for every TOOLS-02 adoption case attempt so far, including failed setup and retries; excludes clone/npm-ci, catalog and source-only anchor reads. No extrapolation.",
+  "runs": [
+    {
+      "revision": "9d71834e58eaacde6742fcf4a5d8c2151acf10ea",
+      "raw_local_path": "/private/tmp/tools02-adoption-results-9d71834e.json",
+      "raw_sha256": "1e9fac7554b9bba0ec787ce9f181d8eed144bc6c95ce6046828eb104d98dc262",
+      "seconds": 5.936,
+      "cases": [
+        {
+          "case": "k12.adopt-a6",
+          "control_valid": false,
+          "seconds": 0.345,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-a9",
+          "control_valid": false,
+          "seconds": 0.344,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-a11",
+          "control_valid": false,
+          "seconds": 0.336,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-a12",
+          "control_valid": false,
+          "seconds": 0.301,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-a13",
+          "control_valid": false,
+          "seconds": 0.371,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-a14",
+          "control_valid": false,
+          "seconds": 0.372,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-b9",
+          "control_valid": false,
+          "seconds": 0.346,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-b10",
+          "control_valid": false,
+          "seconds": 0.334,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-b11",
+          "control_valid": false,
+          "seconds": 0.303,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-b15",
+          "control_valid": false,
+          "seconds": 0.338,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-b20",
+          "control_valid": false,
+          "seconds": 0.305,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-a2",
+          "control_valid": false,
+          "seconds": 0.304,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-b3",
+          "control_valid": false,
+          "seconds": 0.339,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-b4",
+          "control_valid": false,
+          "seconds": 0.335,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-b7",
+          "control_valid": false,
+          "seconds": 0.337,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-b12",
+          "control_valid": false,
+          "seconds": 0.329,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-b13",
+          "control_valid": false,
+          "seconds": 0.296,
+          "outcomes": []
+        },
+        {
+          "case": "k12.adopt-b14",
+          "control_valid": false,
+          "seconds": 0.301,
+          "outcomes": []
+        }
+      ]
+    },
+    {
+      "revision": "51d945149ceb46fd3a4547ec811313e868f951a8",
+      "raw_local_path": "/private/tmp/tools02-adoption-results.json",
+      "raw_sha256": "e9522dc4351f16a6b7b7f3a229aa62e0f719ee6f88e912e1ff689404c693b80a",
+      "seconds": 27.869,
+      "cases": [
+        {
+          "case": "k12.adopt-a6",
+          "control_valid": true,
+          "seconds": 1.84,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-a9",
+          "control_valid": true,
+          "seconds": 1.428,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-a11",
+          "control_valid": true,
+          "seconds": 2.396,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-a12",
+          "control_valid": true,
+          "seconds": 1.492,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-a13",
+          "control_valid": true,
+          "seconds": 1.684,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-a14",
+          "control_valid": true,
+          "seconds": 1.433,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-b9",
+          "control_valid": true,
+          "seconds": 1.357,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-b10",
+          "control_valid": true,
+          "seconds": 1.368,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-b11",
+          "control_valid": true,
+          "seconds": 1.294,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-b15",
+          "control_valid": true,
+          "seconds": 1.83,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-b20",
+          "control_valid": true,
+          "seconds": 1.791,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-a2",
+          "control_valid": true,
+          "seconds": 1.588,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-b3",
+          "control_valid": true,
+          "seconds": 1.359,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-b4",
+          "control_valid": true,
+          "seconds": 1.349,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-b7",
+          "control_valid": true,
+          "seconds": 1.36,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-b12",
+          "control_valid": true,
+          "seconds": 1.467,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-b13",
+          "control_valid": true,
+          "seconds": 1.396,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-b14",
+          "control_valid": true,
+          "seconds": 1.437,
+          "outcomes": [
+            "killed"
+          ]
+        }
+      ]
+    }
+  ],
+  "seconds": 33.805
+}
