@@ -4646,38 +4646,910 @@
     },
     {
       "id": "artifact-81ee2213b6d43260efdfefc4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The complete probe requires accepting a Proxy then traversing its returned descriptor or handler prototype chain with fixed repeated observation counts. PROXY-01, under DESIGN-AUDIT-01 decision-01, now refuses every Proxy before those observations. This retires the Proxy-acceptance schedule only, not ordinary SDK capture or its bounded aggregate diagnostics. Timing was observational even in the source.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      }
     },
     {
       "id": "artifact-de93fbc9203fe569dce89926",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The explicit near-engine-maximum probe invokes the same boundary diagnostic schedule as the maintained refusal-diagnostics fixture. Current oversized and surrogate input classes assert bounded frozen reasons, exact refusal-only state, single capture and later valid answers/replay; diagnosticIdentity/diagnosticText preflight length before touching or concatenating excessive identities. The 50-million-unit maintained schedule and the historical near-engine-limit fixture share that excessive-length branch; no timing/allocation guarantee is inferred.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone high surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone low surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched long identity: control, hold and unsafe-replacement renderers"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-high identity: every Outcome refusal renderer, exact replay and answerability"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-high identity: control, hold and unsafe-replacement renderers"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-low identity: every Outcome refusal renderer, exact replay and answerability"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-low identity: control, hold and unsafe-replacement renderers"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched long identity: takeover callback epoch revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched long identity: takeover callback resolved revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched long identity: takeover callback next-exchange revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched long identity: takeover callback terminal revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched long identity: takeover callback hold revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-high identity: takeover callback epoch revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-high identity: takeover callback resolved revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-high identity: takeover callback next-exchange revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-high identity: takeover callback terminal revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-high identity: takeover callback hold revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-low identity: takeover callback epoch revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-low identity: takeover callback resolved revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-low identity: takeover callback next-exchange revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-low identity: takeover callback terminal revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "matched surrogate-low identity: takeover callback hold revalidation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "identity diagnostic edge 128 printable units does not change lookup"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "identity diagnostic edge 129 printable units does not change lookup"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "identity diagnostic edge printable endpoints does not change lookup"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "identity diagnostic edge tab does not change lookup"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "identity diagnostic edge DEL does not change lookup"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "identity diagnostic edge non-ASCII does not change lookup"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "root projection long member: every issue and root label survives without raw caller path"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "root projection Unicode member: every issue and root label survives without raw caller path"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "constructor long: all root messages projected before composition, recovery roots included"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "constructor Unicode: all root messages projected before composition, recovery roots included"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "duplicate Emission name 128: bounded reason retains duplicate diagnosis and exact key semantics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "duplicate Emission name 129: bounded reason retains duplicate diagnosis and exact key semantics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "duplicate Emission name Unicode: bounded reason retains duplicate diagnosis and exact key semantics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "pinned names long: hold and history aliases bounded while structured identity remains exact"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "pinned names Unicode: hold and history aliases bounded while structured identity remains exact"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "pinned names 128: hold and history aliases bounded while structured identity remains exact"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "pinned names 129: hold and history aliases bounded while structured identity remains exact"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "explicit protocol diagnostics retain their existing 1,024-unit payload rule through both clear paths"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-b4c10e4ecf81929f09fe147e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed family). The six optional-member forms are verbatim in the maintained ambient-reads negative control. The old early-mint helper disappeared and early-increment writes moved to the state owner; the current owner boundary and complete-decision sequence/next-position checks retain both required results. No old-helper absence retirement or reader-setter TypeError kill. The sealed runner digest and B/H result contrast remain historical provenance.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/ambient-reads.test.ts",
+            "test_path": [
+              "correction DEC-8 negative controls: every equivalent form is reported",
+              "review 10: dot, string element, bare, quoted, computed and assignment destructuring"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "artifact-c5f3c68d2707859b074dcf66",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "superseded",
+        "rationale": "S2. The complete probe requires accepting a Proxy then traversing its returned descriptor or handler prototype chain with fixed repeated observation counts. PROXY-01, under DESIGN-AUDIT-01 decision-01, now refuses every Proxy before those observations. This retires the Proxy-acceptance schedule only, not ordinary SDK capture or its bounded aggregate diagnostics. Timing was observational even in the source.",
+        "decision": "docs/development/work/DESIGN-AUDIT-01/decision-01.md"
+      }
     },
     {
       "id": "artifact-f50368fdd8385de10113f371",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "A/B/C host-member schedules are maintained by host-members.test.ts: request-getter installation of inherited isSafeToReplace refuses unsafe_replacement without calling it; residue controlScopes gives no authority; residue mailboxCapacity does not lower the default. The suite also asserts receipts, holds, history, epoch and deliveries. Historical comparison against START remains provenance, not a current rerun.",
         "targets": [
           "suite.packages/kernel/tests/host-members.test.ts"
         ]
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. All three concrete inputs have current host-members assertions and registered H15/H16/H17 adoptions: request-installed ambient safety refuses unsafe_replacement; inherited controlScopes cannot grant power; inherited mailboxCapacity cannot replace the default. The old source comparison is provenance, not a current test requirement.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a Driver without the method is refused even when the request's getter installs an inherited one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "residue pollution left before the call establishes nothing either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a function-object Driver is not answered by Function.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver's own prototype method is honored (trusted host structure)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a method inherited from the host's own prototype object is honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver without the method is not answered by Object.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "controlScopes inherited from the host's own prototype object is still honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "a limit the host supplies through its own options prototype is honored"
+            ]
+          }
+        ]
       }
     },
     {
       "id": "artifact-9e7397d5f07f1bbe4b2fa2d4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. whole-view-ambient preserves the thirty same-input comparisons. The six optional-member spellings are maintained verbatim in ambient-reads; the source-access inventory is a navigation aid, never a soundness claim or separate behavior counterexample.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "the comparison set is review 10's 30"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/ambient-reads.test.ts",
+            "test_path": [
+              "correction DEC-8 negative controls: every equivalent form is reported",
+              "review 10: dot, string element, bare, quoted, computed and assignment destructuring"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-3e2c3a822fd99541b52f06e5",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. All three changed observations are current fault-oracle negative controls. The sixteen ordinary exits and five callback baselines are current fault scenarios and maintained fault-sweep/inventory assertions. The old builder stopping on absent slicing anchors does not retire the live result; no historical defect-accepting classifier is used as current evidence.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-4821cb047b2a86e5f24f93ef",
@@ -4685,11 +5557,571 @@
     },
     {
       "id": "artifact-7fcd24fd4de8e2db87f8ec5f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Current whole-view, inherited-read and poison-catalog leaves retain the same no-ambient-observation results. The current complete-decision fault sweep checks refusal creation/append faults against unchanged state and next position, at the moved state owner; nextRefusal comparison is mutated in the existing registry. Old H having precisely those violations is historical provenance, not a required current failure.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "the comparison set is review 10's 30"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "count: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "throw: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "reenter: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "off: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "count: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "throw: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "reenter: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "every poisoned run returned exactly what the unpoisoned run returned"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "the catalog poisons the complete name set, the descriptor fields included"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          }
+        ]
+      }
     },
     {
       "id": "artifact-3d28b841cb049f74205b0b5c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). Current SDK UTF-16 preflight leaves assert scalar/extent edges, zero oversized character reads and repeated wrapper roots; current value-capture byte-limit and shared-value assertions retain accepted numeric/container byte accounting. The old Kernel live-object entry moved to SDK under BINDING-01: wrapper refusal occurs before a core submission, so old core authority ordering is not imposed on that wrapper. Current boundary suites separately preserve byte-core refusal/state behavior. Rope/flat heap and time samples have no performance threshold (S1/L-03), and no near-engine allocation promise is inferred.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 the four semantic limits, at the limit and one over",
+              "a value nested far past the limit is refused rather than exhausting the stack"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 the four semantic limits, at the limit and one over",
+              "canonical size is measured per root, at the byte"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 the four semantic limits, at the limit and one over",
+              "sibling roots are not summed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 the four semantic limits, at the limit and one over",
+              "the reported canonical byte length is the UTF-8 length, not the UTF-16 one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "the running count is exact: an at-limit value of every byte kind passes and one byte more is refused by it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "a shared member is accepted, and counted in full at every place it appears"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "thirty-two arrays standing for four billion are refused after reading about a megabyte"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "neither word appears in the zone's executable text"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "no legacy controller vocabulary is carried forward into code either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "the exported surface names no Agent or Workflow concept"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "the SDK wrapper keeps the exact JCS dependency and the core has none"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "which code can read progress is answered only by pinned revisions and a codec"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no ordinary indexed assignment survives outside own-array.ts"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R6-STATE-02 no array mutator method is applied to a Kernel-owned list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "K11-R7-STATE-03 every defineProperty in the zone goes through the one null-prototype owner"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/boundary.test.ts",
+            "test_path": [
+              "K1.1-C8 the boundary carries no Agent or Workflow discriminator",
+              "every import in the core zone is internal or a node: builtin"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-c9cc769a30eca18b1f10d3d0",
@@ -129917,15 +131349,27 @@
     },
     {
       "id": "mention-1823bbfefa0fb77e82e38e74",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The enclosing C..H administrative allowlist fence names retained files, including prior-attempt outputs. It states no additional executable claim and supplies no current run credit."
+      }
     },
     {
       "id": "mention-b11aa71333f4de7931f5b169",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The enclosing C..H administrative allowlist fence names retained files, including prior-attempt outputs. It states no additional executable claim and supplies no current run credit."
+      }
     },
     {
       "id": "mention-cb672a4218565bca469334f2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The enclosing C..H administrative allowlist fence names retained files, including prior-attempt outputs. It states no additional executable claim and supplies no current run credit."
+      }
     },
     {
       "id": "mention-3787ef55670eca8f82bbc689",
@@ -129933,7 +131377,11 @@
     },
     {
       "id": "mention-9c627c81e1dfa617cb113e53",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-844964a754cde21df0be5421",
@@ -129941,7 +131389,11 @@
     },
     {
       "id": "mention-3df0830f0805c05b82dd7e8c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-17421d7ff0194ec25119f971",

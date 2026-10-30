@@ -2,6 +2,14 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 correction adapters/probes — through origin 1,049:** 964 retired
+  and 85 extraction-origin plans. [Batch 20](triage-batch-20.md): **five test groups /
+  131 adoptions**, unchanged; measured runtime 250.717 seconds. No new execution or
+  group. Resume `K1.2-correction-01/reconstruction.md:9`,
+  `mention-17421d7ff0194ec25119f971` (origin 1,050). The checkpoint at db0da27a is
+  pushed, and fetch/push work. Continue under owner choice 09's limits; no final-C
+  or family-closure claim.
+
 - **2026-10-30 scheduled checkpoint — through origin 1,031:** 950 retired and
   81 extraction-origin plans. [Batch 19](triage-batch-19.md) and
   [projection 09](projection-09.md): **five distinct test groups / 131 adoptions**;

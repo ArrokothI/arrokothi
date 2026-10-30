@@ -952,7 +952,21 @@
     "mention-63b9ccf3b6a1b755c0a3aaaa",
     "mention-d56a03133e28934465b31bce",
     "mention-8d42f2e15f3f83763d3ef7c0",
-    "mention-e6e7e934e680bf459a90653a"
+    "mention-e6e7e934e680bf459a90653a",
+    "mention-1823bbfefa0fb77e82e38e74",
+    "mention-b11aa71333f4de7931f5b169",
+    "mention-cb672a4218565bca469334f2",
+    "mention-9c627c81e1dfa617cb113e53",
+    "mention-3df0830f0805c05b82dd7e8c",
+    "artifact-81ee2213b6d43260efdfefc4",
+    "artifact-c5f3c68d2707859b074dcf66",
+    "artifact-de93fbc9203fe569dce89926",
+    "artifact-b4c10e4ecf81929f09fe147e",
+    "artifact-f50368fdd8385de10113f371",
+    "artifact-9e7397d5f07f1bbe4b2fa2d4",
+    "artifact-3e2c3a822fd99541b52f06e5",
+    "artifact-7fcd24fd4de8e2db87f8ec5f",
+    "artifact-3d28b841cb049f74205b0b5c"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -2782,6 +2796,71 @@
       "reading": "triage-batch-19.md",
       "required_result": "S6 (mixed). The rebound enforcement/name probes retain the seven already-counted round-7 current read/commit adoption groups and group-review-14 shared/moved-owner routes. Historical results against reviewed H are not new current kills.",
       "planned_test": "Existing passing leaves and existing registries; preserve source variants and require final P1-M closure."
+    },
+    "artifact-3305fd79471e685d75314668": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/original-ablations-02.mjs:1",
+      "groups": [
+        "k12-mutation-a6",
+        "k12-mutation-a9",
+        "k12-mutation-a11",
+        "k12-mutation-a12",
+        "k12-mutation-a13",
+        "k12-mutation-a14",
+        "k12-mutation-b9",
+        "k12-mutation-b10",
+        "k12-mutation-b11",
+        "k12-mutation-b15",
+        "k12-mutation-b20",
+        "k12-mutation-a2",
+        "k12-mutation-b3",
+        "k12-mutation-b4",
+        "k12-mutation-b7",
+        "k12-mutation-b12",
+        "k12-mutation-b13",
+        "k12-mutation-b14"
+      ],
+      "reading": "triage-batch-20.md",
+      "required_result": "S6 (mixed family). The adapter verifies the original runner digest and changes only B6/B12/B13/B14 diagnostic spelling. All 36 member semantics are unchanged. Reuse group-review-07 individual relocation/supersession readings and eighteen existing adoption cases; no duplicate groups and no assertion that all original anchors still apply. A15 unconditional await refusal remains superseded by accepted K1.3.",
+      "planned_test": "Reuse existing groups, retained source variants and current passing leaves; require final P1 closure. No new group."
+    },
+    "mention-3787ef55670eca8f82bbc689": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/owner-note-10.md:11",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-c8",
+        "k12c1-round7-c10"
+      ],
+      "reading": "triage-batch-20.md",
+      "required_result": "S6 (mixed). The note points to review-10 optional reads and early receipt-index changes, retaining the existing round-7 family and moved-owner distinctions; process/escalation advice is S1.",
+      "planned_test": "Reuse existing groups, retained source variants and current passing leaves; require final P1 closure. No new group."
+    },
+    "mention-844964a754cde21df0be5421": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/owner-note-11.md:10",
+      "groups": [
+        "k12c1-sweep8-inspection"
+      ],
+      "reading": "triage-batch-20.md",
+      "required_result": "S6 (mixed). The concrete Pick-based inherited inspection read needs the already-counted inspection adoption. Default-parameter/shadowed-undefined index changes moved into the state owner and are independently checked by complete-decision nextAcceptance/applySequence; the old read-only-reader TypeError is not a kill.",
+      "planned_test": "Reuse existing groups, retained source variants and current passing leaves; require final P1 closure. No new group."
+    },
+    "artifact-4821cb047b2a86e5f24f93ef": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/probe-reviewed-h-07.mjs:1",
+      "groups": [
+        "k12c1-round7-r10"
+      ],
+      "reading": "triage-batch-20.md",
+      "required_result": "S6 (mixed). The explicit Error.prototype.name setter/own-name result is the current R10 adoption already planned. H-only source-guard failures and test counts remain historical provenance; no new group or current kill.",
+      "planned_test": "Reuse existing groups, retained source variants and current passing leaves; require final P1 closure. No new group."
     }
   },
   "reconsidered_extractions": [
@@ -7135,7 +7214,7 @@
       "relocation_reading": "The old viewOf(record) return and ExecutionRecord planner type were replaced by ExecutionReader.inspection(). The reader owns no resultingEpoch and its class chain still reaches Object.prototype. Preserve the Pick cast and unused property read at the current unique return. No missing-anchor retirement."
     }
   },
-  "resume_origin": "mention-1823bbfefa0fb77e82e38e74",
+  "resume_origin": "mention-17421d7ff0194ec25119f971",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -7143,8 +7222,8 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2-correction-01/implementation-09.md",
-  "resume_line": 671,
+  "resume_path": "docs/development/work/K1.2-correction-01/reconstruction.md",
+  "resume_line": 9,
   "cap_stop_07": {
     "origins_reached": 696,
     "origins_before_current_family": 695,
