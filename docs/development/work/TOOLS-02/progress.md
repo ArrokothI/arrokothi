@@ -2,6 +2,16 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 scheduled checkpoint — through origin 1,031:** 950 retired and
+  81 extraction-origin plans. [Batch 19](triage-batch-19.md) and
+  [projection 09](projection-09.md): **five distinct test groups / 131 adoptions**;
+  cumulative projections 8/193, latest-300 projections 5/135, 600-origin sensitivity
+  7/229, all within 12/250. All measured adoption runs total **250.717 seconds**,
+  unchanged; 64 cases plus shared variants remain unbuilt. Resume
+  `K1.2-correction-01/implementation-09.md:671`, `mention-1823bbfefa0fb77e82e38e74`
+  (origin 1,032). Continue under owner choice 09's stops; owner choice 10's bounded
+  waiver is fulfilled, not extended. No P3/audit/mappings_complete/final C/H/CI yet.
+
 - **2026-10-30 runtime sweep reports — through origin 971:** 891 retired origins
   and 80 extraction-origin plans; **five test groups / 131 adoptions**.
   [Group review 17](group-review-17.md) adds one inspection-read adoption at its
