@@ -49516,51 +49516,1871 @@
     },
     {
       "id": "mention-8d27f2828d8cca113b831364",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Revision scope/chronology and the review finding description; no separate distinguishing scenario beyond the evidence map and family origins below."
+      }
     },
     {
       "id": "mention-886f0612eaa9f08f176d21ef",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The review-09 inherited optional History read and history-before-hold ordering are still live. recovery-ambient retains the matrix, foreign reference and both clear paths; H1/H2 adoption and the state-owner boundary case retain the named production regressions. Other H members stay in their family extraction plan.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "the matrix is review 09's 22 cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12c1.adopt-recovery-h1"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.dropped-coupled-field"
+          }
+        ]
+      }
     },
     {
       "id": "mention-ab59c682f779f43d3d4fbae2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Revision scope/chronology and the review finding description; no separate distinguishing scenario beyond the evidence map and family origins below."
+      }
     },
     {
       "id": "mention-cd81b99419b347ddb7c608e3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The current oracle controls alter the complete returned decision, view, both next positions and setup grant, and locate every permitted exception. Every CHECKS comparison has an existing oracle registry case. No ordinary product leaf is substituted for the comparison mutations.",
+        "covered_by": [
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-755d2255f07b501b7368ec6f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The current oracle controls alter the complete returned decision, view, both next positions and setup grant, and locate every permitted exception. Every CHECKS comparison has an existing oracle registry case. No ordinary product leaf is substituted for the comparison mutations.",
+        "covered_by": [
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-fca580c1b8411c1e7e3aa88f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). Weighted diagnostics, eager roots, byte stopping and UTF-16 preflight remain in the SDK capture owner and the aggregate renderer. The named coherent-Proxy acceptance/trap-count subject is superseded by DESIGN-AUDIT-01 decision-01; the current maintained descriptor/handler leaves assert pre-trap refusal plus the ordinary-row counterpart. Timing is an L-03 observation. This is not retirement merely because capture moved.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 every unsupported primitive and plain function has a type-only label; callable and revoked function Proxies are refused untouched"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 own constructor, constructor.name, and thrown-value properties are never inspected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown null, arrays, functions and revoked objects need no diagnostic structural observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: creation, ingress and recovery use the same zero-lookup diagnostics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: creation, ingress and recovery use the same zero-lookup diagnostics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): the probe's Proxy is refused with zero traps; plain rows keep depth-independent bounded observations and exact acceptance"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): the byte stop bounds observations before later rows"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-03 descriptor probe (item 5 superseded by decision-01 item 2): one and eight eager roots keep bounded observations before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-04 handler probe (item 5 superseded by decision-01 item 2): a handler-chain Proxy is refused with no trap lookup; plain rows keep Kernel-selected observations and exact acceptance"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-04 handler probe (item 5 superseded by decision-01 item 2): the byte stop bounds Kernel-selected observations"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "decision-04 handler probe (item 5 superseded by decision-01 item 2): eager roots preserve selected counts and whole state before authority"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 suffix counts preserve late codes and first occurrence order across root consumers"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 eight SDK roots: every position once, no core submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 value-relative path 128 before adding root label"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 value-relative path 129 before adding root label"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 renderer message 1024; capture uses fixed type labels"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 renderer message 1025; capture uses fixed type labels"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 detail count edge 0"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 detail count edge 8"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 detail count edge 9"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 late codes and counts contribute to the same combined refusal in first occurrence order"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 bound proof: fixed code vocabulary and maximum-size details plus all summary codes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 root metadata is own-only under ambient pollution"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-4ef4e757129b99c0a9014801",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Count/throw/reenter prototype poison, zero zone firings, every-window liveness and equal unpoisoned boundary results remain asserted by the maintained catalog; the full-suite sweep continues as the historical broader bounded search, not a universal claim. Raw numbers at the pin are not thresholds at C.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "off: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "count: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "throw: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "reenter: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "every poisoned run returned exactly what the unpoisoned run returned"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "the catalog poisons the complete name set, the descriptor fields included"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ffb2e2bc91ed4b9ad4b05024",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Faulted controls and refusal exits must leave a complete permitted decision, including both positions and grant; the existing fault-sweep executes all 37 short control/refusal scenarios and the oracle examples cover the other decision classes. The historical engine-resource exception and invisible writes are declared limits, not unexplained pass credit. The complete-decision comparisons themselves have registry mutants.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "every part of every permitted decision is compared",
+              "the examples reach every decision class a fault run reaches in the full sweep"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          }
+        ]
+      }
     },
     {
       "id": "mention-933538175f6e91c6d1d640d2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Faulted controls and refusal exits must leave a complete permitted decision, including both positions and grant; the existing fault-sweep executes all 37 short control/refusal scenarios and the oracle examples cover the other decision classes. The historical engine-resource exception and invisible writes are declared limits, not unexplained pass credit. The complete-decision comparisons themselves have registry mutants.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "every part of every permitted decision is compared",
+              "the examples reach every decision class a fault run reaches in the full sweep"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          }
+        ]
+      }
     },
     {
       "id": "mention-2680aedbbc29a8b0e3bf7fae",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Faulted controls and refusal exits must leave a complete permitted decision, including both positions and grant; the existing fault-sweep executes all 37 short control/refusal scenarios and the oracle examples cover the other decision classes. The historical engine-resource exception and invisible writes are declared limits, not unexplained pass credit. The complete-decision comparisons themselves have registry mutants.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "every part of every permitted decision is compared",
+              "the examples reach every decision class a fault run reaches in the full sweep"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          }
+        ]
+      }
     },
     {
       "id": "mention-915538f2926a37adef43f710",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The named review-12 altered observations and comparison-disabling mutations are present in fault-oracle and oracle.* registry cases. M1 grant loss, M2 alternate answer, M3 apply order, M4 hidden refusal position and M5 post-callback refusal position are the same decisions independently compared by setupGrant/returned/recoveryAnswer/applySequence/applyModel/referenceUnnamed/nextRefusal. The whole historical production family still needs its own per-member P1-M reading.",
+        "covered_by": [
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-12431f4808cd3e311bb27f6a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The named review-12 altered observations and comparison-disabling mutations are present in fault-oracle and oracle.* registry cases. M1 grant loss, M2 alternate answer, M3 apply order, M4 hidden refusal position and M5 post-callback refusal position are the same decisions independently compared by setupGrant/returned/recoveryAnswer/applySequence/applyModel/referenceUnnamed/nextRefusal. The whole historical production family still needs its own per-member P1-M reading.",
+        "covered_by": [
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-1ee50d613005b33496f0deb6",
@@ -49568,27 +51388,513 @@
     },
     {
       "id": "mention-8227268ace946fb96146d2fe",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This paragraph declares known static-analysis gaps and excluded deliberately evasive forms; it specifies the proof scope, not a passing negative control."
+      }
     },
     {
       "id": "mention-e5ccbdaaa17db0b6925dd426",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). The concrete coordinate and weighted-result requirements remain maintained in exact-coordinates and aggregate-refusal, with diagnostic-cost capture moved to SDK value-refusal-cost. V5 raw caller-message storage became equivalent after the producer was removed, as group-review-09 records; the live diagnostic-lookup replacement remains separately planned. Preserving old runner reports is process, not acceptance of NOT APPLICABLE as a kill.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 all recovery roots and the two other malformed controls return and retain"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 late codes and counts contribute to the same combined refusal in first occurrence order"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 P5: 532480 invalid positions retain nine records and exact ordered details"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 suffix counts preserve late codes and first occurrence order across root consumers"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-5d5f47daf22d5d1b15a27949",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). The concrete coordinate and weighted-result requirements remain maintained in exact-coordinates and aggregate-refusal, with diagnostic-cost capture moved to SDK value-refusal-cost. V5 raw caller-message storage became equivalent after the producer was removed, as group-review-09 records; the live diagnostic-lookup replacement remains separately planned. Preserving old runner reports is process, not acceptance of NOT APPLICABLE as a kill.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 all recovery roots and the two other malformed controls return and retain"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 late codes and counts contribute to the same combined refusal in first occurrence order"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 P5: 532480 invalid positions retain nine records and exact ordered details"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 suffix counts preserve late codes and first occurrence order across root consumers"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-9bd56e3b2218c38cb2e86fa3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). The concrete coordinate and weighted-result requirements remain maintained in exact-coordinates and aggregate-refusal, with diagnostic-cost capture moved to SDK value-refusal-cost. V5 raw caller-message storage became equivalent after the producer was removed, as group-review-09 records; the live diagnostic-lookup replacement remains separately planned. Preserving old runner reports is process, not acceptance of NOT APPLICABLE as a kill.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 all recovery roots and the two other malformed controls return and retain"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 late codes and counts contribute to the same combined refusal in first occurrence order"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 P5: 532480 invalid positions retain nine records and exact ordered details"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 suffix counts preserve late codes and first occurrence order across root consumers"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-4d210a4535400bfd823e49e7",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). The concrete coordinate and weighted-result requirements remain maintained in exact-coordinates and aggregate-refusal, with diagnostic-cost capture moved to SDK value-refusal-cost. V5 raw caller-message storage became equivalent after the producer was removed, as group-review-09 records; the live diagnostic-lookup replacement remains separately planned. Preserving old runner reports is process, not acceptance of NOT APPLICABLE as a kill.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 all recovery roots and the two other malformed controls return and retain"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "DEC-5 late codes and counts contribute to the same combined refusal in first occurrence order"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 P5: 532480 invalid positions retain nine records and exact ordered details"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 suffix counts preserve late codes and first occurrence order across root consumers"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-58b9055a43d8af0f39035df8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The same-mechanism host-member schedules (absent inherited method/controlScopes/options, legitimate class/prototype methods) are maintained with their exact refused/default/accepted results. Registered H15-H21 adoption cases retain their source variants; no new test group.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a Driver without the method is refused even when the request's getter installs an inherited one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "residue pollution left before the call establishes nothing either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a function-object Driver is not answered by Function.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver's own prototype method is honored (trusted host structure)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a method inherited from the host's own prototype object is honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver without the method is not answered by Object.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "controlScopes inherited from the host's own prototype object is still honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "a limit the host supplies through its own options prototype is honored"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "k12c1.adopt-recovery-h15"
+          },
+          {
+            "kind": "case",
+            "id": "k12c1.adopt-recovery-h16"
+          },
+          {
+            "kind": "case",
+            "id": "k12c1.adopt-recovery-h17"
+          },
+          {
+            "kind": "case",
+            "id": "k12c1.adopt-recovery-h18"
+          },
+          {
+            "kind": "case",
+            "id": "k12c1.adopt-recovery-h20"
+          },
+          {
+            "kind": "case",
+            "id": "k12c1.adopt-recovery-h21"
+          }
+        ]
+      }
     },
     {
       "id": "mention-a1e32d2473e7e68e5d2f981a",
@@ -49604,23 +51910,1213 @@
     },
     {
       "id": "mention-26d58e0f16bf3d5af1f8f2f9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Review-11 seed and complete fault decisions are maintained; the existing complete-decision oracle checks nextRefusal/nextAcceptance, exact returned/state result and callback baseline. C8/C10 remain explicitly invisible to this boundary oracle and are retained as separate structural-adoption plans, rather than being called killed here.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          }
+        ]
+      }
     },
     {
       "id": "mention-e0726375113240681efd4149",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Review-12 three altered observations, every compared decision field, location controls and comparison mutants persist in fault-oracle and the existing oracle registry; M1-M5 map to the same independently prescribed decisions. Historical H-versus-C differential counts add no new current input class.",
+        "covered_by": [
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-7165c7587b4b843c13dba588",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The source-derived exit inventory and each scenario declaration are checked by the maintained fault-oracle inventory leaves; declaredExit, attributed and exitReached are independently mutated in the registry. The historical count 57 is not carried as a present threshold after later controls were added.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          }
+        ]
+      }
     },
     {
       "id": "mention-2786f207724c6a3c2025d754",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Review-11 seed and complete fault decisions are maintained; the existing complete-decision oracle checks nextRefusal/nextAcceptance, exact returned/state result and callback baseline. C8/C10 remain explicitly invisible to this boundary oracle and are retained as separate structural-adoption plans, rather than being called killed here.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          }
+        ]
+      }
     },
     {
       "id": "mention-a7b7a98d50d2199b38cb08cc",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Maintained whole-view-ambient and review-11-probes execute the named inherited-resultingEpoch comparisons and count/throw/reenter arms; recovery-ambient retains review-09 matrix. The same concrete probes remain, with no historical report rewritten.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "the comparison set is review 10's 30"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "count: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "throw: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "reenter: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "the matrix is review 09's 22 cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors left behind as residue"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-4250d65947cd73edb26366aa",
@@ -49628,27 +53124,1169 @@
     },
     {
       "id": "mention-1d538000dd32340b747b05ef",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Conditional future diagnostic-change policy and preservation requirement; no new distinguishing input is specified. The concrete existing renderer and K1.2 families retain their separate origins and obligations."
+      }
     },
     {
       "id": "mention-b1f01a448450fec09f5c1599",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Revision-10 validation points to the same complete-decision oracle, comparison mutants, production M1-M5 decisions and review-12 inventory/altered-observation controls read above. Current registry and maintained controls retain those inputs/results; reproducing historical H acceptance is historical context, not current product credit.",
+        "covered_by": [
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-cf06fd0cf64db96bcf676751",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Revision-10 validation points to the same complete-decision oracle, comparison mutants, production M1-M5 decisions and review-12 inventory/altered-observation controls read above. Current registry and maintained controls retain those inputs/results; reproducing historical H acceptance is historical context, not current product credit.",
+        "covered_by": [
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-87318531f90ba20b05b910db",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Revision-10 validation points to the same complete-decision oracle, comparison mutants, production M1-M5 decisions and review-12 inventory/altered-observation controls read above. Current registry and maintained controls retain those inputs/results; reproducing historical H acceptance is historical context, not current product credit.",
+        "covered_by": [
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ad063968465382dce9bbaeb9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Revision-10 validation points to the same complete-decision oracle, comparison mutants, production M1-M5 decisions and review-12 inventory/altered-observation controls read above. Current registry and maintained controls retain those inputs/results; reproducing historical H acceptance is historical context, not current product credit.",
+        "covered_by": [
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-4b77671986610a83e0dba933",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Revision-9 validation points to the live poison catalog, complete fault decisions and review-11 seed; current maintained probes retain the inherited-read behavior. Historical old-H reproduction and diff preservation are process only.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "off: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "count: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "throw: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "reenter: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "every poisoned run returned exactly what the unpoisoned run returned"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "the catalog poisons the complete name set, the descriptor fields included"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "the comparison set is review 10's 30"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "count: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "throw: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "reenter: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-3cc6601497138ef586bf5541",

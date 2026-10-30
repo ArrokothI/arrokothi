@@ -2,6 +2,15 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 correction contract — through origin 761:** 43 readings, now 723
+  retired and 38 extraction-origin plans. [Batch 16](triage-batch-16.md) retains
+  concrete family references with the already counted adoption groups, and resolves
+  ordinary behavior/oracle claims to maintained leaves and registry comparisons.
+  Five test groups / **129 adoption cases**; measured adoption runtime remains
+  250.717 seconds. No new code, mutant execution, derived-table regeneration or
+  family closure. Resume `K1.2-correction-01/coverage-02.md:23`,
+  `mention-13abcabf5339ec9133f6b04f` (origin 762); owner choice 10 continues to 1,031.
+
 - **2026-10-30 correction records — through origin 718:** twenty more readings;
   694 retired origins and 24 extraction-origin plans. Five test groups / **129
   adoption cases** remain; measured adoption runtime is 250.717 seconds.
