@@ -2,6 +2,19 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 owner choice 09 — resumed within origin 696:**
+  [Owner choice 09](owner-choice-09.md) answers projection 07 at `8e9a8b8f`.
+  The projected mutation-adoption cap is now **250**, with a separate stop if
+  measured added registry runtime exceeds **10 minutes**; the test-group cap stays
+  **12**. Current lower bound: five test groups and 61 adoptions (18 validated).
+  - Resume within `K1.2-correction-01/ablations-06.mjs:1`,
+    `artifact-89a6c743f27e1e2697eab84d`, then source order. Continue past origin 731;
+    the next scheduled checkpoint is **1,031**, in projection-08.md. Report both
+    projections and the measured added runtime for every adoption run so far.
+  - Keep the original stop record. All other owner-choice-07/08 rules, P3, audit,
+    mappings_complete and final C/CI/H requirements remain. Worktree and Node path
+    remain the dedicated handover paths below. IN_PROGRESS; not review-ready.
+
 - **2026-10-29 owner-choice-08 cap stop — origin 696 under reconciliation:**
   674 retired; 22 extraction-origin plans; **five test groups and at least 61 mutation
   adoptions**. The observed adoption count exceeds 60, so dependent triage/build stops.

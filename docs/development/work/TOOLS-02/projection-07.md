@@ -1,5 +1,7 @@
 # Projection 07 — early adoption-cap stop at origin 696
 
+Subsequent owner disposition: [owner choice 09](owner-choice-09.md) raises the projected adoption cap, adds a measured-runtime stop and resumes triage past origin 731.
+
 2026-10-29, implementing Codex GPT-6 session. Governing instruction:
 [owner choice 08](owner-choice-08.md), answering projection 06 at `8acfc06e`.
 
