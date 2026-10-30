@@ -2,6 +2,15 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 correction identity/diagnostic family — origin 698:** five test groups
+  / **129 adoption cases**. [Group review 15](group-review-15.md): 67 live variants in
+  55 new cases, with input/operation/result grouping and ten individual moved-anchor
+  readings. All planned tests already exist and pass in the catalog; the new cases
+  are not built or killed yet. Measured runtime remains 250.717 seconds. Resume
+  `K1.2-correction-01/amendment-02.md:32`, `mention-631a89f180f853e6d7e4260f` (origin 699).
+  Owner choice 10 authorizes continuing through 1,031; no product/historical or
+  generated adoption changes, P3 completion, self-audit, final C/H or CI claimed.
+
 - **2026-10-30 round-7 family read — origin 697:** five test groups / **74 adoption
   cases**. [Group review 14](group-review-14.md) adds R11/R12/C8/C10, and records each
   moved owner/reader route for C1–C16. Seven round-7 cases and R1–R6 shared variants

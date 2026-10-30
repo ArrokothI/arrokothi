@@ -1,0 +1,544 @@
+{
+  "revision": "07f6c0e1ab9739b04ee7de4038e2e8dc4c6558f5",
+  "source_pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "generator_input_revision": "e19d8e7f14bfe3fd661c22b3796a1eca365c3ec0",
+  "method": "Read-only exact anchor counts and individual relocations; no execution/kill credit",
+  "members": [
+    {
+      "member": "I1 restore old value validator for every Activation consumer",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "  if (typeof value === \"string\") return true;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "I2 inverse X24: refuse lone surrogates but permit long strings",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "  if (typeof value === \"string\") return true;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "I3 Outcome-only old validator",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "acceptActivationIdentity(activationField.observed, \"activationId\", idIssues)",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "I4 takeover/protocol-only old validator",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/outcome.ts",
+      "current_anchor": "const activationOk = activationField.ok && acceptActivationIdentity(activationField.observed, \"activationId\", issues);\n  const writerEpoch",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "I5 recovery-only old validator",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/outcome.ts",
+      "current_anchor": "const activationOk = activationField.ok && acceptActivationIdentity(activationField.observed, \"activationId\", issues);\n  const availableField",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "I6 boxed strings treated as usable identities",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "  if (typeof value === \"string\") return true;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "I7 unbounded unknown-field diagnostics",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/outcome.ts",
+      "current_anchor": "const name = diagnosticFieldName(key);",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D35 unbounded identity at coordinator.ts:1335 (intent.activation.activationId)",
+      "historical_anchor_matches": 0,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "          `Activation ${diagnosticIdentity(intent.activation.activationId)} is recovery-held and is not redelivered: ${hold.reason}`,",
+      "current_matches": 1,
+      "reading": "Redelivery held refusal retained; surrounding answer/delivery plan changed. Re-anchor to the exact unique current diagnostic line; no supersession."
+    },
+    {
+      "member": "D1 unbounded identity at coordinator.ts:1462 (activationId)",
+      "historical_anchor_matches": 0,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "            `an Outcome for Activation ${diagnosticIdentity(activationId)} was already accepted with different content; an accepted Outcome is never replaced, merged or patched`,",
+      "current_matches": 1,
+      "reading": "Accepted-Outcome conflict refusal retained; adjacent losing-proposal handling changed. Re-anchor to the exact unique current diagnostic line; no supersession."
+    },
+    {
+      "member": "D2 unbounded identity at coordinator.ts:1473 (record.executionId)",
+      "historical_anchor_matches": 0,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; no further Outcome can be accepted for it`,",
+      "current_matches": 1,
+      "reading": "Terminal Outcome refusal retained; adjacent wait/cancellation handling changed. Re-anchor to the exact unique current diagnostic line; no supersession."
+    },
+    {
+      "member": "D3 unbounded identity at coordinator.ts:1486 (activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "lue is never rendered before the content group (decision-02 disclosure).\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n            record,\n          ),\n        );\n      }\n     ",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D4 unbounded identity at coordinator.ts:1486 (record.executionId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "f (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `The proposa",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D5 unbounded identity at coordinator.ts:1494 (record.executionId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `The proposal's Activation identity was not usable; it is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n          record,\n        ),\n      );\n    }\n    if (identityUsable && intent.activation.activationId !== activationId) {\n      return err(\n    ",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D6 unbounded identity at coordinator.ts:1503 (activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "cord,\n        ),\n      );\n    }\n    if (identityUsable && intent.activation.activationId !== activationId) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n          record,\n        ),\n      );\n    }\n    // Canoni",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D7 unbounded identity at coordinator.ts:1503 (record.executionId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "vationId !== activationId) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n          record,\n        ),\n      );\n    }\n    // Canonical step 3 (execution-cycle.md#outcome-acceptance, DEC-2, DEC-20, decision-02):\n    //",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D8 unbounded identity at coordinator.ts:1528 (activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "rentEpoch) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            epochForCurrency < currentEpoch\n              ? `Outcome for Activation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`\n              : `Outcome for Activation ${diagnosticIdentity(activationId)}: writer ",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D9 unbounded identity at coordinator.ts:1529 (activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "tivation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`\n              : `Outcome for Activation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} has not been issued; the current epoch is ${currentEpoch}`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"s",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D10 unbounded identity at coordinator.ts:1550 (activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "aseForCurrency !== intent.activation.baseProgressRevision) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            `Outcome for Activation ${diagnosticIdentity(activationId)}: base progress revision ${baseForCurrency} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,\n            record,\n          ),\n        );\n      }\n    ",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D11 unbounded identity at coordinator.ts:1574 (activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "ttempt.\n    if (submission !== intent.submission) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"unauthorized_submission\",\n            `Outcome for Activation ${diagnosticIdentity(activationId)} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n            record,\n          ),\n        );\n      }",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D12 unbounded identity at coordinator.ts:1592 (activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "   );\n    }\n    if (capture.overCapacity !== null) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"capacity_exhausted\",\n            `the Outcome for Activation ${diagnosticIdentity(activationId)} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`,\n            record,\n          ),\n        );\n      ",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D13 unbounded identity at coordinator.ts:1615 (activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "  appendAllOwn(combined, idIssues);\n      appendAllOwn(combined, capture.issues);\n      if (identityUsable) {\n        return err(\n          this.#refusal(\"malformed_envelope\", `Outcome for Activation ${diagnosticIdentity(activationId)} refused whole: ${explainOutcomeIssues(combined)}`, record),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"malformed_envelope\",\n          `The proposal's Activation identity w",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D14 unbounded identity at coordinator.ts:1683 (named.activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "riterEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,\n          record,\n        ),\n      );\n    }\n    if (exchange.codeHold !== null) {\n      return err(\n        this.#refusal(\n    ",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D15 unbounded identity at coordinator.ts:1692 (named.activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "and advances past it once`,\n          record,\n        ),\n      );\n    }\n    if (exchange.codeHold !== null) {\n      return err(\n        this.#refusal(\n          \"recovery_held\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${exchange.codeHold.reason}`,\n          record,\n        ),\n      );\n    }\n    let safe = false;\n    try {\n      // `isSafeToReplace` is an o",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D16 unbounded identity at coordinator.ts:1712 (named.activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": " this.#driver, [exchange.activation]) === true;\n    } catch {\n      safe = false;\n    }\n    if (!safe) {\n      return err(\n        this.#refusal(\n          \"unsafe_replacement\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over at writer epoch ${currentEpoch}: the Driver did not establish that native continuation is exclusive or otherwise safe to replace; Kernel fencing alone does not stop superseded na",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D17 unbounded identity at coordinator.ts:1727 (record.executionId)",
+      "historical_anchor_matches": 0,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to take over`,",
+      "current_matches": 1,
+      "reading": "Takeover callback terminal refusal retained; reader-based exchange comparison changed nearby. Re-anchor to the exact unique current diagnostic line; no supersession."
+    },
+    {
+      "member": "D18 unbounded identity at coordinator.ts:1737 (named.activationId)",
+      "historical_anchor_matches": 0,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "            `Activation ${diagnosticIdentity(named.activationId)} resolved while establishing safe replacement; there is no unresolved exchange to take over`,",
+      "current_matches": 1,
+      "reading": "Takeover callback resolved refusal retained; record.activation now read through current reader binding. Re-anchor to the exact unique current diagnostic line; no supersession."
+    },
+    {
+      "member": "D19 unbounded identity at coordinator.ts:1745 (named.activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "lacement; there is no unresolved exchange to take over`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(named.activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,\n          record,\n        ),\n      );\n    }\n    if (exchange.activation.writerEpoch !== currentEpoch) {\n      r",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D20 unbounded identity at coordinator.ts:1745 (record.executionId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": " ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(named.activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,\n          record,\n        ),\n      );\n    }\n    if (exchange.activation.writerEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D21 unbounded identity at coordinator.ts:1754 (named.activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "entEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${exchange.activation.writerEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,\n          record,\n        ),\n      );\n    }\n    // The pre-callback hold check above narrows `exchange.codeHold` to null for th",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D22 unbounded identity at coordinator.ts:1768 (named.activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "    const postCallbackHold: StoredHold | null = currentHoldOf(exchange);\n    if (postCallbackHold !== null) {\n      return err(\n        this.#refusal(\n          \"recovery_held\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${postCallbackHold.reason}`,\n          record,\n        ),\n      );\n    }\n\n    // -- The decision, built whole before anything changes (amend",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D23 unbounded identity at coordinator.ts:1864 (value)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": " = intent.value;\n    const pinned = exchange.activation;\n\n    let missing = \"\";\n    const note = (what: string, value: string): void => {\n      missing += `${missing === \"\" ? \"\" : \"; \"}pinned ${what} ${diagnosticIdentity(value)} is unavailable`;\n    };\n    if (!listed(captured.available.definitionRevisions, pinned.definitionRevision)) note(\"Definition revision\", pinned.definitionRevision);\n    if (!listed(captured.available.",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D24 unbounded identity at coordinator.ts:1952 (named.activationId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "riterEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a superseded attempt cannot hold the exchange`,\n          record,\n        ),\n      );\n    }\n    if (exchange.protocolFailureHold !== null) {\n      return ok({ activationId: named.activationId, write",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D25 unbounded identity at coordinator.ts:1996 (record.executionId)",
+      "historical_anchor_matches": 0,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "        this.#refusal(\"terminal_destination\", `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to ${verb}`, record),",
+      "current_matches": 1,
+      "reading": "Terminal control refusal retained in #openExchange; parameter type is ExecutionReader. Re-anchor to the exact unique current diagnostic line; no supersession."
+    },
+    {
+      "member": "D26 unbounded identity at coordinator.ts:2001 (record.executionId)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": ".state}; there is no exchange to ${verb}`, record),\n      );\n    }\n    const intent = record.activation;\n    if (intent === null) {\n      return err(this.#refusal(\"no_unresolved_exchange\", `Execution ${diagnosticIdentity(record.executionId)} has no unresolved Activation to ${verb}`, record));\n    }\n    if (intent.activation.activationId !== activationId) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Ac",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D27 unbounded identity at coordinator.ts:2007 (activationId)",
+      "historical_anchor_matches": 0,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,",
+      "current_matches": 1,
+      "reading": "Stale control refusal retains caller Activation rendering; following coordinator implementation changed. Re-anchor to the exact unique current diagnostic line; no supersession."
+    },
+    {
+      "member": "D28 unbounded identity at coordinator.ts:2007 (record.executionId)",
+      "historical_anchor_matches": 0,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,",
+      "current_matches": 1,
+      "reading": "The same stale control refusal retains its separate Execution rendering; following implementation changed. Re-anchor to the exact unique current diagnostic line; no supersession."
+    },
+    {
+      "member": "D29 unbounded identity at coordinator.ts:2241 (record.executionId)",
+      "historical_anchor_matches": 0,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "      `caller may inspect Execution ${diagnosticIdentity(record.executionId)} but holds no control power over its scope; takeover, recovery declarations and protocol-failure reports require control authority distinct from inspection`,",
+      "current_matches": 1,
+      "reading": "Control-authority refusal retained; ExecutionReader type and later cancellation control changed nearby. Re-anchor to the exact unique current diagnostic line; no supersession."
+    },
+    {
+      "member": "D30 unbounded identity at outcome.ts:327 (emissionKey)",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/outcome.ts",
+      "current_anchor": "eadAt(keys, position) as string) === emissionKey) duplicate = true;\n    }\n    if (duplicate) {\n      appendIssue(issues, { path: `${label}.emissionKey`, code: \"duplicate_key\", message: `Emission key \"${diagnosticIdentity(emissionKey)}\" appears more than once in this Outcome` });\n      continue;\n    }\n    appendOwn(keys, emissionKey);\n    appendOwn(emissions, PrimordialObjectFreeze({ emissionKey, value }));\n  }\n  return { emissions",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D31 raw captured member path before root prefix",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "path: diagnosticText(issue.path, \"<omitted>\", 128),",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D32 raw captured constructor message",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "message: diagnosticText(issue.message, \"<message omitted>\", 1_024),",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D33 identity length limit removed",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "diagnosticText(identity, \"<identity omitted>\", 128)",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "D34 diagnostic ASCII guard removed",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "    if (text[index]! < \" \" || text[index]! > \"~\") return omitted;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "R1 structured refusal executionId rendered lossy",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "const refusal = mintRefusal(classification, reason, position, record.executionId);",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "R2 code availability compared through diagnostic spelling",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "if (!listed(captured.available.definitionRevisions, pinned.definitionRevision)) note(",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "R6 replay keyed by diagnostic spelling",
+      "historical_anchor_matches": 0,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "      const already = record.acceptedOutcome(activationId);",
+      "current_matches": 1,
+      "reading": "COORD-REFACTOR-01 moved the acceptedOutcomes lookup behind ExecutionReader.acceptedOutcome. Retain exact replay lookup; re-anchor this adoption to the reader call."
+    },
+    {
+      "member": "R8 identity limit 127",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "diagnosticText(identity, \"<identity omitted>\", 128)",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "R10 message limit removed",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "message: diagnosticText(issue.message, \"<message omitted>\", 1_024),",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "R11 hold update lost",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "} else if (exchange.codeHold === null || exchange.codeHold.reason !== missing) {",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "R12 explicit protocol diagnostic made lossy",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "const reason = `the response of the attempt at writer epoch ${currentEpoch} could not be classified as an Outcome: ${diagnostic}`;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "R4 Outcome compares diagnostic spellings",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "if (identityUsable && intent.activation.activationId !== activationId) {",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "R5 controls compare diagnostic spellings",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "if (intent.activation.activationId !== activationId) {\n      return err(",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "R7 Emission keys compare diagnostic spellings",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/outcome.ts",
+      "current_anchor": "if ((readAt(keys, position) as string) === emissionKey) duplicate = true;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "R9 path limit 129",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "path: diagnosticText(issue.path, \"<omitted>\", 128),",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G1 restore unbounded detail list",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "const ISSUE_DETAIL_LIMIT = 8;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G2 drop omitted code evidence",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "if (additional > 0) {",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G3 fail to count repeated omitted code",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "else entry.count += count;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G4 details 7",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "const ISSUE_DETAIL_LIMIT = 8;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G5 details 9",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "const ISSUE_DETAIL_LIMIT = 8;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G6 path limit 127",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "path: diagnosticText(issue.path, \"<omitted>\", 128),",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G7 message limit 1023",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "message: diagnosticText(issue.message, \"<message omitted>\", 1_024),",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G8 message limit 1025",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "message: diagnosticText(issue.message, \"<message omitted>\", 1_024),",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G9 lose captured suffix multiplicity",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": ": { path: issue.path, code: issue.code, message: issue.message, root, occurrences }",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G10 reverse detail order",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "const issue = readAt(issues, index) as LocatedIssue;\n    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT)",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G11 reverse summary code order",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "const entry = readAt(counts, index) as { code: string; count: number };",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G12 lose root label on detail",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "const root = PrimordialGetOwnPropertyDescriptor(issue, \"root\")?.value as string | undefined;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G13 project after root prefix",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "out += `${path === \"\" ? \"envelope\" : path} ${issue.code}`;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    },
+    {
+      "member": "G14 inherited root metadata",
+      "historical_anchor_matches": 1,
+      "current_path": "packages/kernel/src/envelope.ts",
+      "current_anchor": "const root = PrimordialGetOwnPropertyDescriptor(issue, \"root\")?.value as string | undefined;",
+      "current_matches": 1,
+      "reading": "Original anchor remains unique; operation and required result are still current."
+    }
+  ]
+}

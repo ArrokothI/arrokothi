@@ -994,6 +994,70 @@
       "required_result": "R7/R8/R10/R11/R12/C8/C10 need seven new adoption cases; R1-R6 share H15/H21 with distinct variants. R9 retains its individual supersession/equivalence reading. C1-C7/C9/C11-C16 use the individual current owner/oracle readings in group-review-14; final P1-M bindings remain pending.",
       "planned_test": "After owner disposition, build in existing registry, preserve all variants and validate controls/kills; no new maintained test currently required.",
       "reconciliation": "group-review-14.md"
+    },
+    "artifact-defc1c19533790036d5d14f3": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/ablations.mjs:1",
+      "groups": [
+        "k12c1-base-i1",
+        "k12c1-base-d19",
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-g1",
+        "k12c1-base-g3",
+        "k12c1-base-g6",
+        "k12c1-base-i3",
+        "k12c1-base-i4",
+        "k12c1-base-i5",
+        "k12c1-base-i6",
+        "k12c1-base-i7",
+        "k12c1-base-d35",
+        "k12c1-base-d1",
+        "k12c1-base-d2",
+        "k12c1-base-d3",
+        "k12c1-base-d4",
+        "k12c1-base-d5",
+        "k12c1-base-d6",
+        "k12c1-base-d7",
+        "k12c1-base-d8",
+        "k12c1-base-d9",
+        "k12c1-base-d10",
+        "k12c1-base-d11",
+        "k12c1-base-d12",
+        "k12c1-base-d13",
+        "k12c1-base-d14",
+        "k12c1-base-d15",
+        "k12c1-base-d16",
+        "k12c1-base-d17",
+        "k12c1-base-d18",
+        "k12c1-base-d21",
+        "k12c1-base-d22",
+        "k12c1-base-d23",
+        "k12c1-base-d24",
+        "k12c1-base-d25",
+        "k12c1-base-d26",
+        "k12c1-base-d27",
+        "k12c1-base-d28",
+        "k12c1-base-d29",
+        "k12c1-base-d30",
+        "k12c1-base-d33",
+        "k12c1-base-d34",
+        "k12c1-base-r1",
+        "k12c1-base-r2",
+        "k12c1-base-r6",
+        "k12c1-base-r8",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r7",
+        "k12c1-base-g7",
+        "k12c1-base-g9",
+        "k12c1-base-g14"
+      ],
+      "reading": "group-review-15.md",
+      "required_result": "All 67 live mutation variants retain their current identity/diagnostic decisions, grouped into 55 cases only where an identical maintained input, operation and required result distinguishes every variant. All ten absent historical anchor contexts receive individual relocation readings. No family closure before registered controls/kills and P1-M bindings.",
+      "planned_test": "Add the cases and all variants to existing mutations.json; no duplicate behavior test; recheck controls and kills in a fresh clone."
     }
   },
   "reconsidered_extractions": [
@@ -3633,9 +3697,1676 @@
         "const mintSubmission = (executionId: string, activationId: string, writerEpoch: number): SubmissionGrant =>\n  PrimordialObjectFreeze({ executionId, activationId, writerEpoch });"
       ],
       "relocation_reading": "The mintSubmission anchor remains unique. The current structural rule/negative control 17 covers it, but no registered production edit does. The complete-decision oracle explicitly cannot observe this unused module counter."
+    },
+    "k12c1-base-i1": {
+      "family": "family.k12c1.ablations",
+      "member": "I1 restore old value validator for every Activation consumer",
+      "work_kind": "mutation_adoption",
+      "required_result": "One trusted lone-surrogate identity must pass the shared Activation-identity predicate. Both generic-predicate variants reject that same input; per-consumer call-site decisions I3/I4/I5 remain separate cases.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/activation-identity.test.ts",
+        "test_path": [
+          "trusted namespace lone high surrogate: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "  if (typeof value === \"string\") return true;"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "I1 restore old value validator for every Activation consumer",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "  if (typeof value === \"string\") return true;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        },
+        {
+          "label": "I2 inverse X24: refuse lone surrogates but permit long strings",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "  if (typeof value === \"string\") return true;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d19": {
+      "family": "family.k12c1.ablations",
+      "member": "D19 unbounded identity at coordinator.ts:1745 (named.activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "One callback starts the next exchange; the outer takeover refusal must bound both the old Activation and Execution fragments without changing the inner decision. Both interpolation variants are retained.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: takeover callback next-exchange revalidation"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "lacement; there is no unresolved exchange to take over`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(named.activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,\n          record,\n        ),\n      );\n    }\n    if (exchange.activation.writerEpoch !== currentEpoch) {\n      r"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D19 unbounded identity at coordinator.ts:1745 (named.activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "lacement; there is no unresolved exchange to take over`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(named.activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,\n          record,\n        ),\n      );\n    }\n    if (exchange.activation.writerEpoch !== currentEpoch) {\n      r",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        },
+        {
+          "label": "D20 unbounded identity at coordinator.ts:1745 (record.executionId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": " ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(named.activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,\n          record,\n        ),\n      );\n    }\n    if (exchange.activation.writerEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d31": {
+      "family": "family.k12c1.ablations",
+      "member": "D31 raw captured member path before root prefix",
+      "work_kind": "mutation_adoption",
+      "required_result": "One 129-unit path is omitted before the progress root prefix. Both raw-path and 129-limit variants alter that same direct input and expected reason.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "DEC-5 value-relative path 129 before adding root label"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "path: diagnosticText(issue.path, \"<omitted>\", 128),"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D31 raw captured member path before root prefix",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "path: diagnosticText(issue.path, \"<omitted>\", 128),",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        },
+        {
+          "label": "R9 path limit 129",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "path: diagnosticText(issue.path, \"<omitted>\", 128),",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d32": {
+      "family": "family.k12c1.ablations",
+      "member": "D32 raw captured constructor message",
+      "work_kind": "mutation_adoption",
+      "required_result": "One 1,025-unit message is omitted. Raw-message, infinite-limit and 1,025-limit variants change the same direct rendering result.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "DEC-5 renderer message 1025; capture uses fixed type labels"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "message: diagnosticText(issue.message, \"<message omitted>\", 1_024),"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D32 raw captured constructor message",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "message: diagnosticText(issue.message, \"<message omitted>\", 1_024),",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        },
+        {
+          "label": "R10 message limit removed",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "message: diagnosticText(issue.message, \"<message omitted>\", 1_024),",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        },
+        {
+          "label": "G8 message limit 1025",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "message: diagnosticText(issue.message, \"<message omitted>\", 1_024),",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-g1": {
+      "family": "family.k12c1.ablations",
+      "member": "G1 restore unbounded detail list",
+      "work_kind": "mutation_adoption",
+      "required_result": "One nine-issue input has exactly its first eight ordered details and a one-issue suffix. Infinite/7/9 detail bounds, removed suffix and reversed detail order all change that exact required string; keep five mutants.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "DEC-5 detail count edge 9"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "const ISSUE_DETAIL_LIMIT = 8;"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "G1 restore unbounded detail list",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "const ISSUE_DETAIL_LIMIT = 8;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        },
+        {
+          "label": "G2 drop omitted code evidence",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "if (additional > 0) {",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        },
+        {
+          "label": "G4 details 7",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "const ISSUE_DETAIL_LIMIT = 8;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        },
+        {
+          "label": "G5 details 9",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "const ISSUE_DETAIL_LIMIT = 8;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        },
+        {
+          "label": "G10 reverse detail order",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "const issue = readAt(issues, index) as LocatedIssue;\n    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT)",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-g3": {
+      "family": "family.k12c1.ablations",
+      "member": "G3 fail to count repeated omitted code",
+      "work_kind": "mutation_adoption",
+      "required_result": "One mixed-code input with a weighted captured suffix must report the same six additional issues, weights and first-code order. Counting and code-order variants share this exact rendering counterexample; upstream metadata propagation G9 remains separate.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "DEC-5 late codes and counts contribute to the same combined refusal in first occurrence order"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "else entry.count += count;"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "G3 fail to count repeated omitted code",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "else entry.count += count;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        },
+        {
+          "label": "G11 reverse summary code order",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "const entry = readAt(counts, index) as { code: string; count: number };",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-g6": {
+      "family": "family.k12c1.ablations",
+      "member": "G6 path limit 127",
+      "work_kind": "mutation_adoption",
+      "required_result": "One 128-unit value-relative path with progress root must remain full after prefixing. Shorter bound, dropped root and projection-after-prefix variants all alter the same required text.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "DEC-5 value-relative path 128 before adding root label"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "path: diagnosticText(issue.path, \"<omitted>\", 128),"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "G6 path limit 127",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "path: diagnosticText(issue.path, \"<omitted>\", 128),",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        },
+        {
+          "label": "G12 lose root label on detail",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "const root = PrimordialGetOwnPropertyDescriptor(issue, \"root\")?.value as string | undefined;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        },
+        {
+          "label": "G13 project after root prefix",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "out += `${path === \"\" ? \"envelope\" : path} ${issue.code}`;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-i3": {
+      "family": "family.k12c1.ablations",
+      "member": "I3 Outcome-only old validator",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable. This production decision is I3 Outcome-only old validator.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/activation-identity.test.ts",
+        "test_path": [
+          "reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "acceptActivationIdentity(activationField.observed, \"activationId\", idIssues)"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "I3 Outcome-only old validator",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "acceptActivationIdentity(activationField.observed, \"activationId\", idIssues)",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-i4": {
+      "family": "family.k12c1.ablations",
+      "member": "I4 takeover/protocol-only old validator",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable. This production decision is I4 takeover/protocol-only old validator.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/activation-identity.test.ts",
+        "test_path": [
+          "reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable"
+        ]
+      },
+      "current_target": "packages/kernel/src/outcome.ts",
+      "current_anchors": [
+        "const activationOk = activationField.ok && acceptActivationIdentity(activationField.observed, \"activationId\", issues);\n  const writerEpoch"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "I4 takeover/protocol-only old validator",
+          "current_target": "packages/kernel/src/outcome.ts",
+          "current_anchor": "const activationOk = activationField.ok && acceptActivationIdentity(activationField.observed, \"activationId\", issues);\n  const writerEpoch",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-i5": {
+      "family": "family.k12c1.ablations",
+      "member": "I5 recovery-only old validator",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable. This production decision is I5 recovery-only old validator.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/activation-identity.test.ts",
+        "test_path": [
+          "reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable"
+        ]
+      },
+      "current_target": "packages/kernel/src/outcome.ts",
+      "current_anchors": [
+        "const activationOk = activationField.ok && acceptActivationIdentity(activationField.observed, \"activationId\", issues);\n  const availableField"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "I5 recovery-only old validator",
+          "current_target": "packages/kernel/src/outcome.ts",
+          "current_anchor": "const activationOk = activationField.ok && acceptActivationIdentity(activationField.observed, \"activationId\", issues);\n  const availableField",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-i6": {
+      "family": "family.k12c1.ablations",
+      "member": "I6 boxed strings treated as usable identities",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by non-text boxed is unusable with no coercion on every consumer. This production decision is I6 boxed strings treated as usable identities.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/activation-identity.test.ts",
+        "test_path": [
+          "non-text boxed is unusable with no coercion on every consumer"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "  if (typeof value === \"string\") return true;"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "I6 boxed strings treated as usable identities",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "  if (typeof value === \"string\") return true;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-i7": {
+      "family": "family.k12c1.ablations",
+      "member": "I7 unbounded unknown-field diagnostics",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by O3 unknown envelope field long: bounded diagnostic, whole refusal. This production decision is I7 unbounded unknown-field diagnostics.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/activation-identity.test.ts",
+        "test_path": [
+          "O3 unknown envelope field long: bounded diagnostic, whole refusal"
+        ]
+      },
+      "current_target": "packages/kernel/src/outcome.ts",
+      "current_anchors": [
+        "const name = diagnosticFieldName(key);"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "I7 unbounded unknown-field diagnostics",
+          "current_target": "packages/kernel/src/outcome.ts",
+          "current_anchor": "const name = diagnosticFieldName(key);",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d35": {
+      "family": "family.k12c1.ablations",
+      "member": "D35 unbounded identity at coordinator.ts:1335 (intent.activation.activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by O-R2-2 redelivery code hold bounds minted Activation but preserves explicit payload. This production decision is D35 unbounded identity at coordinator.ts:1335 (intent.activation.activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "O-R2-2 redelivery code hold bounds minted Activation but preserves explicit payload"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "          `Activation ${diagnosticIdentity(intent.activation.activationId)} is recovery-held and is not redelivered: ${hold.reason}`,"
+      ],
+      "relocation_reading": "Redelivery held refusal retained; surrounding answer/delivery plan changed. Re-anchor to the exact unique current diagnostic line; no supersession.",
+      "members": [
+        {
+          "label": "D35 unbounded identity at coordinator.ts:1335 (intent.activation.activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "          `Activation ${diagnosticIdentity(intent.activation.activationId)} is recovery-held and is not redelivered: ${hold.reason}`,",
+          "relocation_reading": "Redelivery held refusal retained; surrounding answer/delivery plan changed. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ]
+    },
+    "k12c1-base-d1": {
+      "family": "family.k12c1.ablations",
+      "member": "D1 unbounded identity at coordinator.ts:1462 (activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is D1 unbounded identity at coordinator.ts:1462 (activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "            `an Outcome for Activation ${diagnosticIdentity(activationId)} was already accepted with different content; an accepted Outcome is never replaced, merged or patched`,"
+      ],
+      "relocation_reading": "Accepted-Outcome conflict refusal retained; adjacent losing-proposal handling changed. Re-anchor to the exact unique current diagnostic line; no supersession.",
+      "members": [
+        {
+          "label": "D1 unbounded identity at coordinator.ts:1462 (activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "            `an Outcome for Activation ${diagnosticIdentity(activationId)} was already accepted with different content; an accepted Outcome is never replaced, merged or patched`,",
+          "relocation_reading": "Accepted-Outcome conflict refusal retained; adjacent losing-proposal handling changed. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ]
+    },
+    "k12c1-base-d2": {
+      "family": "family.k12c1.ablations",
+      "member": "D2 unbounded identity at coordinator.ts:1473 (record.executionId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is D2 unbounded identity at coordinator.ts:1473 (record.executionId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; no further Outcome can be accepted for it`,"
+      ],
+      "relocation_reading": "Terminal Outcome refusal retained; adjacent wait/cancellation handling changed. Re-anchor to the exact unique current diagnostic line; no supersession.",
+      "members": [
+        {
+          "label": "D2 unbounded identity at coordinator.ts:1473 (record.executionId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; no further Outcome can be accepted for it`,",
+          "relocation_reading": "Terminal Outcome refusal retained; adjacent wait/cancellation handling changed. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ]
+    },
+    "k12c1-base-d3": {
+      "family": "family.k12c1.ablations",
+      "member": "D3 unbounded identity at coordinator.ts:1486 (activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases. This production decision is D3 unbounded identity at coordinator.ts:1486 (activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "lue is never rendered before the content group (decision-02 disclosure).\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n            record,\n          ),\n        );\n      }\n     "
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D3 unbounded identity at coordinator.ts:1486 (activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "lue is never rendered before the content group (decision-02 disclosure).\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n            record,\n          ),\n        );\n      }\n     ",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d4": {
+      "family": "family.k12c1.ablations",
+      "member": "D4 unbounded identity at coordinator.ts:1486 (record.executionId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is D4 unbounded identity at coordinator.ts:1486 (record.executionId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "f (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `The proposa"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D4 unbounded identity at coordinator.ts:1486 (record.executionId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "f (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `The proposa",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d5": {
+      "family": "family.k12c1.ablations",
+      "member": "D5 unbounded identity at coordinator.ts:1494 (record.executionId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is D5 unbounded identity at coordinator.ts:1494 (record.executionId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `The proposal's Activation identity was not usable; it is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n          record,\n        ),\n      );\n    }\n    if (identityUsable && intent.activation.activationId !== activationId) {\n      return err(\n    "
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D5 unbounded identity at coordinator.ts:1494 (record.executionId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `The proposal's Activation identity was not usable; it is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n          record,\n        ),\n      );\n    }\n    if (identityUsable && intent.activation.activationId !== activationId) {\n      return err(\n    ",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d6": {
+      "family": "family.k12c1.ablations",
+      "member": "D6 unbounded identity at coordinator.ts:1503 (activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases. This production decision is D6 unbounded identity at coordinator.ts:1503 (activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "cord,\n        ),\n      );\n    }\n    if (identityUsable && intent.activation.activationId !== activationId) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n          record,\n        ),\n      );\n    }\n    // Canoni"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D6 unbounded identity at coordinator.ts:1503 (activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "cord,\n        ),\n      );\n    }\n    if (identityUsable && intent.activation.activationId !== activationId) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n          record,\n        ),\n      );\n    }\n    // Canoni",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d7": {
+      "family": "family.k12c1.ablations",
+      "member": "D7 unbounded identity at coordinator.ts:1503 (record.executionId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is D7 unbounded identity at coordinator.ts:1503 (record.executionId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "vationId !== activationId) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n          record,\n        ),\n      );\n    }\n    // Canonical step 3 (execution-cycle.md#outcome-acceptance, DEC-2, DEC-20, decision-02):\n    //"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D7 unbounded identity at coordinator.ts:1503 (record.executionId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "vationId !== activationId) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n          record,\n        ),\n      );\n    }\n    // Canonical step 3 (execution-cycle.md#outcome-acceptance, DEC-2, DEC-20, decision-02):\n    //",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d8": {
+      "family": "family.k12c1.ablations",
+      "member": "D8 unbounded identity at coordinator.ts:1528 (activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is D8 unbounded identity at coordinator.ts:1528 (activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "rentEpoch) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            epochForCurrency < currentEpoch\n              ? `Outcome for Activation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`\n              : `Outcome for Activation ${diagnosticIdentity(activationId)}: writer "
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D8 unbounded identity at coordinator.ts:1528 (activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "rentEpoch) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            epochForCurrency < currentEpoch\n              ? `Outcome for Activation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`\n              : `Outcome for Activation ${diagnosticIdentity(activationId)}: writer ",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d9": {
+      "family": "family.k12c1.ablations",
+      "member": "D9 unbounded identity at coordinator.ts:1529 (activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is D9 unbounded identity at coordinator.ts:1529 (activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "tivation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`\n              : `Outcome for Activation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} has not been issued; the current epoch is ${currentEpoch}`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"s"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D9 unbounded identity at coordinator.ts:1529 (activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "tivation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`\n              : `Outcome for Activation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} has not been issued; the current epoch is ${currentEpoch}`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"s",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d10": {
+      "family": "family.k12c1.ablations",
+      "member": "D10 unbounded identity at coordinator.ts:1550 (activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is D10 unbounded identity at coordinator.ts:1550 (activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "aseForCurrency !== intent.activation.baseProgressRevision) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            `Outcome for Activation ${diagnosticIdentity(activationId)}: base progress revision ${baseForCurrency} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,\n            record,\n          ),\n        );\n      }\n    "
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D10 unbounded identity at coordinator.ts:1550 (activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "aseForCurrency !== intent.activation.baseProgressRevision) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            `Outcome for Activation ${diagnosticIdentity(activationId)}: base progress revision ${baseForCurrency} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,\n            record,\n          ),\n        );\n      }\n    ",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d11": {
+      "family": "family.k12c1.ablations",
+      "member": "D11 unbounded identity at coordinator.ts:1574 (activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is D11 unbounded identity at coordinator.ts:1574 (activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "ttempt.\n    if (submission !== intent.submission) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"unauthorized_submission\",\n            `Outcome for Activation ${diagnosticIdentity(activationId)} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n            record,\n          ),\n        );\n      }"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D11 unbounded identity at coordinator.ts:1574 (activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "ttempt.\n    if (submission !== intent.submission) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"unauthorized_submission\",\n            `Outcome for Activation ${diagnosticIdentity(activationId)} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n            record,\n          ),\n        );\n      }",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d12": {
+      "family": "family.k12c1.ablations",
+      "member": "D12 unbounded identity at coordinator.ts:1592 (activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is D12 unbounded identity at coordinator.ts:1592 (activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "   );\n    }\n    if (capture.overCapacity !== null) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"capacity_exhausted\",\n            `the Outcome for Activation ${diagnosticIdentity(activationId)} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`,\n            record,\n          ),\n        );\n      "
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D12 unbounded identity at coordinator.ts:1592 (activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "   );\n    }\n    if (capture.overCapacity !== null) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"capacity_exhausted\",\n            `the Outcome for Activation ${diagnosticIdentity(activationId)} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`,\n            record,\n          ),\n        );\n      ",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d13": {
+      "family": "family.k12c1.ablations",
+      "member": "D13 unbounded identity at coordinator.ts:1615 (activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is D13 unbounded identity at coordinator.ts:1615 (activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "  appendAllOwn(combined, idIssues);\n      appendAllOwn(combined, capture.issues);\n      if (identityUsable) {\n        return err(\n          this.#refusal(\"malformed_envelope\", `Outcome for Activation ${diagnosticIdentity(activationId)} refused whole: ${explainOutcomeIssues(combined)}`, record),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"malformed_envelope\",\n          `The proposal's Activation identity w"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D13 unbounded identity at coordinator.ts:1615 (activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "  appendAllOwn(combined, idIssues);\n      appendAllOwn(combined, capture.issues);\n      if (identityUsable) {\n        return err(\n          this.#refusal(\"malformed_envelope\", `Outcome for Activation ${diagnosticIdentity(activationId)} refused whole: ${explainOutcomeIssues(combined)}`, record),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"malformed_envelope\",\n          `The proposal's Activation identity w",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d14": {
+      "family": "family.k12c1.ablations",
+      "member": "D14 unbounded identity at coordinator.ts:1683 (named.activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: control, hold and unsafe-replacement renderers. This production decision is D14 unbounded identity at coordinator.ts:1683 (named.activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: control, hold and unsafe-replacement renderers"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "riterEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,\n          record,\n        ),\n      );\n    }\n    if (exchange.codeHold !== null) {\n      return err(\n        this.#refusal(\n    "
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D14 unbounded identity at coordinator.ts:1683 (named.activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "riterEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,\n          record,\n        ),\n      );\n    }\n    if (exchange.codeHold !== null) {\n      return err(\n        this.#refusal(\n    ",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d15": {
+      "family": "family.k12c1.ablations",
+      "member": "D15 unbounded identity at coordinator.ts:1692 (named.activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: control, hold and unsafe-replacement renderers. This production decision is D15 unbounded identity at coordinator.ts:1692 (named.activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: control, hold and unsafe-replacement renderers"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "and advances past it once`,\n          record,\n        ),\n      );\n    }\n    if (exchange.codeHold !== null) {\n      return err(\n        this.#refusal(\n          \"recovery_held\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${exchange.codeHold.reason}`,\n          record,\n        ),\n      );\n    }\n    let safe = false;\n    try {\n      // `isSafeToReplace` is an o"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D15 unbounded identity at coordinator.ts:1692 (named.activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "and advances past it once`,\n          record,\n        ),\n      );\n    }\n    if (exchange.codeHold !== null) {\n      return err(\n        this.#refusal(\n          \"recovery_held\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${exchange.codeHold.reason}`,\n          record,\n        ),\n      );\n    }\n    let safe = false;\n    try {\n      // `isSafeToReplace` is an o",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d16": {
+      "family": "family.k12c1.ablations",
+      "member": "D16 unbounded identity at coordinator.ts:1712 (named.activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: control, hold and unsafe-replacement renderers. This production decision is D16 unbounded identity at coordinator.ts:1712 (named.activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: control, hold and unsafe-replacement renderers"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        " this.#driver, [exchange.activation]) === true;\n    } catch {\n      safe = false;\n    }\n    if (!safe) {\n      return err(\n        this.#refusal(\n          \"unsafe_replacement\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over at writer epoch ${currentEpoch}: the Driver did not establish that native continuation is exclusive or otherwise safe to replace; Kernel fencing alone does not stop superseded na"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D16 unbounded identity at coordinator.ts:1712 (named.activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": " this.#driver, [exchange.activation]) === true;\n    } catch {\n      safe = false;\n    }\n    if (!safe) {\n      return err(\n        this.#refusal(\n          \"unsafe_replacement\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over at writer epoch ${currentEpoch}: the Driver did not establish that native continuation is exclusive or otherwise safe to replace; Kernel fencing alone does not stop superseded na",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d17": {
+      "family": "family.k12c1.ablations",
+      "member": "D17 unbounded identity at coordinator.ts:1727 (record.executionId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: takeover callback terminal revalidation. This production decision is D17 unbounded identity at coordinator.ts:1727 (record.executionId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: takeover callback terminal revalidation"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to take over`,"
+      ],
+      "relocation_reading": "Takeover callback terminal refusal retained; reader-based exchange comparison changed nearby. Re-anchor to the exact unique current diagnostic line; no supersession.",
+      "members": [
+        {
+          "label": "D17 unbounded identity at coordinator.ts:1727 (record.executionId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to take over`,",
+          "relocation_reading": "Takeover callback terminal refusal retained; reader-based exchange comparison changed nearby. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ]
+    },
+    "k12c1-base-d18": {
+      "family": "family.k12c1.ablations",
+      "member": "D18 unbounded identity at coordinator.ts:1737 (named.activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: takeover callback resolved revalidation. This production decision is D18 unbounded identity at coordinator.ts:1737 (named.activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: takeover callback resolved revalidation"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "            `Activation ${diagnosticIdentity(named.activationId)} resolved while establishing safe replacement; there is no unresolved exchange to take over`,"
+      ],
+      "relocation_reading": "Takeover callback resolved refusal retained; record.activation now read through current reader binding. Re-anchor to the exact unique current diagnostic line; no supersession.",
+      "members": [
+        {
+          "label": "D18 unbounded identity at coordinator.ts:1737 (named.activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "            `Activation ${diagnosticIdentity(named.activationId)} resolved while establishing safe replacement; there is no unresolved exchange to take over`,",
+          "relocation_reading": "Takeover callback resolved refusal retained; record.activation now read through current reader binding. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ]
+    },
+    "k12c1-base-d21": {
+      "family": "family.k12c1.ablations",
+      "member": "D21 unbounded identity at coordinator.ts:1754 (named.activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: takeover callback epoch revalidation. This production decision is D21 unbounded identity at coordinator.ts:1754 (named.activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: takeover callback epoch revalidation"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "entEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${exchange.activation.writerEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,\n          record,\n        ),\n      );\n    }\n    // The pre-callback hold check above narrows `exchange.codeHold` to null for th"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D21 unbounded identity at coordinator.ts:1754 (named.activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "entEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${exchange.activation.writerEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,\n          record,\n        ),\n      );\n    }\n    // The pre-callback hold check above narrows `exchange.codeHold` to null for th",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d22": {
+      "family": "family.k12c1.ablations",
+      "member": "D22 unbounded identity at coordinator.ts:1768 (named.activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: takeover callback hold revalidation. This production decision is D22 unbounded identity at coordinator.ts:1768 (named.activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: takeover callback hold revalidation"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "    const postCallbackHold: StoredHold | null = currentHoldOf(exchange);\n    if (postCallbackHold !== null) {\n      return err(\n        this.#refusal(\n          \"recovery_held\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${postCallbackHold.reason}`,\n          record,\n        ),\n      );\n    }\n\n    // -- The decision, built whole before anything changes (amend"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D22 unbounded identity at coordinator.ts:1768 (named.activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "    const postCallbackHold: StoredHold | null = currentHoldOf(exchange);\n    if (postCallbackHold !== null) {\n      return err(\n        this.#refusal(\n          \"recovery_held\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${postCallbackHold.reason}`,\n          record,\n        ),\n      );\n    }\n\n    // -- The decision, built whole before anything changes (amend",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d23": {
+      "family": "family.k12c1.ablations",
+      "member": "D23 unbounded identity at coordinator.ts:1864 (value)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by pinned names long: hold and history aliases bounded while structured identity remains exact. This production decision is D23 unbounded identity at coordinator.ts:1864 (value).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "pinned names long: hold and history aliases bounded while structured identity remains exact"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        " = intent.value;\n    const pinned = exchange.activation;\n\n    let missing = \"\";\n    const note = (what: string, value: string): void => {\n      missing += `${missing === \"\" ? \"\" : \"; \"}pinned ${what} ${diagnosticIdentity(value)} is unavailable`;\n    };\n    if (!listed(captured.available.definitionRevisions, pinned.definitionRevision)) note(\"Definition revision\", pinned.definitionRevision);\n    if (!listed(captured.available."
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D23 unbounded identity at coordinator.ts:1864 (value)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": " = intent.value;\n    const pinned = exchange.activation;\n\n    let missing = \"\";\n    const note = (what: string, value: string): void => {\n      missing += `${missing === \"\" ? \"\" : \"; \"}pinned ${what} ${diagnosticIdentity(value)} is unavailable`;\n    };\n    if (!listed(captured.available.definitionRevisions, pinned.definitionRevision)) note(\"Definition revision\", pinned.definitionRevision);\n    if (!listed(captured.available.",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d24": {
+      "family": "family.k12c1.ablations",
+      "member": "D24 unbounded identity at coordinator.ts:1952 (named.activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: control, hold and unsafe-replacement renderers. This production decision is D24 unbounded identity at coordinator.ts:1952 (named.activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: control, hold and unsafe-replacement renderers"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "riterEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a superseded attempt cannot hold the exchange`,\n          record,\n        ),\n      );\n    }\n    if (exchange.protocolFailureHold !== null) {\n      return ok({ activationId: named.activationId, write"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D24 unbounded identity at coordinator.ts:1952 (named.activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "riterEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a superseded attempt cannot hold the exchange`,\n          record,\n        ),\n      );\n    }\n    if (exchange.protocolFailureHold !== null) {\n      return ok({ activationId: named.activationId, write",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d25": {
+      "family": "family.k12c1.ablations",
+      "member": "D25 unbounded identity at coordinator.ts:1996 (record.executionId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: control, hold and unsafe-replacement renderers. This production decision is D25 unbounded identity at coordinator.ts:1996 (record.executionId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: control, hold and unsafe-replacement renderers"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "        this.#refusal(\"terminal_destination\", `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to ${verb}`, record),"
+      ],
+      "relocation_reading": "Terminal control refusal retained in #openExchange; parameter type is ExecutionReader. Re-anchor to the exact unique current diagnostic line; no supersession.",
+      "members": [
+        {
+          "label": "D25 unbounded identity at coordinator.ts:1996 (record.executionId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "        this.#refusal(\"terminal_destination\", `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to ${verb}`, record),",
+          "relocation_reading": "Terminal control refusal retained in #openExchange; parameter type is ExecutionReader. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ]
+    },
+    "k12c1-base-d26": {
+      "family": "family.k12c1.ablations",
+      "member": "D26 unbounded identity at coordinator.ts:2001 (record.executionId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: control, hold and unsafe-replacement renderers. This production decision is D26 unbounded identity at coordinator.ts:2001 (record.executionId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: control, hold and unsafe-replacement renderers"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        ".state}; there is no exchange to ${verb}`, record),\n      );\n    }\n    const intent = record.activation;\n    if (intent === null) {\n      return err(this.#refusal(\"no_unresolved_exchange\", `Execution ${diagnosticIdentity(record.executionId)} has no unresolved Activation to ${verb}`, record));\n    }\n    if (intent.activation.activationId !== activationId) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Ac"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D26 unbounded identity at coordinator.ts:2001 (record.executionId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": ".state}; there is no exchange to ${verb}`, record),\n      );\n    }\n    const intent = record.activation;\n    if (intent === null) {\n      return err(this.#refusal(\"no_unresolved_exchange\", `Execution ${diagnosticIdentity(record.executionId)} has no unresolved Activation to ${verb}`, record));\n    }\n    if (intent.activation.activationId !== activationId) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Ac",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d27": {
+      "family": "family.k12c1.ablations",
+      "member": "D27 unbounded identity at coordinator.ts:2007 (activationId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases. This production decision is D27 unbounded identity at coordinator.ts:2007 (activationId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,"
+      ],
+      "relocation_reading": "Stale control refusal retains caller Activation rendering; following coordinator implementation changed. Re-anchor to the exact unique current diagnostic line; no supersession.",
+      "members": [
+        {
+          "label": "D27 unbounded identity at coordinator.ts:2007 (activationId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,",
+          "relocation_reading": "Stale control refusal retains caller Activation rendering; following coordinator implementation changed. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ]
+    },
+    "k12c1-base-d28": {
+      "family": "family.k12c1.ablations",
+      "member": "D28 unbounded identity at coordinator.ts:2007 (record.executionId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is D28 unbounded identity at coordinator.ts:2007 (record.executionId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,"
+      ],
+      "relocation_reading": "The same stale control refusal retains its separate Execution rendering; following implementation changed. Re-anchor to the exact unique current diagnostic line; no supersession.",
+      "members": [
+        {
+          "label": "D28 unbounded identity at coordinator.ts:2007 (record.executionId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,",
+          "relocation_reading": "The same stale control refusal retains its separate Execution rendering; following implementation changed. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ]
+    },
+    "k12c1-base-d29": {
+      "family": "family.k12c1.ablations",
+      "member": "D29 unbounded identity at coordinator.ts:2241 (record.executionId)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: control, hold and unsafe-replacement renderers. This production decision is D29 unbounded identity at coordinator.ts:2241 (record.executionId).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: control, hold and unsafe-replacement renderers"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "      `caller may inspect Execution ${diagnosticIdentity(record.executionId)} but holds no control power over its scope; takeover, recovery declarations and protocol-failure reports require control authority distinct from inspection`,"
+      ],
+      "relocation_reading": "Control-authority refusal retained; ExecutionReader type and later cancellation control changed nearby. Re-anchor to the exact unique current diagnostic line; no supersession.",
+      "members": [
+        {
+          "label": "D29 unbounded identity at coordinator.ts:2241 (record.executionId)",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "      `caller may inspect Execution ${diagnosticIdentity(record.executionId)} but holds no control power over its scope; takeover, recovery declarations and protocol-failure reports require control authority distinct from inspection`,",
+          "relocation_reading": "Control-authority refusal retained; ExecutionReader type and later cancellation control changed nearby. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ]
+    },
+    "k12c1-base-d30": {
+      "family": "family.k12c1.ablations",
+      "member": "D30 unbounded identity at outcome.ts:327 (emissionKey)",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by duplicate Emission name 129: bounded reason retains duplicate diagnosis and exact key semantics. This production decision is D30 unbounded identity at outcome.ts:327 (emissionKey).",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "duplicate Emission name 129: bounded reason retains duplicate diagnosis and exact key semantics"
+        ]
+      },
+      "current_target": "packages/kernel/src/outcome.ts",
+      "current_anchors": [
+        "eadAt(keys, position) as string) === emissionKey) duplicate = true;\n    }\n    if (duplicate) {\n      appendIssue(issues, { path: `${label}.emissionKey`, code: \"duplicate_key\", message: `Emission key \"${diagnosticIdentity(emissionKey)}\" appears more than once in this Outcome` });\n      continue;\n    }\n    appendOwn(keys, emissionKey);\n    appendOwn(emissions, PrimordialObjectFreeze({ emissionKey, value }));\n  }\n  return { emissions"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D30 unbounded identity at outcome.ts:327 (emissionKey)",
+          "current_target": "packages/kernel/src/outcome.ts",
+          "current_anchor": "eadAt(keys, position) as string) === emissionKey) duplicate = true;\n    }\n    if (duplicate) {\n      appendIssue(issues, { path: `${label}.emissionKey`, code: \"duplicate_key\", message: `Emission key \"${diagnosticIdentity(emissionKey)}\" appears more than once in this Outcome` });\n      continue;\n    }\n    appendOwn(keys, emissionKey);\n    appendOwn(emissions, PrimordialObjectFreeze({ emissionKey, value }));\n  }\n  return { emissions",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d33": {
+      "family": "family.k12c1.ablations",
+      "member": "D33 identity length limit removed",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by EVID-01 Outcome: different long identities both render omitted. This production decision is D33 identity length limit removed.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "EVID-01 Outcome: different long identities both render omitted"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "diagnosticText(identity, \"<identity omitted>\", 128)"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D33 identity length limit removed",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "diagnosticText(identity, \"<identity omitted>\", 128)",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-d34": {
+      "family": "family.k12c1.ablations",
+      "member": "D34 diagnostic ASCII guard removed",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by EVID-01 Outcome: different non-ASCII identities both render omitted. This production decision is D34 diagnostic ASCII guard removed.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "EVID-01 Outcome: different non-ASCII identities both render omitted"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "    if (text[index]! < \" \" || text[index]! > \"~\") return omitted;"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "D34 diagnostic ASCII guard removed",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "    if (text[index]! < \" \" || text[index]! > \"~\") return omitted;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-r1": {
+      "family": "family.k12c1.ablations",
+      "member": "R1 structured refusal executionId rendered lossy",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by matched long identity: every Outcome refusal renderer, exact replay and answerability. This production decision is R1 structured refusal executionId rendered lossy.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "matched long identity: every Outcome refusal renderer, exact replay and answerability"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "const refusal = mintRefusal(classification, reason, position, record.executionId);"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "R1 structured refusal executionId rendered lossy",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "const refusal = mintRefusal(classification, reason, position, record.executionId);",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-r2": {
+      "family": "family.k12c1.ablations",
+      "member": "R2 code availability compared through diagnostic spelling",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by pinned names long: hold and history aliases bounded while structured identity remains exact. This production decision is R2 code availability compared through diagnostic spelling.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "pinned names long: hold and history aliases bounded while structured identity remains exact"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "if (!listed(captured.available.definitionRevisions, pinned.definitionRevision)) note("
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "R2 code availability compared through diagnostic spelling",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "if (!listed(captured.available.definitionRevisions, pinned.definitionRevision)) note(",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-r6": {
+      "family": "family.k12c1.ablations",
+      "member": "R6 replay keyed by diagnostic spelling",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable. This production decision is R6 replay keyed by diagnostic spelling.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/activation-identity.test.ts",
+        "test_path": [
+          "reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "      const already = record.acceptedOutcome(activationId);"
+      ],
+      "relocation_reading": "COORD-REFACTOR-01 moved the acceptedOutcomes lookup behind ExecutionReader.acceptedOutcome. Retain exact replay lookup; re-anchor this adoption to the reader call.",
+      "members": [
+        {
+          "label": "R6 replay keyed by diagnostic spelling",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "      const already = record.acceptedOutcome(activationId);",
+          "relocation_reading": "COORD-REFACTOR-01 moved the acceptedOutcomes lookup behind ExecutionReader.acceptedOutcome. Retain exact replay lookup; re-anchor this adoption to the reader call."
+        }
+      ]
+    },
+    "k12c1-base-r8": {
+      "family": "family.k12c1.ablations",
+      "member": "R8 identity limit 127",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by identity diagnostic edge 128 printable units does not change lookup. This production decision is R8 identity limit 127.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "identity diagnostic edge 128 printable units does not change lookup"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "diagnosticText(identity, \"<identity omitted>\", 128)"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "R8 identity limit 127",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "diagnosticText(identity, \"<identity omitted>\", 128)",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-r11": {
+      "family": "family.k12c1.ablations",
+      "member": "R11 hold update lost",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by pinned names long: hold and history aliases bounded while structured identity remains exact. This production decision is R11 hold update lost.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "pinned names long: hold and history aliases bounded while structured identity remains exact"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "} else if (exchange.codeHold === null || exchange.codeHold.reason !== missing) {"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "R11 hold update lost",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "} else if (exchange.codeHold === null || exchange.codeHold.reason !== missing) {",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-r12": {
+      "family": "family.k12c1.ablations",
+      "member": "R12 explicit protocol diagnostic made lossy",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by O-R2-2 redelivery protocol hold bounds minted Activation but preserves explicit payload. This production decision is R12 explicit protocol diagnostic made lossy.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "O-R2-2 redelivery protocol hold bounds minted Activation but preserves explicit payload"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "const reason = `the response of the attempt at writer epoch ${currentEpoch} could not be classified as an Outcome: ${diagnostic}`;"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "R12 explicit protocol diagnostic made lossy",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "const reason = `the response of the attempt at writer epoch ${currentEpoch} could not be classified as an Outcome: ${diagnostic}`;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-r4": {
+      "family": "family.k12c1.ablations",
+      "member": "R4 Outcome compares diagnostic spellings",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by EVID-01 Outcome: different long identities both render omitted. This production decision is R4 Outcome compares diagnostic spellings.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "EVID-01 Outcome: different long identities both render omitted"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "if (identityUsable && intent.activation.activationId !== activationId) {"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "R4 Outcome compares diagnostic spellings",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "if (identityUsable && intent.activation.activationId !== activationId) {",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-r5": {
+      "family": "family.k12c1.ablations",
+      "member": "R5 controls compare diagnostic spellings",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by EVID-01 takeover: different long identities both render omitted. This production decision is R5 controls compare diagnostic spellings.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "EVID-01 takeover: different long identities both render omitted"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "if (intent.activation.activationId !== activationId) {\n      return err("
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "R5 controls compare diagnostic spellings",
+          "current_target": "packages/kernel/src/coordinator.ts",
+          "current_anchor": "if (intent.activation.activationId !== activationId) {\n      return err(",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-r7": {
+      "family": "family.k12c1.ablations",
+      "member": "R7 Emission keys compare diagnostic spellings",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by EVID-01 distinct long Emission keys both render omitted and both accept. This production decision is R7 Emission keys compare diagnostic spellings.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "EVID-01 distinct long Emission keys both render omitted and both accept"
+        ]
+      },
+      "current_target": "packages/kernel/src/outcome.ts",
+      "current_anchors": [
+        "if ((readAt(keys, position) as string) === emissionKey) duplicate = true;"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "R7 Emission keys compare diagnostic spellings",
+          "current_target": "packages/kernel/src/outcome.ts",
+          "current_anchor": "if ((readAt(keys, position) as string) === emissionKey) duplicate = true;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-g7": {
+      "family": "family.k12c1.ablations",
+      "member": "G7 message limit 1023",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by DEC-5 renderer message 1024; capture uses fixed type labels. This production decision is G7 message limit 1023.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "DEC-5 renderer message 1024; capture uses fixed type labels"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "message: diagnosticText(issue.message, \"<message omitted>\", 1_024),"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "G7 message limit 1023",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "message: diagnosticText(issue.message, \"<message omitted>\", 1_024),",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-g9": {
+      "family": "family.k12c1.ablations",
+      "member": "G9 lose captured suffix multiplicity",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable. This production decision is G9 lose captured suffix multiplicity.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        ": { path: issue.path, code: issue.code, message: issue.message, root, occurrences }"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "G9 lose captured suffix multiplicity",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": ": { path: issue.path, code: issue.code, message: issue.message, root, occurrences }",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
+    },
+    "k12c1-base-g14": {
+      "family": "family.k12c1.ablations",
+      "member": "G14 inherited root metadata",
+      "work_kind": "mutation_adoption",
+      "required_result": "Retain the current input/operation/result asserted by DEC-5 root metadata is own-only under ambient pollution. This production decision is G14 inherited root metadata.",
+      "gap": "The maintained leaf passes, but neither current registry nor the complete-decision oracle mutates this exact rendering/classification decision. Short-ASCII fault scenarios do not replace the long/non-ASCII/edge/weighted input class.",
+      "reading": "group-review-15.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+        "test_path": [
+          "DEC-5 root metadata is own-only under ambient pollution"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "const root = PrimordialGetOwnPropertyDescriptor(issue, \"root\")?.value as string | undefined;"
+      ],
+      "relocation_reading": "Original anchor remains unique; operation and required result are still current.",
+      "members": [
+        {
+          "label": "G14 inherited root metadata",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "const root = PrimordialGetOwnPropertyDescriptor(issue, \"root\")?.value as string | undefined;",
+          "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ]
     }
   },
-  "resume_origin": "artifact-defc1c19533790036d5d14f3",
+  "resume_origin": "mention-631a89f180f853e6d7e4260f",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -3643,8 +5374,8 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2-correction-01/ablations.mjs",
-  "resume_line": 1,
+  "resume_path": "docs/development/work/K1.2-correction-01/amendment-02.md",
+  "resume_line": 32,
   "cap_stop_07": {
     "origins_reached": 696,
     "origins_before_current_family": 695,
