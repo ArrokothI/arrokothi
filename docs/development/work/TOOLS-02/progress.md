@@ -2,6 +2,14 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 adoption setup correction:** the first invocation at `11887628`
+  refused the first case's 4 MiB output limit before starting a child process; the
+  runner permits at most 1 MiB. All 49 new cases now use that existing maximum.
+  No test/control/mutant ran in that invocation, and no elapsed attempt timer was
+  persisted before the exception. This launcher error is not a successful validation
+  or a measured test run. Rerun all 49 cases in another fresh clone. Counts remain
+  five test groups / 67 adoptions; measured prior case runs remain 33.805 seconds.
+
 - **2026-10-29 recovery family reconciled / adoption build — origin 696:**
   **five test groups and 67 adoption cases**. [Group review 12](group-review-12.md)
   adds six cases; H2 and H19 share H1/H16 cases as separately retained mutation

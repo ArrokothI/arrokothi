@@ -9853,7 +9853,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12-review09-r5",
@@ -9900,7 +9900,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12-review09-r7",
@@ -9948,7 +9948,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x8",
@@ -9995,7 +9995,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x9",
@@ -10042,7 +10042,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x10",
@@ -10089,7 +10089,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x11",
@@ -10136,7 +10136,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x12",
@@ -10192,7 +10192,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x13",
@@ -10248,7 +10248,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x14",
@@ -10295,7 +10295,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x15",
@@ -10342,7 +10342,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x16",
@@ -10389,7 +10389,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x17",
@@ -10436,7 +10436,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x18",
@@ -10483,7 +10483,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x19",
@@ -10539,7 +10539,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x20",
@@ -10586,7 +10586,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x21",
@@ -10633,7 +10633,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x22",
@@ -10680,7 +10680,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-x23",
@@ -10729,7 +10729,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-diagnostics-v1",
@@ -10778,7 +10778,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-diagnostics-v2",
@@ -10827,7 +10827,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-diagnostics-v3",
@@ -10874,7 +10874,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z1",
@@ -10930,7 +10930,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z2",
@@ -10977,7 +10977,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z3",
@@ -11024,7 +11024,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z4",
@@ -11071,7 +11071,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z5",
@@ -11118,7 +11118,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z6",
@@ -11174,7 +11174,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z7",
@@ -11230,7 +11230,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z8",
@@ -11277,7 +11277,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z9",
@@ -11324,7 +11324,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z10",
@@ -11371,7 +11371,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z11",
@@ -11418,7 +11418,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z12",
@@ -11474,7 +11474,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z13",
@@ -11530,7 +11530,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z14",
@@ -11586,7 +11586,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z15",
@@ -11642,7 +11642,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-coordinate-z16",
@@ -11697,7 +11697,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-recovery-h1",
@@ -11762,7 +11762,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-recovery-h10",
@@ -11809,7 +11809,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-recovery-h11",
@@ -11857,7 +11857,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-recovery-h12",
@@ -11903,7 +11903,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-recovery-h15",
@@ -11950,7 +11950,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-recovery-h16",
@@ -12009,7 +12009,7 @@
         "tsconfig.json"
       ],
       "timeout_seconds": 360,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-recovery-h7",
@@ -12055,7 +12055,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-recovery-h17",
@@ -12102,7 +12102,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-recovery-h18",
@@ -12149,7 +12149,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-recovery-h20",
@@ -12196,7 +12196,7 @@
         ]
       },
       "timeout_seconds": 60,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-recovery-h21",
@@ -12237,7 +12237,7 @@
         "tsconfig.json"
       ],
       "timeout_seconds": 360,
-      "output_limit_bytes": 4194304,
+      "output_limit_bytes": 1048576,
       "mutants": [
         {
           "name": "k12c1-recovery-h22",
