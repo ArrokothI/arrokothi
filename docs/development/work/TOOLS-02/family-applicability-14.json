@@ -1,0 +1,211 @@
+{
+  "revision": "6c9bb21954d1ebedb03cc9a80091d3ae2cc32a8e",
+  "method": "Read-only individual anchor counts; absent spans receive the relocation readings in group-review-14, not kill credit.",
+  "members": [
+    {
+      "member": "R11 a lib global read after load",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/envelope.ts",
+          "before": "      return PrimordialReflectApply(PrimordialStringSlice, reason, [0, DIAGNOSTIC_LIMIT]) as string;",
+          "matches": 1
+        }
+      ]
+    },
+    {
+      "member": "R12 a caller envelope read directly",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    const named = captureAttempt(request, issues);\n    if (named === null) {\n      return err(this.#refusal(\"malformed_value\", `takeover request",
+          "matches": 1
+        }
+      ]
+    },
+    {
+      "member": "C1 review 10: takeover receipt minted through this.#mint",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);",
+          "matches": 2
+        }
+      ]
+    },
+    {
+      "member": "C2 review 10: takeover index advanced by a postfix increment",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const position = record.nextAcceptancePosition;\n    const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);",
+          "matches": 2
+        }
+      ]
+    },
+    {
+      "member": "C3 compound assignment in an initializer",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const position = record.nextAcceptancePosition;\n    const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);",
+          "matches": 2
+        }
+      ]
+    },
+    {
+      "member": "C4 early append through a const alias",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const position = record.nextAcceptancePosition;\n    const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);",
+          "matches": 2
+        },
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    appendOwn(record.receipts, receipt);\n    if (cleared !== null)",
+          "matches": 0
+        }
+      ]
+    },
+    {
+      "member": "C5 early append through a fresh container holding a Kernel list",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const position = record.nextAcceptancePosition;\n    const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);",
+          "matches": 2
+        },
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    appendOwn(record.receipts, receipt);\n    if (cleared !== null)",
+          "matches": 0
+        }
+      ]
+    },
+    {
+      "member": "C6 early write inside a local closure",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const submission = mintSubmission(record.executionId, named.activationId, writerEpoch);",
+          "matches": 1
+        }
+      ]
+    },
+    {
+      "member": "C15 an early write through a binding set by logical assignment",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const submission = mintSubmission(record.executionId, named.activationId, writerEpoch);",
+          "matches": 1
+        }
+      ]
+    },
+    {
+      "member": "C16 an early truncation through an object whose constructor keeps a Kernel list",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const mapSet = <K, V>(map: Map<K, V>, key: K, value: V): void => {",
+          "matches": 0
+        },
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const position = record.nextAcceptancePosition;\n    const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);",
+          "matches": 2
+        }
+      ]
+    },
+    {
+      "member": "C7 a Kernel list widened, disguised as a string and appended to through a helper",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const position = record.nextAcceptancePosition;\n    const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);",
+          "matches": 2
+        },
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    appendOwn(record.receipts, receipt);\n    if (cleared !== null)",
+          "matches": 0
+        }
+      ]
+    },
+    {
+      "member": "C8 foreign code after the decision is being built",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "      batch: exchange.batch,\n      receipt,\n    });\n",
+          "matches": 1
+        }
+      ]
+    },
+    {
+      "member": "C9 a refusal recorded without exiting",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const position = record.nextAcceptancePosition;\n    const receipt = mintReceipt(\"dispatch_intent\", position, record.executionId);",
+          "matches": 2
+        }
+      ]
+    },
+    {
+      "member": "C10 a builder that also changes module state",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const mintSubmission = (executionId: string, activationId: string, writerEpoch: number): SubmissionGrant =>\n  PrimordialObjectFreeze({ executionId, activationId, writerEpoch });",
+          "matches": 1
+        }
+      ]
+    },
+    {
+      "member": "C11 the Driver handed the attempt before it is recorded",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    this.#deliver(exchange);\n\n    return answer;",
+          "matches": 0
+        },
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    appendOwn(record.receipts, receipt);\n    if (cleared !== null)",
+          "matches": 0
+        }
+      ]
+    },
+    {
+      "member": "C12 a protocol hold written before its record is built",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    const reason = `the response of the attempt",
+          "matches": 1
+        }
+      ]
+    },
+    {
+      "member": "C13 the recovery answer projected after the commit (round 6 H7)",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    const answer = ok({ activationId: pinned.activationId, writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(commit), changed: true });\n    applyControlCommit(record, exchange, commit);\n    return answer;",
+          "matches": 0
+        }
+      ]
+    },
+    {
+      "member": "C14 holds written before their history append (round 6 H3)",
+      "anchors": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "  const stored = commit.history;\n  appendOwn(record.recoveryHistory, stored);\n  exchange.codeHold = commit.codeHold;\n  exchange.protocolFailureHold = commit.protocolFailureHold;",
+          "matches": 0
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,14 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 round-7 family read — origin 697:** five test groups / **74 adoption
+  cases**. [Group review 14](group-review-14.md) adds R11/R12/C8/C10, and records each
+  moved owner/reader route for C1–C16. Seven round-7 cases and R1–R6 shared variants
+  remain unbuilt; no closure or new kill claimed. Measured adoption runtime stays
+  250.717 seconds. Resume origin 698 `K1.2-correction-01/ablations.mjs:1`,
+  `artifact-defc1c19533790036d5d14f3`. Owner choice 10 continues to origin 1,031;
+  test/runtime stops remain. No product/historical or derived adoption edit.
+
 - **2026-10-30 owner choice 10 — resume through origin 1,031:** the owner explicitly
   answered “Yes—continue to 1,031, then re-estimate” to continuing despite the
   253-adoption projection while retaining the 12-test-group and 10-minute measured

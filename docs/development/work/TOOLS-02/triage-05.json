@@ -984,11 +984,16 @@
         "k12c1-recovery-h21",
         "k12c1-round7-r7",
         "k12c1-round7-r8",
-        "k12c1-round7-r10"
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-c8",
+        "k12c1-round7-c10"
       ],
       "reading": "group-review-13.md",
-      "required_result": "R1-R6 share existing host-member groups; R7/R8/R10 require three new adoption cases. R9 has an individual BINDING-01 relocation/supersession reading. R11-R12/C1-C16 are pending reconciliation at the explicit projection stop. No family closure is claimed.",
-      "planned_test": "After owner disposition, build in existing registry, preserve all variants and validate controls/kills; no new maintained test currently required."
+      "required_result": "R7/R8/R10/R11/R12/C8/C10 need seven new adoption cases; R1-R6 share H15/H21 with distinct variants. R9 retains its individual supersession/equivalence reading. C1-C7/C9/C11-C16 use the individual current owner/oracle readings in group-review-14; final P1-M bindings remain pending.",
+      "planned_test": "After owner disposition, build in existing registry, preserve all variants and validate controls/kills; no new maintained test currently required.",
+      "reconciliation": "group-review-14.md"
     }
   },
   "reconsidered_extractions": [
@@ -3540,9 +3545,97 @@
         "    this.surface = surface;"
       ],
       "relocation_reading": "All original anchors remain unique at b804e986f5be2f39bd5f2d75dcc6673534ff870b. No supersession or new test is required; build and control/kill validation remain pending."
+    },
+    "k12c1-round7-r11": {
+      "family": "family.k12c1.ablations-07",
+      "member": "R11 a lib global read after load",
+      "work_kind": "mutation_adoption",
+      "required_result": "Diagnostic clipping uses its captured primitive, without a post-load lib-global/prototype lookup.",
+      "gap": "boundDiagnostic differs from R8\u2019s issue-path renderer. The original unique anchor remains, and no registry mutates this clipping decision.",
+      "reading": "group-review-14.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/ambient-reads.test.ts",
+        "test_path": [
+          "correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned",
+          "every reported site is inventoried, at its exact count, with a reason"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "      return PrimordialReflectApply(PrimordialStringSlice, reason, [0, DIAGNOSTIC_LIMIT]) as string;"
+      ],
+      "relocation_reading": "boundDiagnostic differs from R8\u2019s issue-path renderer. The original unique anchor remains, and no registry mutates this clipping decision."
+    },
+    "k12c1-round7-r12": {
+      "family": "family.k12c1.ablations-07",
+      "member": "R12 a caller envelope read directly",
+      "work_kind": "mutation_adoption",
+      "required_result": "Takeover request members are observed through captureAttempt, never an extra direct optional writerEpoch read.",
+      "gap": "The original unique captureAttempt anchor remains at takeover; no registry mutates this extra read. This input-observation decision differs from rendering and H15\u2019s trusted-host scopes.",
+      "reading": "group-review-14.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/ambient-reads.test.ts",
+        "test_path": [
+          "correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned",
+          "every reported site is inventoried, at its exact count, with a reason"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "    const named = captureAttempt(request, issues);\n    if (named === null) {\n      return err(this.#refusal(\"malformed_value\", `takeover request"
+      ],
+      "relocation_reading": "The original unique captureAttempt anchor remains at takeover; no registry mutates this extra read. This input-observation decision differs from rendering and H15\u2019s trusted-host scopes."
+    },
+    "k12c1-round7-c8": {
+      "family": "family.k12c1.ablations-07",
+      "member": "C8 foreign code after the decision is being built",
+      "work_kind": "mutation_adoption",
+      "required_result": "No host callback occurs after the takeover decision basis is bound.",
+      "gap": "The answer-building anchor remains unique. A late hostMember call violates the current basis/last-callback guard; the fault oracle explicitly calls C8 invisible at the public boundary. The callback-inside-apply registry is a distinct state-owner decision.",
+      "reading": "group-review-14.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/control-commits.test.ts",
+        "test_path": [
+          "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+          "requestTakeover: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "      batch: exchange.batch,\n      receipt,\n    });\n"
+      ],
+      "relocation_reading": "The answer-building anchor remains unique. A late hostMember call violates the current basis/last-callback guard; the fault oracle explicitly calls C8 invisible at the public boundary. The callback-inside-apply registry is a distinct state-owner decision."
+    },
+    "k12c1-round7-c10": {
+      "family": "family.k12c1.ablations-07",
+      "member": "C10 a builder that also changes module state",
+      "work_kind": "mutation_adoption",
+      "required_result": "A pre-handover grant builder changes no module state.",
+      "gap": "The mintSubmission anchor remains unique. The current structural rule/negative control 17 covers it, but no registered production edit does. The complete-decision oracle explicitly cannot observe this unused module counter.",
+      "reading": "group-review-14.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/control-commits.test.ts",
+        "test_path": [
+          "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+          "requestTakeover: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "const mintSubmission = (executionId: string, activationId: string, writerEpoch: number): SubmissionGrant =>\n  PrimordialObjectFreeze({ executionId, activationId, writerEpoch });"
+      ],
+      "relocation_reading": "The mintSubmission anchor remains unique. The current structural rule/negative control 17 covers it, but no registered production edit does. The complete-decision oracle explicitly cannot observe this unused module counter."
     }
   },
-  "resume_origin": "artifact-d3c77a74ad17db7c908e8b60",
+  "resume_origin": "artifact-defc1c19533790036d5d14f3",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -3550,7 +3643,7 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2-correction-01/ablations-07.mjs",
+  "resume_path": "docs/development/work/K1.2-correction-01/ablations.mjs",
   "resume_line": 1,
   "cap_stop_07": {
     "origins_reached": 696,
