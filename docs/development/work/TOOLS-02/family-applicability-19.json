@@ -1,0 +1,82 @@
+{
+  "revision": "85adabcf",
+  "source_pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "family": "family.k12c1.review-03.reviewer-ablations-h2",
+  "members": [
+    {
+      "family": "family.k12c1.review-03.reviewer-ablations-h2",
+      "member": "N1",
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchor": "if (additional > 0) {",
+      "current_replacement": "if (additional > 1) {",
+      "relocation_reading": "Old issues.length predicate was replaced by the weighted additional count; suppress the one-additional-issue suffix at that current guard.",
+      "status": "planned_not_executed",
+      "group": "k12c1-base-g1"
+    },
+    {
+      "family": "family.k12c1.review-03.reviewer-ablations-h2",
+      "member": "N2",
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchor": "out += `; ${additional} additional issues: `;",
+      "current_replacement": "out += `; ${counts.length} additional issues: `;",
+      "relocation_reading": "Old issues.length subtraction moved to weighted additional; retain the distinct-code count bug at the current output.",
+      "status": "planned_not_executed",
+      "group": "k12c1-base-g3"
+    },
+    {
+      "family": "family.k12c1.review-03.reviewer-ablations-h2",
+      "member": "N4",
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchor": "if (candidate.code === issue.code) entry = candidate;",
+      "current_replacement": "entry = candidate;",
+      "relocation_reading": "Original code-match anchor remains unique; same mixed-code weighted result.",
+      "status": "planned_not_executed",
+      "group": "k12c1-base-g3"
+    },
+    {
+      "family": "family.k12c1.review-03.reviewer-ablations-h2",
+      "member": "N7",
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchor": "export const appendRootIssues = (target: LocatedIssue[], issues: readonly ValueIssue[], root: string): void => {\n  for (let index = 0; index < issues.length; index += 1) {",
+      "current_replacement": "export const appendRootIssues = (target: LocatedIssue[], issues: readonly ValueIssue[], root: string): void => {\n  for (let index = 0; index < issues.length && index < 8; index += 1) {",
+      "relocation_reading": "Current helper anchor remains; dropping the ninth weighted suffix loses the same upstream root evidence as G9.",
+      "status": "planned_not_executed",
+      "group": "k12c1-base-g9"
+    },
+    {
+      "family": "family.k12c1.review-03.reviewer-ablations-h2",
+      "member": "N8",
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchor": "      if (withMessages) out += ` (${projected.message})`;\n    } else {",
+      "current_replacement": "      if (withMessages) out += ` (${projected.message})`;\n    }\n    if (index >= 0) {",
+      "relocation_reading": "Original span remains; count detailed entries again, distinguished by the same nine-issue exact result.",
+      "status": "planned_not_executed",
+      "group": "k12c1-base-g1"
+    },
+    {
+      "member": "N3",
+      "group": "k12c1-recovery-diagnostic-no-message",
+      "status": "new_test_planned"
+    },
+    {
+      "member": "N5",
+      "group": "k12c1-bracket-path-adjacency",
+      "status": "new_test_planned"
+    },
+    {
+      "member": "N6",
+      "group": "k12c1-review3-n6",
+      "status": "adoption_planned"
+    },
+    {
+      "member": "N9",
+      "group": "k12c1-base-d35",
+      "reading": "The identical unbounded redelivery-held Activation fragment is already the D35 current relocation; no second variant or case."
+    },
+    {
+      "member": "N10",
+      "route": "equivalence_pending_P1_binding",
+      "reading": "captureAttempt still observes only activationId and writerEpoch. At most two LocatedIssues, fixed bounded paths, no value root or occurrences metadata. Both explainDiagnosticIssues(false) and explain emit the same path/code pairs. Malformed takeover has no value-root formatting decision; source-based equivalence, no kill."
+    }
+  ]
+}

@@ -1011,7 +1011,19 @@
     "mention-672a27825f4a3427329799b5",
     "artifact-131a517795ea55aee47692de",
     "artifact-42edc8cdfc687dbcb95e30c3",
-    "artifact-f83cfd8c20c9d031c00c98ba"
+    "artifact-f83cfd8c20c9d031c00c98ba",
+    "mention-5536315b6de4f22d95c9ae02",
+    "mention-9eaa3866f95b349fd4f72336",
+    "mention-2faa0e770e2cb864b71d1d3c",
+    "mention-dacc99c7e5f40e575054335d",
+    "mention-854d536e7f16bb0b9c23d4d4",
+    "mention-61d89dfa8210c79a0b52a5b4",
+    "mention-69c0f5c890f84bcdf6cb76a1",
+    "mention-97fefde56dc838396ec9a8dc",
+    "mention-5ddf51344f93ba0f2c3f353b",
+    "mention-be94151fc9033067e919e0fc",
+    "mention-6e3e6d482f0361a92853271b",
+    "mention-f07e211ac5264472fa5889bf"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -3444,6 +3456,256 @@
       "reading": "triage-batch-21.md",
       "required_result": "S6 family. All R1-R12 and sealed control/result rows read. Eleven original mutants correspond directly to the base-family plans (R9=d31, R10=d32); R3 old eager capture path no longer exists but its still-live pre-root projection result maps to G13 in g6. The same 128-unit path input and required retained prefix share that case. No missing-anchor retirement, duplicate group or family closure.",
       "planned_test": "Retain existing test/adoption plans and every source member route; no additional groups or current execution claimed."
+    },
+    "mention-f61dd3caa0ba5d0bb5b0ecd3": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:86",
+      "groups": [
+        "k12c1-base-d35",
+        "k12c1-base-g1",
+        "k12c1-base-g3",
+        "k12c1-base-g9",
+        "k12c1-bracket-path-adjacency",
+        "k12c1-recovery-diagnostic-no-message",
+        "k12c1-review3-n6"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 family. All N1-N10 reconciled in group-review-19: two new tests N3/N5, one existing-leaf adoption N6, five retained shared variants, N9=D35 and N10 source-based equivalence. No family closure.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-04c9844bf6262bebf9880b67": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:89",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 (mixed). The linked probe-identity includes the P2b opaque comparison already planned; its producer/replay/derived/diagnostic results have maintained counterparts. Engine allocation is explicitly qualified.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-02f1c6f78fd6d52171c959e8": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:114",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 (mixed). The linked probe-identity includes the P2b opaque comparison already planned; its producer/replay/derived/diagnostic results have maintained counterparts. Engine allocation is explicitly qualified.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-df12f32117d33c641855f6ef": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:208",
+      "groups": [
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 (mixed). The linked probe-identity includes the P2b opaque comparison already planned; its producer/replay/derived/diagnostic results have maintained counterparts. Engine allocation is explicitly qualified.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-e932962d7427646b6015156d": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:106",
+      "groups": [
+        "k12c1-base-g1",
+        "k12c1-base-g3",
+        "k12c1-base-g9"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 (mixed). The concrete G/N aggregate mutants preserve the existing renderer and weighted metadata groups, with N2/N7 variants retained. Ordinary aggregate behavior is maintained.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-d0d85377f6a2223258218c4b": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:109",
+      "groups": [
+        "k12-mutation-a11",
+        "k12-mutation-a12",
+        "k12-mutation-a13",
+        "k12-mutation-a14",
+        "k12-mutation-a2",
+        "k12-mutation-a6",
+        "k12-mutation-a9",
+        "k12-mutation-b10",
+        "k12-mutation-b11",
+        "k12-mutation-b12",
+        "k12-mutation-b13",
+        "k12-mutation-b14",
+        "k12-mutation-b15",
+        "k12-mutation-b20",
+        "k12-mutation-b3",
+        "k12-mutation-b4",
+        "k12-mutation-b7",
+        "k12-mutation-b9"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 (mixed). The explicit B12-B20 references retain their current adoption/complete-decision routes, including authority-before-content/capacity and unusable-identity combined diagnostics. Bounded current SDK capture is separate from byte-core authority ordering.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-23f581b3d4d32e3f2fe5e6b8": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:110",
+      "groups": [
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r7"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6. Same three current lossy-equality family adoption groups and maintained EVID-01 input class.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-ebfe4acb65a758477b60c0c6": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:112",
+      "groups": [
+        "k12c1-base-g9"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 (mixed). Retain upstream root/weighted evidence G9 and N7 shared variant. Historical eager projection timings are not a current cost gate; capture now belongs to SDK.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-d5678b81510078ff062565f8": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:115",
+      "groups": [
+        "k12-mutation-a11",
+        "k12-mutation-a12",
+        "k12-mutation-a13",
+        "k12-mutation-a14",
+        "k12-mutation-a2",
+        "k12-mutation-a6",
+        "k12-mutation-a9",
+        "k12-mutation-b10",
+        "k12-mutation-b11",
+        "k12-mutation-b12",
+        "k12-mutation-b13",
+        "k12-mutation-b14",
+        "k12-mutation-b15",
+        "k12-mutation-b20",
+        "k12-mutation-b3",
+        "k12-mutation-b4",
+        "k12-mutation-b7",
+        "k12-mutation-b9"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 family reference. Reuse the existing original 36-member routes and eighteen adoption groups; old total is not a current kill.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-66b6e360ad76e4fbb0d5269a": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:145",
+      "groups": [
+        "k12c1-bracket-path-adjacency",
+        "k12c1-recovery-diagnostic-no-message"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6. The whole O-R3-1 paragraph contains both still-live presentation counterexamples. Two new tests are required, with separate recovery-message and bracket-path operations/results. The vocabulary tripwire observation is process scope, not a new behavior fixture.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-f36e7a53222d2bc96fcbd981": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:147",
+      "groups": [
+        "k12c1-bracket-path-adjacency",
+        "k12c1-recovery-diagnostic-no-message"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6. The whole O-R3-1 paragraph contains both still-live presentation counterexamples. Two new tests are required, with separate recovery-message and bracket-path operations/results. The vocabulary tripwire observation is process scope, not a new behavior fixture.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-978ec5a9b9fb456ecd318076": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:149",
+      "groups": [
+        "k12c1-bracket-path-adjacency",
+        "k12c1-recovery-diagnostic-no-message"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6. The whole O-R3-1 paragraph contains both still-live presentation counterexamples. Two new tests are required, with separate recovery-message and bracket-path operations/results. The vocabulary tripwire observation is process scope, not a new behavior fixture.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-7b2d948aa1e17d541effa03b": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03.md:195",
+      "groups": [
+        "k12c1-base-i1",
+        "k12c1-base-i3",
+        "k12c1-base-i4",
+        "k12c1-base-i5",
+        "k12c1-base-i6",
+        "k12c1-base-i7",
+        "k12c1-opaque-identity-normalization"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 (mixed). Identity probe and I1-I7 retain existing test/adoption plans and the I2 shared variant.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-79a32dbc07f52e68f69b0e04": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03/README.md:10",
+      "groups": [
+        "k12c1-base-d35",
+        "k12c1-base-g1",
+        "k12c1-base-g3",
+        "k12c1-base-g9",
+        "k12c1-bracket-path-adjacency",
+        "k12c1-opaque-identity-normalization",
+        "k12c1-recovery-diagnostic-no-message",
+        "k12c1-review3-n6"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 mixed artifact guide. Keep the identity and N-family required routes, not a bare filename retirement; previous timing/count/provenance remain historical.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-5908b5448bfb39bf7e1a176d": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03/README.md:11",
+      "groups": [
+        "k12c1-base-d35",
+        "k12c1-base-g1",
+        "k12c1-base-g3",
+        "k12c1-base-g9",
+        "k12c1-bracket-path-adjacency",
+        "k12c1-opaque-identity-normalization",
+        "k12c1-recovery-diagnostic-no-message",
+        "k12c1-review3-n6"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 mixed artifact guide. Keep the identity and N-family required routes, not a bare filename retirement; previous timing/count/provenance remain historical.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-e037ab5709511ed91bc5c18c": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03/README.md:14",
+      "groups": [
+        "k12c1-base-d35",
+        "k12c1-base-g1",
+        "k12c1-base-g3",
+        "k12c1-base-g9",
+        "k12c1-bracket-path-adjacency",
+        "k12c1-opaque-identity-normalization",
+        "k12c1-recovery-diagnostic-no-message",
+        "k12c1-review3-n6"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 mixed artifact guide. Keep the identity and N-family required routes, not a bare filename retirement; previous timing/count/provenance remain historical.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "artifact-49458504964b90d677c180d8": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-03/reviewer-ablations-h2.mjs:1",
+      "groups": [
+        "k12c1-base-d35",
+        "k12c1-base-g1",
+        "k12c1-base-g3",
+        "k12c1-base-g9",
+        "k12c1-bracket-path-adjacency",
+        "k12c1-recovery-diagnostic-no-message",
+        "k12c1-review3-n6"
+      ],
+      "reading": "group-review-19.md",
+      "required_result": "S6 family. Whole runner plus all ten sealed result rows read. N1/N2 have individual relocated weighted-count anchors; other live anchors checked unique. N3/N5 new tests; N6 existing core Effect leaf adoption; N9=D35; N10 no-root/two-field source equivalence. No current kill or family completion claimed.",
+      "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
     }
   },
   "reconsidered_extractions": [
@@ -6281,6 +6543,26 @@
           "current_anchor": "const issue = readAt(issues, index) as LocatedIssue;\n    const occurrences = PrimordialGetOwnPropertyDescriptor(issue, \"occurrences\")?.value as number | undefined;\n    if (occurrences === undefined && details < ISSUE_DETAIL_LIMIT)",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "additional_variants": [
+        {
+          "family": "family.k12c1.review-03.reviewer-ablations-h2",
+          "member": "N1",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "if (additional > 0) {",
+          "current_replacement": "if (additional > 1) {",
+          "relocation_reading": "Old issues.length predicate was replaced by the weighted additional count; suppress the one-additional-issue suffix at that current guard.",
+          "status": "planned_not_executed"
+        },
+        {
+          "family": "family.k12c1.review-03.reviewer-ablations-h2",
+          "member": "N8",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "      if (withMessages) out += ` (${projected.message})`;\n    } else {",
+          "current_replacement": "      if (withMessages) out += ` (${projected.message})`;\n    }\n    if (index >= 0) {",
+          "relocation_reading": "Original span remains; count detailed entries again, distinguished by the same nine-issue exact result.",
+          "status": "planned_not_executed"
+        }
       ]
     },
     "k12c1-base-g3": {
@@ -6315,6 +6597,26 @@
           "current_target": "packages/kernel/src/envelope.ts",
           "current_anchor": "const entry = readAt(counts, index) as { code: string; count: number };",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "additional_variants": [
+        {
+          "family": "family.k12c1.review-03.reviewer-ablations-h2",
+          "member": "N2",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "out += `; ${additional} additional issues: `;",
+          "current_replacement": "out += `; ${counts.length} additional issues: `;",
+          "relocation_reading": "Old issues.length subtraction moved to weighted additional; retain the distinct-code count bug at the current output.",
+          "status": "planned_not_executed"
+        },
+        {
+          "family": "family.k12c1.review-03.reviewer-ablations-h2",
+          "member": "N4",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "if (candidate.code === issue.code) entry = candidate;",
+          "current_replacement": "entry = candidate;",
+          "relocation_reading": "Original code-match anchor remains unique; same mixed-code weighted result.",
+          "status": "planned_not_executed"
         }
       ]
     },
@@ -7720,6 +8022,17 @@
           "current_anchor": ": { path: issue.path, code: issue.code, message: issue.message, root, occurrences }",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "additional_variants": [
+        {
+          "family": "family.k12c1.review-03.reviewer-ablations-h2",
+          "member": "N7",
+          "current_target": "packages/kernel/src/envelope.ts",
+          "current_anchor": "export const appendRootIssues = (target: LocatedIssue[], issues: readonly ValueIssue[], root: string): void => {\n  for (let index = 0; index < issues.length; index += 1) {",
+          "current_replacement": "export const appendRootIssues = (target: LocatedIssue[], issues: readonly ValueIssue[], root: string): void => {\n  for (let index = 0; index < issues.length && index < 8; index += 1) {",
+          "relocation_reading": "Current helper anchor remains; dropping the ninth weighted suffix loses the same upstream root evidence as G9.",
+          "status": "planned_not_executed"
+        }
       ]
     },
     "k12c1-base-g14": {
@@ -7806,9 +8119,58 @@
       "reading": "group-review-18.md",
       "build_status": "planned_not_built_or_run",
       "planned_test_file": "packages/kernel/tests/activation-identity.test.ts"
+    },
+    "k12c1-recovery-diagnostic-no-message": {
+      "family": "family.k12c1.review-03.reviewer-ablations-h2",
+      "member": "N3 recovery control renders messages",
+      "work_kind": "new_test",
+      "required_result": "Malformed recovery produces path/code diagnostics without parenthesized issue messages, returns/retains exactly its refusal and keeps the exchange usable. Use a nonempty independently known message so including messages is distinguishable.",
+      "gap": "No maintained recovery assertion forbids the message text; current bound/substring/fault-reference checks allow it. The historical DEC-5 presentation requirement and current false flag remain live.",
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor": "recovery request is not acceptable: ${explainDiagnosticIssues(issues, false)}",
+      "current_replacement": "recovery request is not acceptable: ${explainDiagnosticIssues(issues, true)}",
+      "reading": "group-review-19.md",
+      "build_status": "planned_not_built_or_run",
+      "planned_test_file": "packages/kernel/tests/aggregate-refusal.test.ts"
+    },
+    "k12c1-bracket-path-adjacency": {
+      "family": "family.k12c1.review-03.reviewer-ablations-h2",
+      "member": "N5 bracketed value path loses its root adjacency",
+      "work_kind": "new_test",
+      "required_result": "A located issue with root progress and path [0] renders progress[0], never progress.[0]; pin the whole rendering and preserve the ordinary dotted member-path control.",
+      "gap": "Existing direct count tests precompose progress[0] with no root, dotted-path tests use a plain member name, and consumer regexes allow arbitrary nonspace suffixes. None distinguishes the bracket/root composition branch.",
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchor": ": projected.path[0] === \"[\" ? `${root}${projected.path}` : `${root}.${projected.path}`;",
+      "current_replacement": ": `${root}.${projected.path}`;",
+      "reading": "group-review-19.md",
+      "build_status": "planned_not_built_or_run",
+      "planned_test_file": "packages/kernel/tests/aggregate-refusal.test.ts"
+    },
+    "k12c1-review3-n6": {
+      "family": "family.k12c1.review-03.reviewer-ablations-h2",
+      "member": "N6 Outcome renders without messages",
+      "work_kind": "mutation_adoption",
+      "required_result": "The core Effect-bearing Outcome refusal retains the explicit unsupported-Effect explanation, not only its code.",
+      "gap": "The ordinary Effect leaf asserts the message. Both registries contain no edit disabling explainOutcomeIssues messages. SDK wrapper diagnostic tests call explainDiagnosticIssues directly and do not reach this switch; G7 is a different input/operation.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+        "test_path": [
+          "K1.2-C7 Effects, obligations and waits are refused whole",
+          "an Effect-bearing Outcome is refused at envelope validation and leaves no action record"
+        ]
+      },
+      "current_target": "packages/kernel/src/outcome.ts",
+      "current_anchors": [
+        "export const explainOutcomeIssues = (issues: readonly LocatedIssue[]): string => explainDiagnosticIssues(issues, true);"
+      ],
+      "current_replacement": "export const explainOutcomeIssues = (issues: readonly LocatedIssue[]): string => explainDiagnosticIssues(issues, false);",
+      "reading": "group-review-19.md",
+      "build_status": "planned_not_executed"
     }
   },
-  "resume_origin": "mention-5536315b6de4f22d95c9ae02",
+  "resume_origin": "mention-f463c7b45c65bddaa0b1e587",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -7816,8 +8178,8 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2-correction-01/review-03.md",
-  "resume_line": 48,
+  "resume_path": "docs/development/work/K1.2-correction-01/review-04.md",
+  "resume_line": 64,
   "cap_stop_07": {
     "origins_reached": 696,
     "origins_before_current_family": 695,

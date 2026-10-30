@@ -2,6 +2,14 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 reviewer-03 N-family — through origin 1,157:** 1,021 retired and
+  136 extraction-origin plans. [Group review 19](group-review-19.md): **eight test
+  groups / 132 adoptions**. N3/N5 need new tests, N6 uses an existing Effect-message
+  leaf; five variants share existing cases. Cumulative projections 11/174 and
+  latest-300 projections **12/135**, within caps. Measured runtime 250.717 seconds,
+  unchanged. Resume `K1.2-correction-01/review-04.md:64`,
+  `mention-f463c7b45c65bddaa0b1e587` (origin 1,158). No new execution or final closure.
+
 - **2026-10-30 reviewer-02 records — through origin 1,128:** 1,009 retired and
   119 extraction-origin plans. [Batch 21](triage-batch-21.md): **six test groups /
   131 adoptions**, unchanged, with every R1–R12 route retained. Measured runtime
