@@ -57446,35 +57446,265 @@
     },
     {
       "id": "mention-2696c4955e5bfef4fd03a598",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-9b112eff21a9c887ca426e36",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Current activation-identity non-text/lifecycle leaves retain no-coercion and whole-view refusal-only results; accepted schedules assert explicit deltas. Maintained immutable evidence leaves preserve returned/retained facts.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/activation-identity.test.ts",
+            "test_path": [
+              "non-text boxed is unusable with no coercion on every consumer"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/activation-identity.test.ts",
+            "test_path": [
+              "non-text revoked is unusable with no coercion on every consumer"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/activation-identity.test.ts",
+            "test_path": [
+              "non-text missing is unusable with no coercion on every consumer"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/evidence.test.ts",
+            "test_path": [
+              "K11-R2-EVID-01 retained refusals survive a caller editing what it was handed",
+              "a refusal that names no Execution is immutable too, and stays unrecorded"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/evidence.test.ts",
+            "test_path": [
+              "K11-R2-EVID-01 the ownership rule, not one call site",
+              "every evidence object any exposed path returns is immutable"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-85d084e6582b0f1f98dbb297",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-870d389b45cab2ee22e129b2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-30eb298d9870654ceb2ac0b1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-22ad787e0a1fc62fa9519bc0",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-e00a0bee72e2dfb5de298e4c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-6cf53827164452e54a2807ec",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Exact omitted-identity comparisons and bounded aggregate whole refusals remain aggregate-refusal leaves; grant-before-content ordering and original B/R inverse variants retain separate adoption plans.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different long identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different non-ASCII identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different high surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 Outcome: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 takeover: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 recovery: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 protocol: different low surrogate identities both render omitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 distinct long Emission keys both render omitted and both accept"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "EVID-01 distinct non-ASCII Emission keys both render omitted and both accept"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "aggregate content stays behind currency and authority; capture retains bounded weighted diagnostics"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-5c9cbeb1f5c44f7effd08d09",
@@ -57482,23 +57712,143 @@
     },
     {
       "id": "mention-835eb1c9504b07b27eafaacb",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-77a5179ba1d14e13ee9e3f8c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-7730b5752e20596c66f1401a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). The paragraph contrasts observation-only aggregate/equality logs with explicit maintained assertions. Current aggregate leaves assert counts, whole-view equality, frozen retained/returned refusal and no delivery; refusal-diagnostics runs the shared 21-case oversized identity schedule. The namespace probe merely documents the engine qualification, not successful allocation.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 all recovery roots and the two other malformed controls return and retain"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone high surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone low surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-cf639cd7009f2ebb63bb8098",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). The paragraph contrasts observation-only aggregate/equality logs with explicit maintained assertions. Current aggregate leaves assert counts, whole-view equality, frozen retained/returned refusal and no delivery; refusal-diagnostics runs the shared 21-case oversized identity schedule. The namespace probe merely documents the engine qualification, not successful allocation.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and complete: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 aggregate progress, two Emissions and fail: <=16,384 units, retained and answerable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "AGG-01 all recovery roots and the two other malformed controls return and retain"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone high surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong lone low surrogate: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-fd84f3eb4e1a081961dc04fb",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-c9354709994821175ef2e7cb",
@@ -57506,51 +57856,369 @@
     },
     {
       "id": "mention-0ee9d471763e053df8474103",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The named live value faults have existing k12c1.adopt-diagnostics-v1/v2/v3 and value-cost.c1.value-refusal-cost cases. V5 producer-removal equivalence remains separately recorded in group-review-09; X coordinate routes stay in that family, with no kill inferred from an absent anchor.",
+        "covered_by": [
+          {
+            "kind": "case",
+            "id": "k12c1.adopt-diagnostics-v1"
+          },
+          {
+            "kind": "case",
+            "id": "k12c1.adopt-diagnostics-v2"
+          },
+          {
+            "kind": "case",
+            "id": "k12c1.adopt-diagnostics-v3"
+          },
+          {
+            "kind": "case",
+            "id": "value-cost.c1.value-refusal-cost"
+          }
+        ]
+      }
     },
     {
       "id": "mention-aba6785389233b9e89bc6340",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-6d41e7dc69268b69dcb8f97f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-729d507e6b75d4e1bea7f7fd",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-3a6e047addc48b70abd800f7",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-d0f898330df969f8344e47d9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-cd5feae58d6d05ea2e7bbf19",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-a240498635677ccf6b970ddd",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-9d346f99b9e1268b02eec04a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). Exact coordinates remain in independently derived four terminal/namespace leaves; type-only diagnostics and scalar preflight remain in SDK leaves. Coherent-Proxy acceptance is separately superseded by PROXY-01; current converted ordinary counterparts keep the capture obligations.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: deep prototype diagnostics do zero lookups before and after detail eight"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-832e946d726bdbcd1fa79d18",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 (mixed). Whole-result refusal and authority-order assertions remain in aggregate-refusal and nondisclosure; wrapper capture moved to SDK under BINDING-01, whose ordinary eager roots retain observed result/counts. The method list is process only.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/aggregate-refusal.test.ts",
+            "test_path": [
+              "aggregate content stays behind currency and authority; capture retains bounded weighted diagnostics"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K1.2-C12 scoped non-disclosure across Outcome acceptance and the exchange controls",
+              "the Outcome oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K1.2-C12 scoped non-disclosure across Outcome acceptance and the exchange controls",
+              "hidden Outcome, takeover, hold and terminal activity discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 foreign object: eight eager Outcome roots preserve observations and whole refusal state"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 thrown object: eight eager Outcome roots preserve observations and whole refusal state"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-355875ef3dd263d684be05b0",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-29e1cfc070b3b9eb404906e3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-3dac78b2799609f563dc3d82",
@@ -57558,31 +58226,85 @@
     },
     {
       "id": "mention-b1d2e91a8600c255281fc27b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-1507123e4c7dd6df6681b0a3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The logical zero-character-read, byte-charge and accepted-edge requirements remain in the SDK UTF-16 preflight leaves. Millisecond/heap comparisons are historical observations, not bounds or new tests.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-1fc09ac710ca0d66dfff16d1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-24be78557b4b68db7ebfde46",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-8d999585220b210992bf566b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-00dafa0e05266078e9993e89",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-a54562328bf029b7b0bf5f3c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-7524be9a0e5799fedcdc1d43",
@@ -57606,19 +58328,642 @@
     },
     {
       "id": "mention-d03aca8bc27e690776d40f52",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The new-file inventory also names concrete review-09 matrix, mutable foreign reference, both clear paths and host-member compatibility schedules. Those leaves remain maintained; current state-owner/ambient guard leaves replace historical inventory totals.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "the matrix is review 09's 22 cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a Driver without the method is refused even when the request's getter installs an inherited one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "residue pollution left before the call establishes nothing either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a function-object Driver is not answered by Function.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver's own prototype method is honored (trusted host structure)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a method inherited from the host's own prototype object is honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver without the method is not answered by Object.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "controlScopes inherited from the host's own prototype object is still honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "a limit the host supplies through its own options prototype is honored"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-adc496ea8b1c4900d41e5c72",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-1637c30ca00a568a5a0d4680",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-795b37d3505f939b436294a1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The self-found inherited Driver safety, controlScopes and undeclared option schedules retain host-members refusal/default and host-class compatibility assertions. H15\u2013H21 are the already built inverse cases, not new groups.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a Driver without the method is refused even when the request's getter installs an inherited one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "residue pollution left before the call establishes nothing either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a function-object Driver is not answered by Function.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver's own prototype method is honored (trusted host structure)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a method inherited from the host's own prototype object is honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver without the method is not answered by Object.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "controlScopes inherited from the host's own prototype object is still honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "a limit the host supplies through its own options prototype is honored"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-11ee7fe08c80a4f6903b4aed",
@@ -57626,71 +58971,1856 @@
     },
     {
       "id": "mention-d6f4106afffff22eeae14e89",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The engine-stack-headroom experiment expressly cannot distinguish the ordering regression and is not offered as a maintained oracle. The needed H3\u2013H7 structural cases remain separately planned/registered; no kill or fault guarantee is credited from this negative experiment."
+      }
     },
     {
       "id": "mention-210797698a723fbf6975bf66",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The engine-stack-headroom experiment expressly cannot distinguish the ordering regression and is not offered as a maintained oracle. The needed H3\u2013H7 structural cases remain separately planned/registered; no kill or fault guarantee is credited from this negative experiment."
+      }
     },
     {
       "id": "mention-81ab71ce2ccff2410a024486",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The engine-stack-headroom experiment expressly cannot distinguish the ordering regression and is not offered as a maintained oracle. The needed H3\u2013H7 structural cases remain separately planned/registered; no kill or fault guarantee is credited from this negative experiment."
+      }
     },
     {
       "id": "mention-40b67ce136d06ebf3b8366a2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Inherited 777, retained mutable foreign object and count/throw/reenter matrix behavior remain explicitly asserted by recovery-ambient, including the throwing mode that the old defect-expecting probe did not reach. H1\u2013H14 inverse routes remain the reconciled family, not status-only acceptance.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "the matrix is review 09's 22 cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors left behind as residue"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-3419dd4e26b3fc165cdffdda",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The self-found inherited Driver safety, controlScopes and undeclared option schedules retain host-members refusal/default and host-class compatibility assertions. H15\u2013H21 are the already built inverse cases, not new groups.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a Driver without the method is refused even when the request's getter installs an inherited one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "residue pollution left before the call establishes nothing either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a function-object Driver is not answered by Function.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver's own prototype method is honored (trusted host structure)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a method inherited from the host's own prototype object is honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver without the method is not answered by Object.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "controlScopes inherited from the host's own prototype object is still honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "a limit the host supplies through its own options prototype is honored"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ae9f4c25e4ddd40c5fb4656a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The self-found inherited Driver safety, controlScopes and undeclared option schedules retain host-members refusal/default and host-class compatibility assertions. H15\u2013H21 are the already built inverse cases, not new groups.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a Driver without the method is refused even when the request's getter installs an inherited one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "residue pollution left before the call establishes nothing either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a function-object Driver is not answered by Function.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver's own prototype method is honored (trusted host structure)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a method inherited from the host's own prototype object is honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver without the method is not answered by Object.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "controlScopes inherited from the host's own prototype object is still honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "a limit the host supplies through its own options prototype is honored"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-6fa6aa0c41bd5ccc508be1df",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The self-found inherited Driver safety, controlScopes and undeclared option schedules retain host-members refusal/default and host-class compatibility assertions. H15\u2013H21 are the already built inverse cases, not new groups.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a Driver without the method is refused even when the request's getter installs an inherited one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "residue pollution left before the call establishes nothing either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a function-object Driver is not answered by Function.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver's own prototype method is honored (trusted host structure)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a method inherited from the host's own prototype object is honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver without the method is not answered by Object.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "controlScopes inherited from the host's own prototype object is still honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "a limit the host supplies through its own options prototype is honored"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b40704a55152e05e40672513",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-5cd44228fe2b931fc639b280",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-c4d91d9759aa50d70aedeb1b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Inherited 777, retained mutable foreign object and count/throw/reenter matrix behavior remain explicitly asserted by recovery-ambient, including the throwing mode that the old defect-expecting probe did not reach. H1\u2013H14 inverse routes remain the reconciled family, not status-only acceptance.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "the matrix is review 09's 22 cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors left behind as residue"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-029af2f8e4eaefeb54a567ed",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The self-found inherited Driver safety, controlScopes and undeclared option schedules retain host-members refusal/default and host-class compatibility assertions. H15\u2013H21 are the already built inverse cases, not new groups.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a Driver without the method is refused even when the request's getter installs an inherited one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "residue pollution left before the call establishes nothing either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a function-object Driver is not answered by Function.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver's own prototype method is honored (trusted host structure)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a method inherited from the host's own prototype object is honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver without the method is not answered by Object.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "controlScopes inherited from the host's own prototype object is still honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "a limit the host supplies through its own options prototype is honored"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-d5d17d2ef9422651d5f800e1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Inherited 777, retained mutable foreign object and count/throw/reenter matrix behavior remain explicitly asserted by recovery-ambient, including the throwing mode that the old defect-expecting probe did not reach. H1\u2013H14 inverse routes remain the reconciled family, not status-only acceptance.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "the matrix is review 09's 22 cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors left behind as residue"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-499f07f1445c8f39bcc32e63",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The self-found inherited Driver safety, controlScopes and undeclared option schedules retain host-members refusal/default and host-class compatibility assertions. H15\u2013H21 are the already built inverse cases, not new groups.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a Driver without the method is refused even when the request's getter installs an inherited one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "residue pollution left before the call establishes nothing either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a function-object Driver is not answered by Function.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver's own prototype method is honored (trusted host structure)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a method inherited from the host's own prototype object is honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+              "a class-based Driver without the method is not answered by Object.prototype"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no recovery declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+              "controlScopes inherited from the host's own prototype object is still honored"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/host-members.test.ts",
+            "test_path": [
+              "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+              "a limit the host supplies through its own options prototype is honored"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-99441fb938d8999267229f5a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-e7915292f6b8899fe6e2b085",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-b31eb899fb20afcebcd4e549",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-99e37f5527e186d7054cb510",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical validation result/counts, candidate-specific run inventory or exact administrative allowlist. It adds no new input/operation/result beyond separately recorded scenarios and families, and grants no execution credit at C."
+      }
     },
     {
       "id": "mention-29942bd41c5bdff95c7f91c5",

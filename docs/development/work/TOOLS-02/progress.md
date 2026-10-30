@@ -2,6 +2,14 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 implementation reports 01–06 — through origin 900:** 837 retired
+  and 63 extraction-origin plans. [Batch 18](triage-batch-18.md) adds provenance to
+  existing groups; **five test groups / 130 adoptions**, runtime 250.717 seconds,
+  unchanged. Resume `K1.2-correction-01/implementation-07.md:6`,
+  `mention-29942bd41c5bdff95c7f91c5` (origin 901). Fetch/push worked: remote advanced
+  from the expected 5d6fe41f to 86ca0ed4 before this batch. No new execution,
+  regenerated derived data or family closure; owner choice 10 continues to 1,031.
+
 - **2026-10-30 cumulative/diagnostic records — through origin 838:** 784 retired
   and 54 extraction-origin plans. **Five test groups / 130 adoption cases**.
   [Group review 16](group-review-16.md) adds one T4 adoption: the SDK now has two
