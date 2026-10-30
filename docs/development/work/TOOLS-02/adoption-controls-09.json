@@ -1,0 +1,2402 @@
+{
+  "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+  "fresh_clone": "/private/tmp/tools02-correction2-adoptions-20261029",
+  "method": "Selected committed existing-registry entries, packet_tools target_control/run_targets/target_outcome or run_case/observation/execution_outcome. No alternate registry.",
+  "seconds": 147.634,
+  "date": "2026-10-29",
+  "setup": "git clone --no-local; npm ci (exit 0)",
+  "node": "v26.10.0",
+  "raw_local_path": "/private/tmp/tools02-correction-results-f9e9c540.json",
+  "raw_sha256": "6f6f3b969bd9b42ffebcbe94951c7aa17fca36d7e8edbd801aa85e00d5e79e51",
+  "runner_sha256": "fd7087fb19ad9dbee923fbaeea2ed532a157114c19a073de5a489659ee1699df",
+  "cases": [
+    {
+      "case": "k12.adopt-review09-r5",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 2.881,
+      "mutants": [
+        {
+          "id": "mutation-6060d7a974870ac00c1c6ab5ee32fd69420043c264d84c3fc9132144d01d3546",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/submission-lifetime.test.ts > K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced",
+              "site": {
+                "kind": "assert.notEqual",
+                "module": "packages/kernel/tests/submission-lifetime.test.ts",
+                "anchor": {
+                  "line": 112,
+                  "column": 5,
+                  "expression": "assert.notEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/submission-lifetime.test.ts",
+                  "fullName": "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/submission-lifetime.test.ts > K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 1
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-review09-r7",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.544,
+      "mutants": [
+        {
+          "id": "mutation-8d864793a9a0272c220ab34fb4fef524289a74c2b872e3fd6c94aae5597a7df8",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts > changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 559,
+                  "column": 18,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+                  "fullName": "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts > changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts > changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 1
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x8",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.553,
+      "mutants": [
+        {
+          "id": "mutation-509390623b0b674dd29837ae3716602076db314ffa2e349a65e155149b665ca9",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 110,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x9",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.536,
+      "mutants": [
+        {
+          "id": "mutation-dcf4e6cd8919bd695e587219ba88441d7af6383cb0d8b538b1706b125bfc790e",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 123,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x10",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.559,
+      "mutants": [
+        {
+          "id": "mutation-5dc3984622d7a72e92fbe3d44dc13c5f958c17db0c48b53f6480f47ba6706fef",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "observed",
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "error",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "Error",
+                "code": null
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4,
+          "kill": "no qualifying target witness"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x11",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.442,
+      "mutants": [
+        {
+          "id": "mutation-fa985a368cf5ef02f4e78fa00326b74c32b7eeaa1abce950390c75808f130734",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 73,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x12",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.486,
+      "mutants": [
+        {
+          "id": "mutation-b5abed56212f01872e6ddcfd67168d79b29deee8e0bd1585f11abd0959357481",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 173,
+                  "column": 9,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x13",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.486,
+      "mutants": [
+        {
+          "id": "mutation-7f3af4ce8c787b5dd57f4c91fc742825430127fcd06d58a0138f0663e1cee371",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 57,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x14",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.439,
+      "mutants": [
+        {
+          "id": "mutation-36b0828203edf086e5b273f8dc3c927c55ed8e2032159e2bba9c885b3a00dee7",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "observed",
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "error",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "Error",
+                "code": null
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4,
+          "kill": "no qualifying target witness"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x15",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.479,
+      "mutants": [
+        {
+          "id": "mutation-f1614b10e2ceb7925cc8e8c3ea1189f0c62c5be9b488c6b5141f04072e5a1159",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 110,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x16",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.509,
+      "mutants": [
+        {
+          "id": "mutation-3627d5555ef77b5f5c8ec256160af0bb0c62adad2e0fb982f899c5452a78a454",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 174,
+                  "column": 9,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x17",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.431,
+      "mutants": [
+        {
+          "id": "mutation-733bfe5eb4dcded7480d9cd0bab7869db4bcc3fd9ef40d696cd6733cc712c3b9",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 110,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x18",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.411,
+      "mutants": [
+        {
+          "id": "mutation-2c244a0838cb7c24c9a101f056566959c7e3ebafc18dae5a0fb0768159d3b446",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 83,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x19",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.575,
+      "mutants": [
+        {
+          "id": "mutation-050f4ad1253b124c1394cd34ae85a00505e0586f0b72159c8084037d75eabcbd",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 72,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x20",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.511,
+      "mutants": [
+        {
+          "id": "mutation-5b24938ef334efd47fa0010b2296a88f9242a1ee1d34c68903a63d1ea994b911",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 78,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x21",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.593,
+      "mutants": [
+        {
+          "id": "mutation-cf3743ddf6f5e6d36c298fbb6ddb9dcf09357236088abb6f02841bcc27cdf0b4",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 79,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x22",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.465,
+      "mutants": [
+        {
+          "id": "mutation-23eee04ca912441b1010d0630e3b561134ba024b27741e948f4dc5e7e6b2e783",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 148,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x23",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.469,
+      "mutants": [
+        {
+          "id": "mutation-60c1480634a7d7325cf4761f8998c6f12cf4a374bb5ea266081396b5afcba50d",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 152,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-diagnostics-v1",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 5.684,
+      "mutants": [
+        {
+          "id": "mutation-8a0fea43a88d650472448af41701fd332cf6e6e261b11bfcd1f49f642c36d4df",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/sdk/tests/value-refusal-cost.test.ts > V-D1 every issue family: nonfinite",
+              "site": {
+                "kind": "assert.ok",
+                "module": "packages/sdk/tests/value-refusal-cost.test.ts",
+                "anchor": {
+                  "line": 49,
+                  "column": 3,
+                  "expression": "assert.ok"
+                },
+                "invocation": {
+                  "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+                  "fullName": "V-D1 every issue family: nonfinite"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/sdk/tests/value-refusal-cost.test.ts > V-D1 every issue family: nonfinite",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 32
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-diagnostics-v2",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 4.971,
+      "mutants": [
+        {
+          "id": "mutation-2a16e8516cab39583dfbeaa1e85c9e534d1248aa5badda8d88d60c196cc744b5",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/sdk/tests/value-refusal-cost.test.ts > V-D1 every issue family: nonfinite",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/sdk/tests/value-refusal-cost.test.ts",
+                "anchor": {
+                  "line": 100,
+                  "column": 5,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+                  "fullName": "V-D1 every issue family: nonfinite"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/sdk/tests/value-refusal-cost.test.ts > V-D1 every issue family: nonfinite",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 27
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-diagnostics-v3",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 6.032,
+      "mutants": [
+        {
+          "id": "mutation-1731cf011f2945325c227caf27a4a3b0f49da3837284db3f5485a547848d40b1",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/sdk/tests/value-refusal-cost.test.ts > V-D1 suffix counts preserve late codes and first occurrence order across root consumers",
+              "site": {
+                "kind": "assert.match",
+                "module": "packages/sdk/tests/value-refusal-cost.test.ts",
+                "anchor": {
+                  "line": 395,
+                  "column": 3,
+                  "expression": "assert.match"
+                },
+                "invocation": {
+                  "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+                  "fullName": "V-D1 suffix counts preserve late codes and first occurrence order across root consumers"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/sdk/tests/value-refusal-cost.test.ts > V-D1 suffix counts preserve late codes and first occurrence order across root consumers",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 5
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z1",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.438,
+      "mutants": [
+        {
+          "id": "mutation-476da72a3801717d261a6bcc5cb97505da6e525128ba45f33344454de5e2652a",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 36,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z2",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.417,
+      "mutants": [
+        {
+          "id": "mutation-f9376ca88b5acb077c60d25e350c7ea027ea371ed225aee4a5a09df0e565e8fd",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 33,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z3",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.408,
+      "mutants": [
+        {
+          "id": "mutation-4e589609f7613f6e0e827ff22c240ba071a54814358480d69851e8bcc3717015",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "observed",
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "error",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "Error",
+                "code": null
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4,
+          "kill": "no qualifying target witness"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z4",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.402,
+      "mutants": [
+        {
+          "id": "mutation-93c1de368a2af34011a00024b03d9a7bd43edd507b8843d756f13e20e08245b1",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 50,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z5",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.424,
+      "mutants": [
+        {
+          "id": "mutation-33c689898dc3bbc3b07b5d9289c2d36f0162cd44fa51a27519cc3d5018ba2d0c",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "observed",
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "error",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "Error",
+                "code": null
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4,
+          "kill": "no qualifying target witness"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z6",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.426,
+      "mutants": [
+        {
+          "id": "mutation-c3919857d924e4ab103ce0a5a1145f25280f96bf519b50b25bfbf0bd4f896989",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 552,
+                  "column": 5,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z7",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.408,
+      "mutants": [
+        {
+          "id": "mutation-e9e71b41f8196a759faec02fc6827782ff827befc30bb1d8ef73be91b36448f6",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 51,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z8",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.404,
+      "mutants": [
+        {
+          "id": "mutation-210b921a5de485277658dba7eb6132f97252f25407b27771ad35bba37cde86b0",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 67,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z9",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.399,
+      "mutants": [
+        {
+          "id": "mutation-3ed15af54e9f21c973b2aec52714a38e193be86eb077891d504b9455b5402000",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 64,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z10",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.414,
+      "mutants": [
+        {
+          "id": "mutation-eebb7e8adfee6c3c84c96345b15bff2216ffb0d3274c3d9294cb4f0b6dd46805",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 110,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z11",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.411,
+      "mutants": [
+        {
+          "id": "mutation-3fd9c223ba3c1fc0441fd1ea43fb89f18149c68904f58f3ef267859bc21a7724",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 83,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z12",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.38,
+      "mutants": [
+        {
+          "id": "mutation-874e11f6dc75b5b807cca2698439987d7e34cc377930f79f3634303a8ed36b3f",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 57,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z13",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.383,
+      "mutants": [
+        {
+          "id": "mutation-58b945a5fc269434cbc522ee6c7278d4245667d25d396b0ee33b3a91dcd65009",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 38,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z14",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.462,
+      "mutants": [
+        {
+          "id": "mutation-a2088209671a743d9da11ada36108c719f5240bf0b3641837b3d10d3857830b1",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 41,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z15",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.396,
+      "mutants": [
+        {
+          "id": "mutation-a81d3f6d1d502ed37ef5f611560dc29dda01628006cef626eca14a579fa4622d",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 42,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z16",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.42,
+      "mutants": [
+        {
+          "id": "mutation-bf5e6b76398915ccfc6982f5b03aedbb8ed67562f11df0b9b33b9fd99c3a863b",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 73,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h1",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 2.176,
+      "mutants": [
+        {
+          "id": "mutation-eceea9554acdeb316acedd7d6791d3cf09152c12b85eb17aa7d6c0d0f3a2cab8",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/recovery-ambient.test.ts > K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation > protocol-enter / data",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/recovery-ambient.test.ts",
+                "anchor": {
+                  "line": 232,
+                  "column": 3,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/recovery-ambient.test.ts",
+                  "fullName": "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation > protocol-enter / data"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/recovery-ambient.test.ts > K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation > protocol-enter / data",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 24
+        },
+        {
+          "id": "mutation-87d77a4efc5fc0bff25bd6e32e5279deee1da35273fa122fba9d8ff8109b61e0",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/recovery-ambient.test.ts > K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation > protocol-enter / data",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/recovery-ambient.test.ts",
+                "anchor": {
+                  "line": 232,
+                  "column": 3,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/recovery-ambient.test.ts",
+                  "fullName": "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation > protocol-enter / data"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/recovery-ambient.test.ts > K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation > protocol-enter / data",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 24
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h10",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.42,
+      "mutants": [
+        {
+          "id": "mutation-df5cbfa6915c7b88066d6e676a674784e16ab3aefeea940c5b09d23704cc7664",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/recovery-history.test.ts > K12-R1-HISTORY-01 recovery history is retained Execution evidence > b) protocol hold via takeover: entered, then cleared_by_takeover with resultingEpoch",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/recovery-history.test.ts",
+                "anchor": {
+                  "line": 117,
+                  "column": 5,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/recovery-history.test.ts",
+                  "fullName": "K12-R1-HISTORY-01 recovery history is retained Execution evidence > b) protocol hold via takeover: entered, then cleared_by_takeover with resultingEpoch"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/recovery-history.test.ts > K12-R1-HISTORY-01 recovery history is retained Execution evidence > b) protocol hold via takeover: entered, then cleared_by_takeover with resultingEpoch",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 1
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h11",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.401,
+      "mutants": [
+        {
+          "id": "mutation-d39403a1e8e8e47b7d7cd7ee163410a3199b12eecb35ec87253fc6049c4fff45",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/history-attribution.test.ts > K12-R3-HISTORY-02 explicit control transitions still record control authority > entered, protocol entered, and cleared_by_takeover are control-origin",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/history-attribution.test.ts",
+                "anchor": {
+                  "line": 124,
+                  "column": 5,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/history-attribution.test.ts",
+                  "fullName": "K12-R3-HISTORY-02 explicit control transitions still record control authority > entered, protocol entered, and cleared_by_takeover are control-origin"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/history-attribution.test.ts > K12-R3-HISTORY-02 explicit control transitions still record control authority > entered, protocol entered, and cleared_by_takeover are control-origin",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 2
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h12",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 2.219,
+      "mutants": [
+        {
+          "id": "mutation-e79ecbfda90fa5ca4ea337c0727788f4fc86377092d5226dab797a0e65ff613b",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 83,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h15",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.567,
+      "mutants": [
+        {
+          "id": "mutation-f497faffa4b48efc161fda566ef674b5654781fa5943f68d7d958c15e26967cf",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "observed",
+          "targets": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 controlScopes comes from the caller, never from Object.prototype > residue Object.prototype.controlScopes gives a visibility-only caller no takeover",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 3,
+          "kill": "no qualifying target witness"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h16",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.986,
+      "mutants": [
+        {
+          "id": "mutation-874f0915d9d35f1e93716f795d30e0372e2839b32bd4da8e8cd59df22f779f91",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "observed",
+          "targets": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a Driver without the method is refused even when the request's getter installs an inherited one",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4,
+          "kill": "no qualifying target witness"
+        },
+        {
+          "id": "mutation-632b434c60781a49063d54e051cb2b5c497f02e11655e2eed8dad1b15bc295f4",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "observed",
+          "targets": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a Driver without the method is refused even when the request's getter installs an inherited one",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 7,
+          "kill": "no qualifying target witness"
+        }
+      ]
+    },
+    {
+      "case": "state-owner.tools02-h7",
+      "kind": "structural_probe",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 61.126,
+      "mutants": [
+        {
+          "id": "mutation-31b8db55bc82d15e2cac1e99cee73bad9effa301e674a38aa8a6fd0fe914ab45",
+          "reached": null,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "setup_error"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h17",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.368,
+      "mutants": [
+        {
+          "id": "mutation-43fa21cebbae4d4b360d3a917d0bf871168fab8253783feeece73813c7113e2f",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 coordinator limits come from the options, never from Object.prototype > residue mailboxCapacity and emissionsPerOutcome at construction declare nothing",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 552,
+                  "column": 5,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/host-members.test.ts",
+                  "fullName": "correction DEC-8 coordinator limits come from the options, never from Object.prototype > residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 coordinator limits come from the options, never from Object.prototype > residue mailboxCapacity and emissionsPerOutcome at construction declare nothing",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 1
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h18",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.329,
+      "mutants": [
+        {
+          "id": "mutation-396510935970d7695ec7735fb390c64425c144f4bdcee0fe6a8e658cdd0df9b6",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 coordinator limits come from the options, never from Object.prototype > residue mailboxCapacity and emissionsPerOutcome at construction declare nothing",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 552,
+                  "column": 5,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/host-members.test.ts",
+                  "fullName": "correction DEC-8 coordinator limits come from the options, never from Object.prototype > residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 coordinator limits come from the options, never from Object.prototype > residue mailboxCapacity and emissionsPerOutcome at construction declare nothing",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 1
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h20",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.296,
+      "mutants": [
+        {
+          "id": "mutation-ebc784cdb97248253092436607f0223c320e8d886372e6d216bf9a9f16e8caae",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "observed",
+          "targets": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a function-object Driver is not answered by Function.prototype",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 1,
+          "kill": "no qualifying target witness"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h21",
+      "kind": "target_set",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 1.34,
+      "mutants": [
+        {
+          "id": "mutation-ade3d79012cee5a7f80377e21878b06f5218db7120ab6ad0fef4751e60d29a34",
+          "reached": true,
+          "run_status": "finished",
+          "exit": 1,
+          "status": "killed",
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a class-based Driver's own prototype method is honored (trusted host structure)",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 552,
+                  "column": 5,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/host-members.test.ts",
+                  "fullName": "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a class-based Driver's own prototype method is honored (trusted host structure)"
+                }
+              }
+            }
+          ],
+          "targets": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a class-based Driver's own prototype method is honored (trusted host structure)",
+              "outcome": "assertion",
+              "failure_type": "testCodeFailure",
+              "cause": {
+                "name": "AssertionError",
+                "code": "ERR_ASSERTION"
+              },
+              "provenance": "frames",
+              "origin": "not established"
+            }
+          ],
+          "failures": 4
+        }
+      ]
+    },
+    {
+      "case": "state-owner.tools02-h22",
+      "kind": "structural_probe",
+      "control": {
+        "status": "finished",
+        "exit": 0,
+        "valid": true
+      },
+      "seconds": 2.758,
+      "mutants": [
+        {
+          "id": "mutation-f5bfebab16fcb55cc90236967d2aadac0b3f6607110dc8c6994b3416f1d2f37c",
+          "reached": null,
+          "run_status": "finished",
+          "exit": 17,
+          "status": "killed",
+          "observation": {
+            "case": "state-owner.tools02-h22",
+            "assertion": "state-owner.tools02-h22.bypass-killed",
+            "reached": true,
+            "passed": false,
+            "failures": [
+              "every guarded descriptor read follows its own-value check in the same function"
+            ],
+            "tests": 47,
+            "skipped": 0
+          }
+        }
+      ]
+    }
+  ]
+}

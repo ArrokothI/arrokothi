@@ -1793,7 +1793,15 @@
       },
       "member": "R5 Takeover replaces the old grant, and the old grant cannot authorize current coordinates.",
       "registry_case": "k12.adopt-review09-r5",
-      "registry_mutant": "mutation-6060d7a974870ac00c1c6ab5ee32fd69420043c264d84c3fc9132144d01d3546"
+      "registry_mutant": "mutation-6060d7a974870ac00c1c6ab5ee32fd69420043c264d84c3fc9132144d01d3546",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12-review09-r7": {
       "family": "family.k12.review-09",
@@ -1812,7 +1820,15 @@
       },
       "member": "R7 Changing only the writer epoch under an accepted Activation ID conflicts instead of replaying.",
       "registry_case": "k12.adopt-review09-r7",
-      "registry_mutant": "mutation-8d864793a9a0272c220ab34fb4fef524289a74c2b872e3fd6c94aae5597a7df8"
+      "registry_mutant": "mutation-8d864793a9a0272c220ab34fb4fef524289a74c2b872e3fd6c94aae5597a7df8",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x8": {
       "family": "family.k12c1.ablations-03",
@@ -1835,7 +1851,15 @@
       ],
       "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
       "registry_case": "k12c1.adopt-coordinate-x8",
-      "registry_mutant": "mutation-509390623b0b674dd29837ae3716602076db314ffa2e349a65e155149b665ca9"
+      "registry_mutant": "mutation-509390623b0b674dd29837ae3716602076db314ffa2e349a65e155149b665ca9",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x9": {
       "family": "family.k12c1.ablations-03",
@@ -1858,7 +1882,15 @@
       ],
       "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
       "registry_case": "k12c1.adopt-coordinate-x9",
-      "registry_mutant": "mutation-dcf4e6cd8919bd695e587219ba88441d7af6383cb0d8b538b1706b125bfc790e"
+      "registry_mutant": "mutation-dcf4e6cd8919bd695e587219ba88441d7af6383cb0d8b538b1706b125bfc790e",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x10": {
       "family": "family.k12c1.ablations-03",
@@ -1881,7 +1913,15 @@
       ],
       "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
       "registry_case": "k12c1.adopt-coordinate-x10",
-      "registry_mutant": "mutation-5dc3984622d7a72e92fbe3d44dc13c5f958c17db0c48b53f6480f47ba6706fef"
+      "registry_mutant": "mutation-5dc3984622d7a72e92fbe3d44dc13c5f958c17db0c48b53f6480f47ba6706fef",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "observed"
+        ]
+      }
     },
     "k12c1-coordinate-x11": {
       "family": "family.k12c1.ablations-03",
@@ -1904,7 +1944,15 @@
       ],
       "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
       "registry_case": "k12c1.adopt-coordinate-x11",
-      "registry_mutant": "mutation-fa985a368cf5ef02f4e78fa00326b74c32b7eeaa1abce950390c75808f130734"
+      "registry_mutant": "mutation-fa985a368cf5ef02f4e78fa00326b74c32b7eeaa1abce950390c75808f130734",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x12": {
       "family": "family.k12c1.ablations-03",
@@ -1928,7 +1976,15 @@
       ],
       "relocation_reading": "Removed appendRecoveryHistory was reconstructed as holdHistoryRecord and takeoverHistoryRecord. Rebound-06 already targets both current builders; preserve both edits, not a new group.",
       "registry_case": "k12c1.adopt-coordinate-x12",
-      "registry_mutant": "mutation-b5abed56212f01872e6ddcfd67168d79b29deee8e0bd1585f11abd0959357481"
+      "registry_mutant": "mutation-b5abed56212f01872e6ddcfd67168d79b29deee8e0bd1585f11abd0959357481",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x13": {
       "family": "family.k12c1.ablations-03",
@@ -1951,7 +2007,15 @@
       ],
       "relocation_reading": "Delivery construction moved to ExecutionStateOwner.#applyDelivery; its retained row still carries the exact plan Activation ID. Re-anchor here; rendering it remains a live defect.",
       "registry_case": "k12c1.adopt-coordinate-x13",
-      "registry_mutant": "mutation-7f3af4ce8c787b5dd57f4c91fc742825430127fcd06d58a0138f0663e1cee371"
+      "registry_mutant": "mutation-7f3af4ce8c787b5dd57f4c91fc742825430127fcd06d58a0138f0663e1cee371",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x14": {
       "family": "family.k12c1.ablations-03",
@@ -1974,7 +2038,15 @@
       ],
       "relocation_reading": "ResolvedExchange construction became prebuilt ResolvedFacts plus the state-owner append. The exact coordinate is still supplied by this builder; re-anchor its activationId field.",
       "registry_case": "k12c1.adopt-coordinate-x14",
-      "registry_mutant": "mutation-36b0828203edf086e5b273f8dc3c927c55ed8e2032159e2bba9c885b3a00dee7"
+      "registry_mutant": "mutation-36b0828203edf086e5b273f8dc3c927c55ed8e2032159e2bba9c885b3a00dee7",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "observed"
+        ]
+      }
     },
     "k12c1-coordinate-x15": {
       "family": "family.k12c1.ablations-03",
@@ -1997,7 +2069,15 @@
       ],
       "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
       "registry_case": "k12c1.adopt-coordinate-x15",
-      "registry_mutant": "mutation-f1614b10e2ceb7925cc8e8c3ea1189f0c62c5be9b488c6b5141f04072e5a1159"
+      "registry_mutant": "mutation-f1614b10e2ceb7925cc8e8c3ea1189f0c62c5be9b488c6b5141f04072e5a1159",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x16": {
       "family": "family.k12c1.ablations-03",
@@ -2020,7 +2100,15 @@
       ],
       "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
       "registry_case": "k12c1.adopt-coordinate-x16",
-      "registry_mutant": "mutation-3627d5555ef77b5f5c8ec256160af0bb0c62adad2e0fb982f899c5452a78a454"
+      "registry_mutant": "mutation-3627d5555ef77b5f5c8ec256160af0bb0c62adad2e0fb982f899c5452a78a454",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x17": {
       "family": "family.k12c1.ablations-03",
@@ -2043,7 +2131,15 @@
       ],
       "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
       "registry_case": "k12c1.adopt-coordinate-x17",
-      "registry_mutant": "mutation-733bfe5eb4dcded7480d9cd0bab7869db4bcc3fd9ef40d696cd6733cc712c3b9"
+      "registry_mutant": "mutation-733bfe5eb4dcded7480d9cd0bab7869db4bcc3fd9ef40d696cd6733cc712c3b9",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x18": {
       "family": "family.k12c1.ablations-03",
@@ -2066,7 +2162,15 @@
       ],
       "relocation_reading": "Takeover now prebuilds the answer before applying its plan. The historical return moved; rebound-06 identifies the current exact Activation-ID field.",
       "registry_case": "k12c1.adopt-coordinate-x18",
-      "registry_mutant": "mutation-2c244a0838cb7c24c9a101f056566959c7e3ebafc18dae5a0fb0768159d3b446"
+      "registry_mutant": "mutation-2c244a0838cb7c24c9a101f056566959c7e3ebafc18dae5a0fb0768159d3b446",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x19": {
       "family": "family.k12c1.ablations-03",
@@ -2090,7 +2194,15 @@
       ],
       "relocation_reading": "The old shared return split into no-change and changed prebuilt answers. Preserve both current spans as rebound-06 does; one historical adoption, not two.",
       "registry_case": "k12c1.adopt-coordinate-x19",
-      "registry_mutant": "mutation-050f4ad1253b124c1394cd34ae85a00505e0586f0b72159c8084037d75eabcbd"
+      "registry_mutant": "mutation-050f4ad1253b124c1394cd34ae85a00505e0586f0b72159c8084037d75eabcbd",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x20": {
       "family": "family.k12c1.ablations-03",
@@ -2113,7 +2225,15 @@
       ],
       "relocation_reading": "Protocol report now prebuilds its changed answer from the commit. Rebound-06 relocates the same coordinate obligation here.",
       "registry_case": "k12c1.adopt-coordinate-x20",
-      "registry_mutant": "mutation-5b24938ef334efd47fa0010b2296a88f9242a1ee1d34c68903a63d1ea994b911"
+      "registry_mutant": "mutation-5b24938ef334efd47fa0010b2296a88f9242a1ee1d34c68903a63d1ea994b911",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x21": {
       "family": "family.k12c1.ablations-03",
@@ -2136,7 +2256,15 @@
       ],
       "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
       "registry_case": "k12c1.adopt-coordinate-x21",
-      "registry_mutant": "mutation-cf3743ddf6f5e6d36c298fbb6ddb9dcf09357236088abb6f02841bcc27cdf0b4"
+      "registry_mutant": "mutation-cf3743ddf6f5e6d36c298fbb6ddb9dcf09357236088abb6f02841bcc27cdf0b4",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x22": {
       "family": "family.k12c1.ablations-03",
@@ -2159,7 +2287,15 @@
       ],
       "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
       "registry_case": "k12c1.adopt-coordinate-x22",
-      "registry_mutant": "mutation-23eee04ca912441b1010d0630e3b561134ba024b27741e948f4dc5e7e6b2e783"
+      "registry_mutant": "mutation-23eee04ca912441b1010d0630e3b561134ba024b27741e948f4dc5e7e6b2e783",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-x23": {
       "family": "family.k12c1.ablations-03",
@@ -2182,7 +2318,15 @@
       ],
       "relocation_reading": "The original production anchor remains unique; exact identity is still required.",
       "registry_case": "k12c1.adopt-coordinate-x23",
-      "registry_mutant": "mutation-60c1480634a7d7325cf4761f8998c6f12cf4a374bb5ea266081396b5afcba50d"
+      "registry_mutant": "mutation-60c1480634a7d7325cf4761f8998c6f12cf4a374bb5ea266081396b5afcba50d",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-diagnostics-v1": {
       "family": "family.k12c1.ablations-03",
@@ -2205,7 +2349,15 @@
       ],
       "relocation_reading": "Collector moved from Kernel values.ts to SDK value-capture.ts. Its eight details and per-code suffix remain; replacing the collector with appendOwn would restore per-position storage. No registry edit replaces this collector or removes its detail bound.",
       "registry_case": "k12c1.adopt-diagnostics-v1",
-      "registry_mutant": "mutation-8a0fea43a88d650472448af41701fd332cf6e6e261b11bfcd1f49f642c36d4df"
+      "registry_mutant": "mutation-8a0fea43a88d650472448af41701fd332cf6e6e261b11bfcd1f49f642c36d4df",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-diagnostics-v2": {
       "family": "family.k12c1.ablations-03",
@@ -2228,7 +2380,15 @@
       ],
       "relocation_reading": "Capture moved to SDK and its declared stop now returns STOPPED. Add a separate issues.length >= 8 early REFUSED return after that guard. The 256 nonfinite input is below the declared work/byte budget; early diagnostic-based termination still loses occurrences. Budget/STOPPED controls do not mutate this decision.",
       "registry_case": "k12c1.adopt-diagnostics-v2",
-      "registry_mutant": "mutation-2a16e8516cab39583dfbeaa1e85c9e534d1248aa5badda8d88d60c196cc744b5"
+      "registry_mutant": "mutation-2a16e8516cab39583dfbeaa1e85c9e534d1248aa5badda8d88d60c196cc744b5",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-diagnostics-v3": {
       "family": "family.k12c1.ablations-03",
@@ -2251,7 +2411,15 @@
       ],
       "relocation_reading": "The Kernel aggregate formatter still owns the count assignment. Existing own-only and charging cases do not replace occurrences with one.",
       "registry_case": "k12c1.adopt-diagnostics-v3",
-      "registry_mutant": "mutation-1731cf011f2945325c227caf27a4a3b0f49da3837284db3f5485a547848d40b1"
+      "registry_mutant": "mutation-1731cf011f2945325c227caf27a4a3b0f49da3837284db3f5485a547848d40b1",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z1": {
       "family": "family.k12c1.ablations-04",
@@ -2275,7 +2443,15 @@
       ],
       "relocation_reading": "The mutating #mint helper was removed. Its two old callers were input_ingress and initial dispatch; both now prebuild their receipt. Re-anchor those two calls as the one historical adoption, excluding takeover and Outcome receipt sites.",
       "registry_case": "k12c1.adopt-coordinate-z1",
-      "registry_mutant": "mutation-476da72a3801717d261a6bcc5cb97505da6e525128ba45f33344454de5e2652a"
+      "registry_mutant": "mutation-476da72a3801717d261a6bcc5cb97505da6e525128ba45f33344454de5e2652a",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z2": {
       "family": "family.k12c1.ablations-04",
@@ -2298,7 +2474,15 @@
       ],
       "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
       "registry_case": "k12c1.adopt-coordinate-z2",
-      "registry_mutant": "mutation-f9376ca88b5acb077c60d25e350c7ea027ea371ed225aee4a5a09df0e565e8fd"
+      "registry_mutant": "mutation-f9376ca88b5acb077c60d25e350c7ea027ea371ed225aee4a5a09df0e565e8fd",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z3": {
       "family": "family.k12c1.ablations-04",
@@ -2321,7 +2505,15 @@
       ],
       "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
       "registry_case": "k12c1.adopt-coordinate-z3",
-      "registry_mutant": "mutation-4e589609f7613f6e0e827ff22c240ba071a54814358480d69851e8bcc3717015"
+      "registry_mutant": "mutation-4e589609f7613f6e0e827ff22c240ba071a54814358480d69851e8bcc3717015",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "observed"
+        ]
+      }
     },
     "k12c1-coordinate-z4": {
       "family": "family.k12c1.ablations-04",
@@ -2344,7 +2536,15 @@
       ],
       "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
       "registry_case": "k12c1.adopt-coordinate-z4",
-      "registry_mutant": "mutation-93c1de368a2af34011a00024b03d9a7bd43edd507b8843d756f13e20e08245b1"
+      "registry_mutant": "mutation-93c1de368a2af34011a00024b03d9a7bd43edd507b8843d756f13e20e08245b1",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z5": {
       "family": "family.k12c1.ablations-04",
@@ -2367,7 +2567,15 @@
       ],
       "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
       "registry_case": "k12c1.adopt-coordinate-z5",
-      "registry_mutant": "mutation-33c689898dc3bbc3b07b5d9289c2d36f0162cd44fa51a27519cc3d5018ba2d0c"
+      "registry_mutant": "mutation-33c689898dc3bbc3b07b5d9289c2d36f0162cd44fa51a27519cc3d5018ba2d0c",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "observed"
+        ]
+      }
     },
     "k12c1-coordinate-z6": {
       "family": "family.k12c1.ablations-04",
@@ -2390,7 +2598,15 @@
       ],
       "relocation_reading": "The accepted-Outcomes map insertion moved into the owner Outcome arm; the exact Activation-ID key is unchanged. Mutate this insertion, not the lookup or a type-only site.",
       "registry_case": "k12c1.adopt-coordinate-z6",
-      "registry_mutant": "mutation-c3919857d924e4ab103ce0a5a1145f25280f96bf519b50b25bfbf0bd4f896989"
+      "registry_mutant": "mutation-c3919857d924e4ab103ce0a5a1145f25280f96bf519b50b25bfbf0bd4f896989",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z7": {
       "family": "family.k12c1.ablations-04",
@@ -2413,7 +2629,15 @@
       ],
       "relocation_reading": "Activation Event conversion moved into state.ts, and application entries now hold destination directly. Re-anchor the application-input branch; the new timeout branch is outside the historical input class.",
       "registry_case": "k12c1.adopt-coordinate-z7",
-      "registry_mutant": "mutation-e9e71b41f8196a759faec02fc6827782ff827befc30bb1d8ef73be91b36448f6"
+      "registry_mutant": "mutation-e9e71b41f8196a759faec02fc6827782ff827befc30bb1d8ef73be91b36448f6",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z8": {
       "family": "family.k12c1.ablations-04",
@@ -2436,7 +2660,15 @@
       ],
       "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
       "registry_case": "k12c1.adopt-coordinate-z8",
-      "registry_mutant": "mutation-210b921a5de485277658dba7eb6132f97252f25407b27771ad35bba37cde86b0"
+      "registry_mutant": "mutation-210b921a5de485277658dba7eb6132f97252f25407b27771ad35bba37cde86b0",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z9": {
       "family": "family.k12c1.ablations-04",
@@ -2459,7 +2691,15 @@
       ],
       "relocation_reading": "Initial grant construction moved from an ActivationRecord object field into a prebuilt submission local. Its Execution-ID field remains visible to the Driver and tested exactly.",
       "registry_case": "k12c1.adopt-coordinate-z9",
-      "registry_mutant": "mutation-3ed15af54e9f21c973b2aec52714a38e193be86eb077891d504b9455b5402000"
+      "registry_mutant": "mutation-3ed15af54e9f21c973b2aec52714a38e193be86eb077891d504b9455b5402000",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z10": {
       "family": "family.k12c1.ablations-04",
@@ -2482,7 +2722,15 @@
       ],
       "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
       "registry_case": "k12c1.adopt-coordinate-z10",
-      "registry_mutant": "mutation-eebb7e8adfee6c3c84c96345b15bff2216ffb0d3274c3d9294cb4f0b6dd46805"
+      "registry_mutant": "mutation-eebb7e8adfee6c3c84c96345b15bff2216ffb0d3274c3d9294cb4f0b6dd46805",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z11": {
       "family": "family.k12c1.ablations-04",
@@ -2505,7 +2753,15 @@
       ],
       "relocation_reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle.",
       "registry_case": "k12c1.adopt-coordinate-z11",
-      "registry_mutant": "mutation-3fd9c223ba3c1fc0441fd1ea43fb89f18149c68904f58f3ef267859bc21a7724"
+      "registry_mutant": "mutation-3fd9c223ba3c1fc0441fd1ea43fb89f18149c68904f58f3ef267859bc21a7724",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z12": {
       "family": "family.k12c1.ablations-04",
@@ -2528,7 +2784,15 @@
       ],
       "relocation_reading": "toActivationView moved intact to state.ts; the Activation-ID projection remains current.",
       "registry_case": "k12c1.adopt-coordinate-z12",
-      "registry_mutant": "mutation-874e11f6dc75b5b807cca2698439987d7e34cc377930f79f3634303a8ed36b3f"
+      "registry_mutant": "mutation-874e11f6dc75b5b807cca2698439987d7e34cc377930f79f3634303a8ed36b3f",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z13": {
       "family": "family.k12c1.ablations-04",
@@ -2551,7 +2815,15 @@
       ],
       "relocation_reading": "viewOf moved to state.ts; its Execution-ID projection remains current.",
       "registry_case": "k12c1.adopt-coordinate-z13",
-      "registry_mutant": "mutation-58b945a5fc269434cbc522ee6c7278d4245667d25d396b0ee33b3a91dcd65009"
+      "registry_mutant": "mutation-58b945a5fc269434cbc522ee6c7278d4245667d25d396b0ee33b3a91dcd65009",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z14": {
       "family": "family.k12c1.ablations-04",
@@ -2574,7 +2846,15 @@
       ],
       "relocation_reading": "viewOf queued-ID collection moved to state.ts; the exact Event-ID projection remains current.",
       "registry_case": "k12c1.adopt-coordinate-z14",
-      "registry_mutant": "mutation-a2088209671a743d9da11ada36108c719f5240bf0b3641837b3d10d3857830b1"
+      "registry_mutant": "mutation-a2088209671a743d9da11ada36108c719f5240bf0b3641837b3d10d3857830b1",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z15": {
       "family": "family.k12c1.ablations-04",
@@ -2597,7 +2877,15 @@
       ],
       "relocation_reading": "Mailbox projection moved to state.ts and its application branch adds an InputId cast because timeout Events have no input ID. Preserve the application input destination projection; do not mutate the timeout branch.",
       "registry_case": "k12c1.adopt-coordinate-z15",
-      "registry_mutant": "mutation-a81d3f6d1d502ed37ef5f611560dc29dda01628006cef626eca14a579fa4622d"
+      "registry_mutant": "mutation-a81d3f6d1d502ed37ef5f611560dc29dda01628006cef626eca14a579fa4622d",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-coordinate-z16": {
       "family": "family.k12c1.ablations-04",
@@ -2620,7 +2908,15 @@
       ],
       "relocation_reading": "holdsOf moved to plan.ts; the code-hold Activation-ID projection remains exact. This differs from X11 changing retained hold state.",
       "registry_case": "k12c1.adopt-coordinate-z16",
-      "registry_mutant": "mutation-bf5e6b76398915ccfc6982f5b03aedbb8ed67562f11df0b9b33b9fd99c3a863b"
+      "registry_mutant": "mutation-bf5e6b76398915ccfc6982f5b03aedbb8ed67562f11df0b9b33b9fd99c3a863b",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-recovery-h1": {
       "family": "family.k12c1.ablations-06",
@@ -2659,7 +2955,16 @@
           "member": "family.k12c1.ablations-06#H2",
           "mutation": "mutation-87d77a4efc5fc0bff25bd6e32e5279deee1da35273fa122fba9d8ff8109b61e0"
         }
-      ]
+      ],
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed",
+          "killed"
+        ]
+      }
     },
     "k12c1-recovery-h10": {
       "family": "family.k12c1.ablations-06",
@@ -2683,7 +2988,15 @@
       ],
       "relocation_reading": "The takeover History builder still owns resultingEpoch. The complete-decision takeover check constrains epochs in the answer/Activation, but not this History field; dropping it requires an adoption against the existing History leaf.",
       "registry_case": "k12c1.adopt-recovery-h10",
-      "registry_mutant": "mutation-df5cbfa6915c7b88066d6e676a674784e16ab3aefeea940c5b09d23704cc7664"
+      "registry_mutant": "mutation-df5cbfa6915c7b88066d6e676a674784e16ab3aefeea940c5b09d23704cc7664",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-recovery-h11": {
       "family": "family.k12c1.ablations-06",
@@ -2707,7 +3020,15 @@
       ],
       "relocation_reading": "The declaration builder is still current. k12.adopt-b9 mutates Outcome-ending attempt_submission History, the opposite operation/authority boundary, and is not this adoption. The complete-decision oracle does not independently assert this History authority field.",
       "registry_case": "k12c1.adopt-recovery-h11",
-      "registry_mutant": "mutation-d39403a1e8e8e47b7d7cd7ee163410a3199b12eecb35ec87253fc6049c4fff45"
+      "registry_mutant": "mutation-d39403a1e8e8e47b7d7cd7ee163410a3199b12eecb35ec87253fc6049c4fff45",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-recovery-h12": {
       "family": "family.k12c1.ablations-06",
@@ -2730,7 +3051,15 @@
       ],
       "relocation_reading": "Initial dispatch now has the same mintReceipt line, so scope the current anchor to writerEpoch = currentEpoch + 1. Unlike Z11, this changes the actual minted receipt, not only the returned receipt. Short ASCII sweep identities do not distinguish the lossy spelling.",
       "registry_case": "k12c1.adopt-recovery-h12",
-      "registry_mutant": "mutation-e79ecbfda90fa5ca4ea337c0727788f4fc86377092d5226dab797a0e65ff613b"
+      "registry_mutant": "mutation-e79ecbfda90fa5ca4ea337c0727788f4fc86377092d5226dab797a0e65ff613b",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-recovery-h15": {
       "family": "family.k12c1.ablations-06",
@@ -2754,7 +3083,15 @@
       ],
       "relocation_reading": "The hostMember call remains unique. Ordinary caller.controlScopes would consult ambient inheritance; current registry/oracle control-authority scenarios do not introduce this inherited scope. The maintained pollution leaf names the actual distinguishing input.",
       "registry_case": "k12c1.adopt-recovery-h15",
-      "registry_mutant": "mutation-f497faffa4b48efc161fda566ef674b5654781fa5943f68d7d958c15e26967cf"
+      "registry_mutant": "mutation-f497faffa4b48efc161fda566ef674b5654781fa5943f68d7d958c15e26967cf",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "observed"
+        ]
+      }
     },
     "k12c1-recovery-h16": {
       "family": "family.k12c1.ablations-06",
@@ -2793,7 +3130,16 @@
           "member": "family.k12c1.ablations-06#H19",
           "mutation": "mutation-632b434c60781a49063d54e051cb2b5c497f02e11655e2eed8dad1b15bc295f4"
         }
-      ]
+      ],
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "observed",
+          "observed"
+        ]
+      }
     },
     "k12c1-recovery-h7": {
       "family": "family.k12c1.ablations-06",
@@ -2808,7 +3154,7 @@
         "file": "packages/kernel/tests/control-commits.test.ts",
         "test_path": [
           "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
-          "createExecution: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+          "recoverExecution: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
         ]
       },
       "current_target": "packages/kernel/src/coordinator.ts",
@@ -2817,7 +3163,15 @@
       ],
       "relocation_reading": "The recovery answer is prebuilt before handing its plan to the state owner. Re-anchor the post-apply return; the old applyControlCommit helper is removed.",
       "registry_case": "state-owner.tools02-h7",
-      "registry_mutant": "mutation-31b8db55bc82d15e2cac1e99cee73bad9effa301e674a38aa8a6fd0fe914ab45"
+      "registry_mutant": "mutation-31b8db55bc82d15e2cac1e99cee73bad9effa301e674a38aa8a6fd0fe914ab45",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "setup_error"
+        ]
+      }
     },
     "k12c1-recovery-h17": {
       "family": "family.k12c1.ablations-06",
@@ -2841,7 +3195,15 @@
       ],
       "relocation_reading": "An absent mailboxCapacity option ignores Object.prototype and uses the default capacity.",
       "registry_case": "k12c1.adopt-recovery-h17",
-      "registry_mutant": "mutation-43fa21cebbae4d4b360d3a917d0bf871168fab8253783feeece73813c7113e2f"
+      "registry_mutant": "mutation-43fa21cebbae4d4b360d3a917d0bf871168fab8253783feeece73813c7113e2f",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-recovery-h18": {
       "family": "family.k12c1.ablations-06",
@@ -2865,7 +3227,15 @@
       ],
       "relocation_reading": "An absent emissionsPerOutcome option ignores Object.prototype and uses the default Emission limit.",
       "registry_case": "k12c1.adopt-recovery-h18",
-      "registry_mutant": "mutation-396510935970d7695ec7735fb390c64425c144f4bdcee0fe6a8e658cdd0df9b6"
+      "registry_mutant": "mutation-396510935970d7695ec7735fb390c64425c144f4bdcee0fe6a8e658cdd0df9b6",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-recovery-h20": {
       "family": "family.k12c1.ablations-06",
@@ -2889,7 +3259,15 @@
       ],
       "relocation_reading": "A function-object Driver must not inherit safety from Function.prototype.",
       "registry_case": "k12c1.adopt-recovery-h20",
-      "registry_mutant": "mutation-ebc784cdb97248253092436607f0223c320e8d886372e6d216bf9a9f16e8caae"
+      "registry_mutant": "mutation-ebc784cdb97248253092436607f0223c320e8d886372e6d216bf9a9f16e8caae",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "observed"
+        ]
+      }
     },
     "k12c1-recovery-h21": {
       "family": "family.k12c1.ablations-06",
@@ -2913,7 +3291,15 @@
       ],
       "relocation_reading": "Host-owned prototype declarations are honored, including Driver safety, control scopes and options.",
       "registry_case": "k12c1.adopt-recovery-h21",
-      "registry_mutant": "mutation-ade3d79012cee5a7f80377e21878b06f5218db7120ab6ad0fef4751e60d29a34"
+      "registry_mutant": "mutation-ade3d79012cee5a7f80377e21878b06f5218db7120ab6ad0fef4751e60d29a34",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     },
     "k12c1-recovery-h22": {
       "family": "family.k12c1.ablations-06",
@@ -2937,7 +3323,15 @@
       ],
       "relocation_reading": "Every descriptor-field read follows its own-value guard.",
       "registry_case": "state-owner.tools02-h22",
-      "registry_mutant": "mutation-f5bfebab16fcb55cc90236967d2aadac0b3f6607110dc8c6994b3416f1d2f37c"
+      "registry_mutant": "mutation-f5bfebab16fcb55cc90236967d2aadac0b3f6607110dc8c6994b3416f1d2f37c",
+      "validation": {
+        "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+        "record": "adoption-controls-09.json",
+        "control_valid": true,
+        "outcomes": [
+          "killed"
+        ]
+      }
     }
   },
   "resume_origin": "artifact-d3c77a74ad17db7c908e8b60",

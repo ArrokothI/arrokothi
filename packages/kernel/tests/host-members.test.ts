@@ -84,12 +84,13 @@ describe("correction DEC-8 isSafeToReplace comes from the Driver, never from Obj
       },
       writerEpoch: 1,
     };
-    let refusal;
+    let result;
     try {
-      refusal = refused(kernel.requestTakeover(author, executionId, request));
+      result = kernel.requestTakeover(author, executionId, request);
     } finally {
       remove();
     }
+    const refusal = refused(result);
     assert.equal(refusal.classification, "unsafe_replacement", "absent safety is not established by ambient state");
     assert.equal(calls, 0, "the inherited method never ran");
     const after = view();
@@ -103,12 +104,13 @@ describe("correction DEC-8 isSafeToReplace comes from the Driver, never from Obj
     const driver = bareDriver();
     const { kernel, executionId, open } = opened(driver);
     const remove = inherit(Object.prototype, "isSafeToReplace", { value: () => true });
-    let refusal;
+    let result;
     try {
-      refusal = refused(kernel.requestTakeover(author, executionId, { activationId: open.activationId, writerEpoch: 1 }));
+      result = kernel.requestTakeover(author, executionId, { activationId: open.activationId, writerEpoch: 1 });
     } finally {
       remove();
     }
+    const refusal = refused(result);
     assert.equal(refusal.classification, "unsafe_replacement");
   });
 
@@ -120,12 +122,13 @@ describe("correction DEC-8 isSafeToReplace comes from the Driver, never from Obj
     }) as unknown as ExecutionDriver;
     const { kernel, executionId, open } = opened(driver);
     const remove = inherit(Function.prototype, "isSafeToReplace", { value: () => true });
-    let refusal;
+    let result;
     try {
-      refusal = refused(kernel.requestTakeover(author, executionId, { activationId: open.activationId, writerEpoch: 1 }));
+      result = kernel.requestTakeover(author, executionId, { activationId: open.activationId, writerEpoch: 1 });
     } finally {
       remove();
     }
+    const refusal = refused(result);
     assert.equal(refusal.classification, "unsafe_replacement");
   });
 
@@ -166,12 +169,13 @@ describe("correction DEC-8 isSafeToReplace comes from the Driver, never from Obj
     }
     const { kernel, executionId, open } = opened(new NoSafety());
     const remove = inherit(Object.prototype, "isSafeToReplace", { value: () => true });
-    let refusal;
+    let result;
     try {
-      refusal = refused(kernel.requestTakeover(author, executionId, { activationId: open.activationId, writerEpoch: 1 }));
+      result = kernel.requestTakeover(author, executionId, { activationId: open.activationId, writerEpoch: 1 });
     } finally {
       remove();
     }
+    const refusal = refused(result);
     assert.equal(refusal.classification, "unsafe_replacement");
   });
 });
@@ -198,12 +202,13 @@ describe("correction DEC-8 controlScopes comes from the caller, never from Objec
           return ["tenant-a"];
         },
       });
-      let refusal;
+      let result;
       try {
-        refusal = refused(control(kernel, observer("visible-only"), executionId, open.activationId));
+        result = control(kernel, observer("visible-only"), executionId, open.activationId);
       } finally {
         remove();
       }
+      const refusal = refused(result);
       assert.equal(refusal.classification, "unauthorized_control");
       assert.equal(reads, 0, "the inherited accessor was never consulted");
       const after = view();

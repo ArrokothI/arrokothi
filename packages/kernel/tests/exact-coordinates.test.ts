@@ -13,6 +13,19 @@ const receiptAt = (executionId: string, boundary: ReceiptBoundary, position: num
   token: `${({ creation: "crt", input_ingress: "inp", dispatch_intent: "dsp", outcome_acceptance: "out" })[boundary]}:${executionId}:${position}`,
   position,
 });
+// Record successful completion with plain operands as well as checking the returned coordinates.
+// A rejected internal plan must not escape as an unclassified exception before the value assertions.
+function returnsNormally<T>(operation: () => T): T {
+  let result: T | undefined;
+  let threw = false;
+  try {
+    result = operation();
+  } catch {
+    threw = true;
+  }
+  assert.equal(threw, false, "a valid coordinate operation returns normally");
+  return result as T;
+}
 const available = { definitionRevisions: ["weekly-report@3"], runtimeContractRevisions: ["runtime-contract@1"], progressCodecs: ["inline-json@1"] };
 for (const namespace of ["actor-é", "actor-\ud800"]) for (const step of ["complete", "fail"] as const) {
   test(`DEC-4 exact retained coordinates: ${JSON.stringify(namespace)} ${step}`, () => {
@@ -43,7 +56,7 @@ for (const namespace of ["actor-é", "actor-\ud800"]) for (const step of ["compl
         { eventId: initialEventId, inputId: { producerNamespace: namespace, destination: executionId, requestKey: key }, receipt: receiptAt(executionId, "creation", 1) },
         { eventId: extraEventId, inputId: { producerNamespace: namespace, destination: executionId, requestKey: "extra" }, receipt: receiptAt(executionId, "input_ingress", 2) },
       ]);
-      const open = accepted(kernel.dispatch(who, executionId, { bound: 2 }));
+      const open = accepted(returnsNormally(() => kernel.dispatch(who, executionId, { bound: 2 })));
       assert.deepEqual(open, { activationId, writerEpoch: 1, baseProgressRevision: 0, batch, receipt: receiptAt(executionId, "dispatch_intent", 3), redelivered: false });
       const delivered = driver.seen[driver.seen.length - 1]!;
       assert.equal(delivered.executionId, executionId);
@@ -79,7 +92,7 @@ for (const namespace of ["actor-é", "actor-\ud800"]) for (const step of ["compl
       assert.equal(protocol.recoveryHolds[0]?.activationId, open.activationId);
       assert.equal(view().recoveryHolds[0]?.activationId, open.activationId);
       assert.equal(accepted(kernel.reportProtocolFailure(who, executionId, { activationId: open.activationId, writerEpoch: 1 })).activationId, open.activationId);
-      const taken = accepted(kernel.requestTakeover(who, executionId, { activationId: open.activationId, writerEpoch: 1 }));
+      const taken = accepted(returnsNormally(() => kernel.requestTakeover(who, executionId, { activationId: open.activationId, writerEpoch: 1 })));
       assert.deepEqual(taken, { activationId, supersededEpoch: 1, writerEpoch: 2, baseProgressRevision: 0, batch, receipt: receiptAt(executionId, "dispatch_intent", 4) });
       const replacement = driver.seen[driver.seen.length - 1]!;
       assert.deepEqual(replacement, { ...delivered, writerEpoch: 2 });
@@ -106,7 +119,7 @@ for (const namespace of ["actor-é", "actor-\ud800"]) for (const step of ["compl
       accepted(kernel.recoverExecution(who, executionId, { activationId: open.activationId, available: { ...available, progressCodecs: [] } }));
       accepted(kernel.reportProtocolFailure(who, executionId, { activationId: open.activationId, writerEpoch: 2 }));
       const proposal = outcomeFor(executionId, taken, { emissions: [{ emissionKey: "draft-é", value: { text: "first" } }] });
-      const first = accepted(kernel.submitOutcome(who, proposal, grant));
+      const first = accepted(returnsNormally(() => kernel.submitOutcome(who, proposal, grant)));
       assert.deepEqual(first, {
         activationId, receipt: receiptAt(executionId, "outcome_acceptance", 5), acknowledged: batch,
         emissionIds: [`emission-${packed([executionId, activationId, "draft-é"])}`],

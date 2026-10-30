@@ -52,7 +52,7 @@
       ],
       "test_count": 98,
       "killers": [
-        "createExecution: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+        "recoverExecution: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
       ]
     },
     "tools02-h22": {

@@ -2,6 +2,23 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-29 adoption validation / assertion repair:** at `f9e9c540`, all 49 new
+  controls passed; 42 of 51 mutants qualified, eight remained observed, and H7's
+  probe refused the wrong named killer. [Results](adoption-controls-09.json) and
+  [all-attempt runtime](adoption-runtime-09.json): **181.439 seconds** total.
+  - Four coordinate mutants are rejected by the current state owner's internal
+    preconditions before the leaf's value assertions. The existing exact-coordinate
+    leaf now also asserts normal completion using a boolean; product errors themselves
+    never count as witnesses. Same input, operations and expected coordinates.
+  - H15/H16/H19/H20 reached refused() while the test's pollution was still live.
+    The existing leaves now retain the result, restore the prototype, then assert
+    refusal. No witness policy or limit is relaxed. H7's control specification and
+    triage pointer now name recoverExecution instead of the accidentally selected
+    createExecution leaf. Retry these eight cases / nine mutants in a fresh clone.
+  - No new test leaf or counterexample group was introduced: five new-test groups
+    and 67 adoptions remain. All changes are existing tests, fixtures and work records;
+    no product or historical evidence change. Resume remains origin 697 after validation.
+
 - **2026-10-29 adoption setup correction:** the first invocation at `11887628`
   refused the first case's 4 MiB output limit before starting a child process; the
   runner permits at most 1 MiB. All 49 new cases now use that existing maximum.

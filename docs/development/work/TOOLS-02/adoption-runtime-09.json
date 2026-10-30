@@ -270,7 +270,417 @@
           ]
         }
       ]
+    },
+    {
+      "revision": "f9e9c540fe8d29d4a221c854c956e24d5126bcd4",
+      "raw_local_path": "/private/tmp/tools02-correction-results-f9e9c540.json",
+      "raw_sha256": "6f6f3b969bd9b42ffebcbe94951c7aa17fca36d7e8edbd801aa85e00d5e79e51",
+      "seconds": 147.634,
+      "cases": [
+        {
+          "case": "k12.adopt-review09-r5",
+          "control_valid": true,
+          "seconds": 2.881,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12.adopt-review09-r7",
+          "control_valid": true,
+          "seconds": 1.544,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x8",
+          "control_valid": true,
+          "seconds": 1.553,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x9",
+          "control_valid": true,
+          "seconds": 1.536,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x10",
+          "control_valid": true,
+          "seconds": 1.559,
+          "outcomes": [
+            "observed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x11",
+          "control_valid": true,
+          "seconds": 1.442,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x12",
+          "control_valid": true,
+          "seconds": 1.486,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x13",
+          "control_valid": true,
+          "seconds": 1.486,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x14",
+          "control_valid": true,
+          "seconds": 1.439,
+          "outcomes": [
+            "observed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x15",
+          "control_valid": true,
+          "seconds": 1.479,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x16",
+          "control_valid": true,
+          "seconds": 1.509,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x17",
+          "control_valid": true,
+          "seconds": 1.431,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x18",
+          "control_valid": true,
+          "seconds": 1.411,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x19",
+          "control_valid": true,
+          "seconds": 1.575,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x20",
+          "control_valid": true,
+          "seconds": 1.511,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x21",
+          "control_valid": true,
+          "seconds": 1.593,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x22",
+          "control_valid": true,
+          "seconds": 1.465,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x23",
+          "control_valid": true,
+          "seconds": 1.469,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-diagnostics-v1",
+          "control_valid": true,
+          "seconds": 5.684,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-diagnostics-v2",
+          "control_valid": true,
+          "seconds": 4.971,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-diagnostics-v3",
+          "control_valid": true,
+          "seconds": 6.032,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z1",
+          "control_valid": true,
+          "seconds": 1.438,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z2",
+          "control_valid": true,
+          "seconds": 1.417,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z3",
+          "control_valid": true,
+          "seconds": 1.408,
+          "outcomes": [
+            "observed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z4",
+          "control_valid": true,
+          "seconds": 1.402,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z5",
+          "control_valid": true,
+          "seconds": 1.424,
+          "outcomes": [
+            "observed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z6",
+          "control_valid": true,
+          "seconds": 1.426,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z7",
+          "control_valid": true,
+          "seconds": 1.408,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z8",
+          "control_valid": true,
+          "seconds": 1.404,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z9",
+          "control_valid": true,
+          "seconds": 1.399,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z10",
+          "control_valid": true,
+          "seconds": 1.414,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z11",
+          "control_valid": true,
+          "seconds": 1.411,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z12",
+          "control_valid": true,
+          "seconds": 1.38,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z13",
+          "control_valid": true,
+          "seconds": 1.383,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z14",
+          "control_valid": true,
+          "seconds": 1.462,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z15",
+          "control_valid": true,
+          "seconds": 1.396,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z16",
+          "control_valid": true,
+          "seconds": 1.42,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h1",
+          "control_valid": true,
+          "seconds": 2.176,
+          "outcomes": [
+            "killed",
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h10",
+          "control_valid": true,
+          "seconds": 1.42,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h11",
+          "control_valid": true,
+          "seconds": 1.401,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h12",
+          "control_valid": true,
+          "seconds": 2.219,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h15",
+          "control_valid": true,
+          "seconds": 1.567,
+          "outcomes": [
+            "observed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h16",
+          "control_valid": true,
+          "seconds": 1.986,
+          "outcomes": [
+            "observed",
+            "observed"
+          ]
+        },
+        {
+          "case": "state-owner.tools02-h7",
+          "control_valid": true,
+          "seconds": 61.126,
+          "outcomes": [
+            "setup_error"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h17",
+          "control_valid": true,
+          "seconds": 1.368,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h18",
+          "control_valid": true,
+          "seconds": 1.329,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h20",
+          "control_valid": true,
+          "seconds": 1.296,
+          "outcomes": [
+            "observed"
+          ]
+        },
+        {
+          "case": "k12c1.adopt-recovery-h21",
+          "control_valid": true,
+          "seconds": 1.34,
+          "outcomes": [
+            "killed"
+          ]
+        },
+        {
+          "case": "state-owner.tools02-h22",
+          "control_valid": true,
+          "seconds": 2.758,
+          "outcomes": [
+            "killed"
+          ]
+        }
+      ]
     }
   ],
-  "seconds": 33.805
+  "seconds": 181.439,
+  "launcher_errors": [
+    {
+      "revision": "11887628",
+      "error": "4 MiB output limit refused before first child process; no elapsed timer persisted. No test or mutant executed.",
+      "raw_local_path": "/private/tmp/tools02-correction-run-11887628.log",
+      "raw_sha256": "8728019701b9a70df96f586afae937b7e26ca211d052d20a2404cd69cc4ef7e7"
+    }
+  ]
 }
