@@ -60824,7 +60824,11 @@
     },
     {
       "id": "mention-29942bd41c5bdff95c7f91c5",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-23d73d3a5b8cd2caf663b251",
@@ -60836,7 +60840,11 @@
     },
     {
       "id": "mention-2585136f08207aa525b8e870",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-34071a5121f633a3aa3a13ac",
@@ -60844,23 +60852,43 @@
     },
     {
       "id": "mention-2c0da86597d780968073fb0b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-09a2e2fd7ecb1d57106f2cbd",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-b5f3fec4e9a4d524b1bee080",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-1c0240391bf8c040cb592f33",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-e4a476a8a679dd3c992af87c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-c2c05bcad77a5692f2b212e4",
@@ -60876,7 +60904,292 @@
     },
     {
       "id": "mention-aab4e68a34fb905e5c478a60",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The thirty same-input whole-view comparisons remain in whole-view-ambient, with exact answers/views under inherited resultingEpoch variants.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "the comparison set is review 10's 30"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-465ffb05ade468adc070a6d7",
@@ -60884,27 +61197,1580 @@
     },
     {
       "id": "mention-d707595e8105e7d689d76e2e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Invariant explanation and dependency-audit scope. The concrete syntax/ordering examples have separate rows and family readings; no universal enforcement claim is accepted."
+      }
     },
     {
       "id": "mention-7148fa298f9c08126178f2ea",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Invariant explanation and dependency-audit scope. The concrete syntax/ordering examples have separate rows and family readings; no universal enforcement claim is accepted."
+      }
     },
     {
       "id": "mention-d6c798a7f5bc785bac40251d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The current effect-analysis negative controls preserve logical-assignment bindings, constructed-container reachability and foreign handoffs, with exact rule violations and clean/typecheck controls. C15/C16 production variants retain their separate owner-relocation reading.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "the unmodified source is the clean control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "1\u20132: an increment before the commit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "3: a plain write moved before the builds"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "4: an element write with a literal key"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "5: a logical assignment"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "6: a delete of a record field"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "8: an early append through a const alias"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "9: an early append through a fresh container holding a record list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "10\u201311: an early write through an alias"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "13: an early write inside a local closure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "14: an early append inside a callback handed to a helper"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "15: an early Map mutation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "16: an early freeze of a record list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "21: a record list widened to unknown, cast to string and appended to through a helper"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "owner module state changed while preparing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "17: a builder that also changes module state"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "18: a refusal recorded without exiting"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "19: a refusal helper whose result is not tested"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "20: a refusal helper that changes state on its continuing path"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "22: a record handed to foreign code"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "23: an unclassified call before the hand-over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "24: a value built after the hand-over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "28 (round 6 H7): a recovery answer projected after the hand-over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: foreign code run after the basis is bound"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: the basis bound before the safety callback"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: a plan's basis read when the plan is assembled"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: accepted state read after the last callback, before the basis"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: #accept handed a basis that is not its caller's binding"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "26: the Driver handed the attempt before the decision is applied"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "27: holds written before their history append"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a dropped history append (binding kept)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a dropped hold write (binding kept)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a dropped receipt append (binding kept)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a dropped grant write (binding kept)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "the creation-key index published before the Execution map"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "an early append, inside a callback, through an alias of a record list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "an early append, inside a callback, to a record list a fresh container holds"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "the listing walk writes the Execution map through a captured alias, seen at the coordinator's call"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "the listing walk appends to a record list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "29: a protocol hold written while preparing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "30: a hold written by the wrong arm"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "31: recovery history changed through an alias outside the arms"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a reader getter that writes its record"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a changing getter read by a planner before its hand-over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a governed commit computed from the successor (next.registrations + 1)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a successor built but never admitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 an admission after the first write"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 an omitted scalar write (the live wait)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a skipped disposition (the loop starts at 1)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a duplicated append (the timeout twice)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a plan-derived conditional that suppresses a checked change (a scalar)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a plan-derived conditional that suppresses a checked change (an append)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a change the commit does not apply (input clears the cancellation record)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a takeover that writes the open-exchange pointer"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 creation publishing its fresh record unadmitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a getter that returns a live record list, which a planner changes"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-3a6c9265580f88f044999200",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The current effect-analysis negative controls preserve logical-assignment bindings, constructed-container reachability and foreign handoffs, with exact rule violations and clean/typecheck controls. C15/C16 production variants retain their separate owner-relocation reading.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "the unmodified source is the clean control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "1\u20132: an increment before the commit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "3: a plain write moved before the builds"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "4: an element write with a literal key"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "5: a logical assignment"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "6: a delete of a record field"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "8: an early append through a const alias"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "9: an early append through a fresh container holding a record list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "10\u201311: an early write through an alias"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "13: an early write inside a local closure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "14: an early append inside a callback handed to a helper"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "15: an early Map mutation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "16: an early freeze of a record list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "21: a record list widened to unknown, cast to string and appended to through a helper"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "owner module state changed while preparing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "17: a builder that also changes module state"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "18: a refusal recorded without exiting"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "19: a refusal helper whose result is not tested"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "20: a refusal helper that changes state on its continuing path"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "22: a record handed to foreign code"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "23: an unclassified call before the hand-over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "24: a value built after the hand-over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "28 (round 6 H7): a recovery answer projected after the hand-over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: foreign code run after the basis is bound"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: the basis bound before the safety callback"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: a plan's basis read when the plan is assembled"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: accepted state read after the last callback, before the basis"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: #accept handed a basis that is not its caller's binding"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "26: the Driver handed the attempt before the decision is applied"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "27: holds written before their history append"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a dropped history append (binding kept)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a dropped hold write (binding kept)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a dropped receipt append (binding kept)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a dropped grant write (binding kept)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "the creation-key index published before the Execution map"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "an early append, inside a callback, through an alias of a record list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "an early append, inside a callback, to a record list a fresh container holds"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "the listing walk writes the Execution map through a captured alias, seen at the coordinator's call"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "the listing walk appends to a record list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "29: a protocol hold written while preparing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "30: a hold written by the wrong arm"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "31: recovery history changed through an alias outside the arms"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a reader getter that writes its record"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a changing getter read by a planner before its hand-over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a governed commit computed from the successor (next.registrations + 1)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a successor built but never admitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 an admission after the first write"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 an omitted scalar write (the live wait)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a skipped disposition (the loop starts at 1)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a duplicated append (the timeout twice)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a plan-derived conditional that suppresses a checked change (a scalar)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a plan-derived conditional that suppresses a checked change (an append)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a change the commit does not apply (input clears the cancellation record)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a takeover that writes the open-exchange pointer"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 creation publishing its fresh record unadmitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a getter that returns a live record list, which a planner changes"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-3e2fbc14650aa8333b949c50",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The current effect-analysis negative controls preserve logical-assignment bindings, constructed-container reachability and foreign handoffs, with exact rule violations and clean/typecheck controls. C15/C16 production variants retain their separate owner-relocation reading.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "the unmodified source is the clean control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "1\u20132: an increment before the commit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "3: a plain write moved before the builds"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "4: an element write with a literal key"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "5: a logical assignment"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "6: a delete of a record field"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "8: an early append through a const alias"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "9: an early append through a fresh container holding a record list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "10\u201311: an early write through an alias"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "13: an early write inside a local closure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "14: an early append inside a callback handed to a helper"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "15: an early Map mutation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "16: an early freeze of a record list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "21: a record list widened to unknown, cast to string and appended to through a helper"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "owner module state changed while preparing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "17: a builder that also changes module state"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "18: a refusal recorded without exiting"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "19: a refusal helper whose result is not tested"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "20: a refusal helper that changes state on its continuing path"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "22: a record handed to foreign code"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "23: an unclassified call before the hand-over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "24: a value built after the hand-over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "28 (round 6 H7): a recovery answer projected after the hand-over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: foreign code run after the basis is bound"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: the basis bound before the safety callback"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: a plan's basis read when the plan is assembled"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: accepted state read after the last callback, before the basis"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "25: #accept handed a basis that is not its caller's binding"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "26: the Driver handed the attempt before the decision is applied"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "27: holds written before their history append"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a dropped history append (binding kept)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a dropped hold write (binding kept)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a dropped receipt append (binding kept)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a dropped grant write (binding kept)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "the creation-key index published before the Execution map"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "an early append, inside a callback, through an alias of a record list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "an early append, inside a callback, to a record list a fresh container holds"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "the listing walk writes the Execution map through a captured alias, seen at the coordinator's call"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "the listing walk appends to a record list"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "29: a protocol hold written while preparing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "30: a hold written by the wrong arm"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "31: recovery history changed through an alias outside the arms"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a reader getter that writes its record"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a changing getter read by a planner before its hand-over"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a governed commit computed from the successor (next.registrations + 1)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a successor built but never admitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 an admission after the first write"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 an omitted scalar write (the live wait)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a skipped disposition (the loop starts at 1)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a duplicated append (the timeout twice)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a plan-derived conditional that suppresses a checked change (a scalar)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a plan-derived conditional that suppresses a checked change (an append)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a change the commit does not apply (input clears the cancellation record)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 a takeover that writes the open-exchange pointer"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "D03-CHK-01 creation publishing its fresh record unadmitted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 negative controls: every forbidden shape is reported",
+              "a getter that returns a live record list, which a planner changes"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ecfb84420962f490b52ff2c9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The current order-independence leaf computes effect summaries in both traversal orders and compares them exactly, retaining the incomplete-cycle memoization counterexample required result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/control-commits.test.ts",
+            "test_path": [
+              "correction DEC-9 after COORD-REFACTOR-01: decisions are planned whole and committed only by the state owner",
+              "the effect summaries do not depend on the order functions are analysed in"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-3abd33b5a26d387a7d42c799",
@@ -60920,39 +62786,75 @@
     },
     {
       "id": "mention-52bf3c8e32fe7cba7bb545eb",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-f4541033da34e4a70b80cf6a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-7f1a9bc11b6d6e13ec240d9f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-ba94bb1cf6cf5af86b0e974e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-cc95eb8255d5cbd3d2a5fccd",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-527deda62bf007970b8afff2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-d1cd1ff5c8ac92ca54c13d79",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-084eadd4b7d2ddee23365bf8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-cf4df9760484a5859d4c5a6a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-9b9c79c19c20179bf2dae9cd",
@@ -60964,27 +62866,107 @@
     },
     {
       "id": "mention-b356ac7d002ebd094ba50324",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-c9d4b7ffec03b53afe26871e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-7ff54798317e8ba8370d9d4b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-0f8079f2635b76b557759507",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-81691d68003a5c196da66693",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-755534d53d5664cf12f85cf6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Current poison catalog checks all four modes, zero zone firings, live accessors in every window and exact agreement with the unpoisoned trace. Its current SDK/core attribution reflects the accepted binding move.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "off: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "count: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "throw: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "reenter: no zone frame reaches a poisoned member; every window was live"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "every poisoned run returned exactly what the unpoisoned run returned"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/poison-catalog.test.ts",
+            "test_path": [
+              "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+              "the catalog poisons the complete name set, the descriptor fields included"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-82071bc0ccb737819c880e37",
@@ -60996,39 +62978,2436 @@
     },
     {
       "id": "mention-cb551c7636f4fa56fe391eb9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The complete-decision oracle and named review-11 seed check faulted views, both positions and setup grant. The current owner/apply sequence separates planning from actual writes; early index changes are compared independently by nextAcceptance and applySequence. Historical broad exception classes have been narrowed by the maintained located-exception controls.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          }
+        ]
+      }
     },
     {
       "id": "mention-1986057a851eff877125584a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The complete-decision oracle and named review-11 seed check faulted views, both positions and setup grant. The current owner/apply sequence separates planning from actual writes; early index changes are compared independently by nextAcceptance and applySequence. Historical broad exception classes have been narrowed by the maintained located-exception controls.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          }
+        ]
+      }
     },
     {
       "id": "mention-fa9b3aec6a3c86e920c13db7",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-f7d9efb6fede7623097c71ce",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-6f170d4b7b8356d1b91508a3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. whole-view-ambient, review-11-probes and recovery-ambient retain the named whole-view, count/throw/reenter and 22-case control inputs/results. Old file/test totals are historical inventory, not current thresholds.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "the comparison set is review 10's 30"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "count: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "throw: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "reenter: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "the matrix is review 09's 22 cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors left behind as residue"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-10cbfd57d12c44bd838bc528",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. whole-view-ambient, review-11-probes and recovery-ambient retain the named whole-view, count/throw/reenter and 22-case control inputs/results. Old file/test totals are historical inventory, not current thresholds.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "the comparison set is review 10's 30"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "count: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "throw: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "reenter: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "the matrix is review 09's 22 cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors left behind as residue"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-6b8164b28f5665c6af4d7464",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-60cbf03ded13e3f824b36e7f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. whole-view-ambient, review-11-probes and recovery-ambient retain the named whole-view, count/throw/reenter and 22-case control inputs/results. Old file/test totals are historical inventory, not current thresholds.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "the comparison set is review 10's 30"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "count: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "throw: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "reenter: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "the matrix is review 09's 22 cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors left behind as residue"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-1509472e9324dfea0f9a47cf",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-b2299170d09e45ed5908651b",
@@ -61040,31 +65419,59 @@
     },
     {
       "id": "mention-b97d340b5ccad5aea2638108",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-6480714bfff868f39ba7f76b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-20b456da3fa7e06fa95c7eae",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-bbffff53fc8d1776856263fe",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-08859b35fdcfbe5b8688c1b8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-bfcdab7ec77cda0656daa3a4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-a07b33697fcfa56c5398159c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-676901d4470bff9342002d8f",
@@ -61072,39 +65479,213 @@
     },
     {
       "id": "mention-1dc120b73d29d6bc7e24f950",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The complete-decision oracle and named review-11 seed check faulted views, both positions and setup grant. The current owner/apply sequence separates planning from actual writes; early index changes are compared independently by nextAcceptance and applySequence. Historical broad exception classes have been narrowed by the maintained located-exception controls.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.view"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalPosition"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.refusalExecution"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.acceptingExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.fired"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.sameOperation"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.quietRepeat"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.deliveredAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.losingWindowAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceRefusal"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnchanged"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceReplay"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.takeoverAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.declaredExit"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.attributed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.exitReached"
+          }
+        ]
+      }
     },
     {
       "id": "mention-dcd13d140fb709fcdf8ffa49",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-daf2e4c77be3f92d56cb267b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-f5a568ac1f718e59f03df968",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-6397fb84bfb16f5730adac21",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-2b006eac650a8fb1faf088c3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-79cda103e06c0bd67ad7cab1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-a8f990d0081fb25887a78060",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-59e7de5984324d456f37f232",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Historical status/provenance, aggregate validation results or exact report attachment inventory. This is not a new distinguishing schedule and supplies no current-C execution or independent acceptance."
+      }
     },
     {
       "id": "mention-08f056189d606bd949f70225",

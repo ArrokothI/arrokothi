@@ -2,6 +2,15 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 runtime sweep reports — through origin 971:** 891 retired origins
+  and 80 extraction-origin plans; **five test groups / 131 adoptions**.
+  [Group review 17](group-review-17.md) adds one inspection-read adoption at its
+  current ExecutionReader return. It reuses the passing poison-catalog leaf.
+  The 67 built cases and 64 planned cases have not gained new execution; measured
+  runtime remains 250.717 seconds. Resume `K1.2-correction-01/implementation-09.md:20`,
+  `mention-08f056189d606bd949f70225` (origin 972). Owner choice 10 permits the next
+  60 readings to 1,031. Derived data unchanged; no family closure or final-C claim.
+
 - **2026-10-30 implementation reports 01–06 — through origin 900:** 837 retired
   and 63 extraction-origin plans. [Batch 18](triage-batch-18.md) adds provenance to
   existing groups; **five test groups / 130 adoptions**, runtime 250.717 seconds,

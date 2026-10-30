@@ -839,7 +839,61 @@
     "mention-99441fb938d8999267229f5a",
     "mention-e7915292f6b8899fe6e2b085",
     "mention-b31eb899fb20afcebcd4e549",
-    "mention-99e37f5527e186d7054cb510"
+    "mention-99e37f5527e186d7054cb510",
+    "mention-29942bd41c5bdff95c7f91c5",
+    "mention-2585136f08207aa525b8e870",
+    "mention-2c0da86597d780968073fb0b",
+    "mention-09a2e2fd7ecb1d57106f2cbd",
+    "mention-b5f3fec4e9a4d524b1bee080",
+    "mention-1c0240391bf8c040cb592f33",
+    "mention-e4a476a8a679dd3c992af87c",
+    "mention-52bf3c8e32fe7cba7bb545eb",
+    "mention-f4541033da34e4a70b80cf6a",
+    "mention-7f1a9bc11b6d6e13ec240d9f",
+    "mention-ba94bb1cf6cf5af86b0e974e",
+    "mention-cc95eb8255d5cbd3d2a5fccd",
+    "mention-527deda62bf007970b8afff2",
+    "mention-d1cd1ff5c8ac92ca54c13d79",
+    "mention-084eadd4b7d2ddee23365bf8",
+    "mention-cf4df9760484a5859d4c5a6a",
+    "mention-b356ac7d002ebd094ba50324",
+    "mention-c9d4b7ffec03b53afe26871e",
+    "mention-7ff54798317e8ba8370d9d4b",
+    "mention-0f8079f2635b76b557759507",
+    "mention-81691d68003a5c196da66693",
+    "mention-aab4e68a34fb905e5c478a60",
+    "mention-d707595e8105e7d689d76e2e",
+    "mention-7148fa298f9c08126178f2ea",
+    "mention-d6c798a7f5bc785bac40251d",
+    "mention-3a6c9265580f88f044999200",
+    "mention-3e2fbc14650aa8333b949c50",
+    "mention-ecfb84420962f490b52ff2c9",
+    "mention-755534d53d5664cf12f85cf6",
+    "mention-cb551c7636f4fa56fe391eb9",
+    "mention-1986057a851eff877125584a",
+    "mention-1dc120b73d29d6bc7e24f950",
+    "mention-fa9b3aec6a3c86e920c13db7",
+    "mention-f7d9efb6fede7623097c71ce",
+    "mention-6b8164b28f5665c6af4d7464",
+    "mention-1509472e9324dfea0f9a47cf",
+    "mention-b97d340b5ccad5aea2638108",
+    "mention-6480714bfff868f39ba7f76b",
+    "mention-20b456da3fa7e06fa95c7eae",
+    "mention-bbffff53fc8d1776856263fe",
+    "mention-08859b35fdcfbe5b8688c1b8",
+    "mention-bfcdab7ec77cda0656daa3a4",
+    "mention-a07b33697fcfa56c5398159c",
+    "mention-dcd13d140fb709fcdf8ffa49",
+    "mention-daf2e4c77be3f92d56cb267b",
+    "mention-f5a568ac1f718e59f03df968",
+    "mention-6397fb84bfb16f5730adac21",
+    "mention-2b006eac650a8fb1faf088c3",
+    "mention-79cda103e06c0bd67ad7cab1",
+    "mention-a8f990d0081fb25887a78060",
+    "mention-59e7de5984324d456f37f232",
+    "mention-6f170d4b7b8356d1b91508a3",
+    "mention-10cbfd57d12c44bd838bc528",
+    "mention-60cbf03ded13e3f824b36e7f"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -2374,6 +2428,283 @@
       "reading": "triage-batch-18.md",
       "required_result": "S6 (mixed). The descriptor-own guard and prebuilt answer/History-before-holds protection retain H7/H22 adoption and individual H-family state-owner relocations from group-review-12. Current controls/complete-decision checks cover the behavioral results; historical scanner site counts are not thresholds or a universal proof.",
       "planned_test": "Shared existing groups; retain every source-specific variant and final P1-M requirement. No new group or test."
+    },
+    "mention-23d73d3a5b8cd2caf663b251": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-07.md:47",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). The report references concrete round-7 read/effect-analysis forms and their rule-test requirement. Reuse the seven R/C adoption groups and the separately retained H/shared/moved-owner routes in group-review-14. No historical scanner total or ordinary end-state test closes those family members.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-edaa5e4d5fbefd071526edbe": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-07.md:103",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). The report references concrete round-7 read/effect-analysis forms and their rule-test requirement. Reuse the seven R/C adoption groups and the separately retained H/shared/moved-owner routes in group-review-14. No historical scanner total or ordinary end-state test closes those family members.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-34071a5121f633a3aa3a13ac": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-07.md:142",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). The report references concrete round-7 read/effect-analysis forms and their rule-test requirement. Reuse the seven R/C adoption groups and the separately retained H/shared/moved-owner routes in group-review-14. No historical scanner total or ordinary end-state test closes those family members.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-c2c05bcad77a5692f2b212e4": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-07.md:184",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). The report references concrete round-7 read/effect-analysis forms and their rule-test requirement. Reuse the seven R/C adoption groups and the separately retained H/shared/moved-owner routes in group-review-14. No historical scanner total or ordinary end-state test closes those family members.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-cb4473a5c7c9820c76807b8c": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-07.md:185",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). The report references concrete round-7 read/effect-analysis forms and their rule-test requirement. Reuse the seven R/C adoption groups and the separately retained H/shared/moved-owner routes in group-review-14. No historical scanner total or ordinary end-state test closes those family members.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-7e41e42bcfd697e23d6f3e8d": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-07.md:186",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). The report references concrete round-7 read/effect-analysis forms and their rule-test requirement. Reuse the seven R/C adoption groups and the separately retained H/shared/moved-owner routes in group-review-14. No historical scanner total or ordinary end-state test closes those family members.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-3abd33b5a26d387a7d42c799": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-07.md:238",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). The report references concrete round-7 read/effect-analysis forms and their rule-test requirement. Reuse the seven R/C adoption groups and the separately retained H/shared/moved-owner routes in group-review-14. No historical scanner total or ordinary end-state test closes those family members.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-d2e140fafcb8c08e25848b00": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-07.md:240",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). The report references concrete round-7 read/effect-analysis forms and their rule-test requirement. Reuse the seven R/C adoption groups and the separately retained H/shared/moved-owner routes in group-review-14. No historical scanner total or ordinary end-state test closes those family members.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-9b9c79c19c20179bf2dae9cd": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-07.md:345",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). The report references concrete round-7 read/effect-analysis forms and their rule-test requirement. Reuse the seven R/C adoption groups and the separately retained H/shared/moved-owner routes in group-review-14. No historical scanner total or ordinary end-state test closes those family members.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-11581bc57fad5464c9e63eca": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-07.md:350",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). The report references concrete round-7 read/effect-analysis forms and their rule-test requirement. Reuse the seven R/C adoption groups and the separately retained H/shared/moved-owner routes in group-review-14. No historical scanner total or ordinary end-state test closes those family members.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-465ffb05ade468adc070a6d7": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-07.md:188",
+      "groups": [
+        "k12c1-round7-r10"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6. Accessor on Error.prototype.name must receive nothing and the error own its name; existing runtime leaf plus planned R10 inverse case, already counted.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-4865664565a4ad6b851ba8b4": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-07.md:257",
+      "groups": [
+        "k12c1-round7-r10"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6. Accessor on Error.prototype.name must receive nothing and the error own its name; existing runtime leaf plus planned R10 inverse case, already counted.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-82071bc0ccb737819c880e37": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-08.md:85",
+      "groups": [
+        "k12c1-sweep8-inspection"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). Review-11 READ-01 has one newly counted inspection adoption, re-anchored to ExecutionReader.inspection with the same ambient unowned-member read. Other read mutants share round-7 groups. Early default-parameter/shadowed-undefined index writes relocate to the state owner and retain complete-decision nextAcceptance/applySequence checks; never manufacture a reader-setter TypeError as their kill.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-a74f3bd35e889539060264ac": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-08.md:89",
+      "groups": [
+        "k12c1-sweep8-inspection"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). Review-11 READ-01 has one newly counted inspection adoption, re-anchored to ExecutionReader.inspection with the same ambient unowned-member read. Other read mutants share round-7 groups. Early default-parameter/shadowed-undefined index writes relocate to the state owner and retain complete-decision nextAcceptance/applySequence checks; never manufacture a reader-setter TypeError as their kill.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-b2299170d09e45ed5908651b": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-08.md:305",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8",
+        "k12c1-sweep8-inspection"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). Review-11 READ-01 has one newly counted inspection adoption, re-anchored to ExecutionReader.inspection with the same ambient unowned-member read. Other read mutants share round-7 groups. Early default-parameter/shadowed-undefined index writes relocate to the state owner and retain complete-decision nextAcceptance/applySequence checks; never manufacture a reader-setter TypeError as their kill.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-7e1ac3567710d66625ab7dc3": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-08.md:310",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8",
+        "k12c1-sweep8-inspection"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). Review-11 READ-01 has one newly counted inspection adoption, re-anchored to ExecutionReader.inspection with the same ambient unowned-member read. Other read mutants share round-7 groups. Early default-parameter/shadowed-undefined index writes relocate to the state owner and retain complete-decision nextAcceptance/applySequence checks; never manufacture a reader-setter TypeError as their kill.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
+    },
+    "mention-676901d4470bff9342002d8f": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/implementation-08.md:451",
+      "groups": [
+        "k12c1-recovery-h15",
+        "k12c1-recovery-h21",
+        "k12c1-round7-c10",
+        "k12c1-round7-c8",
+        "k12c1-round7-r10",
+        "k12c1-round7-r11",
+        "k12c1-round7-r12",
+        "k12c1-round7-r7",
+        "k12c1-round7-r8",
+        "k12c1-sweep8-inspection"
+      ],
+      "reading": "group-review-17.md",
+      "required_result": "S6 (mixed). Review-11 READ-01 has one newly counted inspection adoption, re-anchored to ExecutionReader.inspection with the same ambient unowned-member read. Other read mutants share round-7 groups. Early default-parameter/shadowed-undefined index writes relocate to the state owner and retain complete-decision nextAcceptance/applySequence checks; never manufacture a reader-setter TypeError as their kill.",
+      "planned_test": "Use existing maintained leaves and the existing registries only; preserve shared variants and source provenance. No P1-M closure until required routes/controls/kills."
     }
   },
   "reconsidered_extractions": [
@@ -6702,9 +7033,32 @@
         "  if (units > STRING_SCAN_LIMIT) return TOO_LONG;\n"
       ],
       "relocation_reading": "Kernel values capture moved to SDK. The historical guard survives inside scanBoundaryString, now called only by scanText, which adds the same preflight outside. Restore the no-preflight decision by removing both guards in one mutant; removing the redundant inner guard alone is not evidence that the subject disappeared."
+    },
+    "k12c1-sweep8-inspection": {
+      "family": "family.k12c1.sweeps-08",
+      "member": "review 11 READ-01: inspection reads a member introduced through a Pick cast",
+      "work_kind": "mutation_adoption",
+      "required_result": "Inspecting a visible Execution must not read ambient resultingEpoch; the poisoned catalog count/throw/reenter runs retain zero zone firings and unchanged answers.",
+      "gap": "No existing registry mutates this inspection read. The ordinary catalog already passes, but family coverage needs the current production decision mutant. History resultingEpoch H1/H2 mutate a different operation and input schedule.",
+      "reading": "group-review-17.md",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/poison-catalog.test.ts",
+        "test_path": [
+          "correction DEC-8: the catalog under poisoned prototypes behaves exactly as without them",
+          "count: no zone frame reaches a poisoned member; every window was live"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "    return ok(record.inspection());"
+      ],
+      "current_replacement": "    const summary: Pick<ExecutionReader, \"executionId\"> = record;\n    (summary as { executionId: string; resultingEpoch: number }).resultingEpoch;\n    return ok(record.inspection());",
+      "relocation_reading": "The old viewOf(record) return and ExecutionRecord planner type were replaced by ExecutionReader.inspection(). The reader owns no resultingEpoch and its class chain still reaches Object.prototype. Preserve the Pick cast and unused property read at the current unique return. No missing-anchor retirement."
     }
   },
-  "resume_origin": "mention-29942bd41c5bdff95c7f91c5",
+  "resume_origin": "mention-08f056189d606bd949f70225",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -6712,8 +7066,8 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2-correction-01/implementation-07.md",
-  "resume_line": 6,
+  "resume_path": "docs/development/work/K1.2-correction-01/implementation-09.md",
+  "resume_line": 20,
   "cap_stop_07": {
     "origins_reached": 696,
     "origins_before_current_family": 695,
