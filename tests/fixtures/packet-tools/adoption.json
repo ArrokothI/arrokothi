@@ -152,20 +152,28 @@
     },
     {
       "id": "artifact-01c48e3f37efc92ef4c6e68a",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "non_executable",
         "rationale": "Generic prior reference-packet git diff --check invocation with an output-log exclusion. It is a historical command recipe, not a semantic test input; TOOLS-01 candidate() independently checks its own B..H diff and declared administrative files.",
         "reason": "historical_command"
+      },
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 historical REF-5 validation command and surrounding process rule specify the authored-path diff check, with raw logs excluded to preserve their exact bytes. Later cleanup withdraws that gate. No new input/schedule for current evidence tooling."
       }
     },
     {
       "id": "artifact-9775fd62e0ec1b4d45f26d3f",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "non_executable",
         "rationale": "Recorded exit codes and whitespace locations in prior validation logs. These are historical observations about frozen output bytes, not commands to rerun or a new executable counterexample. No historical PASS is reused.",
         "reason": "record"
+      },
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 historic diff-check output from the authoring/administration commits: nine whitespace warnings in byte-captured logs. No fresh product or tooling counterexample; sealed bytes are preserved."
       }
     },
     {
@@ -27615,27 +27623,135 @@
     },
     {
       "id": "mention-73eefb699295321abe34a160",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 cleanup evidence list records manifests, ancestry, historical runs, environment failure, diff-check policy and E1 status. It specifies no independent new testable Kernel input/schedule."
+      }
     },
     {
       "id": "mention-d074295a7b9c48c71b3dc48a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 one immutable capture supplies retained value, size and equality; unsupported forms refuse. Live-object capture moved to SDK; current capture tests exercise snapshot, dense array, absent/null, descriptor/read and serialization restoration. Byte-core tests retain their separate admission guarantees.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "a member that is present with no value is refused, because absent and null differ"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 boundary values are validated, never repaired",
+              "K11-R1-VAL-01 value-preserving acceptance over the full key space",
+              "a null-prototype object keeps its prototype and its members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K1.1-C3 canonical form follows values.md rules 1-6",
+              "absent and explicitly null are different values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "refusing a value costs no more than the size limit allows",
+              "an oversized own-names listing is classified after at most one descriptor past the entry limit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R2-VAL-02 serializer boundary sees only the accepted snapshot (round-5 reconstruction)",
+              "an inherited Object.prototype.toJSON cannot divert canonical bytes from the retained snapshot"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R16-VAL-01 canonical bytes do not depend on the iterator protocol the caller can reach",
+              "a deleted holder next plus an Object.prototype next shadow still binds the snapshot"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R16-VAL-01 canonical bytes do not depend on the iterator protocol the caller can reach",
+              "the byte limit is enforced on the snapshot bytes, not on bytes the pollution chose"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 canonical bytes under inherited descriptor-field pollution",
+              "an inherited descriptor getter never runs inside capture, cloning or the serializer window"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-capture.test.ts",
+            "test_path": [
+              "K11-R7-STATE-03 canonical bytes under inherited descriptor-field pollution",
+              "restoring a borrowed accessor shadow under inherited value pollution keeps the bytes and the host"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-245a8721f593aeaef80e79a7",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-059f65df5fce6974d6fe69a8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-2bca97b00f836d57791afee6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-cb4e6f49f561eab054fa2a42",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-b43188cfa39f39ae809510de",

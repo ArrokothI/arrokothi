@@ -1217,7 +1217,15 @@
     "mention-fe7d9936766eac17b96f2879",
     "artifact-1abf88792a382e41d20b4303",
     "mention-257be5ce00f7f87a48205d23",
-    "artifact-a244b971c7f1c400284a09bf"
+    "artifact-a244b971c7f1c400284a09bf",
+    "mention-73eefb699295321abe34a160",
+    "mention-d074295a7b9c48c71b3dc48a",
+    "artifact-01c48e3f37efc92ef4c6e68a",
+    "mention-245a8721f593aeaef80e79a7",
+    "mention-059f65df5fce6974d6fe69a8",
+    "mention-2bca97b00f836d57791afee6",
+    "artifact-9775fd62e0ec1b4d45f26d3f",
+    "mention-cb4e6f49f561eab054fa2a42"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -12528,7 +12536,7 @@
       "build_status": "planned_not_executed"
     }
   },
-  "resume_origin": "mention-73eefb699295321abe34a160",
+  "resume_origin": "artifact-bf8be457073b319f1d960816",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -12536,8 +12544,8 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.1-reference-01/cleanup-01.md",
-  "resume_line": 78,
+  "resume_path": "packages/kernel/tests/activation-identity.test.ts",
+  "resume_line": 1,
   "cap_stop_07": {
     "origins_reached": 696,
     "origins_before_current_family": 695,

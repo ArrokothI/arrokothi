@@ -2,6 +2,10 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 K1.1 reference packet — through origin 1,433.** 1,223 retired and 210 plans.
+  **14 test groups / 152 adoptions**. Cumulative projections 15/162, longer-window projections 15/164.
+  Resume `packages/kernel/tests/activation-identity.test.ts:1`, `artifact-bf8be457073b319f1d960816` (origin 1,434). [Batch 28](triage-batch-28.md)
+
 - **2026-10-31 correction sweep families — through origin 1,425.** 1,215 retired and 210 plans.
   **14 test groups / 152 adoptions**. Cumulative projections 15/162, longer-window projections 16/166.
   Resume `K1.1-reference-01/cleanup-01.md:78`, `mention-73eefb699295321abe34a160` (origin 1,426). [Batch 27](triage-batch-27.md)
