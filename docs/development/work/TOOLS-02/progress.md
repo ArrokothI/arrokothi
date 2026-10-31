@@ -2,6 +2,9 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 kernel Outcome, recovery, sweeps and SDK captures — through origin 1,498.** 1,264 retired, 214 extraction plans, 20 P1 revalidation plans. **14 test groups / 152 adoptions**, projections 15/155.
+  Resume `scripts/check-builder-docs.ts`, `artifact-097a4dcccf08b7048d523d00` (origin 1,499). [Batch 31](triage-batch-31.md)
+
 - **2026-10-31 kernel creation through nondisclosure — through origin 1,461.** 1,243 retired, 210 extraction plans, 8 P1 revalidation plans. **14 test groups / 152 adoptions**, projections 15/158.
   Resume `packages/kernel/tests/outcome-acceptance.test.ts`, `artifact-e675d28451f3413582099c7a` (origin 1,462). [Batch 30](triage-batch-30.md)
 

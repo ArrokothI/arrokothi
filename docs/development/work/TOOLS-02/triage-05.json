@@ -1244,8 +1244,29 @@
     "artifact-210dd0aaaf1f9edcdcaa0600",
     "artifact-510be2a0362710c9996c358a",
     "artifact-ecb10ef937e0612352e7c7ef",
-    "artifact-051103a915c0dad065b3ff57",
-    "artifact-3737bddc25971e833c283b6b"
+    "artifact-e675d28451f3413582099c7a",
+    "artifact-7902341bc00c3376b26ef71f",
+    "artifact-9f1aff62363a7e5c975a5af2",
+    "artifact-234036da40df72ad36095f4b",
+    "artifact-98679309de7791acf7f59c87",
+    "artifact-d5ce2b4c65a4f714507485f0",
+    "artifact-4992d5c386175b80f363f169",
+    "artifact-2805bf93c3eb6e0264775add",
+    "artifact-b21077d3d4d8265db9b7c7ab",
+    "artifact-1ab5c124484bc58b2a471c96",
+    "artifact-a8dc74e516932f00626f70e1",
+    "artifact-6dcba4da5936b64c77a8b470",
+    "artifact-f41bd3ffa4f36fdfd1a93870",
+    "artifact-e0445f9f19d3bcf95cfeba72",
+    "artifact-f5306a247782c53fd004e62d",
+    "artifact-e4b5e509ed4c9252343fc29c",
+    "artifact-ee81a9215a4b627e88fda2d5",
+    "artifact-22eb339860078995989b5d5f",
+    "artifact-f468517ae332ead13530f5b1",
+    "artifact-ea5444a6d42154e413fe0f2e",
+    "artifact-ebfa0eb36bcd33f72a4dffce",
+    "artifact-b93fa92a81d4582fdc056ed6",
+    "artifact-933874e859e8d7b79504af10"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -7453,6 +7474,603 @@
       "required_result": "S6 whole clean-payload raw-output collector: its commands invoke the already-read original, adapted, round-4/6/7/8/9 families and diagnostic, host-member and scope/fault probes. Their concrete production decisions retain existing routes. Raw times, checksums, diff status and clean-tree metadata give provenance.",
       "reading": "triage-batch-27.md",
       "planned_test": "Existing inspection adoption and family routes; fresh-clone control/kill and P1 binding remain due. Static soundness is not claimed."
+    },
+    "artifact-051103a915c0dad065b3ff57": {
+      "disposition": "extracted",
+      "source": "packages/kernel/tests/nondisclosure.test.ts@66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "group": "mention-5b74744b8699ebace1b4c0c3",
+      "required_result": "The pinned leaf explicitly claims hidden activity before A's first operation. Its setup creates A before the injector can run. Preserve the genuine before-creation group plus the other covered transcript schedules.",
+      "reading": "triage-batch-31.md",
+      "other_coverage": [
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K1.2-C12 scoped non-disclosure across Outcome acceptance and the exchange controls",
+            "hidden Outcome, takeover, hold and terminal activity discloses nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K1.2-C12 scoped non-disclosure across Outcome acceptance and the exchange controls",
+            "the Outcome oracle is deterministic: two control arms agree exactly"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "A's own several Executions stay mutually ordered and undisclosing"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "a hidden Execution and a missing one stay indistinguishable, including position"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "hidden activity before A's first operation discloses nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "hidden attached refusals on every remaining path disclose nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "hidden capacity exhaustion discloses nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "hidden refusals attached to hidden Executions disclose nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "hidden refusals naming no Execution disclose nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "hidden work striped across several hidden Executions discloses nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "mixed hidden accepts and refusals disclose nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "one hidden accepted creation discloses nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "several hidden accepts across hidden Executions discloses nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "the oracle is deterministic: two control arms agree exactly"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "the same producer namespace in a hidden scope neither collides nor discloses"
+          ]
+        }
+      ]
+    },
+    "artifact-3737bddc25971e833c283b6b": {
+      "disposition": "extracted",
+      "source": "packages/kernel/tests/nondisclosure.test.ts@9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "group": "mention-5b74744b8699ebace1b4c0c3",
+      "required_result": "The pinned leaf explicitly claims hidden activity before A's first operation. Its setup creates A before the injector can run. Preserve the genuine before-creation group plus the other covered transcript schedules.",
+      "reading": "triage-batch-31.md",
+      "other_coverage": [
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K1.2-C12 scoped non-disclosure across Outcome acceptance and the exchange controls",
+            "hidden Outcome, takeover, hold and terminal activity discloses nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "A's own several Executions stay mutually ordered and undisclosing"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "a hidden Execution and a missing one stay indistinguishable, including position"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "hidden activity before A's first operation discloses nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "hidden attached refusals on every remaining path disclose nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "hidden capacity exhaustion discloses nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "hidden refusals attached to hidden Executions disclose nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "hidden refusals naming no Execution disclose nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "hidden work striped across several hidden Executions discloses nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "mixed hidden accepts and refusals disclose nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "one hidden accepted creation discloses nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "several hidden accepts across hidden Executions discloses nothing to A"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "the oracle is deterministic: two control arms agree exactly"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/nondisclosure.test.ts",
+          "test_path": [
+            "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+            "the same producer namespace in a hidden scope neither collides nor discloses"
+          ]
+        }
+      ]
+    },
+    "artifact-b303eed73b3e154fe6365c09": {
+      "disposition": "extracted",
+      "group": "mention-194ad35e98b1396a9d84c97f",
+      "source": "packages/kernel/tests/receipts.test.ts@66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "required_result": "S6 mixed. The entire pinned suite explicitly promises uniform per-record listing work. Its visibleExecutions leaf checks only a positive read count and which IDs are returned. Keep the existing early/late/no-match listing group, with both source pins. Other receipt/inspection/missing-destination/future-position assertions remain maintained.",
+      "reading": "triage-batch-31.md",
+      "other_coverage": [
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 one receipt per accepted boundary",
+            "a receipt from one boundary can never be mistaken for another's"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 one receipt per accepted boundary",
+            "an exact replay returns the original token, at each boundary that can replay"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 one receipt per accepted boundary",
+            "creation, ingress and dispatch intent each mint their own"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 one receipt per accepted boundary",
+            "every refusal mints none"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "K11-R1-ID-01 hidden and missing lookups do equal work",
+            "equal work holds with many legitimate scopes and in both orders"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "K11-R1-ID-01 hidden and missing lookups do equal work",
+            "ingress, dispatch and redelivery share the same normalized lookup"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "K11-R1-ID-01 hidden and missing lookups do equal work",
+            "inspect performs the same scope work for hidden and missing"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "K11-R1-ID-01 hidden and missing lookups do equal work",
+            "scope work does not depend on where the match sits"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "K11-R1-ID-01 hidden and missing lookups do equal work",
+            "single-ID lookup work does not depend on hidden-record population"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "K11-R1-ID-01 hidden and missing lookups do equal work",
+            "visibleExecutions does uniform per-record work and reveals only visible IDs"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "a caller that holds the scope sees the Execution and its receipts"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "an unauthorized caller cannot learn that an Execution exists"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "refusals that name no Execution advance nothing observable"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K11-R3-ID-02 identity packing is injective only over text, and says so",
+            "a part that is not text is raised rather than packed into a colliding key"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K11-R3-ID-02 identity packing is injective only over text, and says so",
+            "the length-prefixed packing separates parts no separator could"
+          ]
+        }
+      ]
+    },
+    "artifact-f1a28bedebfe204b9687fa53": {
+      "disposition": "extracted",
+      "group": "mention-194ad35e98b1396a9d84c97f",
+      "source": "packages/kernel/tests/receipts.test.ts@9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "required_result": "S6 mixed. The entire pinned suite explicitly promises uniform per-record listing work. Its visibleExecutions leaf checks only a positive read count and which IDs are returned. Keep the existing early/late/no-match listing group, with both source pins. Other receipt/inspection/missing-destination/future-position assertions remain maintained.",
+      "reading": "triage-batch-31.md",
+      "other_coverage": [
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 one receipt per accepted boundary",
+            "a receipt from one boundary can never be mistaken for another's"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 one receipt per accepted boundary",
+            "an exact replay returns the original token, at each boundary that can replay"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 one receipt per accepted boundary",
+            "creation, ingress and dispatch intent each mint their own"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 one receipt per accepted boundary",
+            "every refusal mints none"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "K11-R1-ID-01 hidden and missing lookups do equal work",
+            "equal work holds with many legitimate scopes and in both orders"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "K11-R1-ID-01 hidden and missing lookups do equal work",
+            "ingress, dispatch and redelivery share the same normalized lookup"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "K11-R1-ID-01 hidden and missing lookups do equal work",
+            "inspect performs the same scope work for hidden and missing"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "K11-R1-ID-01 hidden and missing lookups do equal work",
+            "scope work does not depend on where the match sits"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "K11-R1-ID-01 hidden and missing lookups do equal work",
+            "single-ID lookup work does not depend on hidden-record population"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "K11-R1-ID-01 hidden and missing lookups do equal work",
+            "visibleExecutions does uniform per-record work and reveals only visible IDs"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "a caller that holds the scope sees the Execution and its receipts"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "an unauthorized caller cannot learn that an Execution exists"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K1.1-C6 reads are authenticated and scoped first",
+            "refusals that name no Execution advance nothing observable"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K11-R3-ID-02 identity packing is injective only over text, and says so",
+            "a part that is not text is raised rather than packed into a colliding key"
+          ]
+        },
+        {
+          "kind": "leaf",
+          "command": "repository-tests",
+          "file": "packages/kernel/tests/receipts.test.ts",
+          "test_path": [
+            "K11-R3-ID-02 identity packing is injective only over text, and says so",
+            "the length-prefixed packing separates parts no separator could"
+          ]
+        }
+      ]
     }
   },
   "reconsidered_extractions": [
@@ -12556,7 +13174,7 @@
       "build_status": "planned_not_executed"
     }
   },
-  "resume_origin": "artifact-e675d28451f3413582099c7a",
+  "resume_origin": "artifact-097a4dcccf08b7048d523d00",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -12564,7 +13182,7 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "packages/kernel/tests/outcome-acceptance.test.ts",
+  "resume_path": "scripts/check-builder-docs.ts",
   "resume_line": 1,
   "cap_stop_07": {
     "origins_reached": 696,
@@ -12781,6 +13399,228 @@
       ],
       "existing_witnesses": [],
       "reading": "triage-batch-30.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-58a5b7bc09b47ad262f7e4f5": {
+      "source": "packages/kernel/tests/outcome-evidence.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "Current Outcome evidence retains the immutable per-Execution positions, output identities and refusals. All five registrations are unread. Revalidate their witness links under P1-H.",
+      "members": [
+        "packages/kernel/tests/outcome-evidence.test.ts:38:3@1d6919314e67",
+        "packages/kernel/tests/outcome-evidence.test.ts:59:3@1d6919314e67",
+        "packages/kernel/tests/outcome-evidence.test.ts:70:3@1d6919314e67",
+        "packages/kernel/tests/outcome-evidence.test.ts:90:3@1d6919314e67",
+        "packages/kernel/tests/outcome-evidence.test.ts:106:3@1d6919314e67"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-31.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-9252c2392294fb63ec0df4ed": {
+      "source": "packages/kernel/tests/recovery-ambient.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "All six registered templates retain the 22-case resultingEpoch matrix, mutable foreign objects, safe clear paths and field-name pollution. Compare exact history, whole state and getter counts; keep their P1-H unread witness links.",
+      "members": [
+        "packages/kernel/tests/recovery-ambient.test.ts:259:7@b2dae76319e5",
+        "packages/kernel/tests/recovery-ambient.test.ts:264:3@b2dae76319e5",
+        "packages/kernel/tests/recovery-ambient.test.ts:271:5@b2dae76319e5",
+        "packages/kernel/tests/recovery-ambient.test.ts:286:3@b2dae76319e5",
+        "packages/kernel/tests/recovery-ambient.test.ts:293:3@b2dae76319e5",
+        "packages/kernel/tests/recovery-ambient.test.ts:327:7@b2dae76319e5"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-31.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-1082b30bb51b87ed10da586c": {
+      "source": "packages/kernel/tests/recovery-evidence.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "All eleven registrations retain the pinned whole-view, immutability, authority, unsafe-Driver, delivery and receipt-position obligations. Their registered unread status remains a P1-H route.",
+      "members": [
+        "packages/kernel/tests/recovery-evidence.test.ts:190:3@a1df9d957a56",
+        "packages/kernel/tests/recovery-evidence.test.ts:196:3@a1df9d957a56",
+        "packages/kernel/tests/recovery-evidence.test.ts:238:3@a1df9d957a56",
+        "packages/kernel/tests/recovery-evidence.test.ts:298:3@a1df9d957a56",
+        "packages/kernel/tests/recovery-evidence.test.ts:370:3@a1df9d957a56",
+        "packages/kernel/tests/recovery-evidence.test.ts:436:3@a1df9d957a56",
+        "packages/kernel/tests/recovery-evidence.test.ts:504:3@a1df9d957a56",
+        "packages/kernel/tests/recovery-evidence.test.ts:548:3@a1df9d957a56",
+        "packages/kernel/tests/recovery-evidence.test.ts:627:3@a1df9d957a56",
+        "packages/kernel/tests/recovery-evidence.test.ts:814:3@a1df9d957a56",
+        "packages/kernel/tests/recovery-evidence.test.ts:822:3@a1df9d957a56"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-31.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-cea7c714e6dd544a456b0612": {
+      "source": "packages/kernel/tests/recovery-history.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "All seven registrations retain entry/update/idempotence, takeover/Outcome clear, resultingEpoch, order and immutability. Bind the historical unread members through P1-H without credit.",
+      "members": [
+        "packages/kernel/tests/recovery-history.test.ts:43:3@1c87b9c51284",
+        "packages/kernel/tests/recovery-history.test.ts:99:3@1c87b9c51284",
+        "packages/kernel/tests/recovery-history.test.ts:123:3@1c87b9c51284",
+        "packages/kernel/tests/recovery-history.test.ts:160:3@1c87b9c51284",
+        "packages/kernel/tests/recovery-history.test.ts:187:3@1c87b9c51284",
+        "packages/kernel/tests/recovery-history.test.ts:208:3@1c87b9c51284",
+        "packages/kernel/tests/recovery-history.test.ts:252:3@1c87b9c51284"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-31.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-7c993a80443a808b1935f25a": {
+      "source": "packages/kernel/tests/recovery.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "All fourteen registrations cover independent code availability pins, both holds, declarations, authority and refusal-only effects. Revalidate their P1-H unread witnesses.",
+      "members": [
+        "packages/kernel/tests/recovery.test.ts:44:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:83:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:97:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:110:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:132:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:151:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:172:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:190:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:204:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:234:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:252:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:266:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:276:3@1da587bddbab",
+        "packages/kernel/tests/recovery.test.ts:300:3@1da587bddbab"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-31.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-1a82f8f5670f7437573c1084": {
+      "source": "packages/kernel/tests/review-11-probes.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "All three count/throw/reentry arms of its one registered template retain zero inherited reads, unchanged RUNNING/history/receipts and the same answer after cleanup. Its unread P1-H route does not replace the separately planned inspection mutation.",
+      "members": [
+        "packages/kernel/tests/review-11-probes.test.ts:24:5@658b03273f8c"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-31.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-776df3f8f7169a5faed03faf": {
+      "source": "packages/kernel/tests/submission-lifetime.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "Both registrations retain grant lifetime across redelivery, takeover and terminal settlement. Bind unread members via P1-H. The later distinct-current-exchange grant scenarios are separately planned.",
+      "members": [
+        "packages/kernel/tests/submission-lifetime.test.ts:49:3@39c497a3b731",
+        "packages/kernel/tests/submission-lifetime.test.ts:108:3@39c497a3b731"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-31.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-00894044eb58ada0e1dc436d": {
+      "source": "packages/kernel/tests/takeover-reentrancy.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "All four templates retain the exact post-safety-callback basis, nested Outcome/terminal/takeover/new exchange/code hold schedules and refusal-only outer result. Bind their P1-H unread members.",
+      "members": [
+        "packages/kernel/tests/takeover-reentrancy.test.ts:50:3@b5f3f722dd2e",
+        "packages/kernel/tests/takeover-reentrancy.test.ts:110:3@b5f3f722dd2e",
+        "packages/kernel/tests/takeover-reentrancy.test.ts:173:3@b5f3f722dd2e",
+        "packages/kernel/tests/takeover-reentrancy.test.ts:225:3@b5f3f722dd2e"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-31.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-af6cc0ad3461d3504c14ba98": {
+      "source": "packages/kernel/tests/takeover.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "The eleven registered takeover results retain safety prerequisite, revalidation, unique next epoch/grant/receipt and original input/identity. The combined protocol-hold/unsafe case is separately planned. Bind their unread P1-H witnesses.",
+      "members": [
+        "packages/kernel/tests/takeover.test.ts:34:3@27e29236797b",
+        "packages/kernel/tests/takeover.test.ts:70:3@27e29236797b",
+        "packages/kernel/tests/takeover.test.ts:92:3@27e29236797b",
+        "packages/kernel/tests/takeover.test.ts:104:3@27e29236797b",
+        "packages/kernel/tests/takeover.test.ts:120:3@27e29236797b",
+        "packages/kernel/tests/takeover.test.ts:127:3@27e29236797b",
+        "packages/kernel/tests/takeover.test.ts:140:3@27e29236797b",
+        "packages/kernel/tests/takeover.test.ts:153:3@27e29236797b",
+        "packages/kernel/tests/takeover.test.ts:162:3@27e29236797b",
+        "packages/kernel/tests/takeover.test.ts:168:3@27e29236797b",
+        "packages/kernel/tests/takeover.test.ts:198:3@27e29236797b"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-31.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-334c2010f01b3ec6e0f741f2": {
+      "source": "packages/kernel/tests/terminal.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "The nine registrations retain continue versus complete/fail, outside-batch disposition, terminal ingress/replay/conflict, controls and result/error distinction. Revalidate their P1-H unread witnesses.",
+      "members": [
+        "packages/kernel/tests/terminal.test.ts:49:5@1d0307e49380",
+        "packages/kernel/tests/terminal.test.ts:72:3@1d0307e49380",
+        "packages/kernel/tests/terminal.test.ts:79:3@1d0307e49380",
+        "packages/kernel/tests/terminal.test.ts:90:3@1d0307e49380",
+        "packages/kernel/tests/terminal.test.ts:113:3@1d0307e49380",
+        "packages/kernel/tests/terminal.test.ts:129:3@1d0307e49380",
+        "packages/kernel/tests/terminal.test.ts:166:3@1d0307e49380",
+        "packages/kernel/tests/terminal.test.ts:180:3@1d0307e49380",
+        "packages/kernel/tests/terminal.test.ts:203:3@1d0307e49380"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-31.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-fcbe9b87cbe87b398197c578": {
+      "source": "packages/kernel/tests/transaction.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "The six registrations retain the one-writer batch commit and no partial updates on refused content, including immutable progress, receipt and emissions. Revalidate their P1-H unread witnesses.",
+      "members": [
+        "packages/kernel/tests/transaction.test.ts:59:3@bbe0fb257476",
+        "packages/kernel/tests/transaction.test.ts:110:3@bbe0fb257476",
+        "packages/kernel/tests/transaction.test.ts:150:3@bbe0fb257476",
+        "packages/kernel/tests/transaction.test.ts:237:3@bbe0fb257476",
+        "packages/kernel/tests/transaction.test.ts:269:3@bbe0fb257476",
+        "packages/kernel/tests/transaction.test.ts:317:3@bbe0fb257476"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-31.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-5f5e6a66eb7e856dbfa74c1a": {
+      "source": "packages/kernel/tests/whole-view-ambient.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "Both registrations preserve the thirty six-transition/five-mode whole-view comparisons, with outside-batch input and returned answer. Revalidate their unread P1-H witnesses.",
+      "members": [
+        "packages/kernel/tests/whole-view-ambient.test.ts:123:7@9b9706e1ef3e",
+        "packages/kernel/tests/whole-view-ambient.test.ts:130:3@9b9706e1ef3e"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-31.md",
       "status": "awaiting_final_fresh_census_and_context_binding"
     }
   }
