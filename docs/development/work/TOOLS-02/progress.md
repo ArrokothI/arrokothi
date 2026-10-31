@@ -2,6 +2,14 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 reviewer-04 artifacts — through origin 1,180:** 1,031 retired /
+  149 extraction-origin plans. [Group review 21](group-review-21.md): **14 test
+  groups / 135 adoptions**; P1 adds one combined protocol-hold/Driver-safety test
+  with absent/false variants. Partial origin 1,171 resolved; contiguous guide-list
+  provenance expanded. No new execution or complete-pass runtime yet. Resume
+  `K1.2-correction-01/review-06.md:16`, `mention-da52be7462c27a7d962e0981`
+  (origin 1,181), under owner choice 11. IN_PROGRESS; no final closure.
+
 - **2026-10-30 owner choice 11 — resume to origin 1,518:** [Decision](owner-choice-11.md)
   answers projection 10 at `17e77cc8`, raises the test-group cap to **25**, and
   removes the proposed origin-1,331 checkpoint. Projected adoption cap stays **250**.

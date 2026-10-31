@@ -7245,7 +7245,11 @@
     },
     {
       "id": "artifact-d11ba7851aaddd6bd2472e73",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. Whole finite historical Markdown link/slugs checker read. It checks the reviewer-selected 41-file documentation set and prints link findings; no independent current product/evidence-tool counterexample, maintained fixture or claim closure is specified."
+      }
     },
     {
       "id": "artifact-793a993ed2290db00aa7b9d7",
@@ -7257,12 +7261,34 @@
     },
     {
       "id": "artifact-b46445caeaa7feb4193b6677",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "Review-14 CE1/CE2 at-limit and exchange-9-to-10 schedules map to activation-identity.test.ts reviewer key at limit and reviewer exchange 9 to 10 tests. Namespace/key lengths differ to keep the same exact 65536/65537 identity edge. They cover holds, clear, protocol, takeover, terminal Outcome, replay/conflict and retained state; no old log is execution evidence.",
         "targets": [
           "suite.packages/kernel/tests/activation-identity.test.ts"
+        ]
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Whole two-schedule probe and sealed rows read; maintained long-key and exchange-9-to-10 leaves assert all control/hold/replay/terminal surfaces and exact refusal-only conflict behavior.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/activation-identity.test.ts",
+            "test_path": [
+              "reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/activation-identity.test.ts",
+            "test_path": [
+              "reviewer exchange 9 to 10: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable"
+            ]
+          }
         ]
       }
     },
@@ -7272,18 +7298,96 @@
     },
     {
       "id": "artifact-29571c4db7cde3206ffea143",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "Exact-coordinate oracle is maintained in exact-coordinates.test.ts (explicit Review-04 P4 port): independent length-prefixed input derivation, long keys and non-ASCII/surrogate namespaces, all receipt boundaries, two Executions at equal positions, exchange/acknowledgment/hold/history/delivery/emission/result coordinates, replay identity and both terminal forms. This covers P4 X8-X23 observations and R-P3 receipt/view/destination checks; historical mutation runners still have separate pending origins.",
         "targets": [
           "suite.packages/kernel/tests/exact-coordinates.test.ts"
         ]
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 ordinary behavior probe: current exact-coordinates independently derives the retained/returned IDs, tokens and destinations for the same long/non-ASCII multi-Execution lifecycle. Its separately named X production-mutant routes remain extraction plans.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+            ]
+          }
+        ]
       }
     },
     {
       "id": "artifact-722edf51c5915f0d730e192b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed ordinary collector probe: live-object capture moved to SDK; undefined-position weighted diagnostics and genuine-array eight-root observation/work assertions preserve the current metered result. Historic wall-clock/heap outputs carry no current threshold under L-03.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: undefined array members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 eight SDK roots: every position once, no core submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "each of the eight eager Outcome roots does the work of one direct capture, no more (packet review BM-03)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "eight wrapper roots each stop at their own budget before any core call"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-81e241a96919041de351b11f",
