@@ -2,6 +2,13 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 reviewer-09 — through origin 1,264:** 1,084 retired / 180 plans.
+  [Batch 22](triage-batch-22.md): **14 test groups / 152 adoptions**, unchanged;
+  the 22-case recovery matrix and mutable-reference variants have maintained tests.
+  Projections 17/183 and 18/195; no new execution/full-pass runtime. Delivery branch
+  pushed through 4d90db80. Resume `K1.2-correction-01/review-10.md:80`,
+  `mention-33e12a57dfe4687133900340` (origin 1,265). IN_PROGRESS.
+
 - **2026-10-30 reviewer-08 — through origin 1,240:** 1,066 retired / 174 plans.
   [Group review 23](group-review-23.md): **14 test groups / 152 adoptions**;
   thirteen new existing-leaf adoptions, no new tests. Cumulative projections 18/187,

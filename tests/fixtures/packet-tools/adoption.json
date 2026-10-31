@@ -7996,15 +7996,249 @@
     },
     {
       "id": "artifact-fd04c09c49072cc8320638b5",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 entire source and named sealed rows read, including the 12 intended-oracle violations and the two safe clear paths. Maintained recovery-ambient uses the same observation-time inherited resultingEpoch installation, all 22 schedules, exact intended history/state, zero callbacks, and mutable caller-object variants. No new behavior input/result remains.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-d374004de5434100d1e2eea0",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 entire source and named sealed rows read, including the 12 intended-oracle violations and the two safe clear paths. Maintained recovery-ambient uses the same observation-time inherited resultingEpoch installation, all 22 schedules, exact intended history/state, zero callbacks, and mutable caller-object variants. No new behavior input/result remains.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-513f6d3d38a4f44f09d057bd",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 entire source and named sealed rows read, including the 12 intended-oracle violations and the two safe clear paths. Maintained recovery-ambient uses the same observation-time inherited resultingEpoch installation, all 22 schedules, exact intended history/state, zero callbacks, and mutable caller-object variants. No new behavior input/result remains.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-29897c65553c4a7f4ffebc1d",
@@ -145569,7 +145803,45 @@
     },
     {
       "id": "mention-80248a76e85ad84eb16501a5",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 exact-coordinate lifecycle oracle independently pins next exchange and terminal forms, repeated keys and no reopening.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\u00e9\" fail"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" complete"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/exact-coordinates.test.ts",
+            "test_path": [
+              "DEC-4 exact retained coordinates: \"actor-\\ud800\" fail"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b699055b9e587e9e7f763a31",
@@ -145581,7 +145853,85 @@
     },
     {
       "id": "mention-e30fa4a2ca79315e138ee7dc",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient preserves all 22 historical control/data/throw/reenter schedules across protocol-enter, code-enter/update/clear, takeover-clear and outcome-end. Its exact own-key/history/hold/epoch oracle forbids fabricated coordinates, exceptions and nested callbacks; all six mutable-reference and both safe-clear tests retain the other variants. Historical defect reproduction is inverted to the required safe result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ac72e58e455a2f67dcb65238",
@@ -145589,43 +145939,823 @@
     },
     {
       "id": "mention-09a052a4b9081ce5932deacf",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient preserves all 22 historical control/data/throw/reenter schedules across protocol-enter, code-enter/update/clear, takeover-clear and outcome-end. Its exact own-key/history/hold/epoch oracle forbids fabricated coordinates, exceptions and nested callbacks; all six mutable-reference and both safe-clear tests retain the other variants. Historical defect reproduction is inverted to the required safe result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-7528eff9dfcdf640ebb5678a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient preserves all 22 historical control/data/throw/reenter schedules across protocol-enter, code-enter/update/clear, takeover-clear and outcome-end. Its exact own-key/history/hold/epoch oracle forbids fabricated coordinates, exceptions and nested callbacks; all six mutable-reference and both safe-clear tests retain the other variants. Historical defect reproduction is inverted to the required safe result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-fa4dbe65776344193c995aca",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient preserves all 22 historical control/data/throw/reenter schedules across protocol-enter, code-enter/update/clear, takeover-clear and outcome-end. Its exact own-key/history/hold/epoch oracle forbids fabricated coordinates, exceptions and nested callbacks; all six mutable-reference and both safe-clear tests retain the other variants. Historical defect reproduction is inverted to the required safe result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-79f5e7f1d00203225236278a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient preserves all 22 historical control/data/throw/reenter schedules across protocol-enter, code-enter/update/clear, takeover-clear and outcome-end. Its exact own-key/history/hold/epoch oracle forbids fabricated coordinates, exceptions and nested callbacks; all six mutable-reference and both safe-clear tests retain the other variants. Historical defect reproduction is inverted to the required safe result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-425842bc8de017502fd76c09",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient preserves all 22 historical control/data/throw/reenter schedules across protocol-enter, code-enter/update/clear, takeover-clear and outcome-end. Its exact own-key/history/hold/epoch oracle forbids fabricated coordinates, exceptions and nested callbacks; all six mutable-reference and both safe-clear tests retain the other variants. Historical defect reproduction is inverted to the required safe result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-1070f2fb6b19b0aa9e2be684",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient preserves all 22 historical control/data/throw/reenter schedules across protocol-enter, code-enter/update/clear, takeover-clear and outcome-end. Its exact own-key/history/hold/epoch oracle forbids fabricated coordinates, exceptions and nested callbacks; all six mutable-reference and both safe-clear tests retain the other variants. Historical defect reproduction is inverted to the required safe result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-f586b8a0a50ad13bfe8441ff",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient preserves all 22 historical control/data/throw/reenter schedules across protocol-enter, code-enter/update/clear, takeover-clear and outcome-end. Its exact own-key/history/hold/epoch oracle forbids fabricated coordinates, exceptions and nested callbacks; all six mutable-reference and both safe-clear tests retain the other variants. Historical defect reproduction is inverted to the required safe result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-5a7c7170d26d3eb5f11a3a9d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient preserves all 22 historical control/data/throw/reenter schedules across protocol-enter, code-enter/update/clear, takeover-clear and outcome-end. Its exact own-key/history/hold/epoch oracle forbids fabricated coordinates, exceptions and nested callbacks; all six mutable-reference and both safe-clear tests retain the other variants. Historical defect reproduction is inverted to the required safe result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-e4a98dbeabb49d5416eccc47",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient preserves all 22 historical control/data/throw/reenter schedules across protocol-enter, code-enter/update/clear, takeover-clear and outcome-end. Its exact own-key/history/hold/epoch oracle forbids fabricated coordinates, exceptions and nested callbacks; all six mutable-reference and both safe-clear tests retain the other variants. Historical defect reproduction is inverted to the required safe result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-79ac69e1fa401d4d3a749f53",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient preserves all 22 historical control/data/throw/reenter schedules across protocol-enter, code-enter/update/clear, takeover-clear and outcome-end. Its exact own-key/history/hold/epoch oracle forbids fabricated coordinates, exceptions and nested callbacks; all six mutable-reference and both safe-clear tests retain the other variants. Historical defect reproduction is inverted to the required safe result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-698fc56aec62c0de40e0b069",
@@ -145633,15 +146763,101 @@
     },
     {
       "id": "mention-a563901ed5e99bb35e332194",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient preserves all 22 historical control/data/throw/reenter schedules across protocol-enter, code-enter/update/clear, takeover-clear and outcome-end. Its exact own-key/history/hold/epoch oracle forbids fabricated coordinates, exceptions and nested callbacks; all six mutable-reference and both safe-clear tests retain the other variants. Historical defect reproduction is inverted to the required safe result.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-26242238b7b6a94b1147cef9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-efaae84928343e0c0b880741",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum context records scope, chronology, process, candidate identities or aggregate run results, without a separate checkable counterexample. It grants no executable credit."
+      }
     },
     {
       "id": "mention-33e12a57dfe4687133900340",
