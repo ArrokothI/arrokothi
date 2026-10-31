@@ -2,6 +2,10 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 reviewer-11 inspection and fault evidence — through origin 1,334.** 1,134 retired and 200 plans.
+  **14 test groups / 152 adoptions**. Cumulative projections 16/173, longer-window projections 17/181.
+  Resume `K1.2-correction-01/review-12-evidence/README.md:17`, `mention-7921b2e0d676846d3c107b6f` (origin 1,335). [Batch 24](triage-batch-24.md)
+
 - **2026-10-30 reviewer-10 — through origin 1,288:** 1,105 retired / 183 plans.
   [Batch 23](triage-batch-23.md): **14 test groups / 152 adoptions**, unchanged.
   Six source-read forms and thirty whole-view comparisons have maintained controls;

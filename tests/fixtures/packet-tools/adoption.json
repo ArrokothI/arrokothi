@@ -8674,57 +8674,955 @@
     },
     {
       "id": "artifact-0df304cfe45c7b0f825cd277",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "The current MUTANTS table retains the default-parameter alias that moves a mint before the apply boundary.",
         "targets": [
           "suite.packages/kernel/tests/control-commits.test.ts"
         ]
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed control/fault family: default-parameter #mint and shadowed-undefined early writes no longer reach mutable records in coordinator. #mint is removed, writable index moved to state owner. Existing owner/write and complete-decision nextAcceptance/applySequence mutation cases preserve both current decisions. The maintained review-11 seed injects before Activation construction and independently requires unchanged whole view AND next input position 3. Accepted revision-9 amendment 03 explicitly demotes general static soundness; these runtime requirements remain.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
       }
     },
     {
       "id": "artifact-aa61ddb0a0ed934d57775f7c",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "The current MUTANTS table retains a local binding named undefined that aliases accepted state.",
         "targets": [
           "suite.packages/kernel/tests/control-commits.test.ts"
         ]
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed control/fault family: default-parameter #mint and shadowed-undefined early writes no longer reach mutable records in coordinator. #mint is removed, writable index moved to state owner. Existing owner/write and complete-decision nextAcceptance/applySequence mutation cases preserve both current decisions. The maintained review-11 seed injects before Activation construction and independently requires unchanged whole view AND next input position 3. Accepted revision-9 amendment 03 explicitly demotes general static soundness; these runtime requirements remain.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
       }
     },
     {
       "id": "artifact-a2dea1961d70108621d354e1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 reproduction command list/fence and its introduction: no additional required behavior beyond separately read runners and result records."
+      }
     },
     {
       "id": "artifact-74f187edb9be085354d88e8c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 entire fault consumer and three sealed rows: equal immediate view alone missed the early index advance. Maintained review-11 seed checks both unchanged view and next accepted position 3 before Activation construction; current complete-decision negative controls mutate those observations.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "artifact-b1506bf0d7600059504353b7",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed family. Entire analyzer probe and all six sealed rows read. Default/shadow current owner/complete-decision routes preserve the runtime obligation. The three synthetic partial/nested strengthening examples concern a static-soundness requirement explicitly replaced by accepted amendment 03 (current DEC-8 known gaps), not a missing runtime behavior test. No claim that current analyzer reports those forms; current no-observation behavior is tested separately.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "count: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "throw: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "reenter: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-6e44f915a6be34088efe33d8",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 entire consumer and all six clean/mutant results read. Current review-11-probes maintains count/throw/reenter schedules verbatim and independently requires no reads/exception/nested decision and unchanged RUNNING/revision/receipts/history. The separate production-mutant runner retains the inspection adoption.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "count: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "throw: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/review-11-probes.test.ts",
+            "test_path": [
+              "review 11: an inherited resultingEpoch installed during observation is never read by inspection",
+              "reenter: no read, no exception, no nested decision; the view is review 11's clean result"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-f9e5a954595afbdc3db8878a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 complete file compared with review-09: only import paths change. All 22 expected-correct rows and zero-violation summary read; current recovery-ambient preserves the schedules and intended assertions.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "the matrix is review 09's 22 cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors left behind as residue"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-0fb30576cf2d3b164b65fcb4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 complete file compared with review-10: only imports/output location change. All thirty sealed rows read; whole-view-ambient preserves complete assertions and inputs.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "the comparison set is review 10's 30"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-eae297591ad36f0ad9b494d1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 whole construction-fault adapter and three rows read. Original writable index/default-helper owners were replaced; current complete-decision nextAcceptance/applySequence/owner cases and maintained review-11 seed distinguish no early position mutation. No missing-anchor or TypeError kill.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "artifact-3eb9629042a621ad563fb657",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 both whole-suite mutations and sealed results read: default-parameter calls retired mutating #mint, shadowed undefined writes retired coordinator-local mutable record. Current state owner plus complete-decision nextAcceptance/applySequence mutations preserve their decisions; exact seed catches hidden future-position drift. Accepted amendment 03 removes a general analyzer-soundness obligation, not runtime atomicity.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "artifact-783beb792ce98eaed9702962",
@@ -8732,7 +9630,11 @@
     },
     {
       "id": "artifact-5c7504be929674a25bef0e04",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 whole historical identity checker and sealed result: verifies pinned ancestry, exact C..H administrative allowlist, policy bytes and manifest hashes. No separate current product or packet-tool counterexample is specified."
+      }
     },
     {
       "id": "artifact-b2d2a375947dbdddf5c5647c",
@@ -149638,7 +150540,33 @@
     },
     {
       "id": "mention-b42490144d7361987bba4fa5",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed control/fault family: default-parameter #mint and shadowed-undefined early writes no longer reach mutable records in coordinator. #mint is removed, writable index moved to state owner. Existing owner/write and complete-decision nextAcceptance/applySequence mutation cases preserve both current decisions. The maintained review-11 seed injects before Activation construction and independently requires unchanged whole view AND next input position 3. Accepted revision-9 amendment 03 explicitly demotes general static soundness; these runtime requirements remain.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "mention-da00597bbff8e351849e6bb5",
@@ -149678,39 +150606,899 @@
     },
     {
       "id": "mention-7eaac981b07eeecad32f844d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed control/fault family: default-parameter #mint and shadowed-undefined early writes no longer reach mutable records in coordinator. #mint is removed, writable index moved to state owner. Existing owner/write and complete-decision nextAcceptance/applySequence mutation cases preserve both current decisions. The maintained review-11 seed injects before Activation construction and independently requires unchanged whole view AND next input position 3. Accepted revision-9 amendment 03 explicitly demotes general static soundness; these runtime requirements remain.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "mention-915c2393a7e16001eae9e633",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed control/fault family: default-parameter #mint and shadowed-undefined early writes no longer reach mutable records in coordinator. #mint is removed, writable index moved to state owner. Existing owner/write and complete-decision nextAcceptance/applySequence mutation cases preserve both current decisions. The maintained review-11 seed injects before Activation construction and independently requires unchanged whole view AND next input position 3. Accepted revision-9 amendment 03 explicitly demotes general static soundness; these runtime requirements remain.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "mention-bbf5eb1b159cf89a4b4a0e7f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed control/fault family: default-parameter #mint and shadowed-undefined early writes no longer reach mutable records in coordinator. #mint is removed, writable index moved to state owner. Existing owner/write and complete-decision nextAcceptance/applySequence mutation cases preserve both current decisions. The maintained review-11 seed injects before Activation construction and independently requires unchanged whole view AND next input position 3. Accepted revision-9 amendment 03 explicitly demotes general static soundness; these runtime requirements remain.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "mention-a0800e9b800aea8e83ed6a69",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed control/fault family: default-parameter #mint and shadowed-undefined early writes no longer reach mutable records in coordinator. #mint is removed, writable index moved to state owner. Existing owner/write and complete-decision nextAcceptance/applySequence mutation cases preserve both current decisions. The maintained review-11 seed injects before Activation construction and independently requires unchanged whole view AND next input position 3. Accepted revision-9 amendment 03 explicitly demotes general static soundness; these runtime requirements remain.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "mention-2a2e30a5ce94aade227d8bca",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed control/fault family: default-parameter #mint and shadowed-undefined early writes no longer reach mutable records in coordinator. #mint is removed, writable index moved to state owner. Existing owner/write and complete-decision nextAcceptance/applySequence mutation cases preserve both current decisions. The maintained review-11 seed injects before Activation construction and independently requires unchanged whole view AND next input position 3. Accepted revision-9 amendment 03 explicitly demotes general static soundness; these runtime requirements remain.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "mention-61dff328b27f4a565fd66d76",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed control/fault family: default-parameter #mint and shadowed-undefined early writes no longer reach mutable records in coordinator. #mint is removed, writable index moved to state owner. Existing owner/write and complete-decision nextAcceptance/applySequence mutation cases preserve both current decisions. The maintained review-11 seed injects before Activation construction and independently requires unchanged whole view AND next input position 3. Accepted revision-9 amendment 03 explicitly demotes general static soundness; these runtime requirements remain.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "mention-a3d8338537e358118a54b61a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed control/fault family: default-parameter #mint and shadowed-undefined early writes no longer reach mutable records in coordinator. #mint is removed, writable index moved to state owner. Existing owner/write and complete-decision nextAcceptance/applySequence mutation cases preserve both current decisions. The maintained review-11 seed injects before Activation construction and independently requires unchanged whole view AND next input position 3. Accepted revision-9 amendment 03 explicitly demotes general static soundness; these runtime requirements remain.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "mention-7dc8c3223ded12ddcc662fb7",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 all 22 original recovery schedules remain maintained in recovery-ambient, with exact intended safe results and mutable/clear extensions.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "the matrix is review 09's 22 cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors left behind as residue"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-4ed50099f7e1019973e73af9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 all thirty whole-view comparisons remain unchanged in whole-view-ambient, with outside-batch input and complete answer/view equality.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "takeover-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / mutable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "outcome-end / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/whole-view-ambient.test.ts",
+            "test_path": [
+              "review 10: whole views under an inherited resultingEpoch equal the view without it",
+              "the comparison set is review 10's 30"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-aaaf6df4d37d0c495c87dae8",
@@ -149722,27 +151510,51 @@
     },
     {
       "id": "mention-838d460eddbcdfd7f47149ae",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 reproduction command list/fence and its introduction: no additional required behavior beyond separately read runners and result records."
+      }
     },
     {
       "id": "mention-9db4b0fb02a119aa932eaa6e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 reproduction command list/fence and its introduction: no additional required behavior beyond separately read runners and result records."
+      }
     },
     {
       "id": "mention-00092ead54d87559b6f6bedb",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 reproduction command list/fence and its introduction: no additional required behavior beyond separately read runners and result records."
+      }
     },
     {
       "id": "mention-8bd0d38ab984de803fd77b59",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 reproduction command list/fence and its introduction: no additional required behavior beyond separately read runners and result records."
+      }
     },
     {
       "id": "mention-9e4cb53dcd7b1adb4266b03e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 reproduction command list/fence and its introduction: no additional required behavior beyond separately read runners and result records."
+      }
     },
     {
       "id": "mention-cbd742d601bd31ba7890c2f1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 reproduction command list/fence and its introduction: no additional required behavior beyond separately read runners and result records."
+      }
     },
     {
       "id": "mention-5412da70d1c9040aac9bb538",
@@ -149754,7 +151566,33 @@
     },
     {
       "id": "mention-c827ca306ebebd477e9334f5",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 default/shadow source variants and construction-fault schedule are individually retained by current state-owner and complete-decision routes plus the exact review-11 seed; no resource-exhaustion guarantee.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextAcceptance"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "state-owner.write-outside-apply"
+          }
+        ]
+      }
     },
     {
       "id": "mention-14de8ea85c299b581050ffeb",
@@ -149762,7 +151600,11 @@
     },
     {
       "id": "mention-38273e895749bf1deb306f1d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 reviewer method/coverage aims: no additional concrete program, schedule or required observable result beyond the separately read independent/runtime/fault probes; this is not a proof that all analyzer forms are covered."
+      }
     },
     {
       "id": "mention-7921b2e0d676846d3c107b6f",
