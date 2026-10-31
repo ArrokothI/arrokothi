@@ -1,0 +1,100 @@
+[
+  {
+    "ordinal": 1434,
+    "origin": "artifact-bf8be457073b319f1d960816",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/activation-identity.test.ts",
+    "lines_at_pin": 289,
+    "members": 7,
+    "equal_assertion_sequences": 7,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. The seven registered test templates retain the long/surrogate minted identity, opaque text, wrong coordinates/grants, controls and non-text results. Both refused spans now pass invalid value content as JSON bytes. Their eight and twelve assertion calls respectively still match the pinned calls, including receipt/refusal-only state. The separately planned NFC/NFD mutation schedule was not present in this source."
+  },
+  {
+    "ordinal": 1435,
+    "origin": "artifact-bb7722eb19e78f33e1f81a58",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/aggregate-refusal.test.ts",
+    "lines_at_pin": 194,
+    "members": 12,
+    "equal_assertion_sequences": 5,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5 mixed. Same root labels, 128/129 path and 1024/1025 message edges, first eight details, weighted suffix ordering and distinct exact identities remain asserted. Live-object capture moved to SDK, and byte-core permission precedes malformed byte content. The old single live-object call is superseded for its core side; the wrapper tests own its capture counts and diagnostic labels. Both current owners are named."
+  },
+  {
+    "ordinal": 1436,
+    "origin": "artifact-21fb34d9cd3ad15575371064",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/ambient-reads.test.ts",
+    "lines_at_pin": 328,
+    "members": 11,
+    "equal_assertion_sequences": 9,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. Scoped syntax/access inventory, guard dominance, hostMember option ownership and the 6 source forms retain their structural assertions. The zone changed under BINDING-01 and COORD-REFACTOR-01. The Error-name runtime witness still tests zero inherited accessor calls. The pinned test source itself does not establish a universal static proof."
+  },
+  {
+    "ordinal": 1437,
+    "origin": "artifact-22cf4ca80f2139455173765a",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/boundary.test.ts",
+    "lines_at_pin": 208,
+    "members": 9,
+    "equal_assertion_sequences": 7,
+    "without_same_title_current_binding": [
+      "the JCS substrate is the owner-approved exact dependency (K11-R1-JCS-01)",
+      "every import in the zone is internal, a node: builtin, or the approved JCS dependency"
+    ],
+    "disposition": "S5",
+    "reading": "S5 mixed. Current structural tests still ban legacy controller/protocol vocabulary, ordinary indexed writes, mutator calls and inherited property-descriptor construction. The JCS dependency and approved-import expectations moved: SDK wrapper keeps the exact dependency and core has none. The former core approval was superseded by BINDING-01. Both sides are asserted by the current boundary tests."
+  },
+  {
+    "ordinal": 1438,
+    "origin": "artifact-ab4a0cceaeed3b426232f62f",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/boundary.test.ts",
+    "lines_at_pin": 208,
+    "members": 9,
+    "equal_assertion_sequences": 7,
+    "without_same_title_current_binding": [
+      "the JCS substrate is the owner-approved exact dependency (K11-R1-JCS-01)",
+      "every import in the zone is internal, a node: builtin, or the approved JCS dependency"
+    ],
+    "disposition": "S5",
+    "reading": "S5 mixed. Current structural tests still ban legacy controller/protocol vocabulary, ordinary indexed writes, mutator calls and inherited property-descriptor construction. The JCS dependency and approved-import expectations moved: SDK wrapper keeps the exact dependency and core has none. The former core approval was superseded by BINDING-01. Both sides are asserted by the current boundary tests."
+  },
+  {
+    "ordinal": 1439,
+    "origin": "artifact-a7baf87132157c84897e9b47",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/control-authority.test.ts",
+    "lines_at_pin": 397,
+    "members": 14,
+    "equal_assertion_sequences": 14,
+    "without_same_title_current_binding": [],
+    "disposition": "P1-R/P1-H plan",
+    "reading": "The current 14 behavior registrations retain observer and control power, scope, exact grant lifetime and safe/unsafe/absent/throwing Driver results. Every historical member is registered unread. Revalidate the migrated suite under P1-H at the fresh candidate and give those witnesses no executable credit."
+  },
+  {
+    "ordinal": 1440,
+    "origin": "artifact-ada9f66cd74e3bc95eef93d6",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/control-commits.test.ts",
+    "lines_at_pin": 244,
+    "members": 10,
+    "equal_assertion_sequences": 2,
+    "without_same_title_current_binding": [
+      "every call resolves to zone code, a classified primordial or an inventoried foreign call",
+      "`${name}: an apply suffix of prebuilt values, and no accepted-state mutation or foreign call before it`",
+      "the recognised apply suffixes are the ones the contract describes",
+      "applyControlCommit appends its prebuilt record before its hold writes and does nothing else",
+      "hold fields, recovery history, receipts and the acceptance index have fixed writers",
+      "the refusal helpers change nothing on the path that continues past their exit test",
+      "values.ts: only pushIssue itself mutates an issue list, so every suffix entry owns `occurrences`"
+    ],
+    "disposition": "S5",
+    "reading": "S5 mixed. All three planner operations now hand over prebuilt values at a bound basis and the state owner prepares/commits each arm. Current negative controls distinguish early writes, mutating helpers, aliasing, wrong apply sequence and refusal continuation. The coordinator-local suffix and applyControlCommit no longer own state. The pushIssue suffix ownership rule moved intact to SDK capture-static. Keep the two effect traversal orders and original mutant variants."
+  }
+]

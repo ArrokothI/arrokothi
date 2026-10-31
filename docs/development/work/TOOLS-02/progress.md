@@ -2,6 +2,9 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 kernel identity, diagnostics and control structure — through origin 1,440.** 1,229 retired, 210 extraction plans, 1 P1 revalidation plans. **14 test groups / 152 adoptions**, projections 15/161.
+  Resume `packages/kernel/tests/creation.test.ts`, `artifact-6c57cc9dd8febdefa65ed496` (origin 1,441). [Batch 29](triage-batch-29.md)
+
 - **2026-10-31 K1.1 reference packet — through origin 1,433.** 1,223 retired and 210 plans.
   **14 test groups / 152 adoptions**. Cumulative projections 15/162, longer-window projections 15/164.
   Resume `packages/kernel/tests/activation-identity.test.ts:1`, `artifact-bf8be457073b319f1d960816` (origin 1,434). [Batch 28](triage-batch-28.md)

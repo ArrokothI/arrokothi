@@ -1225,7 +1225,13 @@
     "mention-059f65df5fce6974d6fe69a8",
     "mention-2bca97b00f836d57791afee6",
     "artifact-9775fd62e0ec1b4d45f26d3f",
-    "mention-cb4e6f49f561eab054fa2a42"
+    "mention-cb4e6f49f561eab054fa2a42",
+    "artifact-bf8be457073b319f1d960816",
+    "artifact-bb7722eb19e78f33e1f81a58",
+    "artifact-21fb34d9cd3ad15575371064",
+    "artifact-22cf4ca80f2139455173765a",
+    "artifact-ab4a0cceaeed3b426232f62f",
+    "artifact-ada9f66cd74e3bc95eef93d6"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -12536,7 +12542,7 @@
       "build_status": "planned_not_executed"
     }
   },
-  "resume_origin": "artifact-bf8be457073b319f1d960816",
+  "resume_origin": "artifact-6c57cc9dd8febdefa65ed496",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -12544,7 +12550,7 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "packages/kernel/tests/activation-identity.test.ts",
+  "resume_path": "packages/kernel/tests/creation.test.ts",
   "resume_line": 1,
   "cap_stop_07": {
     "origins_reached": 696,
@@ -12598,5 +12604,33 @@
     "projection": "projection-10.md",
     "resume_member": "P1 coverage/supersession reading within README.md:11; then README.md:13 and source order",
     "reason": "Owner choices 08/09 retain projected and observed new-test-group cap 12. This finite P3 set raises the observed count to 13 and latest-300 projection to 23."
+  },
+  "p1_revalidation_plans": {
+    "artifact-a7baf87132157c84897e9b47": {
+      "source": "packages/kernel/tests/control-authority.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "The current 14 behavior registrations retain observer and control power, scope, exact grant lifetime and safe/unsafe/absent/throwing Driver results. Every historical member is registered unread. Revalidate the migrated suite under P1-H at the fresh candidate and give those witnesses no executable credit.",
+      "members": [
+        "packages/kernel/tests/control-authority.test.ts:62:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:70:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:99:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:133:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:162:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:171:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:179:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:200:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:228:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:261:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:298:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:333:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:354:3@a795110537af",
+        "packages/kernel/tests/control-authority.test.ts:377:3@a795110537af"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-29.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    }
   }
 }
