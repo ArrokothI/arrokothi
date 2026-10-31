@@ -1,7 +1,7 @@
 {
   "source_base": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
   "source_packet": "K1.2-correction-01",
-  "state": "triage_in_progress",
+  "state": "source_readings_complete_builds_pending",
   "retirement_readings": [
     "mention-b43188cfa39f39ae809510de",
     "mention-6f40e8f1a46ba505eb1dc0e2",
@@ -1275,7 +1275,8 @@
     "artifact-a1391856426919155dd8d776",
     "artifact-accb88d01d3c1bd7a07f7a37",
     "artifact-1f79bb84e3dcff04b29998b3",
-    "artifact-f57bc769e0c3bc07a00d9698"
+    "artifact-f57bc769e0c3bc07a00d9698",
+    "additional-1f7c234896b1fdf09bc26cdb"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -13208,7 +13209,7 @@
       "build_status": "planned_not_built_or_run"
     }
   },
-  "resume_origin": "additional-1107d4b2a4d8c1365842b8ae",
+  "resume_origin": null,
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -13216,7 +13217,7 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "inventory additional origins",
+  "resume_path": "TOOLS-02 projection-11 and remaining extraction/P3 builds",
   "resume_line": 1,
   "cap_stop_07": {
     "origins_reached": 696,
@@ -13877,6 +13878,205 @@
       ],
       "reading": "triage-batch-32.md",
       "status": "bind named target and reconcile all members at fresh C"
+    },
+    "additional-1107d4b2a4d8c1365842b8ae": {
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/guards/round3_mutants.py",
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "disposition": "closed",
+      "route": "P1-R non-executable record",
+      "required_result": "RM1 restores obsolete A-hard/B-hard obligations, RM2 replaces all 51 option responses with generic text, RM3 falsely attributes poison blocking to frozen intrinsics, RM4 removes a hostile label, and RM5 removes binding pinning. Read the complete runner and sealed round3-mutants.json. The two historical validators let RM1/2/3/5 survive; coverage.json readings audit.RM1/RM2/RM3/RM5 retain distinct semantic reasons. RM4 is rejected by corpus.validate for hostile-label coverage. This is preserved historical evidence-tooling scope, with no new executable kill or product guarantee claimed.",
+      "cases": [],
+      "context": [
+        {
+          "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+          "path": "docs/development/work/DESIGN-AUDIT-01/review-03/guards/round3_mutants.py",
+          "start": 1,
+          "end": 51
+        }
+      ],
+      "reading": "triage-batch-33.md",
+      "status": "awaiting_final_fresh_case_and_context_revalidation"
+    },
+    "additional-b60e2b509343b39e0bc4e392": {
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.mts",
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "disposition": "closed",
+      "route": "P1-R cases",
+      "required_result": "Both sealed creation outcomes were read. The live-object Proxy hop changes JSON numeric serialization and incorrectly replays different content at the old pin. BINDING-01 moves the current core to canonical bytes. The existing two realm.kernel-lexical-creation cases invoke the maintained realm-byte-port creation control/hop, with a request getter installing the same lexical shadow. Their recorded observations require different-content conflict, same-content replay and unchanged first retained payload. Revalidate both cases and context without promoting unread attribution.",
+      "cases": [
+        "realm.kernel-lexical-creation.control",
+        "realm.kernel-lexical-creation.hop"
+      ],
+      "context": [
+        {
+          "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+          "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.mts",
+          "start": 1,
+          "end": 30
+        }
+      ],
+      "reading": "triage-batch-33.md",
+      "status": "awaiting_final_fresh_case_and_context_revalidation"
+    },
+    "additional-0b2b45755c80ff73e7789650": {
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "disposition": "closed",
+      "route": "P1-R cases",
+      "required_result": "All four sealed control/JSON/Object/Array outcomes were read. Historical coherent Proxy capture steers the old serializer despite unchanged globalThis bindings. The existing four realm.kernel-lexical-shadow cases invoke realm-byte-port shadow after core module initialization. Canonical bytes and parsed content must agree on first and later calls under each lexical shadow. The old live-object Kernel operation was replaced by BINDING-01. Preserve each current byte-core route and its unread attribution until a per-entry reading supports credit.",
+      "cases": [
+        "realm.kernel-lexical-shadow.control",
+        "realm.kernel-lexical-shadow.JSON",
+        "realm.kernel-lexical-shadow.Object",
+        "realm.kernel-lexical-shadow.Array"
+      ],
+      "context": [
+        {
+          "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+          "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+          "start": 1,
+          "end": 34
+        }
+      ],
+      "reading": "triage-batch-33.md",
+      "status": "awaiting_final_fresh_case_and_context_revalidation"
+    },
+    "additional-a11f3d5bded83b931874b438": {
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow-probe.mjs",
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "disposition": "closed",
+      "route": "P1-R cases",
+      "required_result": "Read the whole canonicalize@3.0.0 probe and all three observations. Ordinary and frozen-but-unpinned processes admit a lexical JSON declaration and steer bytes; full non-writable/non-configurable pins reject the declaration with SyntaxError and keep bytes unchanged. The three existing realm.lexical-shadow cases preserve these separate environment outcomes and the observation-comparison removal mutant. They are mechanism witnesses, not an ambient SDK guarantee.",
+      "cases": [
+        "realm.lexical-shadow.unpinned.ordinary",
+        "realm.lexical-shadow.unpinned.frozen-intrinsics",
+        "realm.lexical-shadow.pinned.frozen-intrinsics"
+      ],
+      "context": [
+        {
+          "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+          "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow-probe.mjs",
+          "start": 1,
+          "end": 32
+        }
+      ],
+      "reading": "triage-batch-33.md",
+      "status": "awaiting_final_fresh_case_and_context_revalidation"
+    },
+    "additional-4312cb8d9b027fa1ae60a720": {
+      "source": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "disposition": "closed",
+      "route": "P1-R cases",
+      "required_result": "Read the whole runner and all 24 sealed observations. JSON/Object/Array each vary assignment, defineProperty, declaration and a pre-existing lexical binding against full versus writable-only pins. Assignment is blocked in both pin modes; full pins also block definition and later declaration; writable-only pins permit those changes. A declaration installed before either pin survives the startup descriptor check. Preserve all 24 registry cases, including recursive-error outcomes for writable-only JSON/Object definitions. The realm comparison checks the expected observation and a corrupt-observation negative control, with a comparison-removal mutant.",
+      "cases": [
+        "realm.pin-forms.JSON.assign.full.frozen-intrinsics",
+        "realm.pin-forms.JSON.assign.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.JSON.define.full.frozen-intrinsics",
+        "realm.pin-forms.JSON.define.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.JSON.declare.full.frozen-intrinsics",
+        "realm.pin-forms.JSON.declare.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.JSON.preexisting.full.frozen-intrinsics",
+        "realm.pin-forms.JSON.preexisting.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Object.assign.full.frozen-intrinsics",
+        "realm.pin-forms.Object.assign.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Object.define.full.frozen-intrinsics",
+        "realm.pin-forms.Object.define.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Object.declare.full.frozen-intrinsics",
+        "realm.pin-forms.Object.declare.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Object.preexisting.full.frozen-intrinsics",
+        "realm.pin-forms.Object.preexisting.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Array.assign.full.frozen-intrinsics",
+        "realm.pin-forms.Array.assign.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Array.define.full.frozen-intrinsics",
+        "realm.pin-forms.Array.define.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Array.declare.full.frozen-intrinsics",
+        "realm.pin-forms.Array.declare.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Array.preexisting.full.frozen-intrinsics",
+        "realm.pin-forms.Array.preexisting.writableOnly.frozen-intrinsics"
+      ],
+      "context": [
+        {
+          "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+          "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+          "start": 1,
+          "end": 48
+        }
+      ],
+      "reading": "triage-batch-33.md",
+      "status": "awaiting_final_fresh_case_and_context_revalidation"
+    },
+    "additional-e0c4ff8aa1309ff5bc381c10": {
+      "source": "docs/development/work/DESIGN-AUDIT-01/cleanup-01.md",
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "disposition": "closed",
+      "route": "P1-R mixed record and cases",
+      "required_result": "Read the complete cleanup. Status, identities, commands and process retrospective are records. DA01-R3-GUARD-01 is retained by the four explicit reading-only RM entries and sealed RM4 coverage control. DA01-R3-HOP-01 has the 24 pin-form, sixteen Map/Reflect zone, four Object.freeze, three lexical-shadow and six maintained core-port cases. Keep the pre-pin declaration and full-versus-writable-only distinctions. DA01-R3-PROXY-02 was answered by DESIGN-AUDIT-01 decision-01, with coherent Proxy acceptance superseded; decision-02/BINDING-01 replace the old live-object core. The historical policy-only transfer is therefore expanded to the more demanding existing-case closure, plus its separate non-executable reading rationale. No historical evidence changes.",
+      "cases": [
+        "realm.kernel-lexical-shadow.control",
+        "realm.kernel-lexical-shadow.JSON",
+        "realm.kernel-lexical-shadow.Object",
+        "realm.kernel-lexical-shadow.Array",
+        "realm.kernel-lexical-creation.control",
+        "realm.kernel-lexical-creation.hop",
+        "realm.lexical-shadow.unpinned.ordinary",
+        "realm.lexical-shadow.unpinned.frozen-intrinsics",
+        "realm.lexical-shadow.pinned.frozen-intrinsics",
+        "realm.object-freeze-witness.unpinned.ordinary",
+        "realm.object-freeze-witness.pinned.ordinary",
+        "realm.object-freeze-witness.unpinned.frozen-intrinsics",
+        "realm.object-freeze-witness.pinned.frozen-intrinsics",
+        "realm.pin-forms.JSON.assign.full.frozen-intrinsics",
+        "realm.pin-forms.JSON.assign.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.JSON.define.full.frozen-intrinsics",
+        "realm.pin-forms.JSON.define.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.JSON.declare.full.frozen-intrinsics",
+        "realm.pin-forms.JSON.declare.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.JSON.preexisting.full.frozen-intrinsics",
+        "realm.pin-forms.JSON.preexisting.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Object.assign.full.frozen-intrinsics",
+        "realm.pin-forms.Object.assign.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Object.define.full.frozen-intrinsics",
+        "realm.pin-forms.Object.define.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Object.declare.full.frozen-intrinsics",
+        "realm.pin-forms.Object.declare.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Object.preexisting.full.frozen-intrinsics",
+        "realm.pin-forms.Object.preexisting.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Array.assign.full.frozen-intrinsics",
+        "realm.pin-forms.Array.assign.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Array.define.full.frozen-intrinsics",
+        "realm.pin-forms.Array.define.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Array.declare.full.frozen-intrinsics",
+        "realm.pin-forms.Array.declare.writableOnly.frozen-intrinsics",
+        "realm.pin-forms.Array.preexisting.full.frozen-intrinsics",
+        "realm.pin-forms.Array.preexisting.writableOnly.frozen-intrinsics",
+        "realm.zone.Map.assign.full.frozen-intrinsics",
+        "realm.zone.Map.assign.writableOnly.frozen-intrinsics",
+        "realm.zone.Map.define.full.frozen-intrinsics",
+        "realm.zone.Map.define.writableOnly.frozen-intrinsics",
+        "realm.zone.Map.declare.full.frozen-intrinsics",
+        "realm.zone.Map.declare.writableOnly.frozen-intrinsics",
+        "realm.zone.Map.preexisting.full.frozen-intrinsics",
+        "realm.zone.Map.preexisting.writableOnly.frozen-intrinsics",
+        "realm.zone.Reflect.assign.full.frozen-intrinsics",
+        "realm.zone.Reflect.assign.writableOnly.frozen-intrinsics",
+        "realm.zone.Reflect.define.full.frozen-intrinsics",
+        "realm.zone.Reflect.define.writableOnly.frozen-intrinsics",
+        "realm.zone.Reflect.declare.full.frozen-intrinsics",
+        "realm.zone.Reflect.declare.writableOnly.frozen-intrinsics",
+        "realm.zone.Reflect.preexisting.full.frozen-intrinsics",
+        "realm.zone.Reflect.preexisting.writableOnly.frozen-intrinsics"
+      ],
+      "context": [
+        {
+          "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+          "path": "docs/development/work/DESIGN-AUDIT-01/cleanup-01.md",
+          "start": 1,
+          "end": 249
+        }
+      ],
+      "reading": "triage-batch-33.md",
+      "status": "awaiting_final_fresh_case_and_context_revalidation"
     }
   }
 }

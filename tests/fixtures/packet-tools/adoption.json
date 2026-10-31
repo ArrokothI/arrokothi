@@ -221613,7 +221613,11 @@
     },
     {
       "id": "additional-1f7c234896b1fdf09bc26cdb",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "The complete program and both frozen-graph.txt observations measure which Node v25.2.1 objects are frozen and whether thirteen global bindings remain writable/configurable. It asserts no required ArrokothI or evidence-tooling result. Its measurements are historical environment facts, not a maintained cross-version fingerprint. The cleanup intake separately carries the actual replacement-form counterexamples, including Map/Reflect and Object.freeze, under its existing realm cases."
+      }
     },
     {
       "id": "additional-b60e2b509343b39e0bc4e392",

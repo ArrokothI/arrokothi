@@ -2,6 +2,9 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 source triage complete — through origin 1,518.** 1,274 retired, 216 extraction plans and 28 P1 revalidation plans. **15 test groups / 152 adoptions**, final projections 15/152. [Batch 33](triage-batch-33.md)
+  Resume with one fresh-clone pass of all 67 built adopted cases and projection 11, then the 85 remaining adoptions, shared variants, tests/P3 and P1 bindings. Register reconciliation and regenerate remain pending. Worktree `/Users/rex-shih/.codex/worktrees/tools-02-gpt6-handover/arrokothi`. Node PATH prefix `/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin`. IN_PROGRESS.
+
 - **2026-10-31 builder and architecture evidence — through origin 1,511.** 1,273 retired, 216 extraction plans, 22 P1 revalidation plans. **15 test groups / 152 adoptions**, projections 16/153.
   Resume `inventory additional origins`, `additional-1107d4b2a4d8c1365842b8ae` (origin 1,512). [Batch 32](triage-batch-32.md)
 
