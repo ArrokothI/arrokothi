@@ -91,7 +91,7 @@ REGISTER_MINIMUM = {
 TEST_SUFFIXES = ('.test.ts', '.test.mjs', '.test.js')
 # P1-M (design 05 D04-CHK-03, D05-CHK-06): census kinds over pinned runner bytes, and member routes.
 CENSUS_KINDS = ('structural', 'python_ast', 'loop', 'filter', 'inherits', 'bindings')
-MEMBER_ROUTES = ('pending', 'mutation', 'witness', 'no_longer_applicable', 'equivalence', 'survivor', 'limit')
+MEMBER_ROUTES = ('pending', 'mutation', 'witness', 'no_longer_applicable', 'equivalence', 'survivor', 'limit', 'covered')
 FAMILY_ROLES = ('runner', 'mixed')
 # P1-R and the P1 preamble (design 05 §4, D04-CHK-06): origin closure links and minimum contexts.
 CLOSURE_LINKS = ('target', 'counterexample', 'family', 'case', 'member')
@@ -832,7 +832,8 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
                                  registry['cases'], spec['registry'], detected)
         results = [check_target(git, rev, target, counterexamples, registry, context) for target in targets.values()]
         evaluations, all_earlier = preserved_census(git, rev, spec, intake, context, register) if tested else ([], None)
-        _, family_counts = family_table(git, rev, spec['families'], origins, counterexamples, registry, environment, toolchain)
+        _, family_counts = family_table(git, rev, spec['families'], origins, counterexamples, registry, environment, toolchain,
+                                        context)
         retirements = {key: triage_origin(git, rev, key, row, rows, registry, context)
                        for key, row in rows.items() if row['state'] == 'triaged'}
     for target, result in zip(targets.values(), results):
@@ -3298,12 +3299,55 @@ def member_key(member):
     return member.get('key', member['label'].split()[0])
 
 
-def member_route(git, rev, family_id, member, counterexamples, mutants):
+def covered_pointer(pointer, cases, context, label):
+    """Design 06 §2: a covered member names a scheduled registry case or one passing catalog leaf, as S5 does."""
+    require(isinstance(pointer, dict) and pointer.get('kind') in ('case', 'leaf'),
+            'a covered route points at a registry case or a catalog leaf: ' + label)
+    if pointer['kind'] == 'case':
+        require(set(pointer) == {'kind', 'id'} and pointer.get('id') in cases,
+                'a covered case is a scheduled registry case: ' + label)
+        return
+    require(set(pointer) == {'kind', 'command', 'file', 'test_path'} and isinstance(pointer['file'], str) and
+            isinstance(pointer['test_path'], list) and bool(pointer['test_path']) and
+            all(isinstance(name, str) and bool(name) for name in pointer['test_path']) and
+            context is not None and pointer['command'] in context['catalogs'],
+            'a covered leaf names a catalog command, file and full path: ' + label)
+    catalog = context['catalog'](pointer['command'])
+    leaves = [pair for pair in catalog['tree']['files'].get(pointer['file'], {'pairs': []})['pairs']
+              if pair['leaf'] and pair['path'] == pointer['test_path']]
+    require(pointer['file'] in catalog['selection'] and len(leaves) == 1 and leaves[0]['verdict'] == 'passed',
+            'a covered leaf is one passing catalog leaf: ' + label)
+
+
+def member_route(git, rev, family_id, member, counterexamples, mutants, families=None, cases=(), context=None):
     """P1-M routes. Only a registered mutation can later earn a kill; every other route is counted, never a kill."""
     route = member.get('route')
     require(isinstance(route, dict) and route.get('kind') in MEMBER_ROUTES, 'member needs a known route: ' + member['label'])
     kind = route['kind']
     text = lambda name: isinstance(route.get(name), str) and bool(route[name].strip())
+    if kind == 'mutation' and 'via' in route:
+        # Design 06 §1 (owner choice 13): a copy of another family's member names that member's registered mutant.
+        via = route['via']
+        require(isinstance(via, dict) and set(via) == {'family', 'label', 'reading'} and via['family'] != family_id and
+                isinstance(via['reading'], str) and bool(via['reading'].strip()),
+                'a shared mutation route names another family\'s member and its reading: ' + member['label'])
+        source = next((other for other in (families or {}).get(via['family'], {}).get('members', [])
+                       if other['label'] == via['label']), None)
+        require(source is not None and member.get('reuses', {'family': via['family'], 'label': via['label']}) ==
+                {'family': via['family'], 'label': via['label']},
+                'a shared mutation route names an existing member, the one this member reuses: ' + member['label'])
+        mutant = mutants.get((route.get('case'), route.get('mutant')))
+        require(mutant is not None and mutant.get('obligation') == f"{via['family']}#{member_key(source)}",
+                'a shared mutation route needs the source member\'s registered mutant: ' + member['label'])
+        return 'mutation_shared'
+    if kind == 'covered':
+        # Design 06 §2 (owner choice 13): counted with its reading, never a kill.
+        pointers = route.get('covered_by') if isinstance(route.get('covered_by'), list) else [route.get('covered_by')]
+        require(text('reading') and bool(pointers) and set(route) == {'kind', 'covered_by', 'reading'},
+                'a covered route needs its pointers and reading: ' + member['label'])
+        for pointer in pointers:
+            covered_pointer(pointer, cases, context, member['label'])
+        return kind
     if kind == 'mutation':
         mutant = mutants.get((route.get('case'), route.get('mutant')))
         require(mutant is not None and mutant.get('obligation') == f'{family_id}#{member_key(member)}',
@@ -3324,7 +3368,7 @@ def member_route(git, rev, family_id, member, counterexamples, mutants):
     return kind
 
 
-def family_table(git, rev, rows, origins, counterexamples, registry, environment, toolchain):
+def family_table(git, rev, rows, origins, counterexamples, registry, environment, toolchain, context=None):
     """P1-M: recompute every family's census over pinned bytes and check each member's links and route."""
     families = unique_records(rows, 'families')
     census = Census(git, rev, families, origins, environment, toolchain)
@@ -3350,7 +3394,8 @@ def family_table(git, rev, rows, origins, counterexamples, registry, environment
                             for other in families[link['family']]['members']),
                         'a reuse link names an existing member with the same key: ' + member['label'])
                 count['reused'] += 1
-            count['route:' + member_route(git, rev, family_id, member, counterexamples, mutants)] += 1
+            count['route:' + member_route(git, rev, family_id, member, counterexamples, mutants, families,
+                                          {case['id'] for case in registry['cases']}, context)] += 1
     for count in counts.values():
         count['distinct'] = count['occurrences'] - count['inherited'] - count['reused']
     return families, {role: dict(count) for role, count in counts.items()}

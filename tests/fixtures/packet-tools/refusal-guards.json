@@ -5752,6 +5752,238 @@
       ]
     },
     {
+      "id": "guard.covered_pointer.d4f5fd8973bab9e5",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_route_covered_kind",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: covered_pointer",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_route_covered_kind"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.covered_pointer.d4f5fd8973bab9e5"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(pointer, dict) and pointer.get('kind') in ('case', 'leaf'),\n            'a covered route points at a registry case or a catalog leaf: ' + label)",
+          "after": "pass  # tools01-ablate:d4f5fd8973bab9e5",
+          "operator": "remove-refusal-check",
+          "name": "guard.covered_pointer.d4f5fd8973bab9e5",
+          "id": "mutation-6d4340f41bb9f25e15cf520388bbd2ec5ce10ba5aecb3ab06ab4daff4b3fdcf1"
+        }
+      ]
+    },
+    {
+      "id": "guard.covered_pointer.0c45dc148fd36dca",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_route_covered_leaf",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: covered_pointer",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_route_covered_leaf"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.covered_pointer.0c45dc148fd36dca"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(pointer) == {'kind', 'command', 'file', 'test_path'} and isinstance(pointer['file'], str) and\n            isinstance(pointer['test_path'], list) and bool(pointer['test_path']) and\n            all(isinstance(name, str) and bool(name) for name in pointer['test_path']) and\n            context is not None and pointer['command'] in context['catalogs'],\n            'a covered leaf names a catalog command, file and full path: ' + label)",
+          "after": "pass  # tools01-ablate:0c45dc148fd36dca",
+          "operator": "remove-refusal-check",
+          "name": "guard.covered_pointer.0c45dc148fd36dca",
+          "id": "mutation-8df4fb5d831c39a6f4fb6e4a23d94261c2ec5f36f10996ecefb4e3104f472e2a"
+        }
+      ]
+    },
+    {
+      "id": "guard.covered_pointer.a60923bfeabcbf25",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_route_covered_leaf_verdict",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: covered_pointer",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_route_covered_leaf_verdict"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.covered_pointer.a60923bfeabcbf25"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(pointer['file'] in catalog['selection'] and len(leaves) == 1 and leaves[0]['verdict'] == 'passed',\n            'a covered leaf is one passing catalog leaf: ' + label)",
+          "after": "pass  # tools01-ablate:a60923bfeabcbf25",
+          "operator": "remove-refusal-check",
+          "name": "guard.covered_pointer.a60923bfeabcbf25",
+          "id": "mutation-53c3130c20f5d8fcd85f8d436f732a01ad3a55837cb4041bf700caff5ff10b73"
+        }
+      ]
+    },
+    {
+      "id": "guard.covered_pointer.382ac8bbf8cebed6",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_route_covered_case",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: covered_pointer",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_route_covered_case"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.covered_pointer.382ac8bbf8cebed6"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(set(pointer) == {'kind', 'id'} and pointer.get('id') in cases,\n                'a covered case is a scheduled registry case: ' + label)",
+          "after": "pass  # tools01-ablate:382ac8bbf8cebed6",
+          "operator": "remove-refusal-check",
+          "name": "guard.covered_pointer.382ac8bbf8cebed6",
+          "id": "mutation-f0b21be1df67ac39aff1d4c8d7543a7f66ecc33ad33f6c5957265ae62c595424"
+        }
+      ]
+    },
+    {
+      "id": "guard.member_route.a0a6975d0df6526f",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_route_shared_shape",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: member_route",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_route_shared_shape"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.member_route.a0a6975d0df6526f"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(isinstance(via, dict) and set(via) == {'family', 'label', 'reading'} and via['family'] != family_id and\n                isinstance(via['reading'], str) and bool(via['reading'].strip()),\n                'a shared mutation route names another family\\'s member and its reading: ' + member['label'])",
+          "after": "pass  # tools01-ablate:a0a6975d0df6526f",
+          "operator": "remove-refusal-check",
+          "name": "guard.member_route.a0a6975d0df6526f",
+          "id": "mutation-2f779652ed79704abca5471bca2fe5541e604d5f4ba33b7b80acae53974c38eb"
+        }
+      ]
+    },
+    {
+      "id": "guard.member_route.9a97f968b107ede0",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_route_shared_source",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: member_route",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_route_shared_source"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.member_route.9a97f968b107ede0"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(source is not None and member.get('reuses', {'family': via['family'], 'label': via['label']}) ==\n                {'family': via['family'], 'label': via['label']},\n                'a shared mutation route names an existing member, the one this member reuses: ' + member['label'])",
+          "after": "pass  # tools01-ablate:9a97f968b107ede0",
+          "operator": "remove-refusal-check",
+          "name": "guard.member_route.9a97f968b107ede0",
+          "id": "mutation-96b6059c4a6215d117a65d6bc9d0ed27288c2c2d6939f24f1c78eede0da86416"
+        }
+      ]
+    },
+    {
+      "id": "guard.member_route.56d5dadb52deefb3",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_route_shared_mutant",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: member_route",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_route_shared_mutant"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.member_route.56d5dadb52deefb3"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(mutant is not None and mutant.get('obligation') == f\"{via['family']}#{member_key(source)}\",\n                'a shared mutation route needs the source member\\'s registered mutant: ' + member['label'])",
+          "after": "pass  # tools01-ablate:56d5dadb52deefb3",
+          "operator": "remove-refusal-check",
+          "name": "guard.member_route.56d5dadb52deefb3",
+          "id": "mutation-d688c94d69a418ce1480715b8af5a61e33b68719cb7640f03b78b503091b8407"
+        }
+      ]
+    },
+    {
+      "id": "guard.member_route.eb515d7f80aad45f",
+      "assertion": "test_refusal_guards.RefusalGuardTests.test_route_covered_reading",
+      "category": "tool-refusal",
+      "source": "scripts/packet_tools.py: member_route",
+      "input": {
+        "test": "test_refusal_guards.RefusalGuardTests.test_route_covered_reading"
+      },
+      "files": [],
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/python-probe.py",
+        "guard.member_route.eb515d7f80aad45f"
+      ],
+      "timeout_seconds": 20,
+      "output_limit_bytes": 32768,
+      "failure_exit": 17,
+      "mutants": [
+        {
+          "path": "scripts/packet_tools.py",
+          "before": "require(text('reading') and bool(pointers) and set(route) == {'kind', 'covered_by', 'reading'},\n                'a covered route needs its pointers and reading: ' + member['label'])",
+          "after": "pass  # tools01-ablate:eb515d7f80aad45f",
+          "operator": "remove-refusal-check",
+          "name": "guard.member_route.eb515d7f80aad45f",
+          "id": "mutation-2c28c85b5e8defc2d31e0ad14dc5922dd15821fb875fcfd2d99a65ce35e2276f"
+        }
+      ]
+    },
+    {
       "id": "guard.member_route.a801ba64700f209d",
       "assertion": "test_refusal_guards.RefusalGuardTests.test_route_witness",
       "category": "tool-refusal",
