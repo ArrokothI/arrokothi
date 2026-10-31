@@ -1,0 +1,169 @@
+[
+  {
+    "ordinal": 1499,
+    "origin": "artifact-097a4dcccf08b7048d523d00",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "scripts/check-builder-docs.ts",
+    "lines_at_pin": 118,
+    "members": 0,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [],
+    "disposition": "S6 shared group",
+    "reading": "S6 mixed. Both whole-file sources explicitly retain K11-R15-DOC-02: renaming a nested canonical heading must make its checked local link fail, while a valid target passes. The current checker still implements this rule. Its clean command passed on 74 Markdown files, 2,217 links/anchors and 38 public imports at 7388ef1a in a fresh clone. No catalog leaf drives a broken-heading fixture and asserts the checker identifies the link. Use one new maintained test group for both source pins. Other package/guide checks still run in the builder-docs command."
+  },
+  {
+    "ordinal": 1500,
+    "origin": "artifact-5a99ec52d4f6731d34aa0926",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "scripts/check-builder-docs.ts",
+    "lines_at_pin": 118,
+    "members": 0,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [],
+    "disposition": "S6 shared group",
+    "reading": "S6 mixed. Both whole-file sources explicitly retain K11-R15-DOC-02: renaming a nested canonical heading must make its checked local link fail, while a valid target passes. The current checker still implements this rule. Its clean command passed on 74 Markdown files, 2,217 links/anchors and 38 public imports at 7388ef1a in a fresh clone. No catalog leaf drives a broken-heading fixture and asserts the checker identifies the link. Use one new maintained test group for both source pins. Other package/guide checks still run in the builder-docs command."
+  },
+  {
+    "ordinal": 1501,
+    "origin": "artifact-30024d036d904400c4493029",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/boundary-policy.ts",
+    "lines_at_pin": 230,
+    "members": 0,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. The import-policy helper is exercised by permitted internal edges, rejected unapproved dependencies, prohibited reverse edges and exact SDK-versus-core canonicalize cases. Core JCS approval ended at BINDING-01. Synthetic and real-graph tests retain the actual violations and legal controls."
+  },
+  {
+    "ordinal": 1502,
+    "origin": "artifact-b7161892b7836d1e1d26c6bf",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/boundary-policy.ts",
+    "lines_at_pin": 230,
+    "members": 0,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. The import-policy helper is exercised by permitted internal edges, rejected unapproved dependencies, prohibited reverse edges and exact SDK-versus-core canonicalize cases. Core JCS approval ended at BINDING-01. Synthetic and real-graph tests retain the actual violations and legal controls."
+  },
+  {
+    "ordinal": 1503,
+    "origin": "artifact-d2153e36d9c7464883ecea0b",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/evidence-records.test.ts",
+    "lines_at_pin": 211,
+    "members": 4,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [
+      "every settled round's manifest is present and checked",
+      "every recorded digest is the digest of the file it names",
+      "no token presented as a digest has an impossible length",
+      "the check is not vacuous: it rejects a manifest whose digest is wrong"
+    ],
+    "disposition": "P1-R/P1-H plan",
+    "reading": "All four registered digest/manifest invariants moved to the archived evidence suite under the retention snapshot. The registered members have unread witness records. Revalidate those retained links under P1-H; the archived evidence stays sealed."
+  },
+  {
+    "ordinal": 1504,
+    "origin": "artifact-17b6d68525b36633eeaf1951",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/inventory-oracle.ts",
+    "lines_at_pin": 1834,
+    "members": 0,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. The independent inventory reader checks row width/identity, delimiters, escaped/code-span pipes, edge pipes, headers, Markdown sections/fences and exact module/edge counts. Current kernel-landing-zone exercises genuine and malformed Dependencies rows, including a body row starting with the header label."
+  },
+  {
+    "ordinal": 1505,
+    "origin": "artifact-706c556c17630ab723e3ad09",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/inventory-oracle.ts",
+    "lines_at_pin": 1834,
+    "members": 0,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. The independent inventory reader checks row width/identity, delimiters, escaped/code-span pipes, edge pipes, headers, Markdown sections/fences and exact module/edge counts. Current kernel-landing-zone exercises genuine and malformed Dependencies rows, including a body row starting with the header label."
+  },
+  {
+    "ordinal": 1506,
+    "origin": "artifact-1e3d57f18b66af569805e605",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "lines_at_pin": 4495,
+    "members": 189,
+    "equal_assertion_sequences": 182,
+    "without_same_title_current_binding": [
+      "the target zone's real import graph reaches nothing outside itself except the approved JCS dependency",
+      "the approved canonicalize specifier is accepted"
+    ],
+    "disposition": "S5",
+    "reading": "Mixed old JCS allowlist/surface tests moved with BINDING-01 and K1.3. The live architecture oracle retains its named dependency row, graph/scanner classifications, row identity, header width and code/pipe handling. TOOLS-01 owner choice 11 specifically lists the 1200:9 Dependency-body-row member of the deedd7950 pin. Reconcile its target declaration and per-leaf readings and every other member before claiming that origin closed."
+  },
+  {
+    "ordinal": 1507,
+    "origin": "artifact-9fd619f5375d598ebb2b88aa",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+    "lines_at_pin": 4490,
+    "members": 189,
+    "equal_assertion_sequences": 182,
+    "without_same_title_current_binding": [
+      "the target zone's real import graph reaches nothing outside itself except the approved JCS dependency",
+      "the approved canonicalize specifier is accepted"
+    ],
+    "disposition": "P1-R target plan",
+    "reading": "Mixed old JCS allowlist/surface tests moved with BINDING-01 and K1.3. The live architecture oracle retains its named dependency row, graph/scanner classifications, row identity, header width and code/pipe handling. TOOLS-01 owner choice 11 specifically lists the 1200:9 Dependency-body-row member of the deedd7950 pin. Reconcile its target declaration and per-leaf readings and every other member before claiming that origin closed."
+  },
+  {
+    "ordinal": 1508,
+    "origin": "artifact-a1391856426919155dd8d776",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/mcp-boundaries.test.ts",
+    "lines_at_pin": 299,
+    "members": 10,
+    "equal_assertion_sequences": 10,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. Both pinned versions retain the runtime/package dependency and authority boundaries for MCP, actual scans of the port and portable domain owners, and no transport/server imports into Kernel. Current conformance leaves check their accepted and forbidden edges."
+  },
+  {
+    "ordinal": 1509,
+    "origin": "artifact-accb88d01d3c1bd7a07f7a37",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/mcp-boundaries.test.ts",
+    "lines_at_pin": 299,
+    "members": 10,
+    "equal_assertion_sequences": 10,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. Both pinned versions retain the runtime/package dependency and authority boundaries for MCP, actual scans of the port and portable domain owners, and no transport/server imports into Kernel. Current conformance leaves check their accepted and forbidden edges."
+  },
+  {
+    "ordinal": 1510,
+    "origin": "artifact-1f79bb84e3dcff04b29998b3",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "tests/conformance/architecture/module-graph.ts",
+    "lines_at_pin": 346,
+    "members": 0,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. The TypeScript dependency scanner classifies package paths, supported static/runtime imports and dynamic forms, reports forbidden dependencies, and is consumed by the real and synthetic architecture checks. Its helper presence gives no standalone execution credit."
+  },
+  {
+    "ordinal": 1511,
+    "origin": "artifact-f57bc769e0c3bc07a00d9698",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "tests/conformance/architecture/module-graph.ts",
+    "lines_at_pin": 346,
+    "members": 0,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. The TypeScript dependency scanner classifies package paths, supported static/runtime imports and dynamic forms, reports forbidden dependencies, and is consumed by the real and synthetic architecture checks. Its helper presence gives no standalone execution credit."
+  }
+]

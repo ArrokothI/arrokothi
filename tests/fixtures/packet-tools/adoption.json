@@ -3837,12 +3837,45 @@
     },
     {
       "id": "artifact-b7161892b7836d1e1d26c6bf",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source tests/conformance/architecture/boundary-policy.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.tests/conformance/architecture/boundary-policy.ts"
+        ]
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The import-policy helper is exercised by permitted internal edges, rejected unapproved dependencies, prohibited reverse edges and exact SDK-versus-core canonicalize cases. Core JCS approval ended at BINDING-01. Synthetic and real-graph tests retain the actual violations and legal controls.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "an import of an unapproved third-party package is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "canonicalize is rejected by the core policy after the SDK relocation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the protocol dependency appears only where it belongs"
+            ]
+          }
         ]
       }
     },
@@ -4081,7 +4114,7 @@
     },
     {
       "id": "artifact-17b6d68525b36633eeaf1951",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source tests/conformance/architecture/inventory-oracle.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -5409,6 +5442,337 @@
           }
         ],
         "context_reasons": {}
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The independent inventory reader checks row width/identity, delimiters, escaped/code-span pipes, edge pipes, headers, Markdown sections/fences and exact module/edge counts. Current kernel-landing-zone exercises genuine and malformed Dependencies rows, including a body row starting with the header label.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "ATX and table structural-whitespace classes (K10-R15-01)",
+              "a VT-indented row has no leading edge pipe, and a trailing VT is a further cell"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM delimiter and header variants do not hide the table (K1.0-SELF-11)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM line endings (K10-R13-01)",
+              "CR-only table header/delimiter/body rows remain distinct physical rows"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM table row and cell whitespace (K1.0-SELF-24)",
+              "a row indented with Unicode whitespace is not a row with an edge pipe"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "contradictory deferred rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "contradictory dependency rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "contradictory export rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "contradictory zone rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "a header that renames or reorders a non-first position is reported"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "a narrowed or widened header cannot change what a schema-correct body means"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "a widened dependency header cannot authorize an unread fifth body cell"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "an ordinary excess body cell with a correct header is still loud in every table"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Deferred body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Deferred body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Deferred body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Deferred body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Dependency body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Dependency body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Dependency body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Dependency body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Export body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Export body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Export body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Export body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Zones body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Zones body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Zones body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Zones body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a contradictory row promoted to a further table's header is still accounted for (K1.0-SELF-13)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a header that does not carry its expected label is reported, not silently accepted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "the real structural header of each governed table is accepted and is not read as data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "a row carrying more cells than its header declares is reported (K1.0-SELF-29)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "a row with fewer cells than its header keeps its established outcome (K1.0-SELF-29)"
+            ]
+          }
+        ]
       }
     },
     {
@@ -5502,7 +5866,7 @@
     },
     {
       "id": "artifact-a1391856426919155dd8d776",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source tests/conformance/architecture/mcp-boundaries.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -5543,11 +5907,107 @@
           "scripts/mcp-gemini-canary.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
           "tests/evals/agent/mcp-operation-parity.eval.test.ts": "A test or test-side path the text names; it binds through the closure links, not as context."
         }
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Both pinned versions retain the runtime/package dependency and authority boundaries for MCP, actual scans of the port and portable domain owners, and no transport/server imports into Kernel. Current conformance leaves check their accepted and forbidden edges.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "core's manifest declares no MCP dependency"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "no AgentSpec, controller, or Agent executor gained an MCP field"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "no MCP Effect or Event vocabulary was introduced"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "no core source file imports or names an MCP package"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the adapter depends inward, and is the only workspace package that declares MCP"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the adapter reaches the kernel only through its published entry points"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the adapter's only package dependencies are the kernel surface and the MCP SDK"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the export path holds no dispatcher, policy evaluator, grant, store, or Harness"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the import path holds no runtime state, authority, or exposure machinery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the protocol dependency appears only where it belongs"
+            ]
+          }
+        ]
       }
     },
     {
       "id": "artifact-1f79bb84e3dcff04b29998b3",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source tests/conformance/architecture/module-graph.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -6877,6 +7337,570 @@
         "context_reasons": {
           "packages/core": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
         }
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The TypeScript dependency scanner classifies package paths, supported static/runtime imports and dynamic forms, reports forbidden dependencies, and is consumed by the real and synthetic architecture checks. Its helper presence gives no standalone execution credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "a lib reference names a TypeScript library, not a module, and is not a dependency"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "a re-export with no module specifier names no module"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "a triple-slash path reference is extracted as a path, not a bare specifier"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "ambient module declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "an import type whose target is not a literal fails closed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "each form is reported with the syntax that carried it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type at a property position"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type in a parameter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type in a return position"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type nested in a generic"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type under typeof"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type with no qualifier"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type with type arguments"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "triple-slash types reference"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "a reference directive as fixture text"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "a word list containing the preposition"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "an import statement as a string"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "an import statement in a template"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "an import type as fixture text"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "prose in a documentation block"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "prose in a line comment"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: two independent extractors, and what each is for",
+              "the AST pass alone already finds everything the compiler's pre-processor finds"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: two independent extractors, and what each is for",
+              "the union still reports a dependency only one extractor can see"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "a dynamic import inside a template interpolation is still found"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "default and named import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "default import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "dynamic import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "dynamic import with whitespace"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "import with a comment before the from clause"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "inline type import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "multi-line import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "named import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "namespace import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "re-export all"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "re-export named"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "re-export namespace"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "re-export type"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "several imports in one file are all found"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "side-effect import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "type-only import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: prose is not an import (K0.2-SELF-01)",
+              "a documentation block ending in the preposition before a quoted term yields nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: prose is not an import (K0.2-SELF-01)",
+              "a fixture carrying an import statement as literal text is data, not an import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: prose is not an import (K0.2-SELF-01)",
+              "a line comment ending in the preposition before a quoted term yields nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: prose is not an import (K0.2-SELF-01)",
+              "a string used as a search needle is data, not an import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: prose is not an import (K0.2-SELF-01)",
+              "a word list containing the preposition is data, not an import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: prose is not an import (K0.2-SELF-01)",
+              "the same holds for a template literal, which is how the controls actually carry them"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "a no-substitution template dynamic import is still a literal"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "a non-literal dynamic import fails closed instead of reporting no dependency (K10-R1-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "a regular expression after a control-flow closing paren does not hide the next import (K10-R1-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "a regular expression containing quote characters does not corrupt the rest of the file"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "a template dynamic import with substitutions fails closed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "an escaped quote inside a string does not end it early"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "an identifier that merely starts with the keyword is not an import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "division is not mistaken for a regular expression"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "import.meta before a later string produces no phantom specifier"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "nested template literals are parsed back into code correctly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the real tree",
+              "packages/interoperability/mcp/src/import/result.ts reports its imports and not its prose"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the real tree",
+              "packages/retrieval/local/src/lexical.ts reports its imports and not its prose"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the real tree",
+              "packages/retrieval/local/src/records.ts reports its imports and not its prose"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the real tree",
+              "scripts/check-builder-docs.ts reports its imports and not its prose"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the real tree",
+              "the k0 fixture, worded around the old defect, still reports only node builtins"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "an import of an unapproved third-party package is rejected"
+            ]
+          }
+        ]
       }
     },
     {
@@ -34797,12 +35821,45 @@
     },
     {
       "id": "artifact-30024d036d904400c4493029",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source tests/conformance/architecture/boundary-policy.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.tests/conformance/architecture/boundary-policy.ts"
+        ]
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The import-policy helper is exercised by permitted internal edges, rejected unapproved dependencies, prohibited reverse edges and exact SDK-versus-core canonicalize cases. Core JCS approval ended at BINDING-01. Synthetic and real-graph tests retain the actual violations and legal controls.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "an import of an unapproved third-party package is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "canonicalize is rejected by the core policy after the SDK relocation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the protocol dependency appears only where it belongs"
+            ]
+          }
         ]
       }
     },
@@ -35030,7 +36087,7 @@
     },
     {
       "id": "artifact-706c556c17630ab723e3ad09",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source tests/conformance/architecture/inventory-oracle.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -36358,16 +37415,2476 @@
           }
         ],
         "context_reasons": {}
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The independent inventory reader checks row width/identity, delimiters, escaped/code-span pipes, edge pipes, headers, Markdown sections/fences and exact module/edge counts. Current kernel-landing-zone exercises genuine and malformed Dependencies rows, including a body row starting with the header label.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "ATX and table structural-whitespace classes (K10-R15-01)",
+              "a VT-indented row has no leading edge pipe, and a trailing VT is a further cell"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM delimiter and header variants do not hide the table (K1.0-SELF-11)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM line endings (K10-R13-01)",
+              "CR-only table header/delimiter/body rows remain distinct physical rows"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM table row and cell whitespace (K1.0-SELF-24)",
+              "a row indented with Unicode whitespace is not a row with an edge pipe"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "contradictory deferred rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "contradictory dependency rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "contradictory export rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "contradictory zone rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "a header that renames or reorders a non-first position is reported"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "a narrowed or widened header cannot change what a schema-correct body means"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "a widened dependency header cannot authorize an unread fifth body cell"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "an ordinary excess body cell with a correct header is still loud in every table"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Deferred body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Deferred body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Deferred body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Deferred body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Dependency body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Dependency body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Dependency body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Dependency body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Export body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Export body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Export body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Export body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Zones body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Zones body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Zones body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Zones body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a contradictory row promoted to a further table's header is still accounted for (K1.0-SELF-13)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a header that does not carry its expected label is reported, not silently accepted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "the real structural header of each governed table is accepted and is not read as data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "a row carrying more cells than its header declares is reported (K1.0-SELF-29)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "a row with fewer cells than its header keeps its established outcome (K1.0-SELF-29)"
+            ]
+          }
+        ]
       }
     },
     {
       "id": "artifact-1e3d57f18b66af569805e605",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source tests/conformance/architecture/kernel-landing-zone.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
         "targets": [
           "suite.tests/conformance/architecture/kernel-landing-zone.test.ts"
+        ]
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "Mixed old JCS allowlist/surface tests moved with BINDING-01 and K1.3. The live architecture oracle retains its named dependency row, graph/scanner classifications, row identity, header width and code/pipe handling. TOOLS-01 owner choice 11 specifically lists the 1200:9 Dependency-body-row member of the deedd7950 pin. Reconcile its target declaration and per-leaf readings and every other member before claiming that origin closed.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a direct relative import into the legacy implementation is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a dynamic import of the legacy implementation is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a forbidden import after a regular expression after a control-flow paren is rejected (K10-R1-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a legacy dependency reached through an in-zone module is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a non-literal dynamic import fails closed instead of reporting no dependency (K10-R1-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a re-export of the legacy package root barrel is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a reference and an import type that stay inside the zone are accepted (K10-R2-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a similarly-named third-party package is not covered by the canonicalize approval"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a triple-slash reference into the legacy tree is rejected (K10-R2-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a triple-slash types reference on a forbidden package is rejected (K10-R2-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a type-only import of a legacy subpath barrel is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a type-only import-type dependency on the legacy barrel is rejected (K10-R2-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a typeof import-type dependency on the legacy barrel is rejected (K10-R2-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "a workspace subpath that is not a declared export is rejected as unresolved"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "an ambient declaration of a forbidden module is rejected (K10-R2-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "an approved portable leaf is accepted while its unaudited sibling stays rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "an import of an unapproved third-party package is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "an import of the application host is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "an import of the legacy package root barrel is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "an import type nested in a signature or generic is rejected (K10-R2-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "an import type whose target is not a literal fails closed (K10-R2-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "approving a leaf does not approve what that leaf imports"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "canonicalize is rejected by the core policy after the SDK relocation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "one forbidden barrel import reports one violation, not one per edge behind it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "the guard accepts what the policy actually permits"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 legacy quarantine",
+              "nothing outside the zone depends on the unimplemented target Kernel"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 legacy quarantine",
+              "the legacy package keeps its published export map exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 legacy quarantine",
+              "the legacy package's exported names are unchanged by this packet"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "ATX and table structural-whitespace classes (K10-R15-01)",
+              "VT and FF are not stripped from the end of heading content"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "ATX and table structural-whitespace classes (K10-R15-01)",
+              "a VT or FF key cell is not the policy's key"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "ATX and table structural-whitespace classes (K10-R15-01)",
+              "a VT or FF value cell is a different token, and is reported"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "ATX and table structural-whitespace classes (K10-R15-01)",
+              "a VT-indented row has no leading edge pipe, and a trailing VT is a further cell"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "ATX and table structural-whitespace classes (K10-R15-01)",
+              "a hash run followed by VT or FF is not a closing sequence"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "ATX and table structural-whitespace classes (K10-R15-01)",
+              "a hash run preceded by VT or FF is not a closing sequence"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "ATX and table structural-whitespace classes (K10-R15-01)",
+              "the SPACE and TAB twins of every case above still terminate the section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "ATX and table structural-whitespace classes (K10-R15-01)",
+              "the permitted SPACE and TAB padding twins still parse"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "ATX and table structural-whitespace classes (K10-R15-01)",
+              "the \u00a72.1 six still governs the productions that cite it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "CRLF line endings do not reopen the escapes (K1.0-SELF-20)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM ATX heading identity and structural whitespace (K10-R14-01)",
+              "ATX content primitives follow the grammar, not the host trimmer"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM ATX heading identity and structural whitespace (K10-R14-01)",
+              "a Unicode-whitespace current heading does not open the governed section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM ATX heading identity and structural whitespace (K10-R14-01)",
+              "a genuine exact next heading still terminates the section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM ATX heading identity and structural whitespace (K10-R14-01)",
+              "a heading whose content carries Unicode whitespace is not the exact title"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM ATX heading identity and structural whitespace (K10-R14-01)",
+              "leading vertical tab and form feed are heading content, not padding"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM ATX heading identity and structural whitespace (K10-R14-01)",
+              "the opening sequence needs SPACE or TAB, never a Unicode space"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM ATX heading identity and structural whitespace (K10-R14-01)",
+              "the whole real inventory re-separated with TAB stays baseline-green"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM delimiter and header variants do not hide the table (K1.0-SELF-11)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM line endings (K10-R13-01)",
+              "CR-only table header/delimiter/body rows remain distinct physical rows"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM line endings (K10-R13-01)",
+              "a lone-CR-separated exact next heading terminates its section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM line endings (K10-R13-01)",
+              "final line with and without a trailing line ending behaves intentionally"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM line endings (K10-R13-01)",
+              "lone-CR raw-block lifetime matches the LF twin (type-6 and type-7)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM line endings (K10-R13-01)",
+              "mixed LF/CRLF/lone-CR preserves governed section and table boundaries"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM line endings (K10-R13-01)",
+              "physical-line primitives: CR, CRLF and LF all delimit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM line endings (K10-R13-01)",
+              "the whole real inventory recoded LF \u2192 CRLF stays baseline-green"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM line endings (K10-R13-01)",
+              "the whole real inventory recoded LF \u2192 lone CR stays baseline-green"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM table row and cell whitespace (K1.0-SELF-24)",
+              "ASCII space and tab padding around cells is still trimmed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM table row and cell whitespace (K1.0-SELF-24)",
+              "a key cell padded with Unicode whitespace is not the policy's key"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM table row and cell whitespace (K1.0-SELF-24)",
+              "a padded publishability cell is unreadable, not a silent yes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM table row and cell whitespace (K1.0-SELF-24)",
+              "a row indented with Unicode whitespace is not a row with an edge pipe"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM table row and cell whitespace (K1.0-SELF-24)",
+              "a value cell padded with Unicode whitespace disagrees with the policy"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM whitespace and blank-line lexical classes (K10-R12-01)",
+              "NBSP-only, vertical-tab-only and form-feed-only lines do not end raw blocks"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM whitespace and blank-line lexical classes (K10-R12-01)",
+              "a script boundary in NBSP opens no raw block that swallows later sections"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM whitespace and blank-line lexical classes (K10-R12-01)",
+              "no-break space is not a type-6 or type-1 boundary"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM whitespace and blank-line lexical classes (K10-R12-01)",
+              "optional and trailing tag whitespace accepts vertical-tab and form-feed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM whitespace and blank-line lexical classes (K10-R12-01)",
+              "ordinary ASCII syntax, CRLF tolerance and the round-12 token matrix are unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM whitespace and blank-line lexical classes (K10-R12-01)",
+              "space-only and tab-only lines still end raw blocks"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "GFM whitespace and blank-line lexical classes (K10-R12-01)",
+              "vertical-tab and form-feed begin attributes in a complete type-7 tag"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "a dependency row with no recognisable key fails closed (K10-R4-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "a malformed keyed dependency row fails closed in either position (K10-R4-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "a pipe-less contradictory row inside the table block fails closed (K1.0-SELF-11)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "a short row with a recognisable key fails closed in every ownership table (K1.0-SELF-08)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "attribute separators (K10-R10-02)",
+              "malformed and valid neighbors stay separated"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "attribute separators (K10-R10-02)",
+              "missing whitespace after quoted values stays ordinary"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "attribute separators (K10-R10-02)",
+              "the exact GFM missing-whitespace form stays ordinary"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "attribute separators (K10-R10-02)",
+              "valid multi-attribute tags still open raw blocks"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "collection identity in relation comparison (K10-CORR2-01)",
+              "a dropped or invented member is reported by size in both columns"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "collection identity in relation comparison (K10-CORR2-01)",
+              "cardinality alone is not the rule, and neither is membership alone"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "collection identity in relation comparison (K10-CORR2-01)",
+              "every contiguous merge of a declared collection is reported, in both columns"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "collection identity in relation comparison (K10-CORR2-01)",
+              "reordering stays permitted in every collection-valued relation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "collection identity in relation comparison (K10-CORR2-01)",
+              "the Deferred tuple still distinguishes every scalar field"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "collection identity in relation comparison (K10-CORR2-01)",
+              "the dependency columns are compared by the same rule as the ownership tables"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "collection identity in relation comparison (K10-CORR2-01)",
+              "the diagnostic shows the boundaries it compared"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "collection identity in relation comparison (K10-CORR2-01)",
+              "the loss is two-sided: the enforced collection cannot be split either"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "collection identity in relation comparison (K10-CORR2-01)",
+              "the separator byte is not the rule: any invented member is reported"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "complete type-7 tags (K10-R9-02)",
+              "a complete closing tag opens the raw block but carries no attributes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "complete type-7 tags (K10-R9-02)",
+              "a double-quoted value containing > still opens the raw block"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "complete type-7 tags (K10-R9-02)",
+              "a single-quoted value containing < still opens the raw block"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "complete type-7 tags (K10-R9-02)",
+              "a tag after a table row still opens the raw block"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "complete type-7 tags (K10-R9-02)",
+              "malformed near-tags remain ordinary Markdown"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "complete type-7 tags (K10-R9-02)",
+              "ordinary and unquoted attributes still open the raw block"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "complete type-7 tags (K10-R9-02)",
+              "search follows published GFM: no type-6 start (K10-R10-03)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "complete type-7 tags (K10-R9-02)",
+              "textarea follows published GFM: type 7, not type 1 (K10-R10-03)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "complete type-7 tags (K10-R9-02)",
+              "type 7 cannot interrupt a paragraph"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "complete type-7 tags (K10-R9-02)",
+              "type-4 declarations use the uppercase-ASCII rule"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "complete type-7 tags (K10-R9-02)",
+              "type-6 starts match the declared tag boundary"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "container-owned leaf lifetime (K10-R10-01)",
+              "a list-local type-1 and comment block without closers end with the item"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "container-owned leaf lifetime (K10-R10-01)",
+              "a list-local type-7 block without its blank terminator ends with the item"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "container-owned leaf lifetime (K10-R10-01)",
+              "a nested raw block closes at the correct inner and outer boundary"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "container-owned leaf lifetime (K10-R10-01)",
+              "a properly closed list-local fence stays local and green"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "container-owned leaf lifetime (K10-R10-01)",
+              "a quote-prefixed fence never owns leaf state (blockquote analogue)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "container-owned leaf lifetime (K10-R10-01)",
+              "a real table after the dedented heading stays outside the section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "container-owned leaf lifetime (K10-R10-01)",
+              "an equivalent ordered and wide-marker list-local fence"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "container-owned leaf lifetime (K10-R10-01)",
+              "an unclosed list-local fence ends with its item before a real heading"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "contradictory deferred rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "contradictory dependency rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "contradictory export rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "contradictory zone rows with omitted edge pipes fail closed in either position (K10-R5-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "duplicate cross-boundary dependency rows fail closed (K10-R3-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "every deferred owner names a packet the ledger declares"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "fence single-consumption (K10-R8-01)",
+              "a complete table inside a bare backtick fence immediately after the body stays green"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "fence single-consumption (K10-R8-01)",
+              "a complete table inside indented code after the body stays green (adjacent block challenger)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "fence single-consumption (K10-R8-01)",
+              "a real second Markdown table at the same location but outside a fence still fails"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "fence single-consumption (K10-R8-01)",
+              "a real table after a blockquote break still fails"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "fence single-consumption (K10-R8-01)",
+              "a shorter closer than the opener does not close it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "fence single-consumption (K10-R8-01)",
+              "a tilde-fenced equivalent stays green"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "fence single-consumption (K10-R8-01)",
+              "an unclosed fence before the governed table stays fail-loud (GFM-consistent)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "fence single-consumption (K10-R8-01)",
+              "mismatched closers remain inside the open fence"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "fence single-consumption (K10-R8-01)",
+              "table-shaped lines inside a blockquote after the body stay green (adjacent block challenger)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "fence single-consumption (K10-R8-01)",
+              "the same block with a legitimate fence info string stays green"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "a header that renames or reorders a non-first position is reported"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "a narrowed or widened header cannot change what a schema-correct body means"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "a short row omitting only trailing ungoverned prose is still accepted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "a widened dependency header cannot authorize an unread fifth body cell"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "an ordinary excess body cell with a correct header is still loud in every table"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "one width means different things under each schema"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "governed table schemas own their arity (K10-CORR1-R1-01)",
+              "the same widening is loud in Zones, Export and Deferred"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Deferred body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Deferred body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Deferred body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Deferred body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Dependency body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Dependency body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Dependency body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Dependency body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Export body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Export body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Export body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Export body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Zones body row beginning with the header label is accounted for, after the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Zones body row beginning with the header label is accounted for, after the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Zones body row beginning with the header label is accounted for, before the correct row, with full edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a Zones body row beginning with the header label is accounted for, before the correct row, with omitted both edge pipes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a contradictory row promoted to a further table's header is still accounted for (K1.0-SELF-13)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a governed table that is not discoverable at all is reported, not read as an empty relation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a header that does not carry its expected label is reported, not silently accepted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "a repeated section heading cannot delete the rows after it (K1.0-SELF-12)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "header identity is structural, not textual (K10-R6-01)",
+              "the real structural header of each governed table is accepted and is not read as data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "list containers (K10-R9-01)",
+              "a dash line that is really a second item keeps the container open"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "list containers (K10-R9-01)",
+              "a genuine top-level exact next heading after the container still terminates"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "list containers (K10-R9-01)",
+              "a heading nested two containers deep cannot truncate the section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "list containers (K10-R9-01)",
+              "a list-contained heading equal to the current title stays inside"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "list containers (K10-R9-01)",
+              "a next-heading line nested in a bullet item cannot truncate the section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "list containers (K10-R9-01)",
+              "a normal list with no dangerous heading is supported behavior"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "list containers (K10-R9-01)",
+              "a task-list item is a list container too"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "list containers (K10-R9-01)",
+              "a thematic break does not open a list container"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "list containers (K10-R9-01)",
+              "a wider ordered marker derives a deeper continuation indent"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "list containers (K10-R9-01)",
+              "an ordered-list equivalent cannot truncate the section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "list containers (K10-R9-01)",
+              "restricted markers after prose stay prose"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "list containers (K10-R9-01)",
+              "the container boundary holds for the Zones relation as well"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "a deferred row's disposition is changed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "a deferred row's owner is reassigned"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "a deferred row's path is moved to another subsystem"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "a duplicate deferred row after the correct row is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "a duplicate deferred row before the correct row is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "a duplicate package row after the correct row is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "a duplicate package row before the correct row is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "a duplicate zone row after the correct row is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "a duplicate zone row before the correct row is rejected"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "a package row is deleted entirely"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "a private package is claimed to be published"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "a published package is claimed to be private"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "an exported subpath is dropped from a row"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "an undeclared zone is added in prose"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "one zone's root is replaced"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "mutated-document controls (K10-R2-02)",
+              "two zones' roots are swapped with each other"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "raw HTML blocks (K10-R8-02)",
+              "a pre block hides its heading but not the later table"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "raw HTML blocks (K10-R8-02)",
+              "a script open tag with attributes and mixed case still opens the raw block"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "raw HTML blocks (K10-R8-02)",
+              "a type-6 div block hides its heading until the blank line"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "raw HTML blocks (K10-R8-02)",
+              "an HTML comment block hides its heading but not the later table (adjacent raw-block challenger)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "raw HTML blocks (K10-R8-02)",
+              "an exact next-heading line inside a script block cannot truncate the section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "raw HTML blocks (K10-R8-02)",
+              "inline HTML alone without a contradictory table stays green"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "raw HTML blocks (K10-R8-02)",
+              "ordinary inline HTML and prose do not open a raw block"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "structural section boundaries (K10-R7-01)",
+              "a current-heading mention in earlier prose does not select the section start"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "structural section boundaries (K10-R7-01)",
+              "a current-heading mention inside a fenced block does not select the section start"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "structural section boundaries (K10-R7-01)",
+              "a heading-like line without the required whitespace is not a heading (K1.0-SELF-15)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "structural section boundaries (K10-R7-01)",
+              "a literal next-heading mention in prose does not truncate the section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "structural section boundaries (K10-R7-01)",
+              "a mismatched fence closer does not end the fenced region (K1.0-SELF-17)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "structural section boundaries (K10-R7-01)",
+              "a next-heading mention inside a fenced code block does not truncate the section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "structural section boundaries (K10-R7-01)",
+              "a next-heading mention inside an inline code span does not truncate the section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "structural section boundaries (K10-R7-01)",
+              "a real ATX next heading still terminates the section"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "structural section boundaries (K10-R7-01)",
+              "an escaped hash does not start or end a section (K1.0-SELF-14)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "structural section boundaries (K10-R7-01)",
+              "an over-long hash run and indented code are not headings (K1.0-SELF-16)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "structural section boundaries (K10-R7-01)",
+              "the structural boundary holds for the second relation as well"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "the allowed-leaf list is empty, and the inventory says why"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "the cross-boundary dependency table matches the measured tree (K10-R1-02)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "the inventory's ownership relations agree with the policy and the manifests"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "the parser actually reads the three ownership tables"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "type-6 boundary tokens (K10-R11-01)",
+              "closing tags keep the same valid boundaries; prefixes do not inherit them"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "type-6 boundary tokens (K10-R11-01)",
+              "lone-slash and dollar forms stay ordinary"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "type-6 boundary tokens (K10-R11-01)",
+              "round-11 textarea/search, attribute-whitespace and owner-depth controls are unchanged"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "type-6 boundary tokens (K10-R11-01)",
+              "valid open boundaries still open the raw block"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "a count cell is a whole decimal number or it is unreadable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "a disposition or owner cell is compared whole, so an appended word is a different token"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "a genuine count still decodes, including zero and a multi-digit measurement"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "a list cell is read to its end, so an unquoted or repeated token cannot hide in it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "a publishability cell is a whole normalised answer, not a first word"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "a row carrying more cells than its header declares is reported (K1.0-SELF-29)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "a row with fewer cells than its header keeps its established outcome (K1.0-SELF-29)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "an edge cell denies every edge or names them all; it cannot do both"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "an unquoted specifier appended to a dependency list is reported"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "each empty sentinel is accepted only in the column whose grammar names it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "the cleanup's four counterexamples are reported, not equated with the measured row"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "the decoders are not vacuous: every governed cell of the real inventory is read"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "the document's own publishability vocabulary still decodes in both directions"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 policy and inventory agree",
+              "whole-cell value decoding (K10-CLEANUP-01)",
+              "the permitted list spellings still parse: one token, several, and block-whitespace padding"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 target Kernel landing zone",
+              "that result is not vacuous: the graph has real files and a real internal edge"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 target Kernel landing zone",
+              "the target zone exists, is a workspace member, and cannot be published"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 target Kernel landing zone",
+              "the zone refuses unimplemented surfaces rather than answering with a no-op"
+            ]
+          }
         ]
       }
     },
@@ -36451,7 +39968,7 @@
     },
     {
       "id": "artifact-accb88d01d3c1bd7a07f7a37",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source tests/conformance/architecture/mcp-boundaries.test.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -36492,11 +40009,107 @@
           "scripts/mcp-gemini-canary.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
           "tests/evals/agent/mcp-operation-parity.eval.test.ts": "A test or test-side path the text names; it binds through the closure links, not as context."
         }
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. Both pinned versions retain the runtime/package dependency and authority boundaries for MCP, actual scans of the port and portable domain owners, and no transport/server imports into Kernel. Current conformance leaves check their accepted and forbidden edges.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "core's manifest declares no MCP dependency"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "no AgentSpec, controller, or Agent executor gained an MCP field"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "no MCP Effect or Event vocabulary was introduced"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "no core source file imports or names an MCP package"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the adapter depends inward, and is the only workspace package that declares MCP"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the adapter reaches the kernel only through its published entry points"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the adapter's only package dependencies are the kernel surface and the MCP SDK"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the export path holds no dispatcher, policy evaluator, grant, store, or Harness"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the import path holds no runtime state, authority, or exposure machinery"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/mcp-boundaries.test.ts",
+            "test_path": [
+              "MCP is an adapter dependency, never a kernel one",
+              "the protocol dependency appears only where it belongs"
+            ]
+          }
+        ]
       }
     },
     {
       "id": "artifact-f57bc769e0c3bc07a00d9698",
-      "state": "pending_revalidation",
+      "state": "triaged",
       "legacy": {
         "status": "suite",
         "rationale": "Maintained source tests/conformance/architecture/module-graph.ts is retained at the current profile; its executable consumer is repository-tests. Supporting helpers are credited only through that consumer; source presence is not an executed result.",
@@ -37826,6 +41439,570 @@
         "context_reasons": {
           "packages/core": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
         }
+      },
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The TypeScript dependency scanner classifies package paths, supported static/runtime imports and dynamic forms, reports forbidden dependencies, and is consumed by the real and synthetic architecture checks. Its helper presence gives no standalone execution credit.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "a lib reference names a TypeScript library, not a module, and is not a dependency"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "a re-export with no module specifier names no module"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "a triple-slash path reference is extracted as a path, not a bare specifier"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "ambient module declaration"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "an import type whose target is not a literal fails closed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "each form is reported with the syntax that carried it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type at a property position"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type in a parameter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type in a return position"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type nested in a generic"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type under typeof"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type with no qualifier"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "import type with type arguments"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: every way TypeScript can name a module (K10-R2-01)",
+              "triple-slash types reference"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "a reference directive as fixture text"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "a word list containing the preposition"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "an import statement as a string"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "an import statement in a template"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "an import type as fixture text"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "prose in a documentation block"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: prose soundness survives the rebuild (K0.2-SELF-01)",
+              "prose in a line comment"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: two independent extractors, and what each is for",
+              "the AST pass alone already finds everything the compiler's pre-processor finds"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "dependency extractor: two independent extractors, and what each is for",
+              "the union still reports a dependency only one extractor can see"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "a dynamic import inside a template interpolation is still found"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "default and named import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "default import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "dynamic import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "dynamic import with whitespace"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "import with a comment before the from clause"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "inline type import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "multi-line import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "named import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "namespace import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "re-export all"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "re-export named"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "re-export namespace"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "re-export type"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "several imports in one file are all found"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "side-effect import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: every real import form is still found",
+              "type-only import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: prose is not an import (K0.2-SELF-01)",
+              "a documentation block ending in the preposition before a quoted term yields nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: prose is not an import (K0.2-SELF-01)",
+              "a fixture carrying an import statement as literal text is data, not an import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: prose is not an import (K0.2-SELF-01)",
+              "a line comment ending in the preposition before a quoted term yields nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: prose is not an import (K0.2-SELF-01)",
+              "a string used as a search needle is data, not an import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: prose is not an import (K0.2-SELF-01)",
+              "a word list containing the preposition is data, not an import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: prose is not an import (K0.2-SELF-01)",
+              "the same holds for a template literal, which is how the controls actually carry them"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "a no-substitution template dynamic import is still a literal"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "a non-literal dynamic import fails closed instead of reporting no dependency (K10-R1-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "a regular expression after a control-flow closing paren does not hide the next import (K10-R1-01)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "a regular expression containing quote characters does not corrupt the rest of the file"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "a template dynamic import with substitutions fails closed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "an escaped quote inside a string does not end it early"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "an identifier that merely starts with the keyword is not an import"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "division is not mistaken for a regular expression"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "import.meta before a later string produces no phantom specifier"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the parser survives real source shapes",
+              "nested template literals are parsed back into code correctly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the real tree",
+              "packages/interoperability/mcp/src/import/result.ts reports its imports and not its prose"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the real tree",
+              "packages/retrieval/local/src/lexical.ts reports its imports and not its prose"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the real tree",
+              "packages/retrieval/local/src/records.ts reports its imports and not its prose"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the real tree",
+              "scripts/check-builder-docs.ts reports its imports and not its prose"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/import-scanner.test.ts",
+            "test_path": [
+              "import scanner: the real tree",
+              "the k0 fixture, worded around the old defect, still reports only node builtins"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "tests/conformance/architecture/kernel-landing-zone.test.ts",
+            "test_path": [
+              "K1.0 forbidden-edge controls",
+              "an import of an unapproved third-party package is rejected"
+            ]
+          }
+        ]
       }
     },
     {

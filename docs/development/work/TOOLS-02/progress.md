@@ -2,6 +2,9 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 builder and architecture evidence — through origin 1,511.** 1,273 retired, 216 extraction plans, 22 P1 revalidation plans. **15 test groups / 152 adoptions**, projections 16/153.
+  Resume `inventory additional origins`, `additional-1107d4b2a4d8c1365842b8ae` (origin 1,512). [Batch 32](triage-batch-32.md)
+
 - **2026-10-31 kernel Outcome, recovery, sweeps and SDK captures — through origin 1,498.** 1,264 retired, 214 extraction plans, 20 P1 revalidation plans. **14 test groups / 152 adoptions**, projections 15/155.
   Resume `scripts/check-builder-docs.ts`, `artifact-097a4dcccf08b7048d523d00` (origin 1,499). [Batch 31](triage-batch-31.md)
 
