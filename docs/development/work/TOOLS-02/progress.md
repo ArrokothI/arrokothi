@@ -2,6 +2,9 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 final triage checkpoint passed.** [Projection 11](projection-11.md) records **15 new-test groups / 152 mutation adoptions**. Fresh clone at `577c37b2967743af71e8ce4c4603a9d0b26d6b3e`, Node v26.10.0 and `npm ci`. One complete pass took **172.750 seconds**, with 67/67 controls and 69/69 qualified kills. [Attempt ledger](adoption-runtime-11.json)
+  Resume with the 15 test groups, 85 remaining adoptions and shared variants, then P3/P1 binding, register reconciliation and regenerate, self-audit, mappings_complete and final C/CI/H. All caps pass. IN_PROGRESS.
+
 - **2026-10-31 source triage complete — through origin 1,518.** 1,274 retired, 216 extraction plans and 28 P1 revalidation plans. **15 test groups / 152 adoptions**, final projections 15/152. [Batch 33](triage-batch-33.md)
   Resume with one fresh-clone pass of all 67 built adopted cases and projection 11, then the 85 remaining adoptions, shared variants, tests/P3 and P1 bindings. Register reconciliation and regenerate remain pending. Worktree `/Users/rex-shih/.codex/worktrees/tools-02-gpt6-handover/arrokothi`. Node PATH prefix `/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin`. IN_PROGRESS.
 
