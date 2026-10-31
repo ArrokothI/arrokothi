@@ -1231,7 +1231,21 @@
     "artifact-21fb34d9cd3ad15575371064",
     "artifact-22cf4ca80f2139455173765a",
     "artifact-ab4a0cceaeed3b426232f62f",
-    "artifact-ada9f66cd74e3bc95eef93d6"
+    "artifact-ada9f66cd74e3bc95eef93d6",
+    "artifact-6c57cc9dd8febdefa65ed496",
+    "artifact-febb180b453e17b8edab6893",
+    "artifact-73555fe668cc180905b1e49a",
+    "artifact-bca863b02ba3f5f894baa47d",
+    "artifact-394a3572417fe81cafbd7097",
+    "artifact-41fff78d8c610a53b2aafa0e",
+    "artifact-88c70bb20ca9f6fe9c05bbf5",
+    "artifact-0e16542de3087c0c508b3601",
+    "artifact-0f12d86d31f51cf923cb05e8",
+    "artifact-210dd0aaaf1f9edcdcaa0600",
+    "artifact-510be2a0362710c9996c358a",
+    "artifact-ecb10ef937e0612352e7c7ef",
+    "artifact-051103a915c0dad065b3ff57",
+    "artifact-3737bddc25971e833c283b6b"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -12542,7 +12556,7 @@
       "build_status": "planned_not_executed"
     }
   },
-  "resume_origin": "artifact-6c57cc9dd8febdefa65ed496",
+  "resume_origin": "artifact-e675d28451f3413582099c7a",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -12550,7 +12564,7 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "packages/kernel/tests/creation.test.ts",
+  "resume_path": "packages/kernel/tests/outcome-acceptance.test.ts",
   "resume_line": 1,
   "cap_stop_07": {
     "origins_reached": 696,
@@ -12630,6 +12644,143 @@
       ],
       "existing_witnesses": [],
       "reading": "triage-batch-29.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-7da3229588308934e8965a17": {
+      "source": "packages/kernel/tests/delivery-attribution.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "The four registered delivery attribution schedules still distinguish physical attempt, exact Activation/epoch, late settlement and cross-Execution immunity. Each pinned registration is unread. Retain its P1-H witness without executable credit pending final revalidation.",
+      "members": [
+        "packages/kernel/tests/delivery-attribution.test.ts:31:3@b85acb739a1b",
+        "packages/kernel/tests/delivery-attribution.test.ts:82:3@b85acb739a1b",
+        "packages/kernel/tests/delivery-attribution.test.ts:167:3@b85acb739a1b",
+        "packages/kernel/tests/delivery-attribution.test.ts:193:3@b85acb739a1b"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-30.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-3310e718c17bac5248395d3d": {
+      "source": "packages/kernel/tests/history-attribution.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "All five history attribution registrations retain the authenticated actor, action, grant authority, read-only returned record and immutable retained history. Bind each unread historical member under P1-H after census revalidation.",
+      "members": [
+        "packages/kernel/tests/history-attribution.test.ts:57:3@95831241cad7",
+        "packages/kernel/tests/history-attribution.test.ts:96:3@95831241cad7",
+        "packages/kernel/tests/history-attribution.test.ts:140:3@95831241cad7",
+        "packages/kernel/tests/history-attribution.test.ts:155:3@95831241cad7",
+        "packages/kernel/tests/history-attribution.test.ts:175:3@95831241cad7"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-30.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-3553544e78c5d13e863f4db3": {
+      "source": "packages/kernel/tests/hold-permitted.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "The seven hold-permission templates still check actions under code, protocol or combined holds and clearing. This source uses a safe Driver in its protocol-hold schedule; the separate absent/false Driver combined schedule remains an extraction. Retain these unread registrations via P1-H.",
+      "members": [
+        "packages/kernel/tests/hold-permitted.test.ts:44:3@cbd298773251",
+        "packages/kernel/tests/hold-permitted.test.ts:89:3@cbd298773251",
+        "packages/kernel/tests/hold-permitted.test.ts:113:3@cbd298773251",
+        "packages/kernel/tests/hold-permitted.test.ts:139:3@cbd298773251",
+        "packages/kernel/tests/hold-permitted.test.ts:152:3@cbd298773251",
+        "packages/kernel/tests/hold-permitted.test.ts:204:3@cbd298773251",
+        "packages/kernel/tests/hold-permitted.test.ts:230:3@cbd298773251"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-30.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-a4fa946d2759121d53f06ef8": {
+      "source": "packages/kernel/tests/host-members.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "The same trusted-host/source-member results remain in the current Driver and host scopes/options tests. A method on the host prototype is honored, ambient Object/Function declarations are excluded, controlScopes and constructor limits retain their declared distinctions. The later assertion-order repair restores polluted properties before checking. All ten registrations have unread status and need P1-H revalidation.",
+      "members": [
+        "packages/kernel/tests/host-members.test.ts:76:3@0275df62ce13",
+        "packages/kernel/tests/host-members.test.ts:109:3@0275df62ce13",
+        "packages/kernel/tests/host-members.test.ts:122:3@0275df62ce13",
+        "packages/kernel/tests/host-members.test.ts:139:3@0275df62ce13",
+        "packages/kernel/tests/host-members.test.ts:159:3@0275df62ce13",
+        "packages/kernel/tests/host-members.test.ts:166:3@0275df62ce13",
+        "packages/kernel/tests/host-members.test.ts:196:5@0275df62ce13",
+        "packages/kernel/tests/host-members.test.ts:224:3@0275df62ce13",
+        "packages/kernel/tests/host-members.test.ts:234:3@0275df62ce13",
+        "packages/kernel/tests/host-members.test.ts:260:3@0275df62ce13"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-30.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-a45b1c9d40d46e183ebd203d": {
+      "source": "packages/kernel/tests/inspection.test.ts",
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "Both pins retain the same visibility/list/inspection schedules, including authorization, immutable projection and pollution residue. All eleven historical registrations are unread under the released claims. Their own P1-H mapping gives no automatic conformance credit. The new early/late/no-match work comparison proposed from historical prose is a separate schedule.",
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:40:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:66:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:75:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:89:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:108:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:118:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:133:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:153:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:178:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:211:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:251:3@6975f64c51ef"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-30.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-c65a82c89661d8cb815b5b1b": {
+      "source": "packages/kernel/tests/inspection.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "Both pins retain the same visibility/list/inspection schedules, including authorization, immutable projection and pollution residue. All eleven historical registrations are unread under the released claims. Their own P1-H mapping gives no automatic conformance credit. The new early/late/no-match work comparison proposed from historical prose is a separate schedule.",
+      "members": [
+        "packages/kernel/tests/inspection.test.ts:40:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:66:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:75:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:89:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:108:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:118:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:133:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:153:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:178:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:211:3@6975f64c51ef",
+        "packages/kernel/tests/inspection.test.ts:251:3@6975f64c51ef"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-30.md",
+      "status": "awaiting_final_fresh_census_and_context_binding"
+    },
+    "artifact-41aacd591ea18aec11e47313": {
+      "source": "packages/kernel/tests/late-reports.test.ts",
+      "revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "disposition": "closed",
+      "route": "P1-R/P1-H",
+      "required_result": "The five physical late-report templates still constrain attribution to the original delivery across takeover, new exchange and terminal. Each registered member is unread; retain its release/witness and revalidate without executable credit.",
+      "members": [
+        "packages/kernel/tests/late-reports.test.ts:45:3@5c75e870e7e8",
+        "packages/kernel/tests/late-reports.test.ts:60:3@5c75e870e7e8",
+        "packages/kernel/tests/late-reports.test.ts:75:3@5c75e870e7e8",
+        "packages/kernel/tests/late-reports.test.ts:97:3@5c75e870e7e8",
+        "packages/kernel/tests/late-reports.test.ts:109:3@5c75e870e7e8"
+      ],
+      "existing_witnesses": [],
+      "reading": "triage-batch-30.md",
       "status": "awaiting_final_fresh_census_and_context_binding"
     }
   }

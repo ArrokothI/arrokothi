@@ -1,0 +1,308 @@
+[
+  {
+    "ordinal": 1441,
+    "origin": "artifact-6c57cc9dd8febdefa65ed496",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/creation.test.ts",
+    "lines_at_pin": 1068,
+    "members": 37,
+    "equal_assertion_sequences": 24,
+    "without_same_title_current_binding": [
+      "K11-R2-VAL-02 creation identity and replay agree under a capture-time Object.keys replacement",
+      "K11-R5-VAL-03 creation refuses a prototype observation that swaps the live Object binding",
+      "K11-R5-STATE-01 a capture-time Map.prototype.set no-op cannot drop the creation commit",
+      "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation",
+      "K11-R1-VAL-01 an array carrying own non-index member 01 is refused at creation",
+      "a coherent array whose prototype observation installs an indexed accessor binds its own value",
+      "a payload observation that installs get/set still creates the exact Execution",
+      "an ordinary handler broken by its own pollution is refused, never accepted or leaked",
+      "an earlier-field trap cannot steer a later field through ambient state in the same tick"
+    ],
+    "disposition": "S5",
+    "reading": "S5 mixed. Fresh/replayed/conflicting creation, exact initial Event/receipt, scope and invalid request effects retain current whole-result assertions. NaN/inconsistent live values moved to SDK capture; invalid bytes exercise core admission. The Proxy-triggered global and prototype schedules were superseded by unconditional Proxy refusal and now use ordinary same-call envelope getters for the remaining Map/Object/descriptor obligations. The own-01 and disagreement recipes are in wrapper-boundary-split."
+  },
+  {
+    "ordinal": 1442,
+    "origin": "artifact-febb180b453e17b8edab6893",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/creation.test.ts",
+    "lines_at_pin": 1068,
+    "members": 37,
+    "equal_assertion_sequences": 24,
+    "without_same_title_current_binding": [
+      "K11-R2-VAL-02 creation identity and replay agree under a capture-time Object.keys replacement",
+      "K11-R5-VAL-03 creation refuses a prototype observation that swaps the live Object binding",
+      "K11-R5-STATE-01 a capture-time Map.prototype.set no-op cannot drop the creation commit",
+      "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at creation",
+      "K11-R1-VAL-01 an array carrying own non-index member 01 is refused at creation",
+      "a coherent array whose prototype observation installs an indexed accessor binds its own value",
+      "a payload observation that installs get/set still creates the exact Execution",
+      "an ordinary handler broken by its own pollution is refused, never accepted or leaked",
+      "an earlier-field trap cannot steer a later field through ambient state in the same tick"
+    ],
+    "disposition": "S5",
+    "reading": "S5 mixed. Fresh/replayed/conflicting creation, exact initial Event/receipt, scope and invalid request effects retain current whole-result assertions. NaN/inconsistent live values moved to SDK capture; invalid bytes exercise core admission. The Proxy-triggered global and prototype schedules were superseded by unconditional Proxy refusal and now use ordinary same-call envelope getters for the remaining Map/Object/descriptor obligations. The own-01 and disagreement recipes are in wrapper-boundary-split."
+  },
+  {
+    "ordinal": 1443,
+    "origin": "artifact-7da3229588308934e8965a17",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/delivery-attribution.test.ts",
+    "lines_at_pin": 225,
+    "members": 4,
+    "equal_assertion_sequences": 4,
+    "without_same_title_current_binding": [],
+    "disposition": "P1-R/P1-H plan",
+    "reading": "The four registered delivery attribution schedules still distinguish physical attempt, exact Activation/epoch, late settlement and cross-Execution immunity. Each pinned registration is unread. Retain its P1-H witness without executable credit pending final revalidation."
+  },
+  {
+    "ordinal": 1444,
+    "origin": "artifact-73555fe668cc180905b1e49a",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/dispatch.test.ts",
+    "lines_at_pin": 1534,
+    "members": 50,
+    "equal_assertion_sequences": 30,
+    "without_same_title_current_binding": [
+      "nothing in this packet advances a writer epoch",
+      "K11-R2-VAL-02 a payload with no single reading never reaches a Driver",
+      "K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable"
+    ],
+    "disposition": "S5",
+    "reading": "S5 mixed. Current dispatch/redelivery tests pin accepted intent, immutable selected batch, grant lifetime, synchronous throw/report ordering, ignored returns, delayed/overlapping reports and operational diagnostics. Current delivery records add exact Activation/epoch; ordinary redelivery preserves the epoch. The old never-advance-any-epoch assertion was K1.1-scoped and takeover now legitimately advances it. Payload disagreement moved to SDK, proxy traps no longer drive capture, and an ordinary creation getter now installs the freeze replacement."
+  },
+  {
+    "ordinal": 1445,
+    "origin": "artifact-bca863b02ba3f5f894baa47d",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/dispatch.test.ts",
+    "lines_at_pin": 1567,
+    "members": 50,
+    "equal_assertion_sequences": 47,
+    "without_same_title_current_binding": [
+      "K11-R2-VAL-02 a payload with no single reading never reaches a Driver",
+      "K11-R5-STATE-01 a capture-time Object.freeze replacement cannot leave the Activation mutable"
+    ],
+    "disposition": "S5",
+    "reading": "S5 mixed. Current dispatch/redelivery tests pin accepted intent, immutable selected batch, grant lifetime, synchronous throw/report ordering, ignored returns, delayed/overlapping reports and operational diagnostics. Current delivery records add exact Activation/epoch; ordinary redelivery preserves the epoch. The old never-advance-any-epoch assertion was K1.1-scoped and takeover now legitimately advances it. Payload disagreement moved to SDK, proxy traps no longer drive capture, and an ordinary creation getter now installs the freeze replacement."
+  },
+  {
+    "ordinal": 1446,
+    "origin": "artifact-394a3572417fe81cafbd7097",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/evidence.test.ts",
+    "lines_at_pin": 352,
+    "members": 13,
+    "equal_assertion_sequences": 13,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. The retained evidence suite still asserts frozen receipt token/boundary/position, classification/position of refusal, immutability and non-mutation of independent views. Current production uses the state owner and byte admission; these external evidence requirements remain. Both pinned revisions were considered separately."
+  },
+  {
+    "ordinal": 1447,
+    "origin": "artifact-41fff78d8c610a53b2aafa0e",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/evidence.test.ts",
+    "lines_at_pin": 352,
+    "members": 13,
+    "equal_assertion_sequences": 13,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. The retained evidence suite still asserts frozen receipt token/boundary/position, classification/position of refusal, immutability and non-mutation of independent views. Current production uses the state owner and byte admission; these external evidence requirements remain. Both pinned revisions were considered separately."
+  },
+  {
+    "ordinal": 1448,
+    "origin": "artifact-88c70bb20ca9f6fe9c05bbf5",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/exact-coordinates.test.ts",
+    "lines_at_pin": 212,
+    "members": 1,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [
+      "`DEC-4 exact retained coordinates: ${JSON.stringify(namespace)} ${step}`"
+    ],
+    "disposition": "S5",
+    "reading": "S5 the four complete/fail by non-ASCII/long-identity schedules derive IDs/tokens from the inputs and compare all retained/returned coordinates across two Executions. Current tests add normal-return checks while preserving the independent coordinate assertions. The family mutations are handled at their runner origins."
+  },
+  {
+    "ordinal": 1449,
+    "origin": "artifact-0e16542de3087c0c508b3601",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/fault-oracle.test.ts",
+    "lines_at_pin": 425,
+    "members": 38,
+    "equal_assertion_sequences": 11,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5. Current fault-oracle includes the three altered observations, full decision field perturbations, forbidden phase/step prefixes, hidden mutation and broken exit attribution. Its independent source model now includes the owner state arm, relevant K1.3 extensions, and the five callback baselines. Current oracle.* cases mutate the named decisions."
+  },
+  {
+    "ordinal": 1450,
+    "origin": "artifact-0f12d86d31f51cf923cb05e8",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/harness.ts",
+    "lines_at_pin": 585,
+    "members": 0,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [],
+    "disposition": "S1",
+    "reading": "S1. This helper exports deterministic caller/request factories, controlled Drivers, grant capture, accepted/refused result unwrapping and Outcome construction. It supplies no standalone input and required observation beyond its concrete consuming suites, which are read separately. The revision-2 suite association never promotes helper presence to execution credit."
+  },
+  {
+    "ordinal": 1451,
+    "origin": "artifact-210dd0aaaf1f9edcdcaa0600",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/harness.ts",
+    "lines_at_pin": 446,
+    "members": 0,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [],
+    "disposition": "S1",
+    "reading": "S1. This helper exports deterministic caller/request factories, controlled Drivers, grant capture, accepted/refused result unwrapping and Outcome construction. It supplies no standalone input and required observation beyond its concrete consuming suites, which are read separately. The revision-2 suite association never promotes helper presence to execution credit."
+  },
+  {
+    "ordinal": 1452,
+    "origin": "artifact-3310e718c17bac5248395d3d",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/history-attribution.test.ts",
+    "lines_at_pin": 198,
+    "members": 5,
+    "equal_assertion_sequences": 5,
+    "without_same_title_current_binding": [],
+    "disposition": "P1-R/P1-H plan",
+    "reading": "All five history attribution registrations retain the authenticated actor, action, grant authority, read-only returned record and immutable retained history. Bind each unread historical member under P1-H after census revalidation."
+  },
+  {
+    "ordinal": 1453,
+    "origin": "artifact-3553544e78c5d13e863f4db3",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/hold-permitted.test.ts",
+    "lines_at_pin": 274,
+    "members": 7,
+    "equal_assertion_sequences": 7,
+    "without_same_title_current_binding": [],
+    "disposition": "P1-R/P1-H plan",
+    "reading": "The seven hold-permission templates still check actions under code, protocol or combined holds and clearing. This source uses a safe Driver in its protocol-hold schedule; the separate absent/false Driver combined schedule remains an extraction. Retain these unread registrations via P1-H."
+  },
+  {
+    "ordinal": 1454,
+    "origin": "artifact-a4fa946d2759121d53f06ef8",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/host-members.test.ts",
+    "lines_at_pin": 276,
+    "members": 10,
+    "equal_assertion_sequences": 0,
+    "without_same_title_current_binding": [
+      "residue pollution left before the call establishes nothing either",
+      "a function-object Driver is not answered by Function.prototype",
+      "a class-based Driver's own prototype method is honored (trusted host structure)",
+      "a method inherited from the host's own prototype object is honored",
+      "a class-based Driver without the method is not answered by Object.prototype",
+      "`residue Object.prototype.controlScopes gives a visibility-only caller no ${name}`",
+      "controlScopes inherited from the host's own prototype object is still honored",
+      "residue mailboxCapacity and emissionsPerOutcome at construction declare nothing",
+      "a limit the host supplies through its own options prototype is honored"
+    ],
+    "disposition": "P1-R/P1-H plan",
+    "reading": "The same trusted-host/source-member results remain in the current Driver and host scopes/options tests. A method on the host prototype is honored, ambient Object/Function declarations are excluded, controlScopes and constructor limits retain their declared distinctions. The later assertion-order repair restores polluted properties before checking. All ten registrations have unread status and need P1-H revalidation."
+  },
+  {
+    "ordinal": 1455,
+    "origin": "artifact-510be2a0362710c9996c358a",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/ingress.test.ts",
+    "lines_at_pin": 865,
+    "members": 34,
+    "equal_assertion_sequences": 23,
+    "without_same_title_current_binding": [
+      "input that is not a boundary value is refused and queues nothing",
+      "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress",
+      "K11-R2-VAL-02 ingress identity and replay agree under a capture-time Object.keys replacement",
+      "K11-R1-VAL-01 an array with own 01 is refused at ingress and queues nothing",
+      "a creation whose payload traps the first mailbox index still binds its initial Event",
+      "a payload observation that installs get/set still retains the accepted Event"
+    ],
+    "disposition": "S5",
+    "reading": "S5 mixed. Current tests require exact ingress/replay positions, independent creation-key domain, terminal replay/conflict and refused new input. The ordinary envelope-field getter retains same-call own-index/descriptor protections. Live value capture moved to SDK for own-01, descriptor disagreement and invalid value inputs, with refusal before submission. The former K1.3 deferred terminal test now has live terminal evidence."
+  },
+  {
+    "ordinal": 1456,
+    "origin": "artifact-ecb10ef937e0612352e7c7ef",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/ingress.test.ts",
+    "lines_at_pin": 867,
+    "members": 34,
+    "equal_assertion_sequences": 22,
+    "without_same_title_current_binding": [
+      "input that is not a boundary value is refused and queues nothing",
+      "K11-R1-SCOPE-01 terminal-ingress rule is specified with live-terminal evidence deferred to K1.3",
+      "K11-R2-VAL-02 a payload whose own data and property reads disagree is refused at ingress",
+      "K11-R2-VAL-02 ingress identity and replay agree under a capture-time Object.keys replacement",
+      "K11-R1-VAL-01 an array with own 01 is refused at ingress and queues nothing",
+      "a creation whose payload traps the first mailbox index still binds its initial Event",
+      "a payload observation that installs get/set still retains the accepted Event"
+    ],
+    "disposition": "S5",
+    "reading": "S5 mixed. Current tests require exact ingress/replay positions, independent creation-key domain, terminal replay/conflict and refused new input. The ordinary envelope-field getter retains same-call own-index/descriptor protections. Live value capture moved to SDK for own-01, descriptor disagreement and invalid value inputs, with refusal before submission. The former K1.3 deferred terminal test now has live terminal evidence."
+  },
+  {
+    "ordinal": 1457,
+    "origin": "artifact-a45b1c9d40d46e183ebd203d",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/inspection.test.ts",
+    "lines_at_pin": 274,
+    "members": 11,
+    "equal_assertion_sequences": 11,
+    "without_same_title_current_binding": [],
+    "disposition": "P1-R/P1-H plan",
+    "reading": "Both pins retain the same visibility/list/inspection schedules, including authorization, immutable projection and pollution residue. All eleven historical registrations are unread under the released claims. Their own P1-H mapping gives no automatic conformance credit. The new early/late/no-match work comparison proposed from historical prose is a separate schedule."
+  },
+  {
+    "ordinal": 1458,
+    "origin": "artifact-c65a82c89661d8cb815b5b1b",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/inspection.test.ts",
+    "lines_at_pin": 274,
+    "members": 11,
+    "equal_assertion_sequences": 11,
+    "without_same_title_current_binding": [],
+    "disposition": "P1-R/P1-H plan",
+    "reading": "Both pins retain the same visibility/list/inspection schedules, including authorization, immutable projection and pollution residue. All eleven historical registrations are unread under the released claims. Their own P1-H mapping gives no automatic conformance credit. The new early/late/no-match work comparison proposed from historical prose is a separate schedule."
+  },
+  {
+    "ordinal": 1459,
+    "origin": "artifact-41aacd591ea18aec11e47313",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/late-reports.test.ts",
+    "lines_at_pin": 134,
+    "members": 5,
+    "equal_assertion_sequences": 5,
+    "without_same_title_current_binding": [],
+    "disposition": "P1-R/P1-H plan",
+    "reading": "The five physical late-report templates still constrain attribution to the original delivery across takeover, new exchange and terminal. Each registered member is unread; retain its release/witness and revalidate without executable credit."
+  },
+  {
+    "ordinal": 1460,
+    "origin": "artifact-051103a915c0dad065b3ff57",
+    "pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+    "path": "packages/kernel/tests/nondisclosure.test.ts",
+    "lines_at_pin": 594,
+    "members": 16,
+    "equal_assertion_sequences": 13,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5 mixed. Current missing/hidden equivalence checks compare entire public result, exact scoped positions and views after hidden refusals/activity, with independent next receipts. Current cancellation/timeout branches add K1.3 facts. The separately proposed pre-first-Activation hidden activity schedule is not subsumed merely by this source file."
+  },
+  {
+    "ordinal": 1461,
+    "origin": "artifact-3737bddc25971e833c283b6b",
+    "pin": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+    "path": "packages/kernel/tests/nondisclosure.test.ts",
+    "lines_at_pin": 478,
+    "members": 14,
+    "equal_assertion_sequences": 11,
+    "without_same_title_current_binding": [],
+    "disposition": "S5",
+    "reading": "S5 mixed. Current missing/hidden equivalence checks compare entire public result, exact scoped positions and views after hidden refusals/activity, with independent next receipts. Current cancellation/timeout branches add K1.3 facts. The separately proposed pre-first-Activation hidden activity schedule is not subsumed merely by this source file."
+  }
+]

@@ -2,6 +2,9 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 kernel creation through nondisclosure — through origin 1,461.** 1,243 retired, 210 extraction plans, 8 P1 revalidation plans. **14 test groups / 152 adoptions**, projections 15/158.
+  Resume `packages/kernel/tests/outcome-acceptance.test.ts`, `artifact-e675d28451f3413582099c7a` (origin 1,462). [Batch 30](triage-batch-30.md)
+
 - **2026-10-31 kernel identity, diagnostics and control structure — through origin 1,440.** 1,229 retired, 210 extraction plans, 1 P1 revalidation plans. **14 test groups / 152 adoptions**, projections 15/161.
   Resume `packages/kernel/tests/creation.test.ts`, `artifact-6c57cc9dd8febdefa65ed496` (origin 1,441). [Batch 29](triage-batch-29.md)
 
