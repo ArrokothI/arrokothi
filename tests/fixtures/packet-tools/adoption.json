@@ -7870,7 +7870,7 @@
           },
           {
             "kind": "case",
-            "id": "value-cost.byte-charges"
+            "id": "work-charge.array-surplus"
           }
         ]
       }
@@ -9638,15 +9638,134 @@
     },
     {
       "id": "artifact-b2d2a375947dbdddf5c5647c",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 run totals, reproduction commands or inspection scope. The named concrete oracle/exit counterexamples are retained separately with their functional targets."
+      }
     },
     {
       "id": "artifact-f42eca5e311c78031c27cfe2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 whole classifier-slice builder and all three sealed outputs. Current fault-oracle explicitly rejects revoked setup grant, opposite successful hold answer and progress corruption falsely labeled as an apply prefix. Source slicing no longer needed at the separated checker.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          }
+        ]
+      }
     },
     {
       "id": "artifact-e95b67c1005fb210addcf4ae",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 whole sixteen-row clean reachability probe: eleven early unknown/hidden/wrong/no-open/terminal exits and five safety-callback outcomes. Current fault sweep exercises those paths and checks callback baseline, exact refusal-only changes, grant and future positions. Exit inventory fails on missing/untaken/ambiguous paths.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.callbackRan"
+          }
+        ]
+      }
     },
     {
       "id": "artifact-1abf88792a382e41d20b4303",
@@ -61777,10 +61896,6 @@
             "test_path": [
               "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption"
             ]
-          },
-          {
-            "kind": "case",
-            "id": "value-cost.c1.value-diagnostic-work"
           }
         ]
       }
@@ -61832,10 +61947,6 @@
             "test_path": [
               "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption"
             ]
-          },
-          {
-            "kind": "case",
-            "id": "value-cost.c1.value-diagnostic-work"
           }
         ]
       }
@@ -62458,10 +62569,6 @@
           {
             "kind": "case",
             "id": "k12c1.adopt-diagnostics-v3"
-          },
-          {
-            "kind": "case",
-            "id": "value-cost.c1.value-refusal-cost"
           }
         ]
       }
@@ -151608,111 +151715,3792 @@
     },
     {
       "id": "mention-7921b2e0d676846d3c107b6f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 both altered-observation oracle and sixteen missing-exit schedules have maintained fixtures: three bad observations must be rejected, exit inventory and complete decisions include five callback baselines. The other contiguous guide entries supply historical provenance.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-d2489a2cf3977fa6a920d318",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 both altered-observation oracle and sixteen missing-exit schedules have maintained fixtures: three bad observations must be rejected, exit inventory and complete decisions include five callback baselines. The other contiguous guide entries supply historical provenance.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-0b8a1d7ed23f60fdadb91cc9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 run totals, reproduction commands or inspection scope. The named concrete oracle/exit counterexamples are retained separately with their functional targets."
+      }
     },
     {
       "id": "mention-5efcf2b6642d0b747fa3a9ce",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 run totals, reproduction commands or inspection scope. The named concrete oracle/exit counterexamples are retained separately with their functional targets."
+      }
     },
     {
       "id": "mention-efc37ed64d990838c2ae48e2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 run totals, reproduction commands or inspection scope. The named concrete oracle/exit counterexamples are retained separately with their functional targets."
+      }
     },
     {
       "id": "mention-7635bf5bbf6b0606433f962e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 run totals, reproduction commands or inspection scope. The named concrete oracle/exit counterexamples are retained separately with their functional targets."
+      }
     },
     {
       "id": "mention-a2632ae141cbc62f59029840",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 run totals, reproduction commands or inspection scope. The named concrete oracle/exit counterexamples are retained separately with their functional targets."
+      }
     },
     {
       "id": "mention-3b49dc7e7dffe7e355cb7ff4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 both altered-observation oracle and sixteen missing-exit schedules have maintained fixtures: three bad observations must be rejected, exit inventory and complete decisions include five callback baselines. The other contiguous guide entries supply historical provenance.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-fbb6c6eb63ebf38f8e871356",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 run totals, reproduction commands or inspection scope. The named concrete oracle/exit counterexamples are retained separately with their functional targets."
+      }
     },
     {
       "id": "mention-3ff9a60a5e257e50fea25ec3",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-a48df0c0b0f2b701f7222369",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 hidden and missing control destinations are indistinguishable; scope probe and current catalog/sweep enforce no hidden state mutation and current visibility before content.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "one hidden accepted creation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden activity before A's first operation discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "several hidden accepts across hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals attached to hidden Executions disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden refusals naming no Execution disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "mixed hidden accepts and refusals disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "the same producer namespace in a hidden scope neither collides nor discloses"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden work striped across several hidden Executions discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "A's own several Executions stay mutually ordered and undisclosing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "refusal order is per Execution, not per scope: same-scope Executions do not share it"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden attached refusals on every remaining path disclose nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "hidden capacity exhaustion discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K11-R12-ID-01 scoped non-disclosure across the accepted-evidence path",
+              "a hidden Execution and a missing one stay indistinguishable, including position"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K1.2-C12 scoped non-disclosure across Outcome acceptance and the exchange controls",
+              "the Outcome oracle is deterministic: two control arms agree exactly"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/nondisclosure.test.ts",
+            "test_path": [
+              "K1.2-C12 scoped non-disclosure across Outcome acceptance and the exchange controls",
+              "hidden Outcome, takeover, hold and terminal activity discloses nothing to A"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-b790b0255e53b0b45460a675",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current replay/conflict matrix includes late exchange, terminal, absent and retired grants, exact identity, one permitted refusal and unchanged stored decision.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base missing + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base -1 + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base fractional + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch 1 + base string + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "future epoch 5 with base missing and no grant is stale, not unauthorized"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority",
+              "stale epoch with over-capacity content and no grant is stale, not a capacity disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + absent grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch missing + forged grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch fractional + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch fractional + absent grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch fractional + forged grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch negative + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch negative + absent grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch negative + forged grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch string + current grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch string + absent grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale base 7 + epoch string + forged grant -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 partial stale base: malformed writerEpoch with well-formed stale base is stale whatever authority",
+              "stale-low base on the second exchange with missing epoch is stale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and no grant is unauthorized with no claim disclosure"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "current epoch with malformed base and the current grant reaches malformed content validation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 non-stale partial claims keep Case B/C behavior (current + malformed)",
+              "fully malformed claim with no grant stays unauthorized; with grant stays malformed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "wrong Activation ID with a partial-stale claim is stale, naming the exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "non-text Activation ID with the current grant is content-group malformed (decision-02)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "an uncapturable partial claim under an accepted Activation ID conflicts, not stale/malformed"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "terminal execution refuses a fresh partial-stale proposal as terminal, with no content leak"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "terminal execution with a new Activation ID refuses partial-stale as terminal, not stale"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K12-R11 activation identity, replay/conflict, terminal and scope precedence",
+              "outsider partial-stale proposals stay unknown_destination and indistinguishable"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity missing + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity missing + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + forged grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + absent grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity missing + invalid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity missing + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity missing + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity missing + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + retired grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + forged grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + absent grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity missing + current grant + invalid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity number + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity number + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + forged grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + absent grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity number + invalid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity number + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity number + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity number + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + retired grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + forged grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + absent grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity number + current grant + invalid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity object + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity object + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + forged grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + absent grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity object + invalid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity object + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity object + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity object + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + retired grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + forged grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + absent grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity object + current grant + invalid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity throwing + valid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity throwing + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + current grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + retired grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + forged grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + absent grant + valid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + retired grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + forged grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + absent grant + valid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + current grant + valid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "terminal + identity throwing + invalid content -> terminal_destination"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "no unresolved exchange + identity throwing + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + current grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + retired grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + forged grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale epoch 1 + identity throwing + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "stale base 7 + identity throwing + absent grant + invalid content -> stale_exchange"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + retired grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + forged grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + absent grant + invalid content -> unauthorized_submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3)",
+              "current coordinates + identity throwing + current grant + invalid content -> malformed_envelope"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity missing changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity missing changed resubmission is terminal, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity number identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity number changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity number identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity number changed resubmission is terminal, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity object identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity object changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity object identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity object changed resubmission is terminal, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity throwing identical resubmission is stale, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "later exchange + identity throwing changed resubmission is stale, not conflict"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity throwing identical resubmission is terminal, not replay"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+            "test_path": [
+              "K1.2 decision-02 unaddressable identity never replays or conflicts (C2)",
+              "terminal + identity throwing changed resubmission is terminal, not conflict"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ed1fae97b5d820abd847b2bd",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-37a7f2991970d0b9c64f31e4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-7e2dba765cd1703445d898c6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-64ebd6f753c176c290ff35c2",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-675baf5ef65434aecf6dc9ba",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-8ca50dfed46412eabe89677b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-5b60babe083e221ea3563818",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-73370ca344591776c530b45d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-3cbebea4cfe302ebbfe10ec1",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-c2e5ef1721bd67e89214cf3f",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-a7de95e8f7f39e3f52372a7e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 bounded-search conclusions or execution accounting. The concrete historical type/fault examples and their current poison/fault routes were read individually in reviewer 11."
+      }
     },
     {
       "id": "mention-855e216a463ba2d5d0711277",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-a4f89d27a2b2fda9e14bebf4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 bounded-search conclusions or execution accounting. The concrete historical type/fault examples and their current poison/fault routes were read individually in reviewer 11."
+      }
     },
     {
       "id": "mention-96d19102e657bedee70e435a",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-6c548599e7f9c126d9e61c87",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-c94c4b93998ebe81df406fb7",
@@ -151728,23 +155516,757 @@
     },
     {
       "id": "mention-2d683e5fc9bea0fc647d7631",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current Outcome commit source inventory and exact returned/retained views have explicit complete-decision checks for apply prefix, sequence and independently built model.",
+        "covered_by": [
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applyModel"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          }
+        ]
+      }
     },
     {
       "id": "mention-325c2699a1256c73a8811cf4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 current recovery-ambient covers inherited optional fields, history immutability and reentry variants of each transition.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "protocol-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-enter / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-update / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "code-clear / reenter"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "takeover-clear / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / control"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / data"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "outcome-end / throw"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation",
+              "the matrix is review 09's 22 cases"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "protocol-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-enter: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-update: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "code-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "takeover-clear: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 retained evidence holds no caller object",
+              "outcome-end: an inherited caller object never enters, and later mutation changes nothing"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "takeover clear owns resultingEpoch = the new epoch, not the inherited 777"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 both safe clear paths keep their own fields under pollution",
+              "Outcome end owns no resultingEpoch at all, even while one is inherited"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "protocol-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-enter: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-update: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "code-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "takeover-clear: counting inherited accessors left behind as residue"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors during observation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/recovery-ambient.test.ts",
+            "test_path": [
+              "K12C1-R9-HISTORY-01 no record field name is answered by Object.prototype",
+              "outcome-end: counting inherited accessors left behind as residue"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-c1322ec55b0e3cf4b2463af5",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 earlier receipt-index counterexample requires unchanged future receipt position as well as immediate view; current seed and oracle nextAcceptance cover that exact schedule, while review-12 oracle/exit observations are separately maintained.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "review 11's fault probe: an exception before the new Activation is built changes neither the view nor the next receipt"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-4550743c61df2f3878d6b56e",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-1d8aa641454e6e575aa6c8d4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 review-12 oracle and scope findings: current dedicated altered-observation negative controls reject a revoked grant, reversed answer and spurious apply prefix. Current complete-decision checker, exit inventory and fault sweep cover the eleven early exits and five callback baselines, including answer, whole view, both positions and setup grant. The original ordinary/scope observations do not by themselves claim fault coverage.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a refusal that leaves the setup grant unauthorized is a violation"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "an accepted report returning the opposite hold answer is a violation, after a fault and without one"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "review 12's three altered observations (K12C1-R12-ORACLE-01)",
+              "a changed progress revision labelled as an Outcome apply fault by method name is a violation"
+            ]
+          },
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomeStepAt"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceKind"
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the example scenarios' sweep and the whole exit inventory are clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "rebuilt from the child's record, it is clean"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "an exit no scenario takes"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a scenario that does not take its declared exit"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-oracle.test.ts",
+            "test_path": [
+              "the exit inventory",
+              "a declaration matching more than one return"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/fault-sweep.test.ts",
+            "test_path": [
+              "fault injection at every intercepted operation leaves only states a complete decision explains"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-51725074199c1d6fa4638dfc",
