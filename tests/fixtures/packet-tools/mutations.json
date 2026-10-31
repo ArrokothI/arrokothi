@@ -12335,8 +12335,8 @@
             {
               "file": "packages/kernel/tests/host-members.test.ts",
               "path": [
-                "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
-                "a class-based Driver's own prototype method is honored (trusted host structure)"
+                "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+                "controlScopes inherited from the host's own prototype object is still honored"
               ]
             }
           ],
@@ -14187,8 +14187,8 @@
           "operator": "historical-decision-ablation",
           "obligation": "family.k12c1.ablations#D12",
           "path": "packages/kernel/src/coordinator.ts",
-          "before": "   );\n    }\n    if (capture.overCapacity !== null) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"capacity_exhausted\",\n            `the Outcome for Activation ${diagnosticIdentity(activationId)} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`,\n            record,\n          ),\n        );\n      ",
-          "after": "   );\n    }\n    if (capture.overCapacity !== null) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"capacity_exhausted\",\n            `the Outcome for Activation ${activationId} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`,\n            record,\n          ),\n        );\n      ",
+          "before": "`the Outcome for Activation ${diagnosticIdentity(activationId)} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`",
+          "after": "`the Outcome for Activation ${activationId} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`",
           "expected_targets": [
             {
               "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
@@ -14197,7 +14197,7 @@
               ]
             }
           ],
-          "id": "mutation-7fc05dbc96472e7c76a0456b5880825a9d7d15fde1929396b94e211a3775621d"
+          "id": "mutation-525f180028ec10f16d4d64c7f55ebe88f75078c5226f3d9fcf94e2d294a8902f"
         }
       ],
       "category": "historical-family-adoption",
@@ -15810,7 +15810,7 @@
         {
           "name": "k12c1-sweep8-inspection-1",
           "operator": "historical-decision-ablation",
-          "obligation": "family.k12c1.sweeps-08#review",
+          "obligation": "family.k12c1.sweeps-08#review-11-READ-01",
           "path": "packages/kernel/src/coordinator.ts",
           "before": "    return ok(record.inspection());",
           "after": "    const summary: Pick<ExecutionReader, \"executionId\"> = record;\n    (summary as { executionId: string; resultingEpoch: number }).resultingEpoch;\n    return ok(record.inspection());",
@@ -16057,7 +16057,7 @@
         {
           "name": "k12c1-review6-w1-1",
           "operator": "historical-decision-ablation",
-          "obligation": "family.k12c1.review-06#W1",
+          "obligation": "family.k12c1.review-06#W1-located-drops-weight",
           "path": "packages/kernel/src/envelope.ts",
           "before": "    appendOwn(out, { ...issue, path });",
           "after": "    appendOwn(out, { path, code: issue.code, message: issue.message });",
@@ -16108,7 +16108,7 @@
         {
           "name": "k12c1-review6-w3-1",
           "operator": "historical-decision-ablation",
-          "obligation": "family.k12c1.review-06#W3",
+          "obligation": "family.k12c1.review-06#W3-explain-drops-weight",
           "path": "packages/kernel/src/envelope.ts",
           "before": "(${occurrences} additional occurrences; locations omitted)",
           "after": "(additional occurrences; locations omitted)",
@@ -16159,7 +16159,7 @@
         {
           "name": "k12c1-review6-w4-1",
           "operator": "historical-decision-ablation",
-          "obligation": "family.k12c1.review-06#W4",
+          "obligation": "family.k12c1.review-06#W4-suffix-first-code-only",
           "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    if (entry.code === issue.code) {",
           "after": "    if (true) {",
@@ -16228,7 +16228,7 @@
         {
           "name": "k12c1-review6-w5-1",
           "operator": "historical-decision-ablation",
-          "obligation": "family.k12c1.review-06#W5",
+          "obligation": "family.k12c1.review-06#W5-details-unbounded-path",
           "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "      path: issueText(issue.path, 128, \"<omitted>\"),",
           "after": "      path: issue.path,",
@@ -16439,7 +16439,7 @@
             {
               "file": "packages/sdk/tests/value-refusal-cost.test.ts",
               "path": [
-                "V-D1 every issue family: undefined array members"
+                "V-D1 P5: 532480 invalid positions retain nine records and exact ordered details"
               ]
             }
           ],
@@ -16613,11 +16613,10 @@
       "source": "family.k12c1.review-08 N11; TOOLS-02 group-review-23.md",
       "assertion": "k12c1-review8-n11",
       "files": [
-        "packages/kernel/tests/binding-facade.ts",
-        "packages/kernel/tests/harness.ts",
-        "packages/kernel/tests/refusal-diagnostics-fixture.ts",
-        "packages/sdk/tests/capture-instruments.ts",
-        "packages/sdk/tests/capture-work.test.ts"
+        "packages/kernel/tests/zone-analysis.ts",
+        "packages/sdk/tests/capture-metering.test.ts",
+        "packages/sdk/tests/capture-metering.ts",
+        "tsconfig.json"
       ],
       "timeout_seconds": 120,
       "output_limit_bytes": 1048576,
@@ -16631,10 +16630,10 @@
           "after": "    void PrimordialGetOwnPropertyDescriptor(container, key);\n    const member = checkMember(descriptor, read, where, state);",
           "expected_targets": [
             {
-              "file": "packages/sdk/tests/capture-work.test.ts",
+              "file": "packages/sdk/tests/capture-metering.test.ts",
               "path": [
-                "KC3-1 runtime oracle: wrapped engine operations are accounted for by the units charged",
-                "every shape of the maintained corpus"
+                "KC3-1 static metering check",
+                "the real values.ts passes every rule"
               ]
             }
           ],
@@ -16646,7 +16645,7 @@
         "members": [
           "N11"
         ],
-        "required_result": "describedValue split into observeDescriptor/readMember/checkMember. Duplicate descriptor before current object checkMember, preserving old object-member schedule. Existing aliased-descriptor case targets array positions."
+        "required_result": "describedValue split into observeDescriptor/readMember/checkMember. Duplicate descriptor before current object checkMember, preserving old object-member schedule. The runtime oracle's descriptor bound has slack per object member, so the static metering check (SC1: observation primordials only in metered helpers) is the maintained oracle."
       },
       "targets": {
         "flags": [
@@ -16655,7 +16654,7 @@
           "--no-warnings"
         ],
         "files": [
-          "packages/sdk/tests/capture-work.test.ts"
+          "packages/sdk/tests/capture-metering.test.ts"
         ]
       }
     },
@@ -17040,6 +17039,7 @@
       "files": {
         "package.json": "c9bcb2590b7a2ded24ea63582f2a47cbafb934733ed9429cef120e8d6e55bea9",
         "lib/canonicalize.js": "c0fd652bd174455567dcbbbab0f306fe5d40a9fb13b0f184b46aca083b29546e",
+        "lib/canonicalize.d.ts": "5eba409e1fe34c86e46af829f1f236645b654e405e3377277b2baeb5e5352124",
         "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
       }
     },

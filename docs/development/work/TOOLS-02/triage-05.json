@@ -12044,13 +12044,13 @@
         }
       ],
       "registry_case": "k12c1.adopt-base-d12",
-      "registry_mutant": "mutation-7fc05dbc96472e7c76a0456b5880825a9d7d15fde1929396b94e211a3775621d",
+      "registry_mutant": "mutation-525f180028ec10f16d4d64c7f55ebe88f75078c5226f3d9fcf94e2d294a8902f",
       "build_status": "built_awaiting_fresh_clone_control_and_kill",
       "registry_variants": [
         {
           "family": "family.k12c1.ablations",
           "member": "D12 unbounded identity at coordinator.ts:1592 (activationId)",
-          "mutation": "mutation-7fc05dbc96472e7c76a0456b5880825a9d7d15fde1929396b94e211a3775621d"
+          "mutation": "mutation-525f180028ec10f16d4d64c7f55ebe88f75078c5226f3d9fcf94e2d294a8902f"
         }
       ]
     },

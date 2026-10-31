@@ -2,6 +2,10 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 owner choice 13 — option A twice.** [Decision](owner-choice-13.md) answers projection 12: one
+  complete pass may take up to 1,200 seconds, and design 06 adds a reuse-aware `mutation` route and a counted
+  `covered` route, checked in review 05. Resume with the six fixture fixes and a new complete pass. IN_PROGRESS.
+
 - **2026-10-31 runtime cap stop — one complete pass took 787.129 seconds.** [Projection 12](projection-12.md):
   a fresh clone at `2d1be19a` ran all 152 adoption cases and 179 mutants once, over owner choice 11's 600-second
   cap. 150/152 controls passed and 173/179 mutants were killed. All six non-kills trace to registry fixture defects;
