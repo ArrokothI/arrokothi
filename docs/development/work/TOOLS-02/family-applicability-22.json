@@ -1,0 +1,49 @@
+{
+  "revision": "db5023ab",
+  "source_pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "family": "family.k12c1.review-06.mutants",
+  "members": [
+    {
+      "member": "W1",
+      "group": "k12c1-review6-w1",
+      "route": "planned_new_adoption"
+    },
+    {
+      "member": "W3",
+      "group": "k12c1-review6-w3",
+      "route": "planned_new_adoption"
+    },
+    {
+      "member": "W4",
+      "group": "k12c1-review6-w4",
+      "route": "planned_new_adoption"
+    },
+    {
+      "member": "W5",
+      "group": "k12c1-review6-w5",
+      "route": "planned_new_adoption"
+    },
+    {
+      "member": "W2",
+      "group": "k12c1-base-g9",
+      "route": "identical_current_edit",
+      "reading": "The appendRootIssues original whole conditional and G9 current shorter span both drop occurrences from only the weighted branch. No new variant/case."
+    },
+    {
+      "member": "W6",
+      "case": "k12c1.adopt-diagnostics-v3",
+      "route": "same_registered_mutation",
+      "reading": "Exactly const count = occurrences ?? 1 to const count = 1."
+    },
+    {
+      "member": "W7",
+      "route": "equivalence_pending_P1_binding",
+      "reading": "Every capture-generated weighted suffix follows its own eight details; located preserves order and appendRootIssues concatenates each complete root. Before any suffix reaches explainDiagnosticIssues, global details is already eight. Byte-core diagnostics have no compressed suffix. Removing the occurrences test does not change these reachable inputs; arbitrary synthetic out-of-order issue lists are outside this historical input class."
+    },
+    {
+      "member": "W8",
+      "group": "k12c1-review6-w4",
+      "route": "shared_group_retained_variant"
+    }
+  ]
+}

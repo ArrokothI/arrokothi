@@ -2,6 +2,13 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 reviewer-06 — through origin 1,218:** 1,055 retired / 163 plans.
+  [Group review 22](group-review-22.md): **14 test groups / 139 adoptions**; four
+  new existing-leaf cases and one shared W8 variant, all unbuilt. Current cumulative
+  projections 18/174, longer-window 19/188; within caps. No new execution or full-pass
+  measurement. Resume `K1.2-correction-01/review-08.md:18`,
+  `mention-f64bfd942fdd4149cdf555e2` (origin 1,219). IN_PROGRESS under owner choice 11.
+
 - **2026-10-30 reviewer-04 artifacts — through origin 1,180:** 1,031 retired /
   149 extraction-origin plans. [Group review 21](group-review-21.md): **14 test
   groups / 135 adoptions**; P1 adds one combined protocol-hold/Driver-safety test
