@@ -2,6 +2,13 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 owner choice 12 — Claude Opus finishes ranges 2–4.** [Decision](owner-choice-12.md): GPT-6 ran out
+  of quota at `9f6321b4`. The implementer is now a Claude Code desktop session (`claude-opus-5-5`); review 05 is
+  a separate fresh Claude Opus session. Earlier records keep their roles; GPT-6 does not resume on this branch.
+  Worktree `/Users/rex-shih/Documents/ArrokothI/wt-tools-02-opus`, local branch `claude/tools-02-opus`, pushed to
+  `codex/tools-02`. Resume with the fresh-clone full pass of all 152 adopted cases. Caps and stops unchanged.
+  IN_PROGRESS.
+
 - **2026-10-31 all extraction tests pass, remaining adoptions built.** [Build 02](extraction-build-02.md). Fresh clone at `5b584d81` passed all 32 affected tests and typecheck. The existing registry gains 85 cases with 103 mutants, plus seven routes for shared variants in existing cases. Counts stay **15/152**.
   Resume with a new fresh-clone full pass of all 152 adopted cases and controls, then resolve any adoption failures, P3/P1 bindings, register reconciliation/regenerate and self-audit. The new builds have no control/kill claim yet. IN_PROGRESS.
 
