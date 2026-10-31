@@ -1057,7 +1057,18 @@
     "artifact-457e3c73d79647e4c6a79785",
     "artifact-60c388625458463b3781c5a5",
     "artifact-cf4132bb86b2ad173e5e394e",
-    "artifact-d3d0439b0de8a87606740816"
+    "artifact-d3d0439b0de8a87606740816",
+    "mention-f64bfd942fdd4149cdf555e2",
+    "mention-59c3f9a5d3d771e099183c37",
+    "mention-6efedab004ff729ba288c510",
+    "mention-da0765b5448736a0a10438e3",
+    "artifact-8cf4a663a90b6f4631e96879",
+    "artifact-7edb996d60f6eec2166b24e7",
+    "artifact-876e74bca77cb8f0ac6939eb",
+    "artifact-37004d9068d9c8116dec6aac",
+    "artifact-81cb94edc9a218c089d95182",
+    "artifact-8711901f9936aca43e8cb3e8",
+    "artifact-bd4ba7cb9cce748e2be1e60c"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -4815,6 +4826,301 @@
       "reading": "group-review-22.md",
       "required_result": "S6 all 24 Z/W members and both sealed result JSON controls/rows read. Preserve four new adoption cases and W8 shared variant; W2/V6 current counterparts and W7 equivalence are individually recorded. No family completion.",
       "planned_test": "Use existing passing leaves; add planned cases to existing registries, validate controls/kills in a fresh clone and bind all family routes. No new execution claimed."
+    },
+    "mention-8c3162b910d57014cfc0b50f": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-08.md:140",
+      "groups": [
+        "k12c1-review8-n5",
+        "k12c1-review8-n6",
+        "k12c1-review8-n7",
+        "k12c1-diagnostic-t4"
+      ],
+      "reading": "group-review-23.md",
+      "required_result": "S6 N5/N6/N7 with individual current outer/inner preflight readings. Existing T4 plan retained; historical rejection/survival gives no current kill.",
+      "planned_test": "Existing-leaf registry adoptions; reconfirm controls and qualified kills in a fresh clone at build C before P1 binding. No execution claimed."
+    },
+    "mention-0c20d400b2d64066860f7d90": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-08.md:143",
+      "groups": [
+        "k12-mutation-a11",
+        "k12-mutation-a12",
+        "k12-mutation-a13",
+        "k12-mutation-a14",
+        "k12-mutation-a2",
+        "k12-mutation-a6",
+        "k12-mutation-a9",
+        "k12-mutation-b10",
+        "k12-mutation-b11",
+        "k12-mutation-b12",
+        "k12-mutation-b13",
+        "k12-mutation-b14",
+        "k12-mutation-b15",
+        "k12-mutation-b20",
+        "k12-mutation-b3",
+        "k12-mutation-b4",
+        "k12-mutation-b7",
+        "k12-mutation-b9",
+        "k12c1-base-d1",
+        "k12c1-base-d10",
+        "k12c1-base-d11",
+        "k12c1-base-d12",
+        "k12c1-base-d13",
+        "k12c1-base-d14",
+        "k12c1-base-d15",
+        "k12c1-base-d16",
+        "k12c1-base-d17",
+        "k12c1-base-d18",
+        "k12c1-base-d19",
+        "k12c1-base-d2",
+        "k12c1-base-d21",
+        "k12c1-base-d22",
+        "k12c1-base-d23",
+        "k12c1-base-d24",
+        "k12c1-base-d25",
+        "k12c1-base-d26",
+        "k12c1-base-d27",
+        "k12c1-base-d28",
+        "k12c1-base-d29",
+        "k12c1-base-d3",
+        "k12c1-base-d30",
+        "k12c1-base-d31",
+        "k12c1-base-d32",
+        "k12c1-base-d33",
+        "k12c1-base-d34",
+        "k12c1-base-d35",
+        "k12c1-base-d4",
+        "k12c1-base-d5",
+        "k12c1-base-d6",
+        "k12c1-base-d7",
+        "k12c1-base-d8",
+        "k12c1-base-d9",
+        "k12c1-base-g1",
+        "k12c1-base-g14",
+        "k12c1-base-g3",
+        "k12c1-base-g6",
+        "k12c1-base-g7",
+        "k12c1-base-g9",
+        "k12c1-base-i1",
+        "k12c1-base-i3",
+        "k12c1-base-i4",
+        "k12c1-base-i5",
+        "k12c1-base-i6",
+        "k12c1-base-i7",
+        "k12c1-base-r1",
+        "k12c1-base-r11",
+        "k12c1-base-r12",
+        "k12c1-base-r2",
+        "k12c1-base-r4",
+        "k12c1-base-r5",
+        "k12c1-base-r6",
+        "k12c1-base-r7",
+        "k12c1-base-r8",
+        "k12c1-coordinate-x10",
+        "k12c1-coordinate-x11",
+        "k12c1-coordinate-x12",
+        "k12c1-coordinate-x13",
+        "k12c1-coordinate-x14",
+        "k12c1-coordinate-x15",
+        "k12c1-coordinate-x16",
+        "k12c1-coordinate-x17",
+        "k12c1-coordinate-x18",
+        "k12c1-coordinate-x19",
+        "k12c1-coordinate-x20",
+        "k12c1-coordinate-x21",
+        "k12c1-coordinate-x22",
+        "k12c1-coordinate-x23",
+        "k12c1-coordinate-x8",
+        "k12c1-coordinate-x9"
+      ],
+      "reading": "group-review-23.md",
+      "required_result": "S6 cumulative original/correction/X family provenance retains current member routes; no new cases for repeated citations.",
+      "planned_test": "Existing-leaf registry adoptions; reconfirm controls and qualified kills in a fresh clone at build C before P1 binding. No execution claimed."
+    },
+    "mention-3dbac254b530f112868a887c": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-08.md:300",
+      "groups": [
+        "k12c1-review8-n7"
+      ],
+      "reading": "group-review-23.md",
+      "required_result": "S6 index-read variant of the string oracle gap remains live at the outer scanText guard; existing structural SC2 leaf catches it, requiring an adoption rather than a new heap-growth test. Timing/heap observations themselves are L-03.",
+      "planned_test": "Existing-leaf registry adoptions; reconfirm controls and qualified kills in a fresh clone at build C before P1 binding. No execution claimed."
+    },
+    "mention-462fdf4259fd5e1837c6e92f": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-08.md:303",
+      "groups": [
+        "k12c1-review8-n7"
+      ],
+      "reading": "group-review-23.md",
+      "required_result": "S6 index-read variant of the string oracle gap remains live at the outer scanText guard; existing structural SC2 leaf catches it, requiring an adoption rather than a new heap-growth test. Timing/heap observations themselves are L-03.",
+      "planned_test": "Existing-leaf registry adoptions; reconfirm controls and qualified kills in a fresh clone at build C before P1 binding. No execution claimed."
+    },
+    "mention-453774e6c69d0e8c874bbc1e": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-08.md:360",
+      "groups": [
+        "k12c1-coordinate-x10",
+        "k12c1-coordinate-x11",
+        "k12c1-coordinate-x12",
+        "k12c1-coordinate-x13",
+        "k12c1-coordinate-x14",
+        "k12c1-coordinate-x15",
+        "k12c1-coordinate-x16",
+        "k12c1-coordinate-x17",
+        "k12c1-coordinate-x18",
+        "k12c1-coordinate-x19",
+        "k12c1-coordinate-x20",
+        "k12c1-coordinate-x21",
+        "k12c1-coordinate-x22",
+        "k12c1-coordinate-x23",
+        "k12c1-coordinate-x8",
+        "k12c1-coordinate-x9"
+      ],
+      "reading": "group-review-23.md",
+      "required_result": "S6 mixed earlier-closure list retains X8-X23 production cases. Partial-claim and weighted diagnostic ordinary leaves remain maintained; historical acceptance/counts do not supply current family evidence.",
+      "planned_test": "Existing-leaf registry adoptions; reconfirm controls and qualified kills in a fresh clone at build C before P1 binding. No execution claimed."
+    },
+    "mention-5bd039222185833b6d1527f4": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-08.md:383",
+      "groups": [
+        "k12c1-coordinate-z1",
+        "k12c1-coordinate-z10",
+        "k12c1-coordinate-z11",
+        "k12c1-coordinate-z12",
+        "k12c1-coordinate-z13",
+        "k12c1-coordinate-z14",
+        "k12c1-coordinate-z15",
+        "k12c1-coordinate-z16",
+        "k12c1-coordinate-z2",
+        "k12c1-coordinate-z3",
+        "k12c1-coordinate-z4",
+        "k12c1-coordinate-z5",
+        "k12c1-coordinate-z6",
+        "k12c1-coordinate-z7",
+        "k12c1-coordinate-z8",
+        "k12c1-coordinate-z9",
+        "k12c1-review8-f1",
+        "k12c1-review8-f2",
+        "k12c1-review8-f3",
+        "k12c1-review8-f4"
+      ],
+      "reading": "group-review-23.md",
+      "required_result": "S6 Z/F production-coordinate mutation families retained; four F projections are distinct from prior X/Z fields.",
+      "planned_test": "Existing-leaf registry adoptions; reconfirm controls and qualified kills in a fresh clone at build C before P1 binding. No execution claimed."
+    },
+    "mention-7b4bab67c4597c388f7d7bc5": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-08.md:442",
+      "groups": [
+        "k12c1-review8-f1",
+        "k12c1-review8-f2",
+        "k12c1-review8-f3",
+        "k12c1-review8-f4",
+        "k12c1-review8-n10",
+        "k12c1-review8-n11",
+        "k12c1-review8-n13",
+        "k12c1-review8-n14",
+        "k12c1-review8-n5",
+        "k12c1-review8-n6",
+        "k12c1-review8-n7",
+        "k12c1-review8-n8",
+        "k12c1-review8-n9"
+      ],
+      "reading": "group-review-23.md",
+      "required_result": "S6 mixed artifact-guide paragraph includes complete N/F family. Ordinary cost, root-consumer and N15 probes have current SDK counterparts; exotic subjects moved/superseded and engine timing is L-03, with individual artifact readings.",
+      "planned_test": "Existing-leaf registry adoptions; reconfirm controls and qualified kills in a fresh clone at build C before P1 binding. No execution claimed."
+    },
+    "mention-a1773ac0e6ab80407cc588de": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-08.md:443",
+      "groups": [
+        "k12c1-review8-f1",
+        "k12c1-review8-f2",
+        "k12c1-review8-f3",
+        "k12c1-review8-f4",
+        "k12c1-review8-n10",
+        "k12c1-review8-n11",
+        "k12c1-review8-n13",
+        "k12c1-review8-n14",
+        "k12c1-review8-n5",
+        "k12c1-review8-n6",
+        "k12c1-review8-n7",
+        "k12c1-review8-n8",
+        "k12c1-review8-n9"
+      ],
+      "reading": "group-review-23.md",
+      "required_result": "S6 mixed artifact-guide paragraph includes complete N/F family. Ordinary cost, root-consumer and N15 probes have current SDK counterparts; exotic subjects moved/superseded and engine timing is L-03, with individual artifact readings.",
+      "planned_test": "Existing-leaf registry adoptions; reconfirm controls and qualified kills in a fresh clone at build C before P1 binding. No execution claimed."
+    },
+    "mention-96b291a11a990dce89fd59e6": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-08.md:445",
+      "groups": [
+        "k12c1-review8-f1",
+        "k12c1-review8-f2",
+        "k12c1-review8-f3",
+        "k12c1-review8-f4",
+        "k12c1-review8-n10",
+        "k12c1-review8-n11",
+        "k12c1-review8-n13",
+        "k12c1-review8-n14",
+        "k12c1-review8-n5",
+        "k12c1-review8-n6",
+        "k12c1-review8-n7",
+        "k12c1-review8-n8",
+        "k12c1-review8-n9"
+      ],
+      "reading": "group-review-23.md",
+      "required_result": "S6 mixed artifact-guide paragraph includes complete N/F family. Ordinary cost, root-consumer and N15 probes have current SDK counterparts; exotic subjects moved/superseded and engine timing is L-03, with individual artifact readings.",
+      "planned_test": "Existing-leaf registry adoptions; reconfirm controls and qualified kills in a fresh clone at build C before P1 binding. No execution claimed."
+    },
+    "mention-2719598cb28e3597fa6f1bf6": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-08/README.md:7",
+      "groups": [
+        "k12c1-review8-f1",
+        "k12c1-review8-f2",
+        "k12c1-review8-f3",
+        "k12c1-review8-f4",
+        "k12c1-review8-n10",
+        "k12c1-review8-n11",
+        "k12c1-review8-n13",
+        "k12c1-review8-n14",
+        "k12c1-review8-n5",
+        "k12c1-review8-n6",
+        "k12c1-review8-n7",
+        "k12c1-review8-n8",
+        "k12c1-review8-n9"
+      ],
+      "reading": "group-review-23.md",
+      "required_result": "S6 whole guide paragraph: retain N/F family routes and individually recorded ordinary probe dispositions. N12 historical hang and wall-clock observations give no current credit.",
+      "planned_test": "Existing-leaf registry adoptions; reconfirm controls and qualified kills in a fresh clone at build C before P1 binding. No execution claimed."
+    },
+    "artifact-9730c5d55db69b66d093534d": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-08/mutants.mjs:1",
+      "groups": [
+        "k12c1-review8-f1",
+        "k12c1-review8-f2",
+        "k12c1-review8-f3",
+        "k12c1-review8-f4",
+        "k12c1-review8-n10",
+        "k12c1-review8-n11",
+        "k12c1-review8-n13",
+        "k12c1-review8-n14",
+        "k12c1-review8-n5",
+        "k12c1-review8-n6",
+        "k12c1-review8-n7",
+        "k12c1-review8-n8",
+        "k12c1-review8-n9"
+      ],
+      "reading": "group-review-23.md",
+      "required_result": "S6 all N1-N16/F1-F4 and both sealed controls/result sets read. Thirteen current existing-leaf adoptions; seven same-decision registry counterparts. Every missing anchor has a separate relocation reading, not an absence-based retirement.",
+      "planned_test": "Existing-leaf registry adoptions; reconfirm controls and qualified kills in a fresh clone at build C before P1 binding. No execution claimed."
     }
   },
   "reconsidered_extractions": [
@@ -9528,9 +9834,397 @@
       "current_replacement": "      path: issue.path,",
       "reading": "group-review-22.md",
       "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-n5": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "N5",
+      "work_kind": "mutation_adoption",
+      "required_result": "At 131072 UTF-16 units, exact astral values remain accepted. Inner scalar preflight remains unique after SDK relocation.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchors": [
+        "if (units > 2 * BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "if (units > 2 * BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;",
+          "after": "if (units >= 2 * BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+        "test_path": [
+          "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-n6": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "N6",
+      "work_kind": "mutation_adoption",
+      "required_result": "At 131073 units, reject by length before character reads. Outer scanText now also guards; weaken both preflights by one, retaining one historical adoption.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchors": [
+        "if (units > 2 * BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;",
+        "if (units > STRING_SCAN_LIMIT) return TOO_LONG;"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "if (units > 2 * BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;",
+          "after": "if (units > 2 * BOUNDARY_LIMITS.stringScalarValues + 1) return TOO_LONG;"
+        },
+        {
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "if (units > STRING_SCAN_LIMIT) return TOO_LONG;",
+          "after": "if (units > STRING_SCAN_LIMIT + 1) return TOO_LONG;"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+        "test_path": [
+          "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-n8": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "N8",
+      "work_kind": "mutation_adoption",
+      "required_result": "observeArrayLength remains current and unique in SDK. Its ordinary length observation stays once; the exact access-inventory count structurally catches a second cast/read even though Proxy observation is superseded.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchors": [
+        "  const lengthRead: unknown = (container as { length: unknown }).length;\n"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "  const lengthRead: unknown = (container as { length: unknown }).length;\n",
+          "after": "  const lengthRead: unknown = (container as { length: unknown }).length;\n  void (container as { length: unknown }).length;\n"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/value-capture-static.test.ts",
+        "test_path": [
+          "correction DEC-8: every access that could reach a member its object does not own is permitted and reasoned",
+          "every reported site is inventoried, at its exact count, with a reason"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-n14": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "N14",
+      "work_kind": "mutation_adoption",
+      "required_result": "SDK collector retains exactly eight initial details before weighted suffixes, not seven. Unique original threshold is current; V1 unbounded collection changes a different decision.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchors": [
+        "  if (issues.length < 8) {"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "  if (issues.length < 8) {",
+          "after": "  if (issues.length < 7) {"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+        "test_path": [
+          "V-D1 every issue family: undefined array members"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-n7": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "N7",
+      "work_kind": "mutation_adoption",
+      "required_result": "Historical inner preflight moved behind outer scanText. Re-anchor the premature index read immediately before the outer guard: SC2 sees the element observation before spend. This preserves the zero-read counterexample without a new heap/timing test.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchors": [
+        "  const units = text.length;\n  if (units > STRING_SCAN_LIMIT) return TOO_LONG;"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "  const units = text.length;\n  if (units > STRING_SCAN_LIMIT) return TOO_LONG;",
+          "after": "  const units = text.length;\n  void text[0];\n  if (units > STRING_SCAN_LIMIT) return TOO_LONG;"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/capture-metering.test.ts",
+        "test_path": [
+          "KC3-1 static metering check",
+          "the real values.ts passes every rule"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-n9": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "N9",
+      "work_kind": "mutation_adoption",
+      "required_result": "Object symbols listing moved behind listOwnSymbols. Add the historical uncharged duplicate at its current call. Existing oracle extra names listing is a different operation.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchors": [
+        "  const symbolCount = listOwnSymbols(state, container);\n  if (symbolCount === STOPPED) return STOPPED;"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "  const symbolCount = listOwnSymbols(state, container);\n  if (symbolCount === STOPPED) return STOPPED;",
+          "after": "  const symbolCount = listOwnSymbols(state, container);\n  void PrimordialGetOwnPropertySymbols(container);\n  if (symbolCount === STOPPED) return STOPPED;"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/capture-work.test.ts",
+        "test_path": [
+          "KC3-1 runtime oracle: wrapped engine operations are accounted for by the units charged",
+          "every shape of the maintained corpus"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-n10": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "N10",
+      "work_kind": "mutation_adoption",
+      "required_result": "Object prototype observation moved behind prototypeOf. Re-anchor duplicate at captureObject; ordinary accepted objects also distinguish it. MD2 labels only refused foreign values; SC6 targets an array loop.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchors": [
+        "  const prototype = prototypeOf(container);"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "  const prototype = prototypeOf(container);",
+          "after": "  const prototype = prototypeOf(container);\n  void prototypeOf(container);"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/capture-work.test.ts",
+        "test_path": [
+          "KC3-1 runtime oracle: wrapped engine operations are accounted for by the units charged",
+          "every shape of the maintained corpus"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-n11": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "N11",
+      "work_kind": "mutation_adoption",
+      "required_result": "describedValue split into observeDescriptor/readMember/checkMember. Duplicate descriptor before current object checkMember, preserving old object-member schedule. Existing aliased-descriptor case targets array positions.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchors": [
+        "    const member = checkMember(descriptor, read, where, state);"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "    const member = checkMember(descriptor, read, where, state);",
+          "after": "    void PrimordialGetOwnPropertyDescriptor(container, key);\n    const member = checkMember(descriptor, read, where, state);"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/capture-work.test.ts",
+        "test_path": [
+          "KC3-1 runtime oracle: wrapped engine operations are accounted for by the units charged",
+          "every shape of the maintained corpus"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-n13": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "N13",
+      "work_kind": "mutation_adoption",
+      "required_result": "Array listing moved behind listOwnNames. Duplicate uncharged names listing at the current array owner. Current registry extra names listing targets object capture, a different input class.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/sdk/src/internal/value-capture.ts",
+      "current_anchors": [
+        "  const names = listOwnNames(state, container);\n  if (names === STOPPED) return STOPPED;\n  const overlong"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "  const names = listOwnNames(state, container);\n  if (names === STOPPED) return STOPPED;\n  const overlong",
+          "after": "  const names = listOwnNames(state, container);\n  void PrimordialGetOwnPropertyNames(container);\n  if (names === STOPPED) return STOPPED;\n  const overlong"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/sdk/tests/capture-work.test.ts",
+        "test_path": [
+          "KC3-1 runtime oracle: wrapped engine operations are accounted for by the units charged",
+          "every shape of the maintained corpus"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-f1": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "F1",
+      "work_kind": "mutation_adoption",
+      "required_result": "Refusal executionId stays exact for long/non-ASCII identities; original mintRefusal call remains unique.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "const refusal = mintRefusal(classification, reason, position, record.executionId);"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const refusal = mintRefusal(classification, reason, position, record.executionId);",
+          "after": "const refusal = mintRefusal(classification, reason, position, diagnosticIdentity(record.executionId));"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-f2": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "F2",
+      "work_kind": "mutation_adoption",
+      "required_result": "visibleExecutions moved to KernelState reader listing. Keep exact per-record IDs at appendOwn, not lossy diagnostics.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchors": [
+        "import type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";",
+        "appendOwn(visible, record.executionId);"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/kernel/src/state.ts",
+          "before": "import type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";",
+          "after": "import { diagnosticIdentity } from \"./envelope.ts\";\nimport type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";"
+        },
+        {
+          "path": "packages/kernel/src/state.ts",
+          "before": "appendOwn(visible, record.executionId);",
+          "after": "appendOwn(visible, diagnosticIdentity(record.executionId));"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-f3": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "F3",
+      "work_kind": "mutation_adoption",
+      "required_result": "viewOf moved to state.ts. Its creationKey remains the exact request key, with the unique original field anchor.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchors": [
+        "import type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";",
+        "    creationKey: record.creationRequestId.requestKey,"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/kernel/src/state.ts",
+          "before": "import type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";",
+          "after": "import { diagnosticIdentity } from \"./envelope.ts\";\nimport type { Activation, ActivationEvent, SubmissionGrant } from \"./driver.ts\";"
+        },
+        {
+          "path": "packages/kernel/src/state.ts",
+          "before": "    creationKey: record.creationRequestId.requestKey,",
+          "after": "    creationKey: diagnosticIdentity(record.creationRequestId.requestKey),"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review8-f4": {
+      "family": "family.k12c1.review-08.mutants",
+      "member": "F4",
+      "work_kind": "mutation_adoption",
+      "required_result": "Fresh creation answer is now prebuilt before state apply. Re-anchor the unique const answer initializer; initialEventId remains exact.",
+      "gap": "No current registry mutates this decision for this input class. Existing ordinary/structural leaf is not family closure.",
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "const answer = ok({ executionId, receipt, replayed: false, initialEventId: eventId });"
+      ],
+      "current_edits": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const answer = ok({ executionId, receipt, replayed: false, initialEventId: eventId });",
+          "after": "const answer = ok({ executionId, receipt, replayed: false, initialEventId: diagnosticIdentity(eventId) });"
+        }
+      ],
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/exact-coordinates.test.ts",
+        "test_path": [
+          "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+        ]
+      },
+      "reading": "group-review-23.md",
+      "build_status": "planned_not_executed"
     }
   },
-  "resume_origin": "mention-f64bfd942fdd4149cdf555e2",
+  "resume_origin": "mention-83e8aadf621abfcc1187fc0b",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -9538,8 +10232,8 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2-correction-01/review-08.md",
-  "resume_line": 18,
+  "resume_path": "docs/development/work/K1.2-correction-01/review-09.md",
+  "resume_line": 65,
   "cap_stop_07": {
     "origins_reached": 696,
     "origins_before_current_family": 695,
