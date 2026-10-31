@@ -63,6 +63,87 @@
       "killers": [
         "every guarded descriptor read follows its own-value check in the same function"
       ]
+    },
+    "tools02-round7-r7": {
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts"
+      ],
+      "test_count": 47,
+      "killers": [
+        "the zone uses only permitted syntax"
+      ]
+    },
+    "tools02-round7-r8": {
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts"
+      ],
+      "test_count": 47,
+      "killers": [
+        "every reported site is inventoried, at its exact count, with a reason"
+      ]
+    },
+    "tools02-round7-r10": {
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts"
+      ],
+      "test_count": 47,
+      "killers": [
+        "an accessor installed on Error.prototype.name receives nothing, and the error still names itself"
+      ]
+    },
+    "tools02-round7-r11": {
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts"
+      ],
+      "test_count": 47,
+      "killers": [
+        "every reported site is inventoried, at its exact count, with a reason"
+      ]
+    },
+    "tools02-round7-r12": {
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts"
+      ],
+      "test_count": 47,
+      "killers": [
+        "every reported site is inventoried, at its exact count, with a reason"
+      ]
+    },
+    "tools02-round7-c8": {
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts"
+      ],
+      "test_count": 98,
+      "killers": [
+        "requestTakeover: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+      ]
+    },
+    "tools02-round7-c10": {
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts"
+      ],
+      "test_count": 98,
+      "killers": [
+        "requestTakeover: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+      ]
+    },
+    "tools02-review8-n8": {
+      "files": [
+        "packages/sdk/tests/value-capture-static.test.ts"
+      ],
+      "test_count": 6,
+      "killers": [
+        "every reported site is inventoried, at its exact count, with a reason"
+      ]
+    },
+    "tools02-review8-n7": {
+      "files": [
+        "packages/sdk/tests/capture-metering.test.ts"
+      ],
+      "test_count": 30,
+      "killers": [
+        "the real values.ts passes every rule"
+      ]
     }
   }
 }

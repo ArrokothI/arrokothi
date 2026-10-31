@@ -1286,8 +1286,12 @@
       "gap": "The maintained visibleExecutions leaf checks only a positive read count and visible-ID shape. It does not assert equal read counts for early/late/no-match scans. The single-ID lookup leaves do not execute the listing path.",
       "planned_test": "A separate kernel scope-listing regression compares equal-size early-match, late-match and no-match scope arrays over the same record population and checks returned IDs, then binds it through P1. No product change; stop if it fails.",
       "build_reading": "extraction-build-01.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
-      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "record": "extraction-build-02.md"
+      }
     },
     "mention-dfdc7d90f79fe93f4feeeb4b": {
       "disposition": "extracted",
@@ -1304,8 +1308,12 @@
       "gap": "The source requires single observation across scope authorization, key packing and retained creation/ingress fields. The current ordering leaf uses stable scope values; payload mutation and Outcome field-count leaves test different inputs/paths. A bounded search of packages/kernel/tests and packages/sdk/tests found no shifting-getter matrix asserting each creation/ingress field count and its retained first value. Source reading therefore cannot retire this obligation on those weaker pointers.",
       "planned_test": "Exercise shifting own getters on creation scope/key/pins/initial input fields and ingress key/kind/subscription/payload, count observations, and inspect/replay the retained result. Use core byte roots directly; stop if a new regression exposes a product defect.",
       "build_reading": "extraction-build-01.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
-      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "record": "extraction-build-02.md"
+      }
     },
     "mention-a8747fd8bd4f23a87a5aea60": {
       "disposition": "extracted",
@@ -1322,8 +1330,12 @@
       "gap": "The maintained leaf titled hidden activity before A's first operation calls runArm, which creates A and its replay before invoking hidden(..., 0). Bounded search of current packages/kernel/tests found no two-arm transcript test placing B before A's first creation. Other interleaved and per-Execution obligations have passing tests; the title alone cannot cover this schedule.",
       "planned_test": "Add a separate pre-first-creation hidden window to the nondisclosure harness and a maintained control/interleaved transcript comparison; assert the window ran before A's first create. Stop if it exposes a product defect.",
       "build_reading": "extraction-build-01.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
-      "test_file": "packages/kernel/tests/nondisclosure.test.ts"
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
+      "test_file": "packages/kernel/tests/nondisclosure.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "record": "extraction-build-02.md"
+      }
     },
     "mention-5bbc44327807bd9a9a95eb00": {
       "disposition": "extracted",
@@ -8900,8 +8912,15 @@
       "gap": "submission-lifetime covers redelivery/takeover within an exchange. exact-coordinates starts another exchange but obtains its grant through the adapting submissionFor helper, without challenging the old grant. No next-exchange/old-grant negative schedule was found.",
       "reading": "group-review-08.md",
       "build_reading": "extraction-build-01.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
-      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "tests": 32,
+        "failures": 0,
+        "typecheck_exit": 0,
+        "record": "extraction-build-02.md"
+      }
     },
     "k12-cross-execution-grant": {
       "family": "family.k12.review-09",
@@ -8910,8 +8929,15 @@
       "gap": "Forged-look-alike tests reject an unminted object; they do not distinguish a registry-of-any-minted-grant bug. No maintained cross-Execution grant presentation was found.",
       "reading": "group-review-08.md",
       "build_reading": "extraction-build-01.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
-      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "tests": 32,
+        "failures": 0,
+        "typecheck_exit": 0,
+        "record": "extraction-build-02.md"
+      }
     },
     "k12-review09-r5": {
       "family": "family.k12.review-09",
@@ -10316,6 +10342,38 @@
           "reading": "group-review-13.md",
           "status": "variant_planned_not_built"
         }
+      ],
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R1 quoted binding name reads the optional controlScopes",
+          "mutation": "mutation-bc9e39c2cc531603eabb14fbd885b585b40842f5e8ed36e3b2b3f1e35bf30fb0"
+        },
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R2 computed binding name reads the optional controlScopes",
+          "mutation": "mutation-36e2efb3c55ae40d5038634393b61bf80af73d8c0200563a9687613784298704"
+        },
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R3 assignment destructuring reads the optional controlScopes",
+          "mutation": "mutation-7520310e03fa93cf1244d08afd724293e178147d7af2006d368269ca47eaedd2"
+        },
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R4 bare binding reads the optional controlScopes",
+          "mutation": "mutation-448a8649eefb793cbf383eb65b68666e4ae6e54509bb48f577f2ef6d04821b03"
+        },
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R5 a cast makes the optional controlScopes required",
+          "mutation": "mutation-8d5e5f7d2a2e41ab2c02300f0cce2c9ea941e402a373310ecf2ec087b8940f61"
+        },
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R6 a rest copy then an optional read",
+          "mutation": "mutation-c110e81b6cfdaf221d43e0daafb3e5c47a9b068ea209dbdac4afdba64f1303c2"
+        }
       ]
     },
     "k12c1-recovery-h16": {
@@ -10563,6 +10621,13 @@
           "reading": "group-review-13.md",
           "status": "positive-host-prototype variant must also remain attributed; not built"
         }
+      ],
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R6 a rest copy then an optional read",
+          "mutation": "mutation-c110e81b6cfdaf221d43e0daafb3e5c47a9b068ea209dbdac4afdba64f1303c2"
+        }
       ]
     },
     "k12c1-recovery-h22": {
@@ -10617,7 +10682,17 @@
       "current_anchors": [
         "  const controls = hostMember(caller, \"controlScopes\") as readonly string[] | undefined;"
       ],
-      "relocation_reading": "All original anchors remain unique at b804e986f5be2f39bd5f2d75dcc6673534ff870b. No supersession or new test is required; build and control/kill validation remain pending."
+      "relocation_reading": "All original anchors remain unique at b804e986f5be2f39bd5f2d75dcc6673534ff870b. No supersession or new test is required; build and control/kill validation remain pending.",
+      "registry_case": "state-owner.tools02-round7-r7",
+      "registry_mutant": "mutation-19985724e5732c3056cc91452b2d6e09fbb198b9ce00593cf85f474109780a6d",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R7 an in-operator guard consults the prototype chain",
+          "mutation": "mutation-19985724e5732c3056cc91452b2d6e09fbb198b9ce00593cf85f474109780a6d"
+        }
+      ]
     },
     "k12c1-round7-r8": {
       "family": "family.k12c1.ablations-07",
@@ -10639,7 +10714,17 @@
       "current_anchors": [
         "    const bracketed = issue.path.length > 0 && (issue.path[0] as string) === \"[\";"
       ],
-      "relocation_reading": "All original anchors remain unique at b804e986f5be2f39bd5f2d75dcc6673534ff870b. No supersession or new test is required; build and control/kill validation remain pending."
+      "relocation_reading": "All original anchors remain unique at b804e986f5be2f39bd5f2d75dcc6673534ff870b. No supersession or new test is required; build and control/kill validation remain pending.",
+      "registry_case": "state-owner.tools02-round7-r8",
+      "registry_mutant": "mutation-f1ebd6576a04e88ac2d8b9f1d5251617d3893c0316b4d68afbe5b7ea7718f84b",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R8 a String.prototype method replaces an index read",
+          "mutation": "mutation-f1ebd6576a04e88ac2d8b9f1d5251617d3893c0316b4d68afbe5b7ea7718f84b"
+        }
+      ]
     },
     "k12c1-round7-r10": {
       "family": "family.k12c1.ablations-07",
@@ -10662,7 +10747,17 @@
         "  override readonly name = \"UnsupportedKernelSurfaceError\";\n",
         "    this.surface = surface;"
       ],
-      "relocation_reading": "All original anchors remain unique at b804e986f5be2f39bd5f2d75dcc6673534ff870b. No supersession or new test is required; build and control/kill validation remain pending."
+      "relocation_reading": "All original anchors remain unique at b804e986f5be2f39bd5f2d75dcc6673534ff870b. No supersession or new test is required; build and control/kill validation remain pending.",
+      "registry_case": "state-owner.tools02-round7-r10",
+      "registry_mutant": "mutation-7573300a3813f75f97096276c67bd70cb604a1515d5bb1d67438bb809789988c",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R10 SELF-R7-UNSUPPORTED-01 restored: name written through [[Set]]",
+          "mutation": "mutation-7573300a3813f75f97096276c67bd70cb604a1515d5bb1d67438bb809789988c"
+        }
+      ]
     },
     "k12c1-round7-r11": {
       "family": "family.k12c1.ablations-07",
@@ -10684,7 +10779,17 @@
       "current_anchors": [
         "      return PrimordialReflectApply(PrimordialStringSlice, reason, [0, DIAGNOSTIC_LIMIT]) as string;"
       ],
-      "relocation_reading": "boundDiagnostic differs from R8\u2019s issue-path renderer. The original unique anchor remains, and no registry mutates this clipping decision."
+      "relocation_reading": "boundDiagnostic differs from R8\u2019s issue-path renderer. The original unique anchor remains, and no registry mutates this clipping decision.",
+      "registry_case": "state-owner.tools02-round7-r11",
+      "registry_mutant": "mutation-06513d843741bcc515cb583a63782b0dec15e62bfbd79e624b7c64112a6c94bc",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R11 a lib global read after load",
+          "mutation": "mutation-06513d843741bcc515cb583a63782b0dec15e62bfbd79e624b7c64112a6c94bc"
+        }
+      ]
     },
     "k12c1-round7-r12": {
       "family": "family.k12c1.ablations-07",
@@ -10706,7 +10811,17 @@
       "current_anchors": [
         "    const named = captureAttempt(request, issues);\n    if (named === null) {\n      return err(this.#refusal(\"malformed_value\", `takeover request"
       ],
-      "relocation_reading": "The original unique captureAttempt anchor remains at takeover; no registry mutates this extra read. This input-observation decision differs from rendering and H15\u2019s trusted-host scopes."
+      "relocation_reading": "The original unique captureAttempt anchor remains at takeover; no registry mutates this extra read. This input-observation decision differs from rendering and H15\u2019s trusted-host scopes.",
+      "registry_case": "state-owner.tools02-round7-r12",
+      "registry_mutant": "mutation-ca1c9b7dfe377b200b3758794a602198374c206f256df0b4aaa7c5a1d4f306ec",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "R12 a caller envelope read directly",
+          "mutation": "mutation-ca1c9b7dfe377b200b3758794a602198374c206f256df0b4aaa7c5a1d4f306ec"
+        }
+      ]
     },
     "k12c1-round7-c8": {
       "family": "family.k12c1.ablations-07",
@@ -10728,7 +10843,17 @@
       "current_anchors": [
         "      batch: exchange.batch,\n      receipt,\n    });\n"
       ],
-      "relocation_reading": "The answer-building anchor remains unique. A late hostMember call violates the current basis/last-callback guard; the fault oracle explicitly calls C8 invisible at the public boundary. The callback-inside-apply registry is a distinct state-owner decision."
+      "relocation_reading": "The answer-building anchor remains unique. A late hostMember call violates the current basis/last-callback guard; the fault oracle explicitly calls C8 invisible at the public boundary. The callback-inside-apply registry is a distinct state-owner decision.",
+      "registry_case": "state-owner.tools02-round7-c8",
+      "registry_mutant": "mutation-678a424ff6d73968dfcb70c4cc701af75668f07d917bbdfbc4872ad8afe8eada",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "C8 foreign code after the decision is being built",
+          "mutation": "mutation-678a424ff6d73968dfcb70c4cc701af75668f07d917bbdfbc4872ad8afe8eada"
+        }
+      ]
     },
     "k12c1-round7-c10": {
       "family": "family.k12c1.ablations-07",
@@ -10750,7 +10875,17 @@
       "current_anchors": [
         "const mintSubmission = (executionId: string, activationId: string, writerEpoch: number): SubmissionGrant =>\n  PrimordialObjectFreeze({ executionId, activationId, writerEpoch });"
       ],
-      "relocation_reading": "The mintSubmission anchor remains unique. The current structural rule/negative control 17 covers it, but no registered production edit does. The complete-decision oracle explicitly cannot observe this unused module counter."
+      "relocation_reading": "The mintSubmission anchor remains unique. The current structural rule/negative control 17 covers it, but no registered production edit does. The complete-decision oracle explicitly cannot observe this unused module counter.",
+      "registry_case": "state-owner.tools02-round7-c10",
+      "registry_mutant": "mutation-26aac812ac835e45d2c1e719ca49cc5d08508e210090936c271e18a57195c723",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations-07",
+          "member": "C10 a builder that also changes module state",
+          "mutation": "mutation-26aac812ac835e45d2c1e719ca49cc5d08508e210090936c271e18a57195c723"
+        }
+      ]
     },
     "k12c1-base-i1": {
       "family": "family.k12c1.ablations",
@@ -10784,6 +10919,21 @@
           "current_target": "packages/kernel/src/envelope.ts",
           "current_anchor": "  if (typeof value === \"string\") return true;",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-i1",
+      "registry_mutant": "mutation-1507da656a2663fc33c1b5b8fb4870a5d448d4706a5c940ab69e9b0643d873f5",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "I1 restore old value validator for every Activation consumer",
+          "mutation": "mutation-1507da656a2663fc33c1b5b8fb4870a5d448d4706a5c940ab69e9b0643d873f5"
+        },
+        {
+          "family": "family.k12c1.ablations",
+          "member": "I2 inverse X24: refuse lone surrogates but permit long strings",
+          "mutation": "mutation-50b04227a476421177fb77dbfd6c54f68b1d712ebbc8b4b818100994723724a8"
         }
       ]
     },
@@ -10820,6 +10970,21 @@
           "current_anchor": " ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(named.activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,\n          record,\n        ),\n      );\n    }\n    if (exchange.activation.writerEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d19",
+      "registry_mutant": "mutation-e0d805c65f816fc5b5f86950304c6dd7abf40212c076da1148c93469bb88ba40",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D19 unbounded identity at coordinator.ts:1745 (named.activationId)",
+          "mutation": "mutation-e0d805c65f816fc5b5f86950304c6dd7abf40212c076da1148c93469bb88ba40"
+        },
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D20 unbounded identity at coordinator.ts:1745 (record.executionId)",
+          "mutation": "mutation-c5874fafaefd56660f31c555949293fdfab992605bb2b52a34355e759817bcd5"
+        }
       ]
     },
     "k12c1-base-d31": {
@@ -10854,6 +11019,21 @@
           "current_target": "packages/kernel/src/envelope.ts",
           "current_anchor": "path: diagnosticText(issue.path, \"<omitted>\", 128),",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d31",
+      "registry_mutant": "mutation-fae962af804742363e44cafcd0291e38b1325a9a6edd802c9a71e636a9a2f2ef",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D31 raw captured member path before root prefix",
+          "mutation": "mutation-fae962af804742363e44cafcd0291e38b1325a9a6edd802c9a71e636a9a2f2ef"
+        },
+        {
+          "family": "family.k12c1.ablations",
+          "member": "R9 path limit 129",
+          "mutation": "mutation-afee02e53b854c9db5f993ff9e406e2e81e70db7a771865e8a02700d3c63bea3"
         }
       ]
     },
@@ -10895,6 +11075,26 @@
           "current_target": "packages/kernel/src/envelope.ts",
           "current_anchor": "message: diagnosticText(issue.message, \"<message omitted>\", 1_024),",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d32",
+      "registry_mutant": "mutation-c8d92704b4625b1bf471133756b47351a62acbf0f3c8c920169f8ca480a04419",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D32 raw captured constructor message",
+          "mutation": "mutation-c8d92704b4625b1bf471133756b47351a62acbf0f3c8c920169f8ca480a04419"
+        },
+        {
+          "family": "family.k12c1.ablations",
+          "member": "R10 message limit removed",
+          "mutation": "mutation-ea0efa4172b90cf65038181609bf4e9805ee8212a6940212dadf017128ddb690"
+        },
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G8 message limit 1025",
+          "mutation": "mutation-59d662af43aaaaa68f7c69a65011bac3c4171d8b44a35784e3178c919d59f52b"
         }
       ]
     },
@@ -10969,6 +11169,46 @@
           "relocation_reading": "Original span remains; count detailed entries again, distinguished by the same nine-issue exact result.",
           "status": "planned_not_executed"
         }
+      ],
+      "registry_case": "k12c1.adopt-base-g1",
+      "registry_mutant": "mutation-bca2d6d5a0897ad496e8add81794b84441f7edb5d8ec1b34fb53a11c9a315d77",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G1 restore unbounded detail list",
+          "mutation": "mutation-bca2d6d5a0897ad496e8add81794b84441f7edb5d8ec1b34fb53a11c9a315d77"
+        },
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G2 drop omitted code evidence",
+          "mutation": "mutation-3532f908b44b1f5d94e47806913350455c1fa7d2b98b4b50576627c8cb93640b"
+        },
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G4 details 7",
+          "mutation": "mutation-813eec58169f30607785b0c085ed908eebd8af588c683a3db4cd3846dee149c9"
+        },
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G5 details 9",
+          "mutation": "mutation-bbff820a94ae0f39831943d3deac78ba352906e1b0759dd01fefb10447a41b30"
+        },
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G10 reverse detail order",
+          "mutation": "mutation-2a5e5ccad2aa824039dcc974a6ba9ac8bc6196a83ce226c241739d5791266bd5"
+        },
+        {
+          "family": "family.k12c1.review-03",
+          "member": "N1",
+          "mutation": "mutation-d5f82a465c2b035c40721c633ac6af4dce895a4daaad75ebf08b68b4e8b988dc"
+        },
+        {
+          "family": "family.k12c1.review-03",
+          "member": "N8",
+          "mutation": "mutation-8ef52c2b5d6c632ffd05ee4832d6ea1f7031f38fb36179cc5ad083999a17f9b7"
+        }
       ]
     },
     "k12c1-base-g3": {
@@ -11024,6 +11264,31 @@
           "relocation_reading": "Original code-match anchor remains unique; same mixed-code weighted result.",
           "status": "planned_not_executed"
         }
+      ],
+      "registry_case": "k12c1.adopt-base-g3",
+      "registry_mutant": "mutation-4a97ea675e7bab88e9b3b9bb07dde13064d40d85f7f220d806e03d876da2f372",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G3 fail to count repeated omitted code",
+          "mutation": "mutation-4a97ea675e7bab88e9b3b9bb07dde13064d40d85f7f220d806e03d876da2f372"
+        },
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G11 reverse summary code order",
+          "mutation": "mutation-e721669702770e073647d26378286eec3ffab25a92a12ef1f09e5af721fd39a2"
+        },
+        {
+          "family": "family.k12c1.review-03",
+          "member": "N2",
+          "mutation": "mutation-aa9ca5f3289c4608d8c2563ab0a256fb7fff87c987ca060ca615334005a9f803"
+        },
+        {
+          "family": "family.k12c1.review-03",
+          "member": "N4",
+          "mutation": "mutation-0986846a624a642059014a0b2b0748c3633552c489ba623bb7c6edee54481602"
+        }
       ]
     },
     "k12c1-base-g6": {
@@ -11065,6 +11330,26 @@
           "current_anchor": "out += `${path === \"\" ? \"envelope\" : path} ${issue.code}`;",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-g6",
+      "registry_mutant": "mutation-3b2f282f1b096c2b307e5f7a60b3837195c557f80f21cf1c73297ae61a350f23",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G6 path limit 127",
+          "mutation": "mutation-3b2f282f1b096c2b307e5f7a60b3837195c557f80f21cf1c73297ae61a350f23"
+        },
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G12 lose root label on detail",
+          "mutation": "mutation-caa60d8dcf6d0f962c24709ccad5a60c39855d981b06829794b48b10118e4baf"
+        },
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G13 project after root prefix",
+          "mutation": "mutation-e18911f43209c8f6bea34908972378d9b2b8b136b42afb7fad83c9b4dae688cd"
+        }
       ]
     },
     "k12c1-base-i3": {
@@ -11093,6 +11378,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "acceptActivationIdentity(activationField.observed, \"activationId\", idIssues)",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-i3",
+      "registry_mutant": "mutation-eb532726bd7b5592649095ad656a2e8b64c1241ca5817d394f7d9344532f3309",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "I3 Outcome-only old validator",
+          "mutation": "mutation-eb532726bd7b5592649095ad656a2e8b64c1241ca5817d394f7d9344532f3309"
         }
       ]
     },
@@ -11123,6 +11418,16 @@
           "current_anchor": "const activationOk = activationField.ok && acceptActivationIdentity(activationField.observed, \"activationId\", issues);\n  const writerEpoch",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-i4",
+      "registry_mutant": "mutation-d2509d12b787defa682c62f4e01bf668b8143b285e2148b9fcfa4202dd8aeead",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "I4 takeover/protocol-only old validator",
+          "mutation": "mutation-d2509d12b787defa682c62f4e01bf668b8143b285e2148b9fcfa4202dd8aeead"
+        }
       ]
     },
     "k12c1-base-i5": {
@@ -11151,6 +11456,16 @@
           "current_target": "packages/kernel/src/outcome.ts",
           "current_anchor": "const activationOk = activationField.ok && acceptActivationIdentity(activationField.observed, \"activationId\", issues);\n  const availableField",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-i5",
+      "registry_mutant": "mutation-616cebbed218ffd0c5db6e7a33c73a8eca0b0823fdcd7c94fc0b614e61f2a593",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "I5 recovery-only old validator",
+          "mutation": "mutation-616cebbed218ffd0c5db6e7a33c73a8eca0b0823fdcd7c94fc0b614e61f2a593"
         }
       ]
     },
@@ -11181,6 +11496,16 @@
           "current_anchor": "  if (typeof value === \"string\") return true;",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-i6",
+      "registry_mutant": "mutation-829673041a5cabda9cca60e9fb4a3e5906930593820a6422984cf015bd83a0d3",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "I6 boxed strings treated as usable identities",
+          "mutation": "mutation-829673041a5cabda9cca60e9fb4a3e5906930593820a6422984cf015bd83a0d3"
+        }
       ]
     },
     "k12c1-base-i7": {
@@ -11209,6 +11534,16 @@
           "current_target": "packages/kernel/src/outcome.ts",
           "current_anchor": "const name = diagnosticFieldName(key);",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-i7",
+      "registry_mutant": "mutation-5505b2323ef4fee16112063b8bcb5d9e64c881b82c9cd3fe600d1aaa96766897",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "I7 unbounded unknown-field diagnostics",
+          "mutation": "mutation-5505b2323ef4fee16112063b8bcb5d9e64c881b82c9cd3fe600d1aaa96766897"
         }
       ]
     },
@@ -11239,6 +11574,16 @@
           "current_anchor": "          `Activation ${diagnosticIdentity(intent.activation.activationId)} is recovery-held and is not redelivered: ${hold.reason}`,",
           "relocation_reading": "Redelivery held refusal retained; surrounding answer/delivery plan changed. Re-anchor to the exact unique current diagnostic line; no supersession."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d35",
+      "registry_mutant": "mutation-1c10d522556bdf2502a79becad872fc1a8c6d1c2fee9a07a8fd936262c1cae8a",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D35 unbounded identity at coordinator.ts:1335 (intent.activation.activationId)",
+          "mutation": "mutation-1c10d522556bdf2502a79becad872fc1a8c6d1c2fee9a07a8fd936262c1cae8a"
+        }
       ]
     },
     "k12c1-base-d1": {
@@ -11267,6 +11612,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "            `an Outcome for Activation ${diagnosticIdentity(activationId)} was already accepted with different content; an accepted Outcome is never replaced, merged or patched`,",
           "relocation_reading": "Accepted-Outcome conflict refusal retained; adjacent losing-proposal handling changed. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d1",
+      "registry_mutant": "mutation-3448c9547862207428e8d41f93896e8b61155c037d753735a277423aaa41871c",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D1 unbounded identity at coordinator.ts:1462 (activationId)",
+          "mutation": "mutation-3448c9547862207428e8d41f93896e8b61155c037d753735a277423aaa41871c"
         }
       ]
     },
@@ -11297,6 +11652,16 @@
           "current_anchor": "          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; no further Outcome can be accepted for it`,",
           "relocation_reading": "Terminal Outcome refusal retained; adjacent wait/cancellation handling changed. Re-anchor to the exact unique current diagnostic line; no supersession."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d2",
+      "registry_mutant": "mutation-95f4adffde6a9803eb6c5ad17dc339ec58fbf42f5bb759a5b67d848ad1eeb9c4",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D2 unbounded identity at coordinator.ts:1473 (record.executionId)",
+          "mutation": "mutation-95f4adffde6a9803eb6c5ad17dc339ec58fbf42f5bb759a5b67d848ad1eeb9c4"
+        }
       ]
     },
     "k12c1-base-d3": {
@@ -11325,6 +11690,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "lue is never rendered before the content group (decision-02 disclosure).\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n            record,\n          ),\n        );\n      }\n     ",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d3",
+      "registry_mutant": "mutation-3123ec509ee0b2651116e1db6301ed4ac5e75425c98cd9301fbf3c1ae024ac19",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D3 unbounded identity at coordinator.ts:1486 (activationId)",
+          "mutation": "mutation-3123ec509ee0b2651116e1db6301ed4ac5e75425c98cd9301fbf3c1ae024ac19"
         }
       ]
     },
@@ -11355,6 +11730,16 @@
           "current_anchor": "f (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `The proposa",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d4",
+      "registry_mutant": "mutation-1dcc5a93b603f7615f426d5559c6942e385bd2339b529d29c15e18c3aac7bc67",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D4 unbounded identity at coordinator.ts:1486 (record.executionId)",
+          "mutation": "mutation-1dcc5a93b603f7615f426d5559c6942e385bd2339b529d29c15e18c3aac7bc67"
+        }
       ]
     },
     "k12c1-base-d5": {
@@ -11383,6 +11768,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `The proposal's Activation identity was not usable; it is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n          record,\n        ),\n      );\n    }\n    if (identityUsable && intent.activation.activationId !== activationId) {\n      return err(\n    ",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d5",
+      "registry_mutant": "mutation-3e41c9f17df6e086e61f571cb5c93ee1e6a1e8a9f8b4853823939aca7002988e",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D5 unbounded identity at coordinator.ts:1494 (record.executionId)",
+          "mutation": "mutation-3e41c9f17df6e086e61f571cb5c93ee1e6a1e8a9f8b4853823939aca7002988e"
         }
       ]
     },
@@ -11413,6 +11808,16 @@
           "current_anchor": "cord,\n        ),\n      );\n    }\n    if (identityUsable && intent.activation.activationId !== activationId) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n          record,\n        ),\n      );\n    }\n    // Canoni",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d6",
+      "registry_mutant": "mutation-6e398dff74d21b604672022480bd5a08a77169751bbbbf8afdc1d402b351ba94",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D6 unbounded identity at coordinator.ts:1503 (activationId)",
+          "mutation": "mutation-6e398dff74d21b604672022480bd5a08a77169751bbbbf8afdc1d402b351ba94"
+        }
       ]
     },
     "k12c1-base-d7": {
@@ -11441,6 +11846,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "vationId !== activationId) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}; an Outcome can answer only the exchange that is open`,\n          record,\n        ),\n      );\n    }\n    // Canonical step 3 (execution-cycle.md#outcome-acceptance, DEC-2, DEC-20, decision-02):\n    //",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d7",
+      "registry_mutant": "mutation-63371d3dc717479ce1667744aeaf960c51f7e3af5bfa1f9a1f5af8e1a06dda50",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D7 unbounded identity at coordinator.ts:1503 (record.executionId)",
+          "mutation": "mutation-63371d3dc717479ce1667744aeaf960c51f7e3af5bfa1f9a1f5af8e1a06dda50"
         }
       ]
     },
@@ -11471,6 +11886,16 @@
           "current_anchor": "rentEpoch) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            epochForCurrency < currentEpoch\n              ? `Outcome for Activation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`\n              : `Outcome for Activation ${diagnosticIdentity(activationId)}: writer ",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d8",
+      "registry_mutant": "mutation-95c36139076d05f7c45dad68c9d2f06d2a01255bd1a7d069b4737838d73f9048",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D8 unbounded identity at coordinator.ts:1528 (activationId)",
+          "mutation": "mutation-95c36139076d05f7c45dad68c9d2f06d2a01255bd1a7d069b4737838d73f9048"
+        }
       ]
     },
     "k12c1-base-d9": {
@@ -11499,6 +11924,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "tivation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} was superseded by epoch ${currentEpoch}; the superseded attempt commits nothing`\n              : `Outcome for Activation ${diagnosticIdentity(activationId)}: writer epoch ${epochForCurrency} has not been issued; the current epoch is ${currentEpoch}`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"s",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d9",
+      "registry_mutant": "mutation-4e58f0be2e2403ddac451219c4b89aab005e6a9a1fe9561f634a703aea6c89a2",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D9 unbounded identity at coordinator.ts:1529 (activationId)",
+          "mutation": "mutation-4e58f0be2e2403ddac451219c4b89aab005e6a9a1fe9561f634a703aea6c89a2"
         }
       ]
     },
@@ -11529,6 +11964,16 @@
           "current_anchor": "aseForCurrency !== intent.activation.baseProgressRevision) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"stale_exchange\",\n            `Outcome for Activation ${diagnosticIdentity(activationId)}: base progress revision ${baseForCurrency} does not match the revision ${intent.activation.baseProgressRevision} this exchange was pinned at`,\n            record,\n          ),\n        );\n      }\n    ",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d10",
+      "registry_mutant": "mutation-5888ff71724d04694071f5b3f3b949eb86fb5d3a553eca6907de7941af62f8c5",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D10 unbounded identity at coordinator.ts:1550 (activationId)",
+          "mutation": "mutation-5888ff71724d04694071f5b3f3b949eb86fb5d3a553eca6907de7941af62f8c5"
+        }
       ]
     },
     "k12c1-base-d11": {
@@ -11557,6 +12002,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "ttempt.\n    if (submission !== intent.submission) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"unauthorized_submission\",\n            `Outcome for Activation ${diagnosticIdentity(activationId)} presents no submission authority for the current attempt at writer epoch ${currentEpoch}; an inspected Activation does not authorize answering it`,\n            record,\n          ),\n        );\n      }",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d11",
+      "registry_mutant": "mutation-4fa8e1b27b77332b2026a9c54a127f301148138f1e66eab3269abe9838053b07",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D11 unbounded identity at coordinator.ts:1574 (activationId)",
+          "mutation": "mutation-4fa8e1b27b77332b2026a9c54a127f301148138f1e66eab3269abe9838053b07"
         }
       ]
     },
@@ -11587,6 +12042,16 @@
           "current_anchor": "   );\n    }\n    if (capture.overCapacity !== null) {\n      if (identityUsable) {\n        return err(\n          this.#refusal(\n            \"capacity_exhausted\",\n            `the Outcome for Activation ${diagnosticIdentity(activationId)} carries ${capture.overCapacity.count} Emissions, above the declared limit of ${capture.overCapacity.limit} per Outcome; nothing of it was accepted`,\n            record,\n          ),\n        );\n      ",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d12",
+      "registry_mutant": "mutation-7fc05dbc96472e7c76a0456b5880825a9d7d15fde1929396b94e211a3775621d",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D12 unbounded identity at coordinator.ts:1592 (activationId)",
+          "mutation": "mutation-7fc05dbc96472e7c76a0456b5880825a9d7d15fde1929396b94e211a3775621d"
+        }
       ]
     },
     "k12c1-base-d13": {
@@ -11615,6 +12080,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "  appendAllOwn(combined, idIssues);\n      appendAllOwn(combined, capture.issues);\n      if (identityUsable) {\n        return err(\n          this.#refusal(\"malformed_envelope\", `Outcome for Activation ${diagnosticIdentity(activationId)} refused whole: ${explainOutcomeIssues(combined)}`, record),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"malformed_envelope\",\n          `The proposal's Activation identity w",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d13",
+      "registry_mutant": "mutation-f1e2b0d7ea762d221bd3281ab69a2b4c573a2f3810807163d01eb18d1db5be53",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D13 unbounded identity at coordinator.ts:1615 (activationId)",
+          "mutation": "mutation-f1e2b0d7ea762d221bd3281ab69a2b4c573a2f3810807163d01eb18d1db5be53"
         }
       ]
     },
@@ -11645,6 +12120,16 @@
           "current_anchor": "riterEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,\n          record,\n        ),\n      );\n    }\n    if (exchange.codeHold !== null) {\n      return err(\n        this.#refusal(\n    ",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d14",
+      "registry_mutant": "mutation-cf26540301c02362c0055dfaf305f960f5be6360c7be5db987ea5983ea4f7850",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D14 unbounded identity at coordinator.ts:1683 (named.activationId)",
+          "mutation": "mutation-cf26540301c02362c0055dfaf305f960f5be6360c7be5db987ea5983ea4f7850"
+        }
       ]
     },
     "k12c1-base-d15": {
@@ -11673,6 +12158,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "and advances past it once`,\n          record,\n        ),\n      );\n    }\n    if (exchange.codeHold !== null) {\n      return err(\n        this.#refusal(\n          \"recovery_held\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${exchange.codeHold.reason}`,\n          record,\n        ),\n      );\n    }\n    let safe = false;\n    try {\n      // `isSafeToReplace` is an o",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d15",
+      "registry_mutant": "mutation-b52b919fe871ad590f522b075fbdacf65b9b4874a37c6be0a2d0f214d402e2d3",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D15 unbounded identity at coordinator.ts:1692 (named.activationId)",
+          "mutation": "mutation-b52b919fe871ad590f522b075fbdacf65b9b4874a37c6be0a2d0f214d402e2d3"
         }
       ]
     },
@@ -11703,6 +12198,16 @@
           "current_anchor": " this.#driver, [exchange.activation]) === true;\n    } catch {\n      safe = false;\n    }\n    if (!safe) {\n      return err(\n        this.#refusal(\n          \"unsafe_replacement\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over at writer epoch ${currentEpoch}: the Driver did not establish that native continuation is exclusive or otherwise safe to replace; Kernel fencing alone does not stop superseded na",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d16",
+      "registry_mutant": "mutation-1e41ea23daf79b41197fef04b540c9061aed7e50b1e2883ea7a8da609f208578",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D16 unbounded identity at coordinator.ts:1712 (named.activationId)",
+          "mutation": "mutation-1e41ea23daf79b41197fef04b540c9061aed7e50b1e2883ea7a8da609f208578"
+        }
       ]
     },
     "k12c1-base-d17": {
@@ -11731,6 +12236,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to take over`,",
           "relocation_reading": "Takeover callback terminal refusal retained; reader-based exchange comparison changed nearby. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d17",
+      "registry_mutant": "mutation-65cfbf1097ca61316af0358c3c266ad6f064bfe66264e9567db06f8e752343e8",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D17 unbounded identity at coordinator.ts:1727 (record.executionId)",
+          "mutation": "mutation-65cfbf1097ca61316af0358c3c266ad6f064bfe66264e9567db06f8e752343e8"
         }
       ]
     },
@@ -11761,6 +12276,16 @@
           "current_anchor": "            `Activation ${diagnosticIdentity(named.activationId)} resolved while establishing safe replacement; there is no unresolved exchange to take over`,",
           "relocation_reading": "Takeover callback resolved refusal retained; record.activation now read through current reader binding. Re-anchor to the exact unique current diagnostic line; no supersession."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d18",
+      "registry_mutant": "mutation-524a630384fe8616f603c7b90387d7a1ff4cf5d1b6ffe9ca08a37ee02b8d004d",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D18 unbounded identity at coordinator.ts:1737 (named.activationId)",
+          "mutation": "mutation-524a630384fe8616f603c7b90387d7a1ff4cf5d1b6ffe9ca08a37ee02b8d004d"
+        }
       ]
     },
     "k12c1-base-d21": {
@@ -11789,6 +12314,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "entEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${exchange.activation.writerEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,\n          record,\n        ),\n      );\n    }\n    // The pre-callback hold check above narrows `exchange.codeHold` to null for th",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d21",
+      "registry_mutant": "mutation-409216c3344c9250bd7940bd669b7de1f9313384432cfea8bcbe7ea6515a0fc6",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D21 unbounded identity at coordinator.ts:1754 (named.activationId)",
+          "mutation": "mutation-409216c3344c9250bd7940bd669b7de1f9313384432cfea8bcbe7ea6515a0fc6"
         }
       ]
     },
@@ -11819,6 +12354,16 @@
           "current_anchor": "    const postCallbackHold: StoredHold | null = currentHoldOf(exchange);\n    if (postCallbackHold !== null) {\n      return err(\n        this.#refusal(\n          \"recovery_held\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${postCallbackHold.reason}`,\n          record,\n        ),\n      );\n    }\n\n    // -- The decision, built whole before anything changes (amend",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d22",
+      "registry_mutant": "mutation-d75203646f3817d17d8c9089f5b3f9aeb0959b66e52762fc1a0d4a0287657036",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D22 unbounded identity at coordinator.ts:1768 (named.activationId)",
+          "mutation": "mutation-d75203646f3817d17d8c9089f5b3f9aeb0959b66e52762fc1a0d4a0287657036"
+        }
       ]
     },
     "k12c1-base-d23": {
@@ -11847,6 +12392,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": " = intent.value;\n    const pinned = exchange.activation;\n\n    let missing = \"\";\n    const note = (what: string, value: string): void => {\n      missing += `${missing === \"\" ? \"\" : \"; \"}pinned ${what} ${diagnosticIdentity(value)} is unavailable`;\n    };\n    if (!listed(captured.available.definitionRevisions, pinned.definitionRevision)) note(\"Definition revision\", pinned.definitionRevision);\n    if (!listed(captured.available.",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d23",
+      "registry_mutant": "mutation-240a31aee54541f152c44b35e0c4ed912c45d25cde3e9a93f23bbdac76c43ee7",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D23 unbounded identity at coordinator.ts:1864 (value)",
+          "mutation": "mutation-240a31aee54541f152c44b35e0c4ed912c45d25cde3e9a93f23bbdac76c43ee7"
         }
       ]
     },
@@ -11877,6 +12432,16 @@
           "current_anchor": "riterEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${currentEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a superseded attempt cannot hold the exchange`,\n          record,\n        ),\n      );\n    }\n    if (exchange.protocolFailureHold !== null) {\n      return ok({ activationId: named.activationId, write",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d24",
+      "registry_mutant": "mutation-00b6b202575e7ff393f1363f0002bb02424a7486f0e064602260d39da54dd1c1",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D24 unbounded identity at coordinator.ts:1952 (named.activationId)",
+          "mutation": "mutation-00b6b202575e7ff393f1363f0002bb02424a7486f0e064602260d39da54dd1c1"
+        }
       ]
     },
     "k12c1-base-d25": {
@@ -11905,6 +12470,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "        this.#refusal(\"terminal_destination\", `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to ${verb}`, record),",
           "relocation_reading": "Terminal control refusal retained in #openExchange; parameter type is ExecutionReader. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d25",
+      "registry_mutant": "mutation-858355a6bad90914a9aa380ea57fac421ab020d95a0851cc9d6f72cf57745f63",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D25 unbounded identity at coordinator.ts:1996 (record.executionId)",
+          "mutation": "mutation-858355a6bad90914a9aa380ea57fac421ab020d95a0851cc9d6f72cf57745f63"
         }
       ]
     },
@@ -11935,6 +12510,16 @@
           "current_anchor": ".state}; there is no exchange to ${verb}`, record),\n      );\n    }\n    const intent = record.activation;\n    if (intent === null) {\n      return err(this.#refusal(\"no_unresolved_exchange\", `Execution ${diagnosticIdentity(record.executionId)} has no unresolved Activation to ${verb}`, record));\n    }\n    if (intent.activation.activationId !== activationId) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Ac",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d26",
+      "registry_mutant": "mutation-0e89d66c0625a78a2ee2b32b4e2ddf84f5d8537a35c9f8215a0e09fe41ae3110",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D26 unbounded identity at coordinator.ts:2001 (record.executionId)",
+          "mutation": "mutation-0e89d66c0625a78a2ee2b32b4e2ddf84f5d8537a35c9f8215a0e09fe41ae3110"
+        }
       ]
     },
     "k12c1-base-d27": {
@@ -11963,6 +12548,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,",
           "relocation_reading": "Stale control refusal retains caller Activation rendering; following coordinator implementation changed. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d27",
+      "registry_mutant": "mutation-f412bf48ac804ac4b1d0b6679d7631c0970496f036eacb85740e0dc45515ca21",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D27 unbounded identity at coordinator.ts:2007 (activationId)",
+          "mutation": "mutation-f412bf48ac804ac4b1d0b6679d7631c0970496f036eacb85740e0dc45515ca21"
         }
       ]
     },
@@ -11993,6 +12588,16 @@
           "current_anchor": "          `Activation ${diagnosticIdentity(activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,",
           "relocation_reading": "The same stale control refusal retains its separate Execution rendering; following implementation changed. Re-anchor to the exact unique current diagnostic line; no supersession."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d28",
+      "registry_mutant": "mutation-ce9e0145bbd8151d0f9c68c7aa1a8d8bf31e7139ef612f4afc10567cd0a3a96e",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D28 unbounded identity at coordinator.ts:2007 (record.executionId)",
+          "mutation": "mutation-ce9e0145bbd8151d0f9c68c7aa1a8d8bf31e7139ef612f4afc10567cd0a3a96e"
+        }
       ]
     },
     "k12c1-base-d29": {
@@ -12021,6 +12626,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "      `caller may inspect Execution ${diagnosticIdentity(record.executionId)} but holds no control power over its scope; takeover, recovery declarations and protocol-failure reports require control authority distinct from inspection`,",
           "relocation_reading": "Control-authority refusal retained; ExecutionReader type and later cancellation control changed nearby. Re-anchor to the exact unique current diagnostic line; no supersession."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d29",
+      "registry_mutant": "mutation-a47084b24690092515577099ee6ff8b13a7a8be53ab8ddfcfee0680027517bd7",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D29 unbounded identity at coordinator.ts:2241 (record.executionId)",
+          "mutation": "mutation-a47084b24690092515577099ee6ff8b13a7a8be53ab8ddfcfee0680027517bd7"
         }
       ]
     },
@@ -12051,6 +12666,16 @@
           "current_anchor": "eadAt(keys, position) as string) === emissionKey) duplicate = true;\n    }\n    if (duplicate) {\n      appendIssue(issues, { path: `${label}.emissionKey`, code: \"duplicate_key\", message: `Emission key \"${diagnosticIdentity(emissionKey)}\" appears more than once in this Outcome` });\n      continue;\n    }\n    appendOwn(keys, emissionKey);\n    appendOwn(emissions, PrimordialObjectFreeze({ emissionKey, value }));\n  }\n  return { emissions",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d30",
+      "registry_mutant": "mutation-9c8e7edb99c69468b30790f7bcba6d34fa8ab37ca6498620445e68edcd582699",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D30 unbounded identity at outcome.ts:327 (emissionKey)",
+          "mutation": "mutation-9c8e7edb99c69468b30790f7bcba6d34fa8ab37ca6498620445e68edcd582699"
+        }
       ]
     },
     "k12c1-base-d33": {
@@ -12079,6 +12704,16 @@
           "current_target": "packages/kernel/src/envelope.ts",
           "current_anchor": "diagnosticText(identity, \"<identity omitted>\", 128)",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-d33",
+      "registry_mutant": "mutation-25383dfebbaa5dd46505a482ff1acf8f476b15867d746f9605c44482eaccf23b",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D33 identity length limit removed",
+          "mutation": "mutation-25383dfebbaa5dd46505a482ff1acf8f476b15867d746f9605c44482eaccf23b"
         }
       ]
     },
@@ -12109,6 +12744,16 @@
           "current_anchor": "    if (text[index]! < \" \" || text[index]! > \"~\") return omitted;",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-d34",
+      "registry_mutant": "mutation-bcf9c441cc56df4e8316ddbb06d31914eda79e46c67a0873b90548da32bbf717",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "D34 diagnostic ASCII guard removed",
+          "mutation": "mutation-bcf9c441cc56df4e8316ddbb06d31914eda79e46c67a0873b90548da32bbf717"
+        }
       ]
     },
     "k12c1-base-r1": {
@@ -12137,6 +12782,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "const refusal = mintRefusal(classification, reason, position, record.executionId);",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-r1",
+      "registry_mutant": "mutation-6d4bb548ccd8c06c6ae0eb8a0bb03417e01933a3cb5e06854e7e422a7eddf975",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "R1 structured refusal executionId rendered lossy",
+          "mutation": "mutation-6d4bb548ccd8c06c6ae0eb8a0bb03417e01933a3cb5e06854e7e422a7eddf975"
         }
       ]
     },
@@ -12167,6 +12822,16 @@
           "current_anchor": "if (!listed(captured.available.definitionRevisions, pinned.definitionRevision)) note(",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-r2",
+      "registry_mutant": "mutation-232743f7c25c5f3a205f65d279ceb9821e03f23ff2d1e37b341a56da9b1fd059",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "R2 code availability compared through diagnostic spelling",
+          "mutation": "mutation-232743f7c25c5f3a205f65d279ceb9821e03f23ff2d1e37b341a56da9b1fd059"
+        }
       ]
     },
     "k12c1-base-r6": {
@@ -12195,6 +12860,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "      const already = record.acceptedOutcome(activationId);",
           "relocation_reading": "COORD-REFACTOR-01 moved the acceptedOutcomes lookup behind ExecutionReader.acceptedOutcome. Retain exact replay lookup; re-anchor this adoption to the reader call."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-r6",
+      "registry_mutant": "mutation-a771a1ebecdc56a60aadc65762db7d6937635a85b45c470cebbd1004afe70d82",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "R6 replay keyed by diagnostic spelling",
+          "mutation": "mutation-a771a1ebecdc56a60aadc65762db7d6937635a85b45c470cebbd1004afe70d82"
         }
       ]
     },
@@ -12225,6 +12900,16 @@
           "current_anchor": "diagnosticText(identity, \"<identity omitted>\", 128)",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-r8",
+      "registry_mutant": "mutation-acf81fb6bfbae281ce55a0e0e09f4260e7477ac9bd828dd346f109841309b397",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "R8 identity limit 127",
+          "mutation": "mutation-acf81fb6bfbae281ce55a0e0e09f4260e7477ac9bd828dd346f109841309b397"
+        }
       ]
     },
     "k12c1-base-r11": {
@@ -12253,6 +12938,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "} else if (exchange.codeHold === null || exchange.codeHold.reason !== missing) {",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-r11",
+      "registry_mutant": "mutation-6dec164ae9317a6bb050ba08a68b8e08fecd91ad8575c508ad6f69fe49800b9d",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "R11 hold update lost",
+          "mutation": "mutation-6dec164ae9317a6bb050ba08a68b8e08fecd91ad8575c508ad6f69fe49800b9d"
         }
       ]
     },
@@ -12283,6 +12978,16 @@
           "current_anchor": "const reason = `the response of the attempt at writer epoch ${currentEpoch} could not be classified as an Outcome: ${diagnostic}`;",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-r12",
+      "registry_mutant": "mutation-f682ef2061aca38e321004f7a922c543a6b1b79143aac791f239cdb91bf7ea2e",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "R12 explicit protocol diagnostic made lossy",
+          "mutation": "mutation-f682ef2061aca38e321004f7a922c543a6b1b79143aac791f239cdb91bf7ea2e"
+        }
       ]
     },
     "k12c1-base-r4": {
@@ -12311,6 +13016,16 @@
           "current_target": "packages/kernel/src/coordinator.ts",
           "current_anchor": "if (identityUsable && intent.activation.activationId !== activationId) {",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-r4",
+      "registry_mutant": "mutation-f5224f5ed1206a39b44beeb847a2620bc5c0dcd23adf81457a8e13b003b08e31",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "R4 Outcome compares diagnostic spellings",
+          "mutation": "mutation-f5224f5ed1206a39b44beeb847a2620bc5c0dcd23adf81457a8e13b003b08e31"
         }
       ]
     },
@@ -12341,6 +13056,16 @@
           "current_anchor": "if (intent.activation.activationId !== activationId) {\n      return err(",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-r5",
+      "registry_mutant": "mutation-49a7227ec4705b4c75149d53b589a9a44263787e6ac5481f3342409dec7ce0ac",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "R5 controls compare diagnostic spellings",
+          "mutation": "mutation-49a7227ec4705b4c75149d53b589a9a44263787e6ac5481f3342409dec7ce0ac"
+        }
       ]
     },
     "k12c1-base-r7": {
@@ -12370,6 +13095,16 @@
           "current_anchor": "if ((readAt(keys, position) as string) === emissionKey) duplicate = true;",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-r7",
+      "registry_mutant": "mutation-c6e9c775de20c65fbbd0ddec9aeb523446ba49518a4316b750bf3fe7d3627e3c",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "R7 Emission keys compare diagnostic spellings",
+          "mutation": "mutation-c6e9c775de20c65fbbd0ddec9aeb523446ba49518a4316b750bf3fe7d3627e3c"
+        }
       ]
     },
     "k12c1-base-g7": {
@@ -12398,6 +13133,16 @@
           "current_target": "packages/kernel/src/envelope.ts",
           "current_anchor": "message: diagnosticText(issue.message, \"<message omitted>\", 1_024),",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
+        }
+      ],
+      "registry_case": "k12c1.adopt-base-g7",
+      "registry_mutant": "mutation-9db542bc1877ffce9026b8a846325e716582e7bc8f2b116f39d13c1df720d4fb",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G7 message limit 1023",
+          "mutation": "mutation-9db542bc1877ffce9026b8a846325e716582e7bc8f2b116f39d13c1df720d4fb"
         }
       ]
     },
@@ -12439,6 +13184,21 @@
           "relocation_reading": "Current helper anchor remains; dropping the ninth weighted suffix loses the same upstream root evidence as G9.",
           "status": "planned_not_executed"
         }
+      ],
+      "registry_case": "k12c1.adopt-base-g9",
+      "registry_mutant": "mutation-11a2e337924906113f86b8c9f94670cff468a65e2b4a05be9222d3a585870cfc",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G9 lose captured suffix multiplicity",
+          "mutation": "mutation-11a2e337924906113f86b8c9f94670cff468a65e2b4a05be9222d3a585870cfc"
+        },
+        {
+          "family": "family.k12c1.review-03",
+          "member": "N7",
+          "mutation": "mutation-9fe6e79931915a2a6636f0d34a154009586aae91863f9cd03d85e7709c5baa12"
+        }
       ]
     },
     "k12c1-base-g14": {
@@ -12468,6 +13228,16 @@
           "current_anchor": "const root = PrimordialGetOwnPropertyDescriptor(issue, \"root\")?.value as string | undefined;",
           "relocation_reading": "Original anchor remains unique; operation and required result are still current."
         }
+      ],
+      "registry_case": "k12c1.adopt-base-g14",
+      "registry_mutant": "mutation-3ac9cefb3ca6e20ba16db488c9d33fdcc873d5b3a9cda586d2c18716157a6942",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.ablations",
+          "member": "G14 inherited root metadata",
+          "mutation": "mutation-3ac9cefb3ca6e20ba16db488c9d33fdcc873d5b3a9cda586d2c18716157a6942"
+        }
       ]
     },
     "k12c1-diagnostic-t4": {
@@ -12490,7 +13260,17 @@
         "  if (units > 2 * BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;\n",
         "  if (units > STRING_SCAN_LIMIT) return TOO_LONG;\n"
       ],
-      "relocation_reading": "Kernel values capture moved to SDK. The historical guard survives inside scanBoundaryString, now called only by scanText, which adds the same preflight outside. Restore the no-preflight decision by removing both guards in one mutant; removing the redundant inner guard alone is not evidence that the subject disappeared."
+      "relocation_reading": "Kernel values capture moved to SDK. The historical guard survives inside scanBoundaryString, now called only by scanText, which adds the same preflight outside. Restore the no-preflight decision by removing both guards in one mutant; removing the redundant inner guard alone is not evidence that the subject disappeared.",
+      "registry_case": "k12c1.adopt-diagnostic-t4",
+      "registry_mutant": "mutation-cebb8b58e8f42cde5d80a58f32b57b597a3f5b48eaac21fd0588dd9423d24dfa",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.diagnostic-ablations-04",
+          "member": "T4 remove the pre-read oversized-string guard",
+          "mutation": "mutation-cebb8b58e8f42cde5d80a58f32b57b597a3f5b48eaac21fd0588dd9423d24dfa"
+        }
+      ]
     },
     "k12c1-sweep8-inspection": {
       "family": "family.k12c1.sweeps-08",
@@ -12513,7 +13293,17 @@
         "    return ok(record.inspection());"
       ],
       "current_replacement": "    const summary: Pick<ExecutionReader, \"executionId\"> = record;\n    (summary as { executionId: string; resultingEpoch: number }).resultingEpoch;\n    return ok(record.inspection());",
-      "relocation_reading": "The old viewOf(record) return and ExecutionRecord planner type were replaced by ExecutionReader.inspection(). The reader owns no resultingEpoch and its class chain still reaches Object.prototype. Preserve the Pick cast and unused property read at the current unique return. No missing-anchor retirement."
+      "relocation_reading": "The old viewOf(record) return and ExecutionRecord planner type were replaced by ExecutionReader.inspection(). The reader owns no resultingEpoch and its class chain still reaches Object.prototype. Preserve the Pick cast and unused property read at the current unique return. No missing-anchor retirement.",
+      "registry_case": "k12c1.adopt-sweep8-inspection",
+      "registry_mutant": "mutation-8e97089db27d2fb1e0f01ed18195dca48344fece382b28bccbff396531ba990f",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.sweeps-08",
+          "member": "review 11 READ-01: inspection reads a member introduced through a Pick cast",
+          "mutation": "mutation-8e97089db27d2fb1e0f01ed18195dca48344fece382b28bccbff396531ba990f"
+        }
+      ]
     },
     "k12c1-opaque-identity-normalization": {
       "work_kind": "new_test",
@@ -12523,10 +13313,17 @@
       "current_mechanism": "coordinator.ts submitOutcome uses acceptedOutcome(activationId) then strict code-unit comparison with intent.activation.activationId; mental-model/concepts/identity.md requires opaque exact UTF-16 equality. The operation remains live and has no superseding design.",
       "bounded_search": "All Kernel and SDK maintained tests, fault scenarios, both registry mutation bodies, activation-identity, aggregate-refusal, exact-coordinates and outcome-acceptance. Search terms included normalize/NFC/NFD/0301/caf\u00e9/case/truncation/prefix and direct slice/upper calls; assertions and relevant fixtures read.",
       "reading": "group-review-18.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
       "planned_test_file": "packages/kernel/tests/activation-identity.test.ts",
       "build_reading": "extraction-build-01.md",
-      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "tests": 32,
+        "failures": 0,
+        "typecheck_exit": 0,
+        "record": "extraction-build-02.md"
+      }
     },
     "k12c1-recovery-diagnostic-no-message": {
       "family": "family.k12c1.review-03.reviewer-ablations-h2",
@@ -12538,10 +13335,17 @@
       "current_anchor": "recovery request is not acceptable: ${explainDiagnosticIssues(issues, false)}",
       "current_replacement": "recovery request is not acceptable: ${explainDiagnosticIssues(issues, true)}",
       "reading": "group-review-19.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
       "planned_test_file": "packages/kernel/tests/aggregate-refusal.test.ts",
       "build_reading": "extraction-build-01.md",
-      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "tests": 32,
+        "failures": 0,
+        "typecheck_exit": 0,
+        "record": "extraction-build-02.md"
+      }
     },
     "k12c1-bracket-path-adjacency": {
       "family": "family.k12c1.review-03.reviewer-ablations-h2",
@@ -12553,10 +13357,17 @@
       "current_anchor": ": projected.path[0] === \"[\" ? `${root}${projected.path}` : `${root}.${projected.path}`;",
       "current_replacement": ": `${root}.${projected.path}`;",
       "reading": "group-review-19.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
       "planned_test_file": "packages/kernel/tests/aggregate-refusal.test.ts",
       "build_reading": "extraction-build-01.md",
-      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "tests": 32,
+        "failures": 0,
+        "typecheck_exit": 0,
+        "record": "extraction-build-02.md"
+      }
     },
     "k12c1-review3-n6": {
       "family": "family.k12c1.review-03.reviewer-ablations-h2",
@@ -12579,7 +13390,16 @@
       ],
       "current_replacement": "export const explainOutcomeIssues = (issues: readonly LocatedIssue[]): string => explainDiagnosticIssues(issues, false);",
       "reading": "group-review-19.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review3-n6",
+      "registry_mutant": "mutation-0ec8543bd5b4d766cc91d629af857e216248ec6a976343eadb00182a8fe5e22a",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-03",
+          "member": "N6 Outcome renders without messages",
+          "mutation": "mutation-0ec8543bd5b4d766cc91d629af857e216248ec6a976343eadb00182a8fe5e22a"
+        }
+      ]
     },
     "k12c1-review4-x1": {
       "family": "family.k12c1.review-04.reviewer-ablations",
@@ -12601,7 +13421,16 @@
       ],
       "current_replacement": "  if (typeof value === \"string\" && value.length <= 1_048_576) return true;",
       "reading": "group-review-20.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review4-x1",
+      "registry_mutant": "mutation-6b48e8b57300c4347306754360ccdf69add50dd9c5fe440115608e96963c3510",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-04",
+          "member": "X1 Activation identity capped at 2^20 code units",
+          "mutation": "mutation-6b48e8b57300c4347306754360ccdf69add50dd9c5fe440115608e96963c3510"
+        }
+      ]
     },
     "k12c1-review4-x2": {
       "family": "family.k12c1.review-04.reviewer-ablations",
@@ -12623,7 +13452,16 @@
       ],
       "current_replacement": "  if (typeof value === \"string\" && value.length > 0) return true;",
       "reading": "group-review-20.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review4-x2",
+      "registry_mutant": "mutation-1b4fe1666c707526a4f1d0a20534fa3a053cf2132bc7a78bd353c5fed15df0c2",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-04",
+          "member": "X2 empty Activation identity treated as malformed",
+          "mutation": "mutation-1b4fe1666c707526a4f1d0a20534fa3a053cf2132bc7a78bd353c5fed15df0c2"
+        }
+      ]
     },
     "k12c1-review4-x3": {
       "family": "family.k12c1.review-04.reviewer-ablations",
@@ -12645,7 +13483,16 @@
       ],
       "current_replacement": "const already = activationId.length > 65_536 ? null : record.acceptedOutcome(activationId);",
       "reading": "group-review-20.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review4-x3",
+      "registry_mutant": "mutation-9b17611488dd6fbe6b7177851eb18a5567ceafe9617ea886b3452a0088038d2b",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-04",
+          "member": "X3 replay lookup skipped above the old 65,536 limit",
+          "mutation": "mutation-9b17611488dd6fbe6b7177851eb18a5567ceafe9617ea886b3452a0088038d2b"
+        }
+      ]
     },
     "k12c1-control-observation-takeover-resolve": {
       "work_kind": "new_test",
@@ -12659,10 +13506,17 @@
       "current_mechanism": "captureAttempt then #openExchange and currentEpoch check",
       "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
       "reading": "group-review-20.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
       "planned_test_file": "packages/kernel/tests/control-observation.test.ts",
       "build_reading": "extraction-build-01.md",
-      "test_file": "packages/kernel/tests/control-observation.test.ts"
+      "test_file": "packages/kernel/tests/control-observation.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "tests": 32,
+        "failures": 0,
+        "typecheck_exit": 0,
+        "record": "extraction-build-02.md"
+      }
     },
     "k12c1-control-observation-takeover-takeover": {
       "work_kind": "new_test",
@@ -12676,10 +13530,17 @@
       "current_mechanism": "captureAttempt then #openExchange and currentEpoch check",
       "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
       "reading": "group-review-20.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
       "planned_test_file": "packages/kernel/tests/control-observation.test.ts",
       "build_reading": "extraction-build-01.md",
-      "test_file": "packages/kernel/tests/control-observation.test.ts"
+      "test_file": "packages/kernel/tests/control-observation.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "tests": 32,
+        "failures": 0,
+        "typecheck_exit": 0,
+        "record": "extraction-build-02.md"
+      }
     },
     "k12c1-control-observation-protocol-takeover": {
       "work_kind": "new_test",
@@ -12693,10 +13554,17 @@
       "current_mechanism": "captureAttempt and diagnostic observation then #openExchange and currentEpoch check",
       "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
       "reading": "group-review-20.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
       "planned_test_file": "packages/kernel/tests/control-observation.test.ts",
       "build_reading": "extraction-build-01.md",
-      "test_file": "packages/kernel/tests/control-observation.test.ts"
+      "test_file": "packages/kernel/tests/control-observation.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "tests": 32,
+        "failures": 0,
+        "typecheck_exit": 0,
+        "record": "extraction-build-02.md"
+      }
     },
     "k12c1-control-observation-recover-resolve": {
       "work_kind": "new_test",
@@ -12710,10 +13578,17 @@
       "current_mechanism": "captureRecovery then #openExchange",
       "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
       "reading": "group-review-20.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
       "planned_test_file": "packages/kernel/tests/control-observation.test.ts",
       "build_reading": "extraction-build-01.md",
-      "test_file": "packages/kernel/tests/control-observation.test.ts"
+      "test_file": "packages/kernel/tests/control-observation.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "tests": 32,
+        "failures": 0,
+        "typecheck_exit": 0,
+        "record": "extraction-build-02.md"
+      }
     },
     "k12c1-control-observation-protocol-complete": {
       "work_kind": "new_test",
@@ -12727,10 +13602,17 @@
       "current_mechanism": "captureAttempt and diagnostic observation then #openExchange and currentEpoch check",
       "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
       "reading": "group-review-20.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
       "planned_test_file": "packages/kernel/tests/control-observation.test.ts",
       "build_reading": "extraction-build-01.md",
-      "test_file": "packages/kernel/tests/control-observation.test.ts"
+      "test_file": "packages/kernel/tests/control-observation.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "tests": 32,
+        "failures": 0,
+        "typecheck_exit": 0,
+        "record": "extraction-build-02.md"
+      }
     },
     "k12c1-protocol-hold-driver-safety": {
       "work_kind": "new_test",
@@ -12740,10 +13622,17 @@
       "gap": "control-authority and recovery-evidence cover unsafe replacement with no hold; hold-permitted covers the protocol hold with a safe Driver. The fault scenario unsafeDriver also has no hold. None pins the combined schedule. BASELINE explicitly preserves hold-local permission and the separate safety prerequisite; it is not superseded.",
       "authority": "docs/development/002-implemented-kernel-baseline.md:279 and mental-model/mechanisms/recovery.md; K1.2 DEC-15/17",
       "reading": "group-review-21.md",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
       "planned_test_file": "packages/kernel/tests/hold-permitted.test.ts",
       "build_reading": "extraction-build-01.md",
-      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "tests": 32,
+        "failures": 0,
+        "typecheck_exit": 0,
+        "record": "extraction-build-02.md"
+      }
     },
     "k12c1-review6-w1": {
       "family": "family.k12c1.review-06.mutants",
@@ -12765,7 +13654,16 @@
       ],
       "current_replacement": "    appendOwn(out, { path, code: issue.code, message: issue.message });",
       "reading": "group-review-22.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review6-w1",
+      "registry_mutant": "mutation-b54046bda4749effddc681c50a7d6ea7f8b5e8b0ef2286e2de89ac4adf2b4bea",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-06",
+          "member": "W1",
+          "mutation": "mutation-b54046bda4749effddc681c50a7d6ea7f8b5e8b0ef2286e2de89ac4adf2b4bea"
+        }
+      ]
     },
     "k12c1-review6-w3": {
       "family": "family.k12c1.review-06.mutants",
@@ -12787,7 +13685,16 @@
       ],
       "current_replacement": "(additional occurrences; locations omitted)",
       "reading": "group-review-22.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review6-w3",
+      "registry_mutant": "mutation-42b20c69f1509bbe91bc1d2583f51db895c0e7206c0ab474babb9295320ea9ec",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-06",
+          "member": "W3",
+          "mutation": "mutation-42b20c69f1509bbe91bc1d2583f51db895c0e7206c0ab474babb9295320ea9ec"
+        }
+      ]
     },
     "k12c1-review6-w4": {
       "family": "family.k12c1.review-06.mutants",
@@ -12809,7 +13716,7 @@
       ],
       "current_replacement": "    if (true) {",
       "reading": "group-review-22.md",
-      "build_status": "planned_not_executed",
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
       "additional_variants": [
         {
           "family": "family.k12c1.review-06.mutants",
@@ -12819,6 +13726,20 @@
           "current_replacement": "  const moved = { path: \"\", code: issue.code, message: \"additional occurrences (locations omitted)\", occurrences: 1 };\n  if (issues.length > 8) { const first = readAt(issues, 8) as ValueIssue; defineAt(issues, 8, moved); appendOwn(issues, first); return; }\n  appendOwn(issues, moved);",
           "relocation_reading": "Collector moved to SDK; original suffix insertion remains unique and readAt/defineAt remain imported. Same mixed-code collector array and exact ordered weighted suffix result as W4.",
           "status": "planned_not_executed"
+        }
+      ],
+      "registry_case": "k12c1.adopt-review6-w4",
+      "registry_mutant": "mutation-589fe75e389f093da8d653ad5e4a3dc0ce41d54f513ffeb72d0daf9c44b571a4",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-06",
+          "member": "W4",
+          "mutation": "mutation-589fe75e389f093da8d653ad5e4a3dc0ce41d54f513ffeb72d0daf9c44b571a4"
+        },
+        {
+          "family": "family.k12c1.review-06",
+          "member": "W8-order-last-occurrence",
+          "mutation": "mutation-197d76f3764e679b06ed851245967ddf826c23b4c49b579e207b7b5afa7f3bbe"
         }
       ]
     },
@@ -12842,7 +13763,16 @@
       ],
       "current_replacement": "      path: issue.path,",
       "reading": "group-review-22.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review6-w5",
+      "registry_mutant": "mutation-11f9b90d22e6f075dcf620a16a3ffee1472e46bf969a054de8017716003a4a33",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-06",
+          "member": "W5",
+          "mutation": "mutation-11f9b90d22e6f075dcf620a16a3ffee1472e46bf969a054de8017716003a4a33"
+        }
+      ]
     },
     "k12c1-review8-n5": {
       "family": "family.k12c1.review-08.mutants",
@@ -12870,7 +13800,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review8-n5",
+      "registry_mutant": "mutation-db4d588c84f05b669da8c2aff5ec67272094b2e330025f688a51b8d4b0b5c2d4",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "N5",
+          "mutation": "mutation-db4d588c84f05b669da8c2aff5ec67272094b2e330025f688a51b8d4b0b5c2d4"
+        }
+      ]
     },
     "k12c1-review8-n6": {
       "family": "family.k12c1.review-08.mutants",
@@ -12904,7 +13843,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review8-n6",
+      "registry_mutant": "mutation-883d0914f5607585f90b9a40f44df0be14fb81872795a67d26e3611e5013a49c",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "N6",
+          "mutation": "mutation-883d0914f5607585f90b9a40f44df0be14fb81872795a67d26e3611e5013a49c"
+        }
+      ]
     },
     "k12c1-review8-n8": {
       "family": "family.k12c1.review-08.mutants",
@@ -12933,7 +13881,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "state-owner.tools02-review8-n8",
+      "registry_mutant": "mutation-3ed7fd27e1697dad43007a3a861598e62bbe79c1aab8089ca8ae0ee096047bac",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "N8",
+          "mutation": "mutation-3ed7fd27e1697dad43007a3a861598e62bbe79c1aab8089ca8ae0ee096047bac"
+        }
+      ]
     },
     "k12c1-review8-n14": {
       "family": "family.k12c1.review-08.mutants",
@@ -12961,7 +13918,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review8-n14",
+      "registry_mutant": "mutation-c846b8e33be766155b55280289889b3c8bdec085dfcf19d220ee49918e425571",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "N14",
+          "mutation": "mutation-c846b8e33be766155b55280289889b3c8bdec085dfcf19d220ee49918e425571"
+        }
+      ]
     },
     "k12c1-review8-n7": {
       "family": "family.k12c1.review-08.mutants",
@@ -12990,7 +13956,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "state-owner.tools02-review8-n7",
+      "registry_mutant": "mutation-d05a151ba1c274259e40e531c0e7c23acfe4ea806fe3809b9e87f155e612a549",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "N7",
+          "mutation": "mutation-d05a151ba1c274259e40e531c0e7c23acfe4ea806fe3809b9e87f155e612a549"
+        }
+      ]
     },
     "k12c1-review8-n9": {
       "family": "family.k12c1.review-08.mutants",
@@ -13019,7 +13994,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review8-n9",
+      "registry_mutant": "mutation-2932a636f1caed317d22c479cad052caf38997684c4f0e37f1ddb91dbc9fef3c",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "N9",
+          "mutation": "mutation-2932a636f1caed317d22c479cad052caf38997684c4f0e37f1ddb91dbc9fef3c"
+        }
+      ]
     },
     "k12c1-review8-n10": {
       "family": "family.k12c1.review-08.mutants",
@@ -13048,7 +14032,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review8-n10",
+      "registry_mutant": "mutation-2a60a1387ac1b1b53a491a891e7259658df5710ad40e2a03bddfb8283fc523ec",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "N10",
+          "mutation": "mutation-2a60a1387ac1b1b53a491a891e7259658df5710ad40e2a03bddfb8283fc523ec"
+        }
+      ]
     },
     "k12c1-review8-n11": {
       "family": "family.k12c1.review-08.mutants",
@@ -13077,7 +14070,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review8-n11",
+      "registry_mutant": "mutation-3b2922ccd1e6a811d09f857bde8f15cf13036e6f7cd42e7e885fbcab8c2af08f",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "N11",
+          "mutation": "mutation-3b2922ccd1e6a811d09f857bde8f15cf13036e6f7cd42e7e885fbcab8c2af08f"
+        }
+      ]
     },
     "k12c1-review8-n13": {
       "family": "family.k12c1.review-08.mutants",
@@ -13106,7 +14108,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review8-n13",
+      "registry_mutant": "mutation-1ba8c5c3d123773c58796cb856a42c10cb86757855ba6d1c85ffa8f2923fa105",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "N13",
+          "mutation": "mutation-1ba8c5c3d123773c58796cb856a42c10cb86757855ba6d1c85ffa8f2923fa105"
+        }
+      ]
     },
     "k12c1-review8-f1": {
       "family": "family.k12c1.review-08.mutants",
@@ -13134,7 +14145,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review8-f1",
+      "registry_mutant": "mutation-6d4bb548ccd8c06c6ae0eb8a0bb03417e01933a3cb5e06854e7e422a7eddf975",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "F1",
+          "mutation": "mutation-6d4bb548ccd8c06c6ae0eb8a0bb03417e01933a3cb5e06854e7e422a7eddf975"
+        }
+      ]
     },
     "k12c1-review8-f2": {
       "family": "family.k12c1.review-08.mutants",
@@ -13168,7 +14188,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review8-f2",
+      "registry_mutant": "mutation-8a61870c77d587c206abe17a83738e7a1eb49682b0d73243ee313739169eb1df",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "F2",
+          "mutation": "mutation-8a61870c77d587c206abe17a83738e7a1eb49682b0d73243ee313739169eb1df"
+        }
+      ]
     },
     "k12c1-review8-f3": {
       "family": "family.k12c1.review-08.mutants",
@@ -13202,7 +14231,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review8-f3",
+      "registry_mutant": "mutation-022c75be6eb1ed957c859442650c16f60a6298bda3f6bb65dcf976bd4597a526",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "F3",
+          "mutation": "mutation-022c75be6eb1ed957c859442650c16f60a6298bda3f6bb65dcf976bd4597a526"
+        }
+      ]
     },
     "k12c1-review8-f4": {
       "family": "family.k12c1.review-08.mutants",
@@ -13230,7 +14268,16 @@
         ]
       },
       "reading": "group-review-23.md",
-      "build_status": "planned_not_executed"
+      "build_status": "built_awaiting_fresh_clone_control_and_kill",
+      "registry_case": "k12c1.adopt-review8-f4",
+      "registry_mutant": "mutation-a82554e5c7ebd8ec319555b08b307a9070e38b3381da1acd8573159810d94f07",
+      "registry_variants": [
+        {
+          "family": "family.k12c1.review-08",
+          "member": "F4",
+          "mutation": "mutation-a82554e5c7ebd8ec319555b08b307a9070e38b3381da1acd8573159810d94f07"
+        }
+      ]
     },
     "builder-docs-renamed-anchor": {
       "work_kind": "new_test",
@@ -13239,9 +14286,16 @@
       "gap": "K11-R15-DOC-02 is explicitly named in both whole-file inputs. check:builder-docs validates the clean corpus but the maintained suites contain no negative heading-rename fixture for this checker. It still scans canonical mental-model pages and checks local anchors at 7388ef1a.",
       "reading": "triage-batch-32.md",
       "planned_test_file": "tests/conformance/architecture/builder-docs-anchor.test.ts",
-      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "build_status": "fresh_clone_tests_passed_P1_binding_pending",
       "build_reading": "extraction-build-01.md",
-      "test_file": "tests/conformance/architecture/builder-docs-anchor.test.ts"
+      "test_file": "tests/conformance/architecture/builder-docs-anchor.test.ts",
+      "validation": {
+        "revision": "5b584d8126ed1343d808f6e7b137a72d05436423",
+        "tests": 32,
+        "failures": 0,
+        "typecheck_exit": 0,
+        "record": "extraction-build-02.md"
+      }
     }
   },
   "resume_origin": null,

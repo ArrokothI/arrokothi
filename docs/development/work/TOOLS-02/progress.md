@@ -2,6 +2,9 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 all extraction tests pass, remaining adoptions built.** [Build 02](extraction-build-02.md). Fresh clone at `5b584d81` passed all 32 affected tests and typecheck. The existing registry gains 85 cases with 103 mutants, plus seven routes for shared variants in existing cases. Counts stay **15/152**.
+  Resume with a new fresh-clone full pass of all 152 adopted cases and controls, then resolve any adoption failures, P3/P1 bindings, register reconciliation/regenerate and self-audit. The new builds have no control/kill claim yet. IN_PROGRESS.
+
 - **2026-10-31 new-test build written.** [Extraction build 01](extraction-build-01.md) reconfirms all 15 live groups and their coverage gaps, then adds the tests. Counts stay 15/152. Resume with a fresh no-local clone and npm ci to run the four affected suites and typecheck. Stop on a product defect. No validation or P1 credit claimed yet.
 
 - **2026-10-31 final triage checkpoint passed.** [Projection 11](projection-11.md) records **15 new-test groups / 152 mutation adoptions**. Fresh clone at `577c37b2967743af71e8ce4c4603a9d0b26d6b3e`, Node v26.10.0 and `npm ci`. One complete pass took **172.750 seconds**, with 67/67 controls and 69/69 qualified kills. [Attempt ledger](adoption-runtime-11.json)
