@@ -2,6 +2,14 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 runtime cap stop — one complete pass took 787.129 seconds.** [Projection 12](projection-12.md):
+  a fresh clone at `2d1be19a` ran all 152 adoption cases and 179 mutants once, over owner choice 11's 600-second
+  cap. 150/152 controls passed and 173/179 mutants were killed. All six non-kills trace to registry fixture defects;
+  their fixes are planned, not applied. No product defect. A second blocker: 218 of 396 family members in the 19
+  pending family origins have no P1-M route kind that fits. [Ledger](adoption-runtime-12.json). Counts stay 15/152.
+  IN_PROGRESS, stopped for the owner's answer to projection 12's two questions. Resume with the fixture fixes, a
+  new complete pass, then the bindings.
+
 - **2026-10-31 owner choice 12 — Claude Opus finishes ranges 2–4.** [Decision](owner-choice-12.md): GPT-6 ran out
   of quota at `9f6321b4`. The implementer is now a Claude Code desktop session (`claude-opus-5-5`); review 05 is
   a separate fresh Claude Opus session. Earlier records keep their roles; GPT-6 does not resume on this branch.
