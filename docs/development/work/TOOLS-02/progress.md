@@ -2,6 +2,13 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 reviewer-10 — through origin 1,288:** 1,105 retired / 183 plans.
+  [Batch 23](triage-batch-23.md): **14 test groups / 152 adoptions**, unchanged.
+  Six source-read forms and thirty whole-view comparisons have maintained controls;
+  first-mutation obligations have current state-owner routes. Projections 17/180
+  and 17/190; no new execution. Resume `K1.2-correction-01/review-11.md:99`,
+  `mention-b42490144d7361987bba4fa5` (origin 1,289). IN_PROGRESS.
+
 - **2026-10-30 reviewer-09 — through origin 1,264:** 1,084 retired / 180 plans.
   [Batch 22](triage-batch-22.md): **14 test groups / 152 adoptions**, unchanged;
   the 22-case recovery matrix and mutable-reference variants have maintained tests.
