@@ -1284,7 +1284,10 @@
       "source": "K1.1/implementation-02.md:206\u2013223",
       "required_result": "Listing scans the same caller scope positions per retained record, independent of which scope matches, while returning only visible IDs.",
       "gap": "The maintained visibleExecutions leaf checks only a positive read count and visible-ID shape. It does not assert equal read counts for early/late/no-match scans. The single-ID lookup leaves do not execute the listing path.",
-      "planned_test": "A separate kernel scope-listing regression compares equal-size early-match, late-match and no-match scope arrays over the same record population and checks returned IDs, then binds it through P1. No product change; stop if it fails."
+      "planned_test": "A separate kernel scope-listing regression compares equal-size early-match, late-match and no-match scope arrays over the same record population and checks returned IDs, then binds it through P1. No product change; stop if it fails.",
+      "build_reading": "extraction-build-01.md",
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
     },
     "mention-dfdc7d90f79fe93f4feeeb4b": {
       "disposition": "extracted",
@@ -1299,7 +1302,10 @@
       "source": "K1.1/implementation-05.md:146",
       "required_result": "Creation and ingress reuse each observed envelope field for validation, authority, identity and retained content; a shifting getter cannot validate one value and commit another.",
       "gap": "The source requires single observation across scope authorization, key packing and retained creation/ingress fields. The current ordering leaf uses stable scope values; payload mutation and Outcome field-count leaves test different inputs/paths. A bounded search of packages/kernel/tests and packages/sdk/tests found no shifting-getter matrix asserting each creation/ingress field count and its retained first value. Source reading therefore cannot retire this obligation on those weaker pointers.",
-      "planned_test": "Exercise shifting own getters on creation scope/key/pins/initial input fields and ingress key/kind/subscription/payload, count observations, and inspect/replay the retained result. Use core byte roots directly; stop if a new regression exposes a product defect."
+      "planned_test": "Exercise shifting own getters on creation scope/key/pins/initial input fields and ingress key/kind/subscription/payload, count observations, and inspect/replay the retained result. Use core byte roots directly; stop if a new regression exposes a product defect.",
+      "build_reading": "extraction-build-01.md",
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
     },
     "mention-a8747fd8bd4f23a87a5aea60": {
       "disposition": "extracted",
@@ -1314,7 +1320,10 @@
       "source": "K1.1/implementation-13.md:118",
       "required_result": "Hidden activity completed before caller A's first creation must not alter A's complete creation-through-inspection transcript.",
       "gap": "The maintained leaf titled hidden activity before A's first operation calls runArm, which creates A and its replay before invoking hidden(..., 0). Bounded search of current packages/kernel/tests found no two-arm transcript test placing B before A's first creation. Other interleaved and per-Execution obligations have passing tests; the title alone cannot cover this schedule.",
-      "planned_test": "Add a separate pre-first-creation hidden window to the nondisclosure harness and a maintained control/interleaved transcript comparison; assert the window ran before A's first create. Stop if it exposes a product defect."
+      "planned_test": "Add a separate pre-first-creation hidden window to the nondisclosure harness and a maintained control/interleaved transcript comparison; assert the window ran before A's first create. Stop if it exposes a product defect.",
+      "build_reading": "extraction-build-01.md",
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "test_file": "packages/kernel/tests/nondisclosure.test.ts"
     },
     "mention-5bbc44327807bd9a9a95eb00": {
       "disposition": "extracted",
@@ -8889,14 +8898,20 @@
       "work_kind": "new_test",
       "required_result": "A completed continue followed by a new dispatch mints a distinct grant; the old exchange grant refuses a current-coordinate proposal, with only a refusal appended, and the new grant succeeds.",
       "gap": "submission-lifetime covers redelivery/takeover within an exchange. exact-coordinates starts another exchange but obtains its grant through the adapting submissionFor helper, without challenging the old grant. No next-exchange/old-grant negative schedule was found.",
-      "reading": "group-review-08.md"
+      "reading": "group-review-08.md",
+      "build_reading": "extraction-build-01.md",
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
     },
     "k12-cross-execution-grant": {
       "family": "family.k12.review-09",
       "work_kind": "new_test",
       "required_result": "A legitimate grant minted for Execution A cannot authorize a current-coordinate Outcome for B on the same coordinator; B stays answerable by its own grant.",
       "gap": "Forged-look-alike tests reject an unminted object; they do not distinguish a registry-of-any-minted-grant bug. No maintained cross-Execution grant presentation was found.",
-      "reading": "group-review-08.md"
+      "reading": "group-review-08.md",
+      "build_reading": "extraction-build-01.md",
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
     },
     "k12-review09-r5": {
       "family": "family.k12.review-09",
@@ -12508,8 +12523,10 @@
       "current_mechanism": "coordinator.ts submitOutcome uses acceptedOutcome(activationId) then strict code-unit comparison with intent.activation.activationId; mental-model/concepts/identity.md requires opaque exact UTF-16 equality. The operation remains live and has no superseding design.",
       "bounded_search": "All Kernel and SDK maintained tests, fault scenarios, both registry mutation bodies, activation-identity, aggregate-refusal, exact-coordinates and outcome-acceptance. Search terms included normalize/NFC/NFD/0301/caf\u00e9/case/truncation/prefix and direct slice/upper calls; assertions and relevant fixtures read.",
       "reading": "group-review-18.md",
-      "build_status": "planned_not_built_or_run",
-      "planned_test_file": "packages/kernel/tests/activation-identity.test.ts"
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "planned_test_file": "packages/kernel/tests/activation-identity.test.ts",
+      "build_reading": "extraction-build-01.md",
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
     },
     "k12c1-recovery-diagnostic-no-message": {
       "family": "family.k12c1.review-03.reviewer-ablations-h2",
@@ -12521,8 +12538,10 @@
       "current_anchor": "recovery request is not acceptable: ${explainDiagnosticIssues(issues, false)}",
       "current_replacement": "recovery request is not acceptable: ${explainDiagnosticIssues(issues, true)}",
       "reading": "group-review-19.md",
-      "build_status": "planned_not_built_or_run",
-      "planned_test_file": "packages/kernel/tests/aggregate-refusal.test.ts"
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "planned_test_file": "packages/kernel/tests/aggregate-refusal.test.ts",
+      "build_reading": "extraction-build-01.md",
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
     },
     "k12c1-bracket-path-adjacency": {
       "family": "family.k12c1.review-03.reviewer-ablations-h2",
@@ -12534,8 +12553,10 @@
       "current_anchor": ": projected.path[0] === \"[\" ? `${root}${projected.path}` : `${root}.${projected.path}`;",
       "current_replacement": ": `${root}.${projected.path}`;",
       "reading": "group-review-19.md",
-      "build_status": "planned_not_built_or_run",
-      "planned_test_file": "packages/kernel/tests/aggregate-refusal.test.ts"
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "planned_test_file": "packages/kernel/tests/aggregate-refusal.test.ts",
+      "build_reading": "extraction-build-01.md",
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
     },
     "k12c1-review3-n6": {
       "family": "family.k12c1.review-03.reviewer-ablations-h2",
@@ -12638,8 +12659,10 @@
       "current_mechanism": "captureAttempt then #openExchange and currentEpoch check",
       "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
       "reading": "group-review-20.md",
-      "build_status": "planned_not_built_or_run",
-      "planned_test_file": "packages/kernel/tests/control-observation.test.ts"
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "planned_test_file": "packages/kernel/tests/control-observation.test.ts",
+      "build_reading": "extraction-build-01.md",
+      "test_file": "packages/kernel/tests/control-observation.test.ts"
     },
     "k12c1-control-observation-takeover-takeover": {
       "work_kind": "new_test",
@@ -12653,8 +12676,10 @@
       "current_mechanism": "captureAttempt then #openExchange and currentEpoch check",
       "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
       "reading": "group-review-20.md",
-      "build_status": "planned_not_built_or_run",
-      "planned_test_file": "packages/kernel/tests/control-observation.test.ts"
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "planned_test_file": "packages/kernel/tests/control-observation.test.ts",
+      "build_reading": "extraction-build-01.md",
+      "test_file": "packages/kernel/tests/control-observation.test.ts"
     },
     "k12c1-control-observation-protocol-takeover": {
       "work_kind": "new_test",
@@ -12668,8 +12693,10 @@
       "current_mechanism": "captureAttempt and diagnostic observation then #openExchange and currentEpoch check",
       "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
       "reading": "group-review-20.md",
-      "build_status": "planned_not_built_or_run",
-      "planned_test_file": "packages/kernel/tests/control-observation.test.ts"
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "planned_test_file": "packages/kernel/tests/control-observation.test.ts",
+      "build_reading": "extraction-build-01.md",
+      "test_file": "packages/kernel/tests/control-observation.test.ts"
     },
     "k12c1-control-observation-recover-resolve": {
       "work_kind": "new_test",
@@ -12683,8 +12710,10 @@
       "current_mechanism": "captureRecovery then #openExchange",
       "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
       "reading": "group-review-20.md",
-      "build_status": "planned_not_built_or_run",
-      "planned_test_file": "packages/kernel/tests/control-observation.test.ts"
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "planned_test_file": "packages/kernel/tests/control-observation.test.ts",
+      "build_reading": "extraction-build-01.md",
+      "test_file": "packages/kernel/tests/control-observation.test.ts"
     },
     "k12c1-control-observation-protocol-complete": {
       "work_kind": "new_test",
@@ -12698,8 +12727,10 @@
       "current_mechanism": "captureAttempt and diagnostic observation then #openExchange and currentEpoch check",
       "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
       "reading": "group-review-20.md",
-      "build_status": "planned_not_built_or_run",
-      "planned_test_file": "packages/kernel/tests/control-observation.test.ts"
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "planned_test_file": "packages/kernel/tests/control-observation.test.ts",
+      "build_reading": "extraction-build-01.md",
+      "test_file": "packages/kernel/tests/control-observation.test.ts"
     },
     "k12c1-protocol-hold-driver-safety": {
       "work_kind": "new_test",
@@ -12709,8 +12740,10 @@
       "gap": "control-authority and recovery-evidence cover unsafe replacement with no hold; hold-permitted covers the protocol hold with a safe Driver. The fault scenario unsafeDriver also has no hold. None pins the combined schedule. BASELINE explicitly preserves hold-local permission and the separate safety prerequisite; it is not superseded.",
       "authority": "docs/development/002-implemented-kernel-baseline.md:279 and mental-model/mechanisms/recovery.md; K1.2 DEC-15/17",
       "reading": "group-review-21.md",
-      "build_status": "planned_not_built_or_run",
-      "planned_test_file": "packages/kernel/tests/hold-permitted.test.ts"
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "planned_test_file": "packages/kernel/tests/hold-permitted.test.ts",
+      "build_reading": "extraction-build-01.md",
+      "test_file": "packages/kernel/tests/origin-regressions.test.ts"
     },
     "k12c1-review6-w1": {
       "family": "family.k12c1.review-06.mutants",
@@ -13206,7 +13239,9 @@
       "gap": "K11-R15-DOC-02 is explicitly named in both whole-file inputs. check:builder-docs validates the clean corpus but the maintained suites contain no negative heading-rename fixture for this checker. It still scans canonical mental-model pages and checks local anchors at 7388ef1a.",
       "reading": "triage-batch-32.md",
       "planned_test_file": "tests/conformance/architecture/builder-docs-anchor.test.ts",
-      "build_status": "planned_not_built_or_run"
+      "build_status": "test_written_awaiting_fresh_clone_validation",
+      "build_reading": "extraction-build-01.md",
+      "test_file": "tests/conformance/architecture/builder-docs-anchor.test.ts"
     }
   },
   "resume_origin": null,

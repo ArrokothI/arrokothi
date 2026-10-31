@@ -75,9 +75,11 @@ interface ArmTranscript {
   serialized: string[];
 }
 
-function runArm(hidden: (kernel: ExecutionCoordinator, hiddenExecutions: string[], round: number) => void): ArmTranscript {
+function runArm(hidden: (kernel: ExecutionCoordinator, hiddenExecutions: string[], round: number) => void,
+  beforeCreate: (kernel: ExecutionCoordinator, hiddenExecutions: string[]) => void = () => {}): ArmTranscript {
   const kernel = new ExecutionCoordinator({ driver: recordingDriver() });
   const hiddenExecutions: string[] = [];
+  beforeCreate(kernel, hiddenExecutions);
 
   const create = accepted(kernel.createExecution(authorA, createRequest({ creationKey: "a-report" })));
   const createReplay = accepted(kernel.createExecution(authorA, createRequest({ creationKey: "a-report" })));
@@ -591,4 +593,23 @@ describe("K1.2-C12 scoped non-disclosure across Outcome acceptance and the excha
   test("hidden Outcome, takeover, hold and terminal activity discloses nothing to A", () => {
     assert.deepEqual(runOutcomeArm(hiddenOutcomeActivity), runOutcomeArm(() => {}));
   });
+});
+
+
+test("hidden accepted and refused activity before A's first creation preserves its entire transcript", () => {
+  let windows = 0;
+  const early = runArm(noHidden, (kernel, hiddenExecutions) => {
+    windows++;
+    assert.deepEqual(kernel.visibleExecutions(authorA), [], "A has made no creation yet");
+    const hidden = accepted(kernel.createExecution(authorB, bCreate("before-a")));
+    hiddenExecutions.push(hidden.executionId);
+    accepted(kernel.submitInput(authorB, { destination: hidden.executionId, requestKey: "hidden-input", kind: "k", payload: { h: 1 } }));
+    assert.equal(refused(kernel.createExecution(authorB, bConflict("before-a"))).classification, "duplicate_conflict");
+    accepted(kernel.dispatch(authorB, hidden.executionId, { bound: 2 }));
+    accepted(kernel.redeliver(authorB, hidden.executionId));
+    assert.deepEqual(kernel.visibleExecutions(authorA), [], "B's prior activity is hidden");
+  });
+  assert.equal(windows, 1, "the before-creation window really ran");
+  assertIndistinguishable(runArm(noHidden), early);
+  assertOwnOrder(early);
 });
