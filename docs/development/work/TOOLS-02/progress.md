@@ -2,6 +2,10 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 correction sweep families — through origin 1,425.** 1,215 retired and 210 plans.
+  **14 test groups / 152 adoptions**. Cumulative projections 15/162, longer-window projections 16/166.
+  Resume `K1.1-reference-01/cleanup-01.md:78`, `mention-73eefb699295321abe34a160` (origin 1,426). [Batch 27](triage-batch-27.md)
+
 - **2026-10-31 independent revisions 9 and 10 — through origin 1,415.** 1,209 retired and 206 plans.
   **14 test groups / 152 adoptions**. Cumulative projections 16/164, longer-window projections 16/167.
   Resume `K1.2-correction-01/string-closure-04.md:17`, `mention-8d429f5946c433a8e37ede4d` (origin 1,416). [Batch 26](triage-batch-26.md)

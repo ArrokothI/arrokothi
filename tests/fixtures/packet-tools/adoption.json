@@ -9769,7 +9769,55 @@
     },
     {
       "id": "artifact-1abf88792a382e41d20b4303",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 whole probe specification: SDK direct UTF-16 impossible extent/valid edge, exact charges and wrapper creation/ingress/eight eager roots; historical time/heap/RSS had no threshold. The ordinary text names the maintained logical assertions.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-2 B is derived from the limits and covers the costliest acceptances",
+              "other at-limit families stay well below B and are accepted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "eight wrapper roots each stop at their own budget before any core call"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "artifact-38627d8cff9585853ff81a51",
@@ -9777,7 +9825,41 @@
     },
     {
       "id": "artifact-a244b971c7f1c400284a09bf",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 five production mutant decisions and all sealed rows. M1 submission revocation moved to state-owned attempt: setupGrant independently compares the retained grant. M2 current report answer stays at its unique live coordinator projection: returned/recoveryAnswer. M3 receipt append moved to state applyOutcome: applySequence/outcomePrefix. M4 removed coordinator map/hidden-record index write: state-owned refusal and referenceUnnamed/nextRefusal. M5 post-callback refusal position now commits through state applyRefusal: nextRefusal compares future position independently. Historical H differential is provenance only.",
+        "covered_by": [
+          {
+            "kind": "case",
+            "id": "oracle.setupGrant"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.returned"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.recoveryAnswer"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.applySequence"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.outcomePrefix"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.referenceUnnamed"
+          },
+          {
+            "kind": "case",
+            "id": "oracle.nextRefusal"
+          }
+        ]
+      }
     },
     {
       "id": "artifact-0371a0638a275e4aaa462599",
@@ -179725,19 +179807,123 @@
     },
     {
       "id": "mention-8d429f5946c433a8e37ede4d",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 historical heap measurements and attribution. The probe and the explicit mandatory preflight mutation are read separately."
+      }
     },
     {
       "id": "mention-2560a40e2a6b51410badc6a4",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1 table heading for path/obligation and distinguishing oracle. The concrete string-edge/charge/wrapper schedules are separately recorded."
+      }
     },
     {
       "id": "mention-fe7d9936766eac17b96f2879",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 whole probe specification: SDK direct UTF-16 impossible extent/valid edge, exact charges and wrapper creation/ingress/eight eager roots; historical time/heap/RSS had no threshold. The ordinary text names the maintained logical assertions.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-2 B is derived from the limits and covers the costliest acceptances",
+              "other at-limit families stay well below B and are accepted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "eight wrapper roots each stop at their own budget before any core call"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-257be5ce00f7f87a48205d23",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 whole probe specification: SDK direct UTF-16 impossible extent/valid edge, exact charges and wrapper creation/ingress/eight eager roots; historical time/heap/RSS had no threshold. The ordinary text names the maintained logical assertions.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: scalar and 131072/131073-unit edges preserve exact accepted values"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: huge values and names do zero character reads and keep full byte charges"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-diagnostic-work.test.ts",
+            "test_path": [
+              "V-D1 UTF-16 preflight: creation, ingress and eager Outcome roots refuse without oversized character reads"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-2 B is derived from the limits and covers the costliest acceptances",
+              "other at-limit families stay well below B and are accepted"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "eight wrapper roots each stop at their own budget before any core call"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-0118ebbd3604fcccf1f81c43",
