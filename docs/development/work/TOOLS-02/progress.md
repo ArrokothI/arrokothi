@@ -2,6 +2,10 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-31 independent revisions 9 and 10 — through origin 1,415.** 1,209 retired and 206 plans.
+  **14 test groups / 152 adoptions**. Cumulative projections 16/164, longer-window projections 16/167.
+  Resume `K1.2-correction-01/string-closure-04.md:17`, `mention-8d429f5946c433a8e37ede4d` (origin 1,416). [Batch 26](triage-batch-26.md)
+
 - **2026-10-31 reviewer-12 fault oracle and scope — through origin 1,372.** 1,169 retired and 203 plans.
   **14 test groups / 152 adoptions**. Cumulative projections 16/169, longer-window projections 16/174.
   Resume `K1.2-correction-01/review-revision-09-independent-2026-09-30/README.md:6`, `mention-51725074199c1d6fa4638dfc` (origin 1,373). [Batch 25](triage-batch-25.md)
