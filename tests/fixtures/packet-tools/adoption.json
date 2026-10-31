@@ -141095,7 +141095,21 @@
     },
     {
       "id": "mention-f463c7b45c65bddaa0b1e587",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5. The shared DIAG-01 excessive primitive-string schedule reaches the same renderer/preflight branch without requiring allocation at the engine maximum. The separate namespace probe records the now-explicit engine composition qualification, not a required allocation or exception species.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+            "test_path": [
+              "DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-3e521907aa5dada59355b82a",
@@ -141111,15 +141125,63 @@
     },
     {
       "id": "mention-d03cb52ee88ee80976ef1fff",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This context reports a source-derived allocation precision note and asks for a baseline qualification. Current canonical identity prose explicitly qualifies engine allocation and derived-string composition. The cited input-key/derived-ID builds precede state-owner apply. No required successful above-limit allocation, prescribed exception kind, timing result or newly executed atomicity proof is claimed."
+      }
     },
     {
       "id": "mention-ac4405e350d5f9577fa28ba9",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "covered_elsewhere",
+        "rationale": "S5 mixed. The former Kernel live-object collector is now SDK-owned. Current undefined-position collection pins weighted bounded issues; tracked genuine-array eight-root tests pin each observation and no core submission after wrapper refusal; capture-work pins per-position depth-independent work. Wall-clock/heap measurements remain historical under L-03, not a current timing gate.",
+        "covered_by": [
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 every issue family: undefined array members"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+            "test_path": [
+              "V-D1 eight SDK roots: every position once, no core submission"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "each of the eight eager Outcome roots does the work of one direct capture, no more (packet review BM-03)"
+            ]
+          },
+          {
+            "kind": "leaf",
+            "command": "repository-tests",
+            "file": "packages/sdk/tests/capture-work.test.ts",
+            "test_path": [
+              "KC3-4 K12C1-R8-VALUE-DEPTH-01: per-position work does not depend on nesting depth",
+              "eight wrapper roots each stop at their own budget before any core call"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "mention-ec96ca4fdb7118aea1d2db97",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The minimum paragraph identifies source A and single-span-ablation provenance and says the finding concerns evidence; it does not supply another input/result. The explicit X/P4 paragraphs retain their separate family extraction plans."
+      }
     },
     {
       "id": "mention-18c11b6203f44c60e52ffb5d",
@@ -141131,11 +141193,19 @@
     },
     {
       "id": "mention-9576077137c811a5393da88b",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. This context reports a source-derived allocation precision note and asks for a baseline qualification. Current canonical identity prose explicitly qualifies engine allocation and derived-string composition. The cited input-key/derived-ID builds precede state-owner apply. No required successful above-limit allocation, prescribed exception kind, timing result or newly executed atomicity proof is claimed."
+      }
     },
     {
       "id": "mention-be160ed4895df5e513f7bce6",
-      "state": "pending"
+      "state": "triaged",
+      "triage": {
+        "class": "not_a_counterexample",
+        "rationale": "S1. The enclosing handoff fence is an instruction to a future correcting session with candidate/owner/process identities and the already-recorded P5/X/P4 finding pointers; it is not a test result or an independent closure claim."
+      }
     },
     {
       "id": "mention-0f71a0ce76a8b01b35018264",

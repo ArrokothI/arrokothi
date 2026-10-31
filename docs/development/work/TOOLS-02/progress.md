@@ -2,6 +2,21 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 test-group cap stop — within origin 1,171:** 1,027 retired records
+  and 144 extraction-origin plans, including one partial origin. [Group review 20](group-review-20.md)
+  adds five request-getter reentry test groups and three existing-leaf X1–X3
+  adoptions: **at least 13 tests / 135 adoptions**. [Projection 10](projection-10.md):
+  cumulative 17/176, latest-300 **23/141**; the 12-test cap is exceeded. All measured
+  adoption runtime remains **250.717 seconds**, unchanged; no new execution.
+  IN_PROGRESS, stopped for owner disposition. Resume within
+  `K1.2-correction-01/review-04/README.md:11`, `mention-b521726deecc3636dce692c5`:
+  finish P1's combined protocol-hold/unsafe-Driver coverage or supersession reading,
+  then README.md:13 (origin 1,172) and source order. 67 built / 68 planned adoption
+  cases plus shared variants; new tests unbuilt. No P3/audit/mappings_complete/C/H/CI.
+  Worktree `/Users/rex-shih/.codex/worktrees/tools-02-gpt6-handover/arrokothi`;
+  Node PATH prefix `/Users/rex-shih/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin`.
+  Fetch succeeded; remote was the expected `db0da27a` before this stop record.
+
 - **2026-10-30 reviewer-03 N-family — through origin 1,157:** 1,021 retired and
   136 extraction-origin plans. [Group review 19](group-review-19.md): **eight test
   groups / 132 adoptions**. N3/N5 need new tests, N6 uses an existing Effect-message

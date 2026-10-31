@@ -1,7 +1,7 @@
 {
   "source_base": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
   "source_packet": "K1.2-correction-01",
-  "state": "triage_in_progress",
+  "state": "stopped_for_owner_projection",
   "retirement_readings": [
     "mention-b43188cfa39f39ae809510de",
     "mention-6f40e8f1a46ba505eb1dc0e2",
@@ -1023,7 +1023,13 @@
     "mention-5ddf51344f93ba0f2c3f353b",
     "mention-be94151fc9033067e919e0fc",
     "mention-6e3e6d482f0361a92853271b",
-    "mention-f07e211ac5264472fa5889bf"
+    "mention-f07e211ac5264472fa5889bf",
+    "mention-f463c7b45c65bddaa0b1e587",
+    "mention-d03cb52ee88ee80976ef1fff",
+    "mention-9576077137c811a5393da88b",
+    "mention-ac4405e350d5f9577fa28ba9",
+    "mention-ec96ca4fdb7118aea1d2db97",
+    "mention-be160ed4895df5e513f7bce6"
   ],
   "extraction_plans": {
     "mention-194ad35e98b1396a9d84c97f": {
@@ -3706,6 +3712,196 @@
       "reading": "group-review-19.md",
       "required_result": "S6 family. Whole runner plus all ten sealed result rows read. N1/N2 have individual relocated weighted-count anchors; other live anchors checked unique. N3/N5 new tests; N6 existing core Effect leaf adoption; N9=D35; N10 no-root/two-field source equivalence. No current kill or family completion claimed.",
       "planned_test": "Build the two new presentation tests and N6 adoption; preserve all shared variants, then final-C control/kill and P1 closure. No product edit."
+    },
+    "mention-3e521907aa5dada59355b82a": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-04.md:88",
+      "groups": [
+        "k12c1-coordinate-x10",
+        "k12c1-coordinate-x11",
+        "k12c1-coordinate-x12",
+        "k12c1-coordinate-x13",
+        "k12c1-coordinate-x14",
+        "k12c1-coordinate-x15",
+        "k12c1-coordinate-x16",
+        "k12c1-coordinate-x17",
+        "k12c1-coordinate-x18",
+        "k12c1-coordinate-x19",
+        "k12c1-coordinate-x20",
+        "k12c1-coordinate-x21",
+        "k12c1-coordinate-x22",
+        "k12c1-coordinate-x23",
+        "k12c1-coordinate-x8",
+        "k12c1-coordinate-x9",
+        "k12c1-review4-x1",
+        "k12c1-review4-x2",
+        "k12c1-review4-x3"
+      ],
+      "reading": "group-review-20.md",
+      "required_result": "S6 family reference: whole runner, control and all 19 historical members read (labels X1-X3 and X8-X23; X4-X7 absent, not invented). X1-X3 need three existing-leaf adoptions; X8-X23 retain their existing built cases and individual current relocations. Historical broad rejection is not a current qualified kill.",
+      "planned_test": "Await owner disposition of projection-10. Reconfirm at build C, then fresh-clone controls/kills and P1 binding. No new execution or closure."
+    },
+    "mention-976e779d70e083a3d4d3aadc": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-04.md:102",
+      "groups": [
+        "k12c1-base-i1",
+        "k12c1-base-i3",
+        "k12c1-base-i4",
+        "k12c1-base-i5",
+        "k12c1-base-i6",
+        "k12c1-review4-x2",
+        "k12c1-review4-x3"
+      ],
+      "reading": "group-review-20.md",
+      "required_result": "S6 mixed. Producer/consumer lifecycle and replay assertions are maintained; keep named I1-I6 and X2/X3 production mutation routes, including I2 under I1. P2 long-key/exchange-10 schedule itself needs no new behavior test.",
+      "planned_test": "Await owner disposition of projection-10. Reconfirm at build C, then fresh-clone controls/kills and P1 binding. No new execution or closure."
+    },
+    "mention-be353aed87b7e2e6cfe29975": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-04.md:107",
+      "groups": [
+        "k12c1-coordinate-x10",
+        "k12c1-coordinate-x11",
+        "k12c1-coordinate-x12",
+        "k12c1-coordinate-x13",
+        "k12c1-coordinate-x14",
+        "k12c1-coordinate-x15",
+        "k12c1-coordinate-x16",
+        "k12c1-coordinate-x17",
+        "k12c1-coordinate-x18",
+        "k12c1-coordinate-x19",
+        "k12c1-coordinate-x20",
+        "k12c1-coordinate-x21",
+        "k12c1-coordinate-x22",
+        "k12c1-coordinate-x23",
+        "k12c1-coordinate-x8",
+        "k12c1-coordinate-x9"
+      ],
+      "reading": "group-review-20.md",
+      "required_result": "S6 mixed exact-coordinate evidence: retain all X8-X23 routes, with P4 ordinary assertions in exact-coordinates. Existing short-ASCII fault oracle cannot replace the lossy-coordinate mutations; no second adoption or new test.",
+      "planned_test": "Await owner disposition of projection-10. Reconfirm at build C, then fresh-clone controls/kills and P1 binding. No new execution or closure."
+    },
+    "mention-18c11b6203f44c60e52ffb5d": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-04.md:227",
+      "groups": [
+        "k12c1-coordinate-x10",
+        "k12c1-coordinate-x11",
+        "k12c1-coordinate-x12",
+        "k12c1-coordinate-x13",
+        "k12c1-coordinate-x14",
+        "k12c1-coordinate-x15",
+        "k12c1-coordinate-x16",
+        "k12c1-coordinate-x17",
+        "k12c1-coordinate-x18",
+        "k12c1-coordinate-x19",
+        "k12c1-coordinate-x20",
+        "k12c1-coordinate-x21",
+        "k12c1-coordinate-x22",
+        "k12c1-coordinate-x23",
+        "k12c1-coordinate-x8",
+        "k12c1-coordinate-x9"
+      ],
+      "reading": "group-review-20.md",
+      "required_result": "S6 mixed exact-coordinate evidence: retain all X8-X23 routes, with P4 ordinary assertions in exact-coordinates. Existing short-ASCII fault oracle cannot replace the lossy-coordinate mutations; no second adoption or new test.",
+      "planned_test": "Await owner disposition of projection-10. Reconfirm at build C, then fresh-clone controls/kills and P1 binding. No new execution or closure."
+    },
+    "mention-0390564e65ddfd97e0cf6aca": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-04.md:243",
+      "groups": [
+        "k12c1-coordinate-x10",
+        "k12c1-coordinate-x11",
+        "k12c1-coordinate-x12",
+        "k12c1-coordinate-x13",
+        "k12c1-coordinate-x14",
+        "k12c1-coordinate-x15",
+        "k12c1-coordinate-x16",
+        "k12c1-coordinate-x17",
+        "k12c1-coordinate-x18",
+        "k12c1-coordinate-x19",
+        "k12c1-coordinate-x20",
+        "k12c1-coordinate-x21",
+        "k12c1-coordinate-x22",
+        "k12c1-coordinate-x23",
+        "k12c1-coordinate-x8",
+        "k12c1-coordinate-x9"
+      ],
+      "reading": "group-review-20.md",
+      "required_result": "S6 mixed exact-coordinate evidence: retain all X8-X23 routes, with P4 ordinary assertions in exact-coordinates. Existing short-ASCII fault oracle cannot replace the lossy-coordinate mutations; no second adoption or new test.",
+      "planned_test": "Await owner disposition of projection-10. Reconfirm at build C, then fresh-clone controls/kills and P1 binding. No new execution or closure."
+    },
+    "mention-0f71a0ce76a8b01b35018264": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-04/README.md:9",
+      "groups": [
+        "k12c1-coordinate-x10",
+        "k12c1-coordinate-x11",
+        "k12c1-coordinate-x12",
+        "k12c1-coordinate-x13",
+        "k12c1-coordinate-x14",
+        "k12c1-coordinate-x15",
+        "k12c1-coordinate-x16",
+        "k12c1-coordinate-x17",
+        "k12c1-coordinate-x18",
+        "k12c1-coordinate-x19",
+        "k12c1-coordinate-x20",
+        "k12c1-coordinate-x21",
+        "k12c1-coordinate-x22",
+        "k12c1-coordinate-x23",
+        "k12c1-coordinate-x8",
+        "k12c1-coordinate-x9",
+        "k12c1-review4-x1",
+        "k12c1-review4-x2",
+        "k12c1-review4-x3"
+      ],
+      "reading": "group-review-20.md",
+      "required_result": "S6 artifact guide. Read both whole runners and their sealed control/mutant/P4 records. Current X1-X3 adoption plans and existing X8-X23 cases preserve the named obligations; no closure by filename or historical pass.",
+      "planned_test": "Await owner disposition of projection-10. Reconfirm at build C, then fresh-clone controls/kills and P1 binding. No new execution or closure."
+    },
+    "mention-836f20d49c9125a19e1e5465": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-04/README.md:10",
+      "groups": [
+        "k12c1-coordinate-x10",
+        "k12c1-coordinate-x11",
+        "k12c1-coordinate-x12",
+        "k12c1-coordinate-x13",
+        "k12c1-coordinate-x14",
+        "k12c1-coordinate-x15",
+        "k12c1-coordinate-x16",
+        "k12c1-coordinate-x17",
+        "k12c1-coordinate-x18",
+        "k12c1-coordinate-x19",
+        "k12c1-coordinate-x20",
+        "k12c1-coordinate-x21",
+        "k12c1-coordinate-x22",
+        "k12c1-coordinate-x23",
+        "k12c1-coordinate-x8",
+        "k12c1-coordinate-x9"
+      ],
+      "reading": "group-review-20.md",
+      "required_result": "S6 artifact guide. Read P4, oracle-vs-mutants and its source runner and sealed results. The eleven survivor probes and all related X8-X23 exact-coordinate cases retain their existing adoption routes, with no new behavior test or closure.",
+      "planned_test": "Await owner disposition of projection-10. Reconfirm at build C, then fresh-clone controls/kills and P1 binding. No new execution or closure."
+    },
+    "mention-b521726deecc3636dce692c5": {
+      "disposition": "extracted",
+      "source": "K1.2-correction-01/review-04/README.md:11",
+      "groups": [
+        "k12c1-control-observation-protocol-complete",
+        "k12c1-control-observation-protocol-takeover",
+        "k12c1-control-observation-recover-resolve",
+        "k12c1-control-observation-takeover-resolve",
+        "k12c1-control-observation-takeover-takeover"
+      ],
+      "reading": "group-review-20.md",
+      "required_result": "S6 mixed guide, PARTIAL after cap stop. P3 whole source and all five sealed rows retain five new mutating request-getter schedules. P2 is maintained producer/consumer lifecycle coverage. P1 whole source and raw rows were read, but the combined protocol-hold plus absent/false Driver-safety coverage/supersession reading remains unresolved; resume it before closing this origin. No P1 retirement or zero-group claim.",
+      "planned_test": "Await owner disposition of projection-10. Reconfirm at build C, then fresh-clone controls/kills and P1 binding. No new execution or closure.",
+      "partial": true,
+      "unresolved_members": [
+        "P1 permitted-actions / unsafe-replacement combined schedule"
+      ]
     }
   },
   "reconsidered_extractions": [
@@ -8168,9 +8364,150 @@
       "current_replacement": "export const explainOutcomeIssues = (issues: readonly LocatedIssue[]): string => explainDiagnosticIssues(issues, false);",
       "reading": "group-review-19.md",
       "build_status": "planned_not_executed"
+    },
+    "k12c1-review4-x1": {
+      "family": "family.k12c1.review-04.reviewer-ablations",
+      "member": "X1 Activation identity capped at 2^20 code units",
+      "work_kind": "mutation_adoption",
+      "required_result": "A primitive 50-million-unit wrong Activation ID remains structurally usable and produces the same scope/power/lifecycle classification, bounded diagnostic, refusal-only state and later answerability. The predicate must not add a 2^20-unit cap.",
+      "gap": "The shared predicate remains unique. The lone-surrogate I1/I2 input does not distinguish a length cap; this is a separate current input/result. Neither registry edits this decision with this cap.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/refusal-diagnostics.test.ts",
+        "test_path": [
+          "DIAG-01 wrong 50 million units: all 21 shared scope/power/lifecycle boundary cases"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "  if (typeof value === \"string\") return true;"
+      ],
+      "current_replacement": "  if (typeof value === \"string\" && value.length <= 1_048_576) return true;",
+      "reading": "group-review-20.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review4-x2": {
+      "family": "family.k12c1.review-04.reviewer-ablations",
+      "member": "X2 empty Activation identity treated as malformed",
+      "work_kind": "mutation_adoption",
+      "required_result": "An empty primitive Activation coordinate is usable; an authorized takeover against a terminal Execution returns terminal_destination with only its refusal, rather than malformed_value.",
+      "gap": "The original shared-predicate anchor remains unique. Existing empty-text control matrix distinguishes this exact branch; I1/I2 surrogate input does not. No registry case mutates this empty-text predicate.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/activation-identity.test.ts",
+        "test_path": [
+          "control takeover / text empty / terminal / power=true"
+        ]
+      },
+      "current_target": "packages/kernel/src/envelope.ts",
+      "current_anchors": [
+        "  if (typeof value === \"string\") return true;"
+      ],
+      "current_replacement": "  if (typeof value === \"string\" && value.length > 0) return true;",
+      "reading": "group-review-20.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-review4-x3": {
+      "family": "family.k12c1.review-04.reviewer-ablations",
+      "member": "X3 replay lookup skipped above the old 65,536 limit",
+      "work_kind": "mutation_adoption",
+      "required_result": "A long minted Activation coordinate still addresses its accepted Outcome: exact replay without a grant returns the same receipt, including after completion, and changed content conflicts.",
+      "gap": "Old mapGet(record.acceptedOutcomes, activationId) moved behind ExecutionReader.acceptedOutcome. Re-anchor the conditional at the unique caller lookup and use current null absence. I3 changes validation, a different decision; no current case skips the long-ID replay lookup.",
+      "ordinary_behavior_coverage": {
+        "kind": "leaf",
+        "command": "repository-tests",
+        "file": "packages/kernel/tests/activation-identity.test.ts",
+        "test_path": [
+          "reviewer key at limit: Outcome, takeover, recovery, protocol hold, replay and terminal remain usable"
+        ]
+      },
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchors": [
+        "const already = record.acceptedOutcome(activationId);"
+      ],
+      "current_replacement": "const already = activationId.length > 65_536 ? null : record.acceptedOutcome(activationId);",
+      "reading": "group-review-20.md",
+      "build_status": "planned_not_executed"
+    },
+    "k12c1-control-observation-takeover-resolve": {
+      "work_kind": "new_test",
+      "source": "K1.2-correction-01/review-04/p3-control-reentry.ts:1",
+      "source_pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "member": "takeover/resolve",
+      "required_result": "The outer takeover control observes activationId exactly once; its own getter completes the inner resolve decision before outer checks. Outer classification is no_unresolved_exchange; final state READY, epoch None, total deliveries 1. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal.",
+      "input": "Fresh authorized caller, recording Driver and one open exchange. Control request has writerEpoch 1, missing progress-codec availability and an own activationId getter that makes the named inner decision using the legitimate current grant or original attempt coordinates, then returns the original Activation ID.",
+      "gap": "No maintained control request getter performs this mutating reentry. Safety-callback tests occur after initial checks; Outcome getter tests use another outer operation; recovery/whole-view/review-11 ambient tests install a nested accessor whose invocation must remain zero; poison-catalog getter only inspects. These do not exercise this schedule.",
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_mechanism": "captureAttempt then #openExchange and currentEpoch check",
+      "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
+      "reading": "group-review-20.md",
+      "build_status": "planned_not_built_or_run",
+      "planned_test_file": "packages/kernel/tests/control-observation.test.ts"
+    },
+    "k12c1-control-observation-takeover-takeover": {
+      "work_kind": "new_test",
+      "source": "K1.2-correction-01/review-04/p3-control-reentry.ts:1",
+      "source_pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "member": "takeover/takeover",
+      "required_result": "The outer takeover control observes activationId exactly once; its own getter completes the inner takeover decision before outer checks. Outer classification is stale_exchange; final state RUNNING, epoch 2, total deliveries 2. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal.",
+      "input": "Fresh authorized caller, recording Driver and one open exchange. Control request has writerEpoch 1, missing progress-codec availability and an own activationId getter that makes the named inner decision using the legitimate current grant or original attempt coordinates, then returns the original Activation ID.",
+      "gap": "No maintained control request getter performs this mutating reentry. Safety-callback tests occur after initial checks; Outcome getter tests use another outer operation; recovery/whole-view/review-11 ambient tests install a nested accessor whose invocation must remain zero; poison-catalog getter only inspects. These do not exercise this schedule.",
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_mechanism": "captureAttempt then #openExchange and currentEpoch check",
+      "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
+      "reading": "group-review-20.md",
+      "build_status": "planned_not_built_or_run",
+      "planned_test_file": "packages/kernel/tests/control-observation.test.ts"
+    },
+    "k12c1-control-observation-protocol-takeover": {
+      "work_kind": "new_test",
+      "source": "K1.2-correction-01/review-04/p3-control-reentry.ts:1",
+      "source_pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "member": "protocol/takeover",
+      "required_result": "The outer protocol control observes activationId exactly once; its own getter completes the inner takeover decision before outer checks. Outer classification is stale_exchange; final state RUNNING, epoch 2, total deliveries 2. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal.",
+      "input": "Fresh authorized caller, recording Driver and one open exchange. Control request has writerEpoch 1, missing progress-codec availability and an own activationId getter that makes the named inner decision using the legitimate current grant or original attempt coordinates, then returns the original Activation ID.",
+      "gap": "No maintained control request getter performs this mutating reentry. Safety-callback tests occur after initial checks; Outcome getter tests use another outer operation; recovery/whole-view/review-11 ambient tests install a nested accessor whose invocation must remain zero; poison-catalog getter only inspects. These do not exercise this schedule.",
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_mechanism": "captureAttempt and diagnostic observation then #openExchange and currentEpoch check",
+      "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
+      "reading": "group-review-20.md",
+      "build_status": "planned_not_built_or_run",
+      "planned_test_file": "packages/kernel/tests/control-observation.test.ts"
+    },
+    "k12c1-control-observation-recover-resolve": {
+      "work_kind": "new_test",
+      "source": "K1.2-correction-01/review-04/p3-control-reentry.ts:1",
+      "source_pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "member": "recover/resolve",
+      "required_result": "The outer recover control observes activationId exactly once; its own getter completes the inner resolve decision before outer checks. Outer classification is no_unresolved_exchange; final state READY, epoch None, total deliveries 1. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal.",
+      "input": "Fresh authorized caller, recording Driver and one open exchange. Control request has writerEpoch 1, missing progress-codec availability and an own activationId getter that makes the named inner decision using the legitimate current grant or original attempt coordinates, then returns the original Activation ID.",
+      "gap": "No maintained control request getter performs this mutating reentry. Safety-callback tests occur after initial checks; Outcome getter tests use another outer operation; recovery/whole-view/review-11 ambient tests install a nested accessor whose invocation must remain zero; poison-catalog getter only inspects. These do not exercise this schedule.",
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_mechanism": "captureRecovery then #openExchange",
+      "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
+      "reading": "group-review-20.md",
+      "build_status": "planned_not_built_or_run",
+      "planned_test_file": "packages/kernel/tests/control-observation.test.ts"
+    },
+    "k12c1-control-observation-protocol-complete": {
+      "work_kind": "new_test",
+      "source": "K1.2-correction-01/review-04/p3-control-reentry.ts:1",
+      "source_pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "member": "protocol/complete",
+      "required_result": "The outer protocol control observes activationId exactly once; its own getter completes the inner complete decision before outer checks. Outer classification is terminal_destination; final state COMPLETED, epoch None, total deliveries 1. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal.",
+      "input": "Fresh authorized caller, recording Driver and one open exchange. Control request has writerEpoch 1, missing progress-codec availability and an own activationId getter that makes the named inner decision using the legitimate current grant or original attempt coordinates, then returns the original Activation ID.",
+      "gap": "No maintained control request getter performs this mutating reentry. Safety-callback tests occur after initial checks; Outcome getter tests use another outer operation; recovery/whole-view/review-11 ambient tests install a nested accessor whose invocation must remain zero; poison-catalog getter only inspects. These do not exercise this schedule.",
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_mechanism": "captureAttempt and diagnostic observation then #openExchange and currentEpoch check",
+      "authority": "BINDING-01 design-01 L-09 retains own-getter envelope behavior; the current controls classify against state after capture. No accepted supersession removes these controls or this observation ordering.",
+      "reading": "group-review-20.md",
+      "build_status": "planned_not_built_or_run",
+      "planned_test_file": "packages/kernel/tests/control-observation.test.ts"
     }
   },
-  "resume_origin": "mention-f463c7b45c65bddaa0b1e587",
+  "resume_origin": "mention-b521726deecc3636dce692c5",
   "counting_rule": {
     "owner_choice": "docs/development/work/TOOLS-02/owner-choice-08.md",
     "baseline_origin": 431,
@@ -8178,8 +8515,8 @@
     "baseline_mutation_adoptions": 11,
     "next_checkpoint": 731
   },
-  "resume_path": "docs/development/work/K1.2-correction-01/review-04.md",
-  "resume_line": 64,
+  "resume_path": "docs/development/work/K1.2-correction-01/review-04/README.md",
+  "resume_line": 11,
   "cap_stop_07": {
     "origins_reached": 696,
     "origins_before_current_family": 695,
@@ -8218,5 +8555,20 @@
     "projection": "projection-08.md",
     "scheduled_checkpoint": 1031,
     "scheduled_checkpoint_completed": false
+  },
+  "cap_stop_10": {
+    "origins_reached": 1171,
+    "fully_read_through": 1170,
+    "test_groups_lower_bound": 13,
+    "mutation_adoptions": 135,
+    "cumulative_test_projection": 17,
+    "recent_test_projection": 23,
+    "cumulative_adoption_projection": 176,
+    "recent_adoption_projection": 141,
+    "measured_adoption_runtime_seconds": 250.717,
+    "reading": "group-review-20.md",
+    "projection": "projection-10.md",
+    "resume_member": "P1 coverage/supersession reading within README.md:11; then README.md:13 and source order",
+    "reason": "Owner choices 08/09 retain projected and observed new-test-group cap 12. This finite P3 set raises the observed count to 13 and latest-300 projection to 23."
   }
 }
