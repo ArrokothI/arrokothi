@@ -2,6 +2,19 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-10-30 owner choice 11 — resume to origin 1,518:** [Decision](owner-choice-11.md)
+  answers projection 10 at `17e77cc8`, raises the test-group cap to **25**, and
+  removes the proposed origin-1,331 checkpoint. Projected adoption cap stays **250**.
+  Runtime stop is **600 seconds for one complete pass of all built adopted cases,
+  controls plus mutants**; preserve the per-attempt ledger without treating its
+  cumulative 250.717 seconds as that measurement. No current full pass measured yet.
+  Resume within `K1.2-correction-01/review-04/README.md:11`,
+  `mention-b521726deecc3636dce692c5`, at the unresolved P1 reading, then source order.
+  At least **13 test groups / 135 adoptions**; 67 built / 68 planned plus variants.
+  At triage end, projection 11 records final counts and a fresh-clone full-pass
+  runtime, then remaining builds/P3, audit, mappings_complete, final C/CI and H.
+  Other stops unchanged. IN_PROGRESS; implementer Codex GPT-6 under owner choice 06.
+
 - **2026-10-30 test-group cap stop — within origin 1,171:** 1,027 retired records
   and 144 extraction-origin plans, including one partial origin. [Group review 20](group-review-20.md)
   adds five request-getter reentry test groups and three existing-leaf X1–X3

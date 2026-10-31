@@ -58,3 +58,5 @@ re-estimate there, while retaining the 250-adoption, 600-second runtime and all
 product/evidence/defect/audit stops. This option is a proposal, not authorization.
 P3 builds, self-audit, mappings_complete, final fresh-clone checks, C/CI dispatch
 without polling and H remain required. IN_PROGRESS; no acceptance claim.
+
+Owner disposition: [owner choice 11](owner-choice-11.md) raises the test cap to 25, authorizes triage through 1,518 and defines the runtime cap per complete pass; the original stop above is preserved.
