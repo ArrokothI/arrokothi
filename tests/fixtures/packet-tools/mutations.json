@@ -16609,16 +16609,19 @@
       }
     },
     {
-      "id": "k12c1.adopt-review8-n11",
-      "source": "family.k12c1.review-08 N11; TOOLS-02 group-review-23.md",
-      "assertion": "k12c1-review8-n11",
+      "id": "state-owner.tools02-review8-n11",
+      "source": "family.k12c1.review-08 N11; TOOLS-02 group-review-23.md; static oracle per extraction-build-03.md",
+      "assertion": "state-owner.tools02-review8-n11.bypass-killed",
       "files": [
         "packages/kernel/tests/zone-analysis.ts",
         "packages/sdk/tests/capture-metering.test.ts",
         "packages/sdk/tests/capture-metering.ts",
+        "tests/fixtures/packet-tools/state-owner-controls.json",
+        "tests/tooling/assertion-reporter.mjs",
+        "tests/tooling/state-owner-probe.mjs",
         "tsconfig.json"
       ],
-      "timeout_seconds": 120,
+      "timeout_seconds": 360,
       "output_limit_bytes": 1048576,
       "mutants": [
         {
@@ -16628,15 +16631,6 @@
           "path": "packages/sdk/src/internal/value-capture.ts",
           "before": "    const member = checkMember(descriptor, read, where, state);",
           "after": "    void PrimordialGetOwnPropertyDescriptor(container, key);\n    const member = checkMember(descriptor, read, where, state);",
-          "expected_targets": [
-            {
-              "file": "packages/sdk/tests/capture-metering.test.ts",
-              "path": [
-                "KC3-1 static metering check",
-                "the real values.ts passes every rule"
-              ]
-            }
-          ],
           "id": "mutation-3b2922ccd1e6a811d09f857bde8f15cf13036e6f7cd42e7e885fbcab8c2af08f"
         }
       ],
@@ -16647,16 +16641,14 @@
         ],
         "required_result": "describedValue split into observeDescriptor/readMember/checkMember. Duplicate descriptor before current object checkMember, preserving old object-member schedule. The runtime oracle's descriptor bound has slack per object member, so the static metering check (SC1: observation primordials only in metered helpers) is the maintained oracle."
       },
-      "targets": {
-        "flags": [
-          "--test",
-          "--experimental-strip-types",
-          "--no-warnings"
-        ],
-        "files": [
-          "packages/sdk/tests/capture-metering.test.ts"
-        ]
-      }
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/state-owner-probe.mjs",
+        "tools02-review8-n11"
+      ],
+      "failure_exit": 17
     },
     {
       "id": "k12c1.adopt-review8-n13",

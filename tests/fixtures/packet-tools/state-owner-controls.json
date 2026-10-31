@@ -144,6 +144,15 @@
       "killers": [
         "the real values.ts passes every rule"
       ]
+    },
+    "tools02-review8-n11": {
+      "files": [
+        "packages/sdk/tests/capture-metering.test.ts"
+      ],
+      "test_count": 30,
+      "killers": [
+        "the real values.ts passes every rule"
+      ]
     }
   }
 }
