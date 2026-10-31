@@ -657,7 +657,7 @@
           "suite.packages/kernel/tests/boundary.test.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -4122,7 +4122,7 @@
           "suite.tests/conformance/architecture/inventory-oracle.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -5874,7 +5874,7 @@
           "suite.tests/conformance/architecture/mcp-boundaries.test.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -6015,7 +6015,7 @@
           "suite.tests/conformance/architecture/module-graph.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -18710,7 +18710,7 @@
           "suite.packages/kernel/tests/ambient-reads.test.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -19199,7 +19199,7 @@
           "suite.packages/kernel/tests/boundary.test.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -19359,7 +19359,7 @@
           "suite.packages/kernel/tests/control-commits.test.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -21217,7 +21217,7 @@
           "suite.packages/kernel/tests/fault-oracle.test.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -28167,7 +28167,7 @@
           "suite.packages/kernel/tests/sweep/fault-scenarios.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -31407,7 +31407,7 @@
           "suite.packages/kernel/tests/unsupported.test.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -34128,7 +34128,7 @@
           "suite.packages/kernel/tests/zone-analysis.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -35118,7 +35118,7 @@
           "suite.packages/kernel/tests/zone-inventory.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -36095,7 +36095,7 @@
           "suite.tests/conformance/architecture/inventory-oracle.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -39976,7 +39976,7 @@
           "suite.tests/conformance/architecture/mcp-boundaries.test.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -40117,7 +40117,7 @@
           "suite.tests/conformance/architecture/module-graph.ts"
         ]
       },
-      "closure": {
+      "reopened_closure": {
         "links": [
           {
             "kind": "counterexample",
@@ -228892,6 +228892,225 @@
         "tests/conformance/architecture/workflow-boundaries.test.ts:200:3@3ebe893d8b44"
       ],
       "required_result": "Held for BINDING-01 under V-ENV: Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's. Test: packages/retrieval/local depends inward on core, and core never depends on it"
+    },
+    {
+      "id": "cx.tools02.mention-194ad35e98b1396a9d84c97f",
+      "kind": "behavior",
+      "origins": [
+        "artifact-b303eed73b3e154fe6365c09",
+        "artifact-f1a28bedebfe204b9687fa53",
+        "mention-194ad35e98b1396a9d84c97f",
+        "mention-675b78ea2886233a8576c776",
+        "mention-dfdc7d90f79fe93f4feeeb4b"
+      ],
+      "required_result": "Listing scans the same caller scope positions per retained record, independent of which scope matches, while returning only visible IDs."
+    },
+    {
+      "id": "cx.tools02.mention-bc970277f23ef1e97995b21f",
+      "kind": "behavior",
+      "origins": [
+        "mention-a8747fd8bd4f23a87a5aea60",
+        "mention-bc970277f23ef1e97995b21f"
+      ],
+      "required_result": "Creation and ingress reuse each observed envelope field for validation, authority, identity and retained content; a shifting getter cannot validate one value and commit another."
+    },
+    {
+      "id": "cx.tools02.mention-5b74744b8699ebace1b4c0c3",
+      "kind": "behavior",
+      "origins": [
+        "artifact-051103a915c0dad065b3ff57",
+        "artifact-3737bddc25971e833c283b6b",
+        "mention-5b74744b8699ebace1b4c0c3",
+        "mention-5bbc44327807bd9a9a95eb00"
+      ],
+      "required_result": "Hidden activity completed before caller A's first creation must not alter A's complete creation-through-inspection transcript."
+    },
+    {
+      "id": "cx.tools02.k12-next-exchange-grant",
+      "kind": "behavior",
+      "origins": [
+        "artifact-0cb68d791d0da9214004a486",
+        "artifact-3e0e417da3928120db360908",
+        "mention-163eeb9a978d22d6c5f980fe",
+        "mention-38b09ed6a16639b00c20e401",
+        "mention-3e362523d04b9425be98c0e9",
+        "mention-68474d44689179ef704f6bdd",
+        "mention-b347456c26d96d4d9a79cf44",
+        "mention-d1685c6688c0445cae99ba9f",
+        "mention-da380c47c3f14ef407419f3e",
+        "mention-f8810c9235ffce4a7ec895a4"
+      ],
+      "required_result": "A completed continue followed by a new dispatch mints a distinct grant; the old exchange grant refuses a current-coordinate proposal, with only a refusal appended, and the new grant succeeds."
+    },
+    {
+      "id": "cx.tools02.k12-cross-execution-grant",
+      "kind": "behavior",
+      "origins": [
+        "artifact-0cb68d791d0da9214004a486",
+        "mention-163eeb9a978d22d6c5f980fe",
+        "mention-38b09ed6a16639b00c20e401",
+        "mention-68474d44689179ef704f6bdd",
+        "mention-b347456c26d96d4d9a79cf44",
+        "mention-d1685c6688c0445cae99ba9f",
+        "mention-da380c47c3f14ef407419f3e"
+      ],
+      "required_result": "A legitimate grant minted for Execution A cannot authorize a current-coordinate Outcome for B on the same coordinator; B stays answerable by its own grant."
+    },
+    {
+      "id": "cx.tools02.k12c1-opaque-identity-normalization",
+      "kind": "behavior",
+      "origins": [
+        "artifact-5b32015b1b29cc63ffe851ad",
+        "mention-02f1c6f78fd6d52171c959e8",
+        "mention-03186d994403a0c1b9007740",
+        "mention-04c9844bf6262bebf9880b67",
+        "mention-11513ac2be645ffef9d417eb",
+        "mention-137379956c05e16c4ac6b6a8",
+        "mention-180d070361967fda88a7669a",
+        "mention-19001b3329f13f52764343d2",
+        "mention-270fc582f2c18c717c3d73cb",
+        "mention-3a6b84640dd57beeea2115b8",
+        "mention-3f049eb1763b439b36b14db8",
+        "mention-4510bd0ccd83d1d87f78c0e5",
+        "mention-4eee92b6077945e4e817354f",
+        "mention-5908b5448bfb39bf7e1a176d",
+        "mention-6907d13cad47194314c45efc",
+        "mention-756dd747a8e160839edab027",
+        "mention-79a32dbc07f52e68f69b0e04",
+        "mention-7b2d948aa1e17d541effa03b",
+        "mention-7dff89894acbcb2c1068eb3a",
+        "mention-7f5815a4b729a6de11b83e71",
+        "mention-a15ebc4571384b4aa6edbb06",
+        "mention-b26ff5b65dbb101d7e99bd30",
+        "mention-b31cf27dabdb002d4becb2fe",
+        "mention-b34b29e381ea27cc99c2a297",
+        "mention-df12f32117d33c641855f6ef",
+        "mention-e037ab5709511ed91bc5c18c"
+      ],
+      "required_result": "For one current exchange minted from creation key caf\u00e9, prefix, suffix, NFD and uppercase Activation-ID variants must refuse stale_exchange with exactly one refusal and no other state/delivery change. A code-unit-equal reconstructed primitive string remains answerable with the current grant."
+    },
+    {
+      "id": "cx.tools02.k12c1-recovery-diagnostic-no-message",
+      "kind": "behavior",
+      "origins": [
+        "artifact-0371a0638a275e4aaa462599",
+        "artifact-49458504964b90d677c180d8",
+        "mention-09e6f0e91b957722f0e48648",
+        "mention-117ca7a080541710c5eba2b2",
+        "mention-38f6f95dd3af82e24ae74060",
+        "mention-5908b5448bfb39bf7e1a176d",
+        "mention-66b6e360ad76e4fbb0d5269a",
+        "mention-6bc006289b0ce52bb0f0f12f",
+        "mention-6dd44799cad9d68f037a6e65",
+        "mention-79a32dbc07f52e68f69b0e04",
+        "mention-94eb6ef0b219dd7237dd72ce",
+        "mention-978ec5a9b9fb456ecd318076",
+        "mention-a57f2621bea588051444d255",
+        "mention-aaaf6df4d37d0c495c87dae8",
+        "mention-aad51384e428356c3fcee0d1",
+        "mention-c94c4b93998ebe81df406fb7",
+        "mention-cdfb5beed39dec8413ef82d2",
+        "mention-e037ab5709511ed91bc5c18c",
+        "mention-f36e7a53222d2bc96fcbd981",
+        "mention-f61dd3caa0ba5d0bb5b0ecd3"
+      ],
+      "required_result": "Malformed recovery produces path/code diagnostics without parenthesized issue messages, returns/retains exactly its refusal and keeps the exchange usable. Use a nonempty independently known message so including messages is distinguishable."
+    },
+    {
+      "id": "cx.tools02.k12c1-bracket-path-adjacency",
+      "kind": "behavior",
+      "origins": [
+        "artifact-49458504964b90d677c180d8",
+        "mention-5908b5448bfb39bf7e1a176d",
+        "mention-66b6e360ad76e4fbb0d5269a",
+        "mention-79a32dbc07f52e68f69b0e04",
+        "mention-978ec5a9b9fb456ecd318076",
+        "mention-e037ab5709511ed91bc5c18c",
+        "mention-f36e7a53222d2bc96fcbd981",
+        "mention-f61dd3caa0ba5d0bb5b0ecd3"
+      ],
+      "required_result": "A located issue with root progress and path [0] renders progress[0], never progress.[0]; pin the whole rendering and preserve the ordinary dotted member-path control."
+    },
+    {
+      "id": "cx.tools02.k12c1-protocol-hold-driver-safety",
+      "kind": "behavior",
+      "origins": [
+        "artifact-0a3854d11f25e056848e7933",
+        "mention-0f71a0ce76a8b01b35018264",
+        "mention-53d6a79b7dd3b84c37cd5da4",
+        "mention-836f20d49c9125a19e1e5465",
+        "mention-b521726deecc3636dce692c5"
+      ],
+      "required_result": "A protocol-held exchange lists request_takeover and submit_outcome because the hold does not prohibit them, yet an absent or false Driver safety callback causes unsafe_replacement. Redelivery still refuses recovery_held. Both refusals preserve accepted state, history, receipts, epoch and delivery count; retain the two Driver variants."
+    },
+    {
+      "id": "cx.tools02.builder-docs-renamed-anchor",
+      "kind": "behavior",
+      "origins": [
+        "artifact-097a4dcccf08b7048d523d00",
+        "artifact-5a99ec52d4f6731d34aa0926"
+      ],
+      "required_result": "A local link into canonical mental-model documentation succeeds for the existing heading and is refused when that heading is renamed in an isolated input tree; identify the broken link."
+    },
+    {
+      "id": "cx.tools02.k12c1-control-observation-takeover-resolve",
+      "kind": "behavior",
+      "origins": [
+        "artifact-fd518cd58bc52efef1ff1b22",
+        "mention-0f71a0ce76a8b01b35018264",
+        "mention-53d6a79b7dd3b84c37cd5da4",
+        "mention-836f20d49c9125a19e1e5465",
+        "mention-b521726deecc3636dce692c5"
+      ],
+      "required_result": "The outer takeover control observes activationId exactly once; its own getter completes the inner resolve decision before outer checks. Outer classification is no_unresolved_exchange; final state READY, epoch None, total deliveries 1. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal."
+    },
+    {
+      "id": "cx.tools02.k12c1-control-observation-takeover-takeover",
+      "kind": "behavior",
+      "origins": [
+        "artifact-fd518cd58bc52efef1ff1b22",
+        "mention-0f71a0ce76a8b01b35018264",
+        "mention-53d6a79b7dd3b84c37cd5da4",
+        "mention-836f20d49c9125a19e1e5465",
+        "mention-b521726deecc3636dce692c5"
+      ],
+      "required_result": "The outer takeover control observes activationId exactly once; its own getter completes the inner takeover decision before outer checks. Outer classification is stale_exchange; final state RUNNING, epoch 2, total deliveries 2. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal."
+    },
+    {
+      "id": "cx.tools02.k12c1-control-observation-protocol-takeover",
+      "kind": "behavior",
+      "origins": [
+        "artifact-fd518cd58bc52efef1ff1b22",
+        "mention-0f71a0ce76a8b01b35018264",
+        "mention-53d6a79b7dd3b84c37cd5da4",
+        "mention-836f20d49c9125a19e1e5465",
+        "mention-b521726deecc3636dce692c5"
+      ],
+      "required_result": "The outer protocol control observes activationId exactly once; its own getter completes the inner takeover decision before outer checks. Outer classification is stale_exchange; final state RUNNING, epoch 2, total deliveries 2. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal."
+    },
+    {
+      "id": "cx.tools02.k12c1-control-observation-recover-resolve",
+      "kind": "behavior",
+      "origins": [
+        "artifact-fd518cd58bc52efef1ff1b22",
+        "mention-0f71a0ce76a8b01b35018264",
+        "mention-53d6a79b7dd3b84c37cd5da4",
+        "mention-836f20d49c9125a19e1e5465",
+        "mention-b521726deecc3636dce692c5"
+      ],
+      "required_result": "The outer recover control observes activationId exactly once; its own getter completes the inner resolve decision before outer checks. Outer classification is no_unresolved_exchange; final state READY, epoch None, total deliveries 1. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal."
+    },
+    {
+      "id": "cx.tools02.k12c1-control-observation-protocol-complete",
+      "kind": "behavior",
+      "origins": [
+        "artifact-fd518cd58bc52efef1ff1b22",
+        "mention-0f71a0ce76a8b01b35018264",
+        "mention-53d6a79b7dd3b84c37cd5da4",
+        "mention-836f20d49c9125a19e1e5465",
+        "mention-b521726deecc3636dce692c5"
+      ],
+      "required_result": "The outer protocol control observes activationId exactly once; its own getter completes the inner complete decision before outer checks. Outer classification is terminal_destination; final state COMPLETED, epoch None, total deliveries 1. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal."
     }
   ],
   "suite_targets": [
@@ -231988,6 +232207,674 @@
       },
       "discrimination": {
         "reading": "The test fails unless `assert.ok( narrowed.unreadable.some((message) => /Dependency table header must be/.test(message)), `a narrowed header must be reported; g...`; `assert.equal( narrowed.rows.get(\"target-kernel\")?.files, 13, \"a narrowed header must not turn a schema-correct body into excess\", )`; `assert.ok( widenedHeaderOnly.unreadable.some((message) => /Dependency table header must be/.test(message)), `a widened header must be rep...`; `assert.deepEqual( widenedHeaderOnly.unreadable.filter((message) => /the excess is read by no column/.test(message)), [], \"schema-correct ...`; `assert.equal( widenedHeaderOnly.rows.get(\"target-kernel\")?.files, 13, \"the relation survives a header-only widening; the header report ca...` holds. The pinned test used the 11-file zone; K1.2 added two files, so the real row and list it mirrors changed."
+      }
+    },
+    {
+      "id": "target.tools02.mention-194ad35e98b1396a9d84c97f",
+      "counterexample": "cx.tools02.mention-194ad35e98b1396a9d84c97f",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/origin-regressions.test.ts",
+      "test_path": [
+        "listing scans equal scope positions for early, late and absent matches"
+      ],
+      "declaration": {
+        "line": 19,
+        "column": 1
+      },
+      "input_anchors": [
+        {
+          "anchor": "const listed = kernel.visibleExecutions({ namespace: \"reader\", scopes });",
+          "sha256": "ad1e22d5245e0068166abb50e6139dab6803e709bc21709d4b19d21131b2a162",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.deepEqual(listed, index < 2 ? visible : []);",
+          "sha256": "3f59c1d7db7d62a17022945ea24a91db40e5c98035886ac761f1de1c6e3ae6ca"
+        },
+        {
+          "anchor": "assert.deepEqual(scans[0], [\"0\", \"1\", \"2\", \"0\", \"1\", \"2\", \"0\", \"1\", \"2\"]);",
+          "sha256": "b6f9a78d2f5622531009a08f23137fc2b07bcc7c844151a4af429765569bdf6f"
+        },
+        {
+          "anchor": "assert.deepEqual(scans[1], scans[0]);",
+          "sha256": "c85d9880fa2d2ff133ac6f39b7c1e35dbb21779d174b51ab901342aaf2e994c7"
+        },
+        {
+          "anchor": "assert.deepEqual(scans[2], scans[0]);",
+          "sha256": "ebb1c73582a001d4efe73649f510a2b7fe4b655b5a1d4b870f99f3eb5045ec7e"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: Listing scans the same caller scope positions per retained record, independent of which scope matches, while returning only visible IDs."
+      }
+    },
+    {
+      "id": "target.tools02.mention-bc970277f23ef1e97995b21f",
+      "counterexample": "cx.tools02.mention-bc970277f23ef1e97995b21f",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/origin-regressions.test.ts",
+      "test_path": [
+        "creation and ingress retain each shifting envelope getter's first observation"
+      ],
+      "declaration": {
+        "line": 124,
+        "column": 1
+      },
+      "input_anchors": [
+        {
+          "anchor": "const observed = shifting({ ...first, initialInput: shifting(initialInput, \"initial\") }, \"create\");",
+          "sha256": "4f110dcef7cdea11ec5c3bd528ffdcea8d0d01a2f374d9f6c33b097544c7dbed",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.deepEqual(view.authorityContext, { tenant: \"first\" });",
+          "sha256": "bd762d43d11ccd3437e06d892fb397203e9a891e8bbf7c8fc14981b8ebb37d8a"
+        },
+        {
+          "anchor": "assert.ok(Object.values(reads).every(count => count === 1), JSON.stringify(reads));",
+          "sha256": "50f24597382ec108bd3bbed83baacaa974e3a8d99f6a5d468c056cc123ef4f21"
+        },
+        {
+          "anchor": "assert.deepEqual(Object.keys(reads).sort(), [...Object.keys(first).map(key => `create.${key}`), ...Object.keys(initialInput).map(key => `initial.${key}`), ...Object.keys(input).map(key => `input.${key}`)].sort());",
+          "sha256": "d3e634659cdddb4265e7e54092b9c8b7058abdd0ee76410038002b6081f08d38"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: Creation and ingress reuse each observed envelope field for validation, authority, identity and retained content; a shifting getter cannot validate one value and commit another."
+      }
+    },
+    {
+      "id": "target.tools02.mention-5b74744b8699ebace1b4c0c3",
+      "counterexample": "cx.tools02.mention-5b74744b8699ebace1b4c0c3",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/nondisclosure.test.ts",
+      "test_path": [
+        "hidden accepted and refused activity before A's first creation preserves its entire transcript"
+      ],
+      "declaration": {
+        "line": 599,
+        "column": 1
+      },
+      "input_anchors": [
+        {
+          "anchor": "const hidden = accepted(kernel.createExecution(authorB, bCreate(\"before-a\")));",
+          "sha256": "a434e91b2654ca5a505b26777d5a8ac0be355b80597bcb044deb6a387da32450",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(windows, 1, \"the before-creation window really ran\");",
+          "sha256": "8f208417d1cb403384655ff6eab81eef09bf3d355c1e1d8a00fe170cb4adb4ca"
+        },
+        {
+          "anchor": "assert.deepEqual(kernel.visibleExecutions(authorA), [], \"B's prior activity is hidden\");",
+          "sha256": "ef3c24eff3c6d3c78b57eac9cda1c2b69e525a9d13bbc007733493938e110245"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: Hidden activity completed before caller A's first creation must not alter A's complete creation-through-inspection transcript."
+      }
+    },
+    {
+      "id": "target.tools02.k12-next-exchange-grant",
+      "counterexample": "cx.tools02.k12-next-exchange-grant",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/origin-regressions.test.ts",
+      "test_path": [
+        "a completed exchange grant cannot authorize the next exchange's current coordinates"
+      ],
+      "declaration": {
+        "line": 38,
+        "column": 1
+      },
+      "input_anchors": [
+        {
+          "anchor": "const rejection = refused(s.kernel.submitOutcome(s.who, outcomeFor(s.executionId, next), s.grant));",
+          "sha256": "3f5f973ee97c9280e1bf536afa53eaa0c32ece5a8531af19304f33ff02d145bb",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.notStrictEqual(currentGrant, s.grant);",
+          "sha256": "d743cdc38f5d2f3fb5662f7d2a3d5c9165ce838f73efe34c5bf219a69b2e0c6a"
+        },
+        {
+          "anchor": "assert.notEqual(next.activationId, s.exchange.activationId);",
+          "sha256": "7c065ddc337a40dd2ae02ed95bad1cbee29e17f0d8214151bbf57065fb307ce1"
+        },
+        {
+          "anchor": "assert.equal(s.view().progressRevision, 2);",
+          "sha256": "fe7f22bd0a863fef6e1ef657aa7295962a555f48efd4ebfbf23da4fc704665e3"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: A completed continue followed by a new dispatch mints a distinct grant; the old exchange grant refuses a current-coordinate proposal, with only a refusal appended, and the new grant succeeds."
+      }
+    },
+    {
+      "id": "target.tools02.k12-cross-execution-grant",
+      "counterexample": "cx.tools02.k12-cross-execution-grant",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/origin-regressions.test.ts",
+      "test_path": [
+        "a grant minted for another Execution cannot authorize a current-coordinate proposal"
+      ],
+      "declaration": {
+        "line": 54,
+        "column": 1
+      },
+      "input_anchors": [
+        {
+          "anchor": "const rejection = refused(s.kernel.submitOutcome(s.who, outcomeFor(other, otherExchange), s.grant));",
+          "sha256": "d66f239120c3ed13026077eb01ca5be6dfe5755f69a1b275c9634b8068e67fe9",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.deepEqual(s.view(), firstBefore);",
+          "sha256": "ba93dd4b31b90f8c7a29371d759b5668481c720ba4475696cafb43e481b0da55"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: A legitimate grant minted for Execution A cannot authorize a current-coordinate Outcome for B on the same coordinator; B stays answerable by its own grant."
+      }
+    },
+    {
+      "id": "target.tools02.k12c1-opaque-identity-normalization",
+      "counterexample": "cx.tools02.k12c1-opaque-identity-normalization",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/origin-regressions.test.ts",
+      "test_path": [
+        "opaque Activation identity rejects prefix, suffix, NFD and uppercase variants"
+      ],
+      "declaration": {
+        "line": 69,
+        "column": 1
+      },
+      "input_anchors": [
+        {
+          "anchor": "const variants = [\"prefix\" + original, original + \"suffix\", original.normalize(\"NFD\"), original.toUpperCase()];",
+          "sha256": "3cff10ecf0465c1e1b393d75a40796b56399e52f504ad7887c7b2799749af265",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.notEqual(activationId, original);",
+          "sha256": "c8de938ad64a6334093730e8b984f9aa1a453e97d180fd9e324d7c7077e09dc4"
+        },
+        {
+          "anchor": "assert.equal(rejection.classification, \"stale_exchange\");",
+          "sha256": "f029d8e29797aebd87c48ab7211a35ee7fc7aef62f1cf62c6f3c7f88c53d88c0"
+        },
+        {
+          "anchor": "assert.equal(equal, original);",
+          "sha256": "59b45c46ebb7dd4568ddd93d7cbaf8a908eaabcdaa81eb0c2c1d2c096277871f"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: For one current exchange minted from creation key caf\u00e9, prefix, suffix, NFD and uppercase Activation-ID variants must refuse stale_exchange with exactly one refusal and no other state/delivery change. A code-unit-equal reconstructed primitive string remains answerable with the current grant."
+      }
+    },
+    {
+      "id": "target.tools02.k12c1-recovery-diagnostic-no-message",
+      "counterexample": "cx.tools02.k12c1-recovery-diagnostic-no-message",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/origin-regressions.test.ts",
+      "test_path": [
+        "malformed recovery retains the located code without the nonempty issue message"
+      ],
+      "declaration": {
+        "line": 85,
+        "column": 1
+      },
+      "input_anchors": [
+        {
+          "anchor": "const rejection = refused(s.kernel.recoverExecution(s.who, s.executionId, { activationId: s.exchange.activationId, available: undefined }));",
+          "sha256": "dde2ce626d1392dfcb25dca0ed79f5ff7984ec44d46fb5bed57bbe9c4cfbbd69",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(rejection.classification, \"malformed_value\");",
+          "sha256": "64ae1622d630090b9e2be53fd6d6648654c58a3e11bbaba21caa131242e4f807"
+        },
+        {
+          "anchor": "assert.equal(rejection.reason, \"recovery request is not acceptable: available unsupported_form\");",
+          "sha256": "16b34ee55f15e61dff28c549c181bbfbfe797e63e5dfc7599134573a60799670"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: Malformed recovery produces path/code diagnostics without parenthesized issue messages, returns/retains exactly its refusal and keeps the exchange usable. Use a nonempty independently known message so including messages is distinguishable."
+      }
+    },
+    {
+      "id": "target.tools02.k12c1-bracket-path-adjacency",
+      "counterexample": "cx.tools02.k12c1-bracket-path-adjacency",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/origin-regressions.test.ts",
+      "test_path": [
+        "rooted bracket diagnostics stay adjacent while member paths keep their dot"
+      ],
+      "declaration": {
+        "line": 95,
+        "column": 1
+      },
+      "input_anchors": [
+        {
+          "anchor": "assert.equal(explainDiagnosticIssues([\n    { root: \"progress\", path: \"[0]\", code: \"undefined_member\", message: \"first item absent\" },\n    { root: \"progress\", path: \"member\", code: \"unsupported_form\", message: \"member is unsupported\" },\n  ], true), \"progress[0] undefined_member (first item absent); progress.member unsupported_form (member is unsupported)\");",
+          "sha256": "352f91152bc45e349cf6fa0daeb5c3386ed1d44ce86f2e3a5537c103022a10ce",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(explainDiagnosticIssues([\n    { root: \"progress\", path: \"[0]\", code: \"undefined_member\", message: \"first item absent\" },\n    { root: \"progress\", path: \"member\", code: \"unsupported_form\", message: \"member is unsupported\" },\n  ], true), \"progress[0] undefined_member (first item absent); progress.member unsupported_form (member is unsupported)\");",
+          "sha256": "352f91152bc45e349cf6fa0daeb5c3386ed1d44ce86f2e3a5537c103022a10ce"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: A located issue with root progress and path [0] renders progress[0], never progress.[0]; pin the whole rendering and preserve the ordinary dotted member-path control."
+      }
+    },
+    {
+      "id": "target.tools02.k12c1-protocol-hold-driver-safety.absent",
+      "counterexample": "cx.tools02.k12c1-protocol-hold-driver-safety",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/origin-regressions.test.ts",
+      "test_path": [
+        "protocol hold permits takeover but absent Driver safety still refuses it"
+      ],
+      "declaration": {
+        "line": 103,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const takeover = refused(s.kernel.requestTakeover(s.who, s.executionId, s.exchange));",
+          "sha256": "f990dae56094da6fcfe3bc743384379e2a41a2ec10e26c29e24d4b81dbd2806d",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(hold.cause, \"protocol_failure\");",
+          "sha256": "9f8287c1a56ae5323e869c20ede8347a01bce60772b579d4dae0b8374d164f9c"
+        },
+        {
+          "anchor": "assert.deepEqual(hold.permittedNextActions, [\"request_takeover\", \"submit_outcome\"]);",
+          "sha256": "b579cde11fed5c9bbb9e6abff9f2721aee0a0bdf7c576c96f0a59bca6571916e"
+        },
+        {
+          "anchor": "assert.equal(takeover.classification, \"unsafe_replacement\");",
+          "sha256": "c384588cc10cee3c65de8ffa4389aafa99a395ea58d9f00f70ec3cd0d6e37f01"
+        },
+        {
+          "anchor": "assert.equal(redelivery.classification, \"recovery_held\");",
+          "sha256": "7198c4029db181f67d1c2def3d77a326082829eb7fb2bf541a4d32963935d529"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: A protocol-held exchange lists request_takeover and submit_outcome because the hold does not prohibit them, yet an absent or false Driver safety callback causes unsafe_replacement. Redelivery still refuses recovery_held. Both refusals preserve accepted state, history, receipts, epoch and delivery count; retain the two Driver variants."
+      }
+    },
+    {
+      "id": "target.tools02.k12c1-protocol-hold-driver-safety.false",
+      "counterexample": "cx.tools02.k12c1-protocol-hold-driver-safety",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/origin-regressions.test.ts",
+      "test_path": [
+        "protocol hold permits takeover but false Driver safety still refuses it"
+      ],
+      "declaration": {
+        "line": 103,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const takeover = refused(s.kernel.requestTakeover(s.who, s.executionId, s.exchange));",
+          "sha256": "f990dae56094da6fcfe3bc743384379e2a41a2ec10e26c29e24d4b81dbd2806d",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(hold.cause, \"protocol_failure\");",
+          "sha256": "9f8287c1a56ae5323e869c20ede8347a01bce60772b579d4dae0b8374d164f9c"
+        },
+        {
+          "anchor": "assert.deepEqual(hold.permittedNextActions, [\"request_takeover\", \"submit_outcome\"]);",
+          "sha256": "b579cde11fed5c9bbb9e6abff9f2721aee0a0bdf7c576c96f0a59bca6571916e"
+        },
+        {
+          "anchor": "assert.equal(takeover.classification, \"unsafe_replacement\");",
+          "sha256": "c384588cc10cee3c65de8ffa4389aafa99a395ea58d9f00f70ec3cd0d6e37f01"
+        },
+        {
+          "anchor": "assert.equal(redelivery.classification, \"recovery_held\");",
+          "sha256": "7198c4029db181f67d1c2def3d77a326082829eb7fb2bf541a4d32963935d529"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: A protocol-held exchange lists request_takeover and submit_outcome because the hold does not prohibit them, yet an absent or false Driver safety callback causes unsafe_replacement. Redelivery still refuses recovery_held. Both refusals preserve accepted state, history, receipts, epoch and delivery count; retain the two Driver variants."
+      }
+    },
+    {
+      "id": "target.tools02.builder-docs-renamed-anchor",
+      "counterexample": "cx.tools02.builder-docs-renamed-anchor",
+      "command": "repository-tests",
+      "file": "tests/conformance/architecture/builder-docs-anchor.test.ts",
+      "test_path": [
+        "builder docs rejects a renamed canonical heading after a passing cross-reference control"
+      ],
+      "declaration": {
+        "line": 10,
+        "column": 1
+      },
+      "input_anchors": [
+        {
+          "anchor": "put(\"mental-model/boundary.md\", \"# Renamed heading\\n\");",
+          "sha256": "c56002041343c25b20c50d83fe36dd0385858ba648f1f40412d87ba0a8b1ea50",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(control.status, 0, control.stderr);",
+          "sha256": "670cd7d9cfadbd422fdcbd4cacef26d4bae97594f0727658f6a32009d0f16817"
+        },
+        {
+          "anchor": "assert.equal(changed.status, 1, changed.stderr);",
+          "sha256": "fc63b5a80fb315b247d072145fd7506fbe84d78b639185c7f6bfd59e4b153adb"
+        },
+        {
+          "anchor": "assert.equal(changed.stderr.trim(), \"mental-model/README.md: missing anchor: boundary.md#stable-heading\");",
+          "sha256": "33fe2ddac2e5bfeb340abb41670a8c3d6b21a8b081196a2f967b17674a9ce643"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: A local link into canonical mental-model documentation succeeds for the existing heading and is refused when that heading is renamed in an isolated input tree; identify the broken link."
+      }
+    },
+    {
+      "id": "target.tools02.k12c1-control-observation-takeover-resolve",
+      "counterexample": "cx.tools02.k12c1-control-observation-takeover-resolve",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/control-observation.test.ts",
+      "test_path": [
+        "control request getter reentry takeover/resolve checks the post-observation state"
+      ],
+      "declaration": {
+        "line": 15,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const rejection = refused(result), after = accepted(kernel.inspect(who, executionId));",
+          "sha256": "05480ae38a510c9730cdb97f80a3b2ff25921661cc9e3e643f88ebd04d382eea",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(reads, 1);",
+          "sha256": "0d9e83f855ca482546ab2d801d1f907635656c860a37b9b53a512c7ad60c5631"
+        },
+        {
+          "anchor": "assert.equal(rejection.classification, classification);",
+          "sha256": "5129bbe68eb6c0ded52d1aab2e707310bb5995d72a1889ad5623205b8b56aacb"
+        },
+        {
+          "anchor": "assert.equal(after.state, state);",
+          "sha256": "1dedafacc059e7896cbf1ee0ae07fa3e7db00f42af57761187818ee47bcdb338"
+        },
+        {
+          "anchor": "assert.equal(after.activation?.writerEpoch ?? null, epoch);",
+          "sha256": "742b089dc1597b2881dd5aa1931a993fe8b5863a814006b1e298a2354b0889be"
+        },
+        {
+          "anchor": "assert.equal(driver.seen.length, sends);",
+          "sha256": "f45f1ae67dc9768526dc481ff1653ab585df385379e6c69567199596ed11f0cb"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: The outer takeover control observes activationId exactly once; its own getter completes the inner resolve decision before outer checks. Outer classification is no_unresolved_exchange; final state READY, epoch None, total deliveries 1. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal."
+      }
+    },
+    {
+      "id": "target.tools02.k12c1-control-observation-takeover-takeover",
+      "counterexample": "cx.tools02.k12c1-control-observation-takeover-takeover",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/control-observation.test.ts",
+      "test_path": [
+        "control request getter reentry takeover/takeover checks the post-observation state"
+      ],
+      "declaration": {
+        "line": 15,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const rejection = refused(result), after = accepted(kernel.inspect(who, executionId));",
+          "sha256": "05480ae38a510c9730cdb97f80a3b2ff25921661cc9e3e643f88ebd04d382eea",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(reads, 1);",
+          "sha256": "0d9e83f855ca482546ab2d801d1f907635656c860a37b9b53a512c7ad60c5631"
+        },
+        {
+          "anchor": "assert.equal(rejection.classification, classification);",
+          "sha256": "5129bbe68eb6c0ded52d1aab2e707310bb5995d72a1889ad5623205b8b56aacb"
+        },
+        {
+          "anchor": "assert.equal(after.state, state);",
+          "sha256": "1dedafacc059e7896cbf1ee0ae07fa3e7db00f42af57761187818ee47bcdb338"
+        },
+        {
+          "anchor": "assert.equal(after.activation?.writerEpoch ?? null, epoch);",
+          "sha256": "742b089dc1597b2881dd5aa1931a993fe8b5863a814006b1e298a2354b0889be"
+        },
+        {
+          "anchor": "assert.equal(driver.seen.length, sends);",
+          "sha256": "f45f1ae67dc9768526dc481ff1653ab585df385379e6c69567199596ed11f0cb"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: The outer takeover control observes activationId exactly once; its own getter completes the inner takeover decision before outer checks. Outer classification is stale_exchange; final state RUNNING, epoch 2, total deliveries 2. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal."
+      }
+    },
+    {
+      "id": "target.tools02.k12c1-control-observation-protocol-takeover",
+      "counterexample": "cx.tools02.k12c1-control-observation-protocol-takeover",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/control-observation.test.ts",
+      "test_path": [
+        "control request getter reentry protocol/takeover checks the post-observation state"
+      ],
+      "declaration": {
+        "line": 15,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const rejection = refused(result), after = accepted(kernel.inspect(who, executionId));",
+          "sha256": "05480ae38a510c9730cdb97f80a3b2ff25921661cc9e3e643f88ebd04d382eea",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(reads, 1);",
+          "sha256": "0d9e83f855ca482546ab2d801d1f907635656c860a37b9b53a512c7ad60c5631"
+        },
+        {
+          "anchor": "assert.equal(rejection.classification, classification);",
+          "sha256": "5129bbe68eb6c0ded52d1aab2e707310bb5995d72a1889ad5623205b8b56aacb"
+        },
+        {
+          "anchor": "assert.equal(after.state, state);",
+          "sha256": "1dedafacc059e7896cbf1ee0ae07fa3e7db00f42af57761187818ee47bcdb338"
+        },
+        {
+          "anchor": "assert.equal(after.activation?.writerEpoch ?? null, epoch);",
+          "sha256": "742b089dc1597b2881dd5aa1931a993fe8b5863a814006b1e298a2354b0889be"
+        },
+        {
+          "anchor": "assert.equal(driver.seen.length, sends);",
+          "sha256": "f45f1ae67dc9768526dc481ff1653ab585df385379e6c69567199596ed11f0cb"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: The outer protocol control observes activationId exactly once; its own getter completes the inner takeover decision before outer checks. Outer classification is stale_exchange; final state RUNNING, epoch 2, total deliveries 2. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal."
+      }
+    },
+    {
+      "id": "target.tools02.k12c1-control-observation-recover-resolve",
+      "counterexample": "cx.tools02.k12c1-control-observation-recover-resolve",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/control-observation.test.ts",
+      "test_path": [
+        "control request getter reentry recover/resolve checks the post-observation state"
+      ],
+      "declaration": {
+        "line": 15,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const rejection = refused(result), after = accepted(kernel.inspect(who, executionId));",
+          "sha256": "05480ae38a510c9730cdb97f80a3b2ff25921661cc9e3e643f88ebd04d382eea",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(reads, 1);",
+          "sha256": "0d9e83f855ca482546ab2d801d1f907635656c860a37b9b53a512c7ad60c5631"
+        },
+        {
+          "anchor": "assert.equal(rejection.classification, classification);",
+          "sha256": "5129bbe68eb6c0ded52d1aab2e707310bb5995d72a1889ad5623205b8b56aacb"
+        },
+        {
+          "anchor": "assert.equal(after.state, state);",
+          "sha256": "1dedafacc059e7896cbf1ee0ae07fa3e7db00f42af57761187818ee47bcdb338"
+        },
+        {
+          "anchor": "assert.equal(after.activation?.writerEpoch ?? null, epoch);",
+          "sha256": "742b089dc1597b2881dd5aa1931a993fe8b5863a814006b1e298a2354b0889be"
+        },
+        {
+          "anchor": "assert.equal(driver.seen.length, sends);",
+          "sha256": "f45f1ae67dc9768526dc481ff1653ab585df385379e6c69567199596ed11f0cb"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: The outer recover control observes activationId exactly once; its own getter completes the inner resolve decision before outer checks. Outer classification is no_unresolved_exchange; final state READY, epoch None, total deliveries 1. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal."
+      }
+    },
+    {
+      "id": "target.tools02.k12c1-control-observation-protocol-complete",
+      "counterexample": "cx.tools02.k12c1-control-observation-protocol-complete",
+      "command": "repository-tests",
+      "file": "packages/kernel/tests/control-observation.test.ts",
+      "test_path": [
+        "control request getter reentry protocol/complete checks the post-observation state"
+      ],
+      "declaration": {
+        "line": 15,
+        "column": 3
+      },
+      "input_anchors": [
+        {
+          "anchor": "const rejection = refused(result), after = accepted(kernel.inspect(who, executionId));",
+          "sha256": "05480ae38a510c9730cdb97f80a3b2ff25921661cc9e3e643f88ebd04d382eea",
+          "computed": true
+        }
+      ],
+      "assertion_anchors": [
+        {
+          "anchor": "assert.equal(reads, 1);",
+          "sha256": "0d9e83f855ca482546ab2d801d1f907635656c860a37b9b53a512c7ad60c5631"
+        },
+        {
+          "anchor": "assert.equal(rejection.classification, classification);",
+          "sha256": "5129bbe68eb6c0ded52d1aab2e707310bb5995d72a1889ad5623205b8b56aacb"
+        },
+        {
+          "anchor": "assert.equal(after.state, state);",
+          "sha256": "1dedafacc059e7896cbf1ee0ae07fa3e7db00f42af57761187818ee47bcdb338"
+        },
+        {
+          "anchor": "assert.equal(after.activation?.writerEpoch ?? null, epoch);",
+          "sha256": "742b089dc1597b2881dd5aa1931a993fe8b5863a814006b1e298a2354b0889be"
+        },
+        {
+          "anchor": "assert.equal(driver.seen.length, sends);",
+          "sha256": "f45f1ae67dc9768526dc481ff1653ab585df385379e6c69567199596ed11f0cb"
+        }
+      ],
+      "relation": {
+        "kind": "exact_input"
+      },
+      "discrimination": {
+        "reading": "TOOLS-02 extraction build 01: The outer protocol control observes activationId exactly once; its own getter completes the inner complete decision before outer checks. Outer classification is terminal_destination; final state COMPLETED, epoch None, total deliveries 1. Compare the post-inner snapshot to the post-outer view: exactly one outer refusal, no extra receipt, hold, history, delivery or accepted mutation. Preserve the inner decision and later answerability when nonterminal."
       }
     }
   ],
