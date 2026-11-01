@@ -5534,7 +5534,13 @@
           "name": "result.stale-repeat",
           "id": "mutation-2fcff9f536ad1267b01c3a5c6896c6ab72327a226795e9de282977ae4ee5e2c1"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.invalid-repeat",
@@ -5578,7 +5584,13 @@
           "name": "result.invalid-repeat",
           "id": "mutation-1c5b4a66fd5a2b9e460156011613e4e5f4a06d767c9e4c3702fc5ce69a973e0b"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.unstable-control",
@@ -5622,7 +5634,13 @@
           "name": "result.unstable-control",
           "id": "mutation-e39d60fb87235d0e22b579c405d374dace8f403bb9b64888581dc40a2d67ec95"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "capture.current.Map",
@@ -6356,7 +6374,13 @@
           "name": "result.target-wrong-kill",
           "id": "mutation-b75ff2fcfadd9545335a032f660fdb2ee9fbb0f94c4e3b8f0caa3eeef3d787dd"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.target-uncovered",
@@ -6400,7 +6424,13 @@
           "name": "result.target-uncovered",
           "id": "mutation-cf432fd26dab61e859b4072480214323ff2dfdfedcb92baf2886387682961e03"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.target-never-kills",
@@ -6444,7 +6474,13 @@
           "name": "result.target-never-kills",
           "id": "mutation-036e128fd3c05252e18949e4acbf3f118b3d64127d589b4f72cf0d7e7570447a"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.target-absent",
@@ -6488,7 +6524,13 @@
           "name": "result.target-absent",
           "id": "mutation-b4f35d8df7277bba84cde668ef846afd22f139a8776af0365b428fe25e970b75"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.target-malformed",
@@ -6532,7 +6574,13 @@
           "name": "result.target-malformed",
           "id": "mutation-e038f14573b39fe26fd063ba65f110418418cc956cf4549e0b1558137bfdca65"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.target-assertion-shape",
@@ -6576,7 +6624,13 @@
           "name": "result.target-assertion-shape",
           "id": "mutation-3f3835885ed7d3dd2eff14d3719a388f89f7a3eab2efb3cd5a6efb2d26d95d69"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.venv-leaf",
@@ -6620,7 +6674,13 @@
           "name": "result.venv-leaf",
           "id": "mutation-8f392ebcdb43b22556a4b224a9c078469accf619c4ea30b43b34318e905b5f66"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.venv-load",
@@ -6664,7 +6724,13 @@
           "name": "result.venv-load",
           "id": "mutation-939c0b1383fd7bd4d925b29a23b3a3215f892f8b20d15b2274084286a8826ed8"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.venv-hooks",
@@ -6708,7 +6774,13 @@
           "name": "result.venv-hooks",
           "id": "mutation-b996e8678242b0f1401f1a6497cc5e8b741be736bbf1467499d843472653b586"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.venv-unresolved",
@@ -6752,7 +6824,13 @@
           "name": "result.venv-unresolved",
           "id": "mutation-a3140ac966b82cd83cb40054ea7d74d24db6f34e2f01a76caf3a2c00e8465b63"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.venv-case",
@@ -6796,7 +6874,13 @@
           "name": "result.venv-case",
           "id": "mutation-1e430e273f5c163daf01fcb9d837000ca43269795d76dc9af027daa363811e59"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "state-owner.write-outside-apply",
@@ -8013,7 +8097,13 @@
           "name": "result.read-form.named-only",
           "id": "mutation-0256baf0f5aa75af1fcb0fdb58c749d5ef501183132a90ff842eb7bdcf8c65a1"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-form.walk-root-named",
@@ -8057,7 +8147,13 @@
           "name": "result.read-form.walk-root-named",
           "id": "mutation-149bee84fc3dfdf11c77005027ed56f71784a4746c8fb07ad998772b507a4241"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-form.named-dropped",
@@ -8101,7 +8197,13 @@
           "name": "result.read-form.named-dropped",
           "id": "mutation-b7deadb844ca92d99d777397af7f82c4727e62137280bd4e877d5d1219e8cf08"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-form.identity-free",
@@ -8145,7 +8247,13 @@
           "name": "result.read-form.identity-free",
           "id": "mutation-5e04a3a5ec214671163a10a0d02cf31903d0efac809fe46daabf6b76cd0ea920"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-form.fixtures-dropped",
@@ -8189,7 +8297,13 @@
           "name": "result.read-form.fixtures-dropped",
           "id": "mutation-7ed49cafe49ba43671be1e410b3682daf7be50222f6708f71c30290bd2d4df90"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.fixture-read.directory",
@@ -8233,7 +8347,13 @@
           "name": "result.fixture-read.directory",
           "id": "mutation-e4f043a20d3f0cc6c936a31549d40987d4e6dc77ac2d69ac9b5a3795bcb69b22"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-form.recursion-ignored",
@@ -8277,7 +8397,13 @@
           "name": "result.read-form.recursion-ignored",
           "id": "mutation-3ae3a45535e3207c0c756ee05e1348be90248672defa87ffffdf894b5c975ef0"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-form.tree-unexpanded",
@@ -8321,7 +8447,13 @@
           "name": "result.read-form.tree-unexpanded",
           "id": "mutation-bff7613c46ace56c13e124d7bac3c8460ffb989b7cc0f638f34da01a61778961"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-form.pin-unexpanded",
@@ -8365,7 +8497,13 @@
           "name": "result.read-form.pin-unexpanded",
           "id": "mutation-7e523d7dba6fa06d0be2ebd0f522df7520b3326884d462e8c053fc73723751db"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-form.pattern-accepted",
@@ -8409,7 +8547,13 @@
           "name": "result.read-form.pattern-accepted",
           "id": "mutation-201eec43f955a025375c76f05742430442f40c77dab114df52c9cfd27c7a728b"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-form.types-dropped",
@@ -8453,7 +8597,13 @@
           "name": "result.read-form.types-dropped",
           "id": "mutation-40d26c7b37c4a0f96ab7eac1a2a8b5ffac4fd9beb9bc5b3e669c454d1ad1322f"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-matrix.default-outside",
@@ -8497,7 +8647,13 @@
           "name": "result.read-matrix.default-outside",
           "id": "mutation-ba52df49b4b23ee73f7eccb853580be554720258813feca0b4476256d0d927f7"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-matrix.option-guard",
@@ -8541,7 +8697,13 @@
           "name": "result.read-matrix.option-guard",
           "id": "mutation-b7c530d90f43d30ce65e84b8fac9cad6e4bff110fdf677e1d78952584f693619"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-matrix.normalized",
@@ -8585,7 +8747,13 @@
           "name": "result.read-matrix.normalized",
           "id": "mutation-5ee25765d4f842bc81322147d99d90fe2cb2fbcea50d9f650d310b4eab2e01ce"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-matrix.alias",
@@ -8629,7 +8797,13 @@
           "name": "result.read-matrix.alias",
           "id": "mutation-d8960468fa0219146580bba3971973e2e5f608debc9880912314994ca3ed4a41"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-matrix.crossing",
@@ -8673,7 +8847,13 @@
           "name": "result.read-matrix.crossing",
           "id": "mutation-054013c1a3a36ae9be7aa15535412cca2bea8f90732e66d333c62e2a3cdb2065"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-matrix.pin-ancestor",
@@ -8717,7 +8897,13 @@
           "name": "result.read-matrix.pin-ancestor",
           "id": "mutation-8d1a02b6e287f5f5ec2e53cc4c13a07d4d01619a4d9d6b09181d5c03b21aeecd"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-matrix.pin-crossing",
@@ -8761,7 +8947,13 @@
           "name": "result.read-matrix.pin-crossing",
           "id": "mutation-d3553224685524abc7be9ae1356b76bf13a5937fb2132e1885934b29c095294d"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-matrix.exists-mode-only",
@@ -8805,7 +8997,13 @@
           "name": "result.read-matrix.exists-mode-only",
           "id": "mutation-dabc4c79a81704e2fd0339373913e8e39499e56ae7ac14db6e464f57e1ea0939"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-matrix.rule-p",
@@ -8849,7 +9047,13 @@
           "name": "result.read-matrix.rule-p",
           "id": "mutation-5ddbd22e8905405fb25ddde70a8b21116a578399d0acdeba144f857db4559982"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.read-matrix.rule-o",
@@ -8893,7 +9097,13 @@
           "name": "result.read-matrix.rule-o",
           "id": "mutation-f5977b91564e5990aa7cbfb653f28aa053e4a939baf93bd14d7428085b3c9d4d"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.target-invocation",
@@ -8937,7 +9147,13 @@
           "name": "result.target-invocation",
           "id": "mutation-72a83f681164629e8280268e9d79341498ffe2dd28d665575895bfcc6470d64f"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.target-policy",
@@ -8981,7 +9197,13 @@
           "name": "result.target-policy",
           "id": "mutation-7bb05f5cd871ef81014a087426ace8afd9f73ecc1c68b2d1ab5ad38300296c01"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "result.target-witness",
@@ -9025,7 +9247,13 @@
           "name": "result.target-witness",
           "id": "mutation-7527eac76917ad66599913cbcf3b3df0648da236924de3ed93d8e2c80a35e772"
         }
-      ]
+      ],
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The target-result control is a tooling mechanism check; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "k12.adopt-a6",
@@ -9072,6 +9300,12 @@
       "input": {
         "member": "A6 Effects silently stripped instead of refusing the Outcome",
         "required_result": "Effects are refused whole"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9119,6 +9353,12 @@
       "input": {
         "member": "A9 redelivery ignores recovery holds",
         "required_result": "Recovery holds block redelivery"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9165,6 +9405,12 @@
       "input": {
         "member": "A11 unknown envelope fields ignored",
         "required_result": "Unknown envelope fields are rejected"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9221,6 +9467,12 @@
       "input": {
         "member": "A12 Emission identity from a coordinator-wide counter",
         "required_result": "Emission identity does not use a shared counter"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9269,6 +9521,12 @@
       "input": {
         "member": "A13 progress observed twice (validation and retention read separately)",
         "required_result": "Progress is observed once"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9325,6 +9583,12 @@
       "input": {
         "member": "A14 Emission capacity checked only after every element is read",
         "required_result": "Emission capacity stops before element observation"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9372,6 +9636,12 @@
       "input": {
         "member": "B9 hold-ending History claims control power for a Runtime submission",
         "required_result": "Hold-ending history names attempt submission authority"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9419,6 +9689,12 @@
       "input": {
         "member": "B10 ordinary redelivery rotates the Runtime attempt grant",
         "required_result": "The initial attempt grant survives redelivery"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9466,6 +9742,12 @@
       "input": {
         "member": "B11 redelivery rotates only a takeover attempt grant",
         "required_result": "A takeover attempt grant survives redelivery"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9513,6 +9795,12 @@
       "input": {
         "member": "B15 skip all currency when either numeric claim member is malformed (K12-R11-ORDER-01 defective family)",
         "required_result": "A usable stale coordinate still fences a partial claim"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9560,6 +9848,12 @@
       "input": {
         "member": "B20 malformed Activation identity rendered in a pre-content refusal reason (decision-02 disclosure)",
         "required_result": "Pre-authority refusal does not render unusable Activation identity"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9607,6 +9901,12 @@
       "input": {
         "member": "A2 replay only while no exchange is open and the Execution is live (validation effectively first)",
         "required_result": "Replay remains answerable with a new exchange open or after termination"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9654,6 +9954,12 @@
       "input": {
         "member": "B3 permitted-action inspection desynchronized (protocol hold lists declaration instead of takeover)",
         "required_result": "Protocol hold lists takeover and submission, not code declaration"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9701,6 +10007,12 @@
       "input": {
         "member": "B4 delivery attribution lost (every delivery pinned to epoch 1)",
         "required_result": "Delivery evidence retains the epoch of each actual delivery"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9748,6 +10060,12 @@
       "input": {
         "member": "B7 Outcome hold-ending history built but never appended (resolves yet explains nothing)",
         "required_result": "An Outcome ending a hold appends its History in the same decision"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9804,6 +10122,12 @@
       "input": {
         "member": "B12 content validated before submission authority (grant check moved after content, K12-R9-EVID-01)",
         "required_result": "No grant plus invalid content refuses authority before disclosing content"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9860,6 +10184,12 @@
       "input": {
         "member": "B13 capacity validated before submission authority (capacity check moved before grant check, K12-R9-ORDER-01 neighbor)",
         "required_result": "No grant plus excess capacity refuses authority before disclosing capacity"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9916,6 +10246,12 @@
       "input": {
         "member": "B14 malformed claim reports only claim defects after authority (content defects silently dropped, K12-R10-EVID-01)",
         "required_result": "After authority, malformed claim diagnostics retain all independent content defects"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -9963,6 +10299,12 @@
       "input": {
         "member": "R5 Takeover replaces the old grant, and the old grant cannot authorize current coordinates.",
         "required_result": "Takeover replaces the old grant, and the old grant cannot authorize current coordinates."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10010,6 +10352,12 @@
       "input": {
         "member": "R7 Changing only the writer epoch under an accepted Activation ID conflicts instead of replaying.",
         "required_result": "Changing only the writer epoch under an accepted Activation ID conflicts instead of replaying."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10057,6 +10405,12 @@
       "input": {
         "member": "X8 Emission ID derived from diagnostic Activation spelling",
         "required_result": "X8 Emission ID derived from exact Activation spelling"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10104,6 +10458,12 @@
       "input": {
         "member": "X9 result ID derived from diagnostic Activation spelling",
         "required_result": "X9 result ID derived from exact Activation spelling"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10151,6 +10511,12 @@
       "input": {
         "member": "X10 acknowledged disposition names diagnostic Activation spelling",
         "required_result": "X10 acknowledged disposition names exact Activation spelling"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10198,6 +10564,12 @@
       "input": {
         "member": "X11 code hold stores diagnostic Activation spelling",
         "required_result": "X11 code hold stores exact Activation spelling"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10254,6 +10626,12 @@
       "input": {
         "member": "X12 recovery history stores diagnostic Activation spelling",
         "required_result": "X12 recovery history stores exact Activation spelling"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10310,6 +10688,12 @@
       "input": {
         "member": "X13 delivery row stores diagnostic Activation spelling",
         "required_result": "X13 delivery row stores exact Activation spelling"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10357,6 +10741,12 @@
       "input": {
         "member": "X14 resolved exchange stores diagnostic Activation spelling",
         "required_result": "X14 resolved exchange stores exact Activation spelling"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10404,6 +10794,12 @@
       "input": {
         "member": "X15 Outcome receipt token uses diagnostic Execution spelling",
         "required_result": "X15 Outcome receipt token uses exact Execution spelling"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10451,6 +10847,12 @@
       "input": {
         "member": "X16 history actor namespace rendered lossy",
         "required_result": "X16 history actor namespace remains exact"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10498,6 +10900,12 @@
       "input": {
         "member": "X17 decision answer activationId rendered lossy",
         "required_result": "X17 decision answer activationId remains exact"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10545,6 +10953,12 @@
       "input": {
         "member": "X18 takeover answer activationId rendered lossy",
         "required_result": "X18 takeover answer activationId remains exact"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10601,6 +11015,12 @@
       "input": {
         "member": "X19 recovery answer activationId rendered lossy",
         "required_result": "X19 recovery answer activationId remains exact"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10648,6 +11068,12 @@
       "input": {
         "member": "X20 protocol answer activationId rendered lossy",
         "required_result": "X20 protocol answer activationId remains exact"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10695,6 +11121,12 @@
       "input": {
         "member": "X21 protocol hold stores diagnostic Activation spelling",
         "required_result": "X21 protocol hold stores exact Activation spelling"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10742,6 +11174,12 @@
       "input": {
         "member": "X22 Emission record activationId rendered lossy",
         "required_result": "X22 Emission record activationId remains exact"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10789,6 +11227,12 @@
       "input": {
         "member": "X23 result record activationId rendered lossy",
         "required_result": "X23 result record activationId remains exact"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10838,6 +11282,12 @@
       "input": {
         "member": "V1",
         "required_result": "Bound diagnostic storage while retaining every observed issue occurrence"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10887,6 +11337,12 @@
       "input": {
         "member": "V2",
         "required_result": "Continue observing siblings after eight diagnostics until a declared cost stop"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10936,6 +11392,12 @@
       "input": {
         "member": "V3",
         "required_result": "Render every suffix occurrence rather than counting each suffix record once"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -10992,6 +11454,12 @@
       "input": {
         "member": "Z1-mint-receipt-token",
         "required_result": "Exact retained/returned coordinate at mint-receipt-token for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11039,6 +11507,12 @@
       "input": {
         "member": "Z2-creation-receipt-token",
         "required_result": "Exact retained/returned coordinate at creation-receipt-token for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11086,6 +11560,12 @@
       "input": {
         "member": "Z3-activation-executionId",
         "required_result": "Exact retained/returned coordinate at activation-executionId for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11133,6 +11613,12 @@
       "input": {
         "member": "Z4-activation-activationId",
         "required_result": "Exact retained/returned coordinate at activation-activationId for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11180,6 +11666,12 @@
       "input": {
         "member": "Z5-takeover-activation-copy",
         "required_result": "Exact retained/returned coordinate at takeover-activation-copy for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11236,6 +11728,12 @@
       "input": {
         "member": "Z6-replay-map-key",
         "required_result": "Exact retained/returned coordinate at replay-map-key for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11292,6 +11790,12 @@
       "input": {
         "member": "Z7-event-destination",
         "required_result": "Exact retained/returned coordinate at event-destination for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11339,6 +11843,12 @@
       "input": {
         "member": "Z8-redeliver-answer",
         "required_result": "Exact retained/returned coordinate at redeliver-answer for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11386,6 +11896,12 @@
       "input": {
         "member": "Z9-dispatch-grant-exec",
         "required_result": "Exact retained/returned coordinate at dispatch-grant-exec for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11433,6 +11949,12 @@
       "input": {
         "member": "Z10-acknowledged-ids",
         "required_result": "Exact retained/returned coordinate at acknowledged-ids for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11480,6 +12002,12 @@
       "input": {
         "member": "Z11-takeover-answer-batch-receipt",
         "required_result": "Exact retained/returned coordinate at takeover-answer-batch-receipt for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11536,6 +12064,12 @@
       "input": {
         "member": "Z12-view-activation-id",
         "required_result": "Exact retained/returned coordinate at view-activation-id for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11592,6 +12126,12 @@
       "input": {
         "member": "Z13-view-execution-id",
         "required_result": "Exact retained/returned coordinate at view-execution-id for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11648,6 +12188,12 @@
       "input": {
         "member": "Z14-view-queued-ids",
         "required_result": "Exact retained/returned coordinate at view-queued-ids for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11704,6 +12250,12 @@
       "input": {
         "member": "Z15-view-mailbox-destination",
         "required_result": "Exact retained/returned coordinate at view-mailbox-destination for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11760,6 +12312,12 @@
       "input": {
         "member": "Z16-view-hold-activation",
         "required_result": "Exact retained/returned coordinate at view-hold-activation for long and non-ASCII identities, derived independently from inputs."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11825,6 +12383,12 @@
       "input": {
         "member": "H1 hold history built from an entry whose resultingEpoch is optional (review 09's read)",
         "required_result": "Hold History does not inherit resultingEpoch from Object.prototype."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11872,6 +12436,12 @@
       "input": {
         "member": "H10 takeover record loses its resulting epoch",
         "required_result": "A takeover-clearing History record owns resultingEpoch equal to the new writer epoch."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11919,6 +12489,12 @@
       "input": {
         "member": "H11 declaration records claim attempt-submission authority",
         "required_result": "Explicit control declarations retain control authority in History."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -11966,6 +12542,12 @@
       "input": {
         "member": "H12 takeover receipt token through the diagnostic spelling",
         "required_result": "Takeover receipt token retains the exact Execution ID in both retained state and its answer."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -12121,6 +12703,12 @@
       "input": {
         "member": "H15 ordinary optional controlScopes read restored",
         "required_result": "Object.prototype.controlScopes cannot authorize a visibility-only caller."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -12186,6 +12774,12 @@
       "input": {
         "member": "H16 ordinary optional isSafeToReplace call restored",
         "required_result": "Object.prototype.isSafeToReplace cannot establish takeover safety for a Driver without that method."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -12226,7 +12820,13 @@
         "tests/tooling/state-owner-probe.mjs",
         "tools02-h7"
       ],
-      "failure_exit": 17
+      "failure_exit": 17,
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "k12c1.adopt-recovery-h17",
@@ -12273,6 +12873,12 @@
       "input": {
         "member": "H17 ordinary optional mailboxCapacity read restored",
         "required_result": "An absent mailboxCapacity option ignores Object.prototype and uses the default capacity."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -12320,6 +12926,12 @@
       "input": {
         "member": "H18 ordinary optional emissionsPerOutcome read restored",
         "required_result": "An absent emissionsPerOutcome option ignores Object.prototype and uses the default Emission limit."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -12367,6 +12979,12 @@
       "input": {
         "member": "H20 hostMember answers from Function.prototype",
         "required_result": "A function-object Driver must not inherit safety from Function.prototype."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -12432,6 +13050,12 @@
       "input": {
         "member": "H21 hostMember ignores members the host's own prototype supplies",
         "required_result": "Host-owned prototype declarations are honored, including Driver safety, control scopes and options."
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -12472,7 +13096,13 @@
         "tests/tooling/state-owner-probe.mjs",
         "tools02-h22"
       ],
-      "failure_exit": 17
+      "failure_exit": 17,
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "state-owner.tools02-round7-r7",
@@ -12514,7 +13144,13 @@
         "tests/tooling/state-owner-probe.mjs",
         "tools02-round7-r7"
       ],
-      "failure_exit": 17
+      "failure_exit": 17,
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "state-owner.tools02-round7-r8",
@@ -12556,7 +13192,13 @@
         "tests/tooling/state-owner-probe.mjs",
         "tools02-round7-r8"
       ],
-      "failure_exit": 17
+      "failure_exit": 17,
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "state-owner.tools02-round7-r10",
@@ -12607,7 +13249,13 @@
         "tests/tooling/state-owner-probe.mjs",
         "tools02-round7-r10"
       ],
-      "failure_exit": 17
+      "failure_exit": 17,
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "state-owner.tools02-round7-r11",
@@ -12649,7 +13297,13 @@
         "tests/tooling/state-owner-probe.mjs",
         "tools02-round7-r11"
       ],
-      "failure_exit": 17
+      "failure_exit": 17,
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "state-owner.tools02-round7-r12",
@@ -12691,7 +13345,13 @@
         "tests/tooling/state-owner-probe.mjs",
         "tools02-round7-r12"
       ],
-      "failure_exit": 17
+      "failure_exit": 17,
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "state-owner.tools02-round7-c8",
@@ -12733,7 +13393,13 @@
         "tests/tooling/state-owner-probe.mjs",
         "tools02-round7-c8"
       ],
-      "failure_exit": 17
+      "failure_exit": 17,
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "state-owner.tools02-round7-c10",
@@ -12775,7 +13441,13 @@
         "tests/tooling/state-owner-probe.mjs",
         "tools02-round7-c10"
       ],
-      "failure_exit": 17
+      "failure_exit": 17,
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "k12c1.adopt-base-i1",
@@ -12841,6 +13513,12 @@
         "files": [
           "packages/kernel/tests/activation-identity.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -12909,6 +13587,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -12977,6 +13661,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13063,6 +13753,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13221,6 +13917,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13325,6 +14027,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13411,6 +14119,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13459,6 +14173,12 @@
         "files": [
           "packages/kernel/tests/activation-identity.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13507,6 +14227,12 @@
         "files": [
           "packages/kernel/tests/activation-identity.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13555,6 +14281,12 @@
         "files": [
           "packages/kernel/tests/activation-identity.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13603,6 +14335,12 @@
         "files": [
           "packages/kernel/tests/activation-identity.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13651,6 +14389,12 @@
         "files": [
           "packages/kernel/tests/activation-identity.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13701,6 +14445,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13751,6 +14501,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13801,6 +14557,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13851,6 +14613,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13901,6 +14669,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -13951,6 +14725,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14001,6 +14781,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14051,6 +14837,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14101,6 +14893,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14151,6 +14949,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14201,6 +15005,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14251,6 +15061,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14301,6 +15117,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14351,6 +15173,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14401,6 +15229,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14451,6 +15285,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14501,6 +15341,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14551,6 +15397,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14601,6 +15453,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14651,6 +15509,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14701,6 +15565,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14751,6 +15621,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14801,6 +15677,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14851,6 +15733,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14901,6 +15789,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -14951,6 +15845,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15001,6 +15901,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15051,6 +15957,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15101,6 +16013,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15151,6 +16069,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15201,6 +16125,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15251,6 +16181,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15301,6 +16237,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15349,6 +16291,12 @@
         "files": [
           "packages/kernel/tests/activation-identity.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15399,6 +16347,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15449,6 +16403,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15499,6 +16459,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15549,6 +16515,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15599,6 +16571,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15649,6 +16627,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15699,6 +16683,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15767,6 +16757,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15817,6 +16813,12 @@
         "files": [
           "packages/kernel/tests/aggregate-refusal.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15876,6 +16878,12 @@
         "files": [
           "packages/sdk/tests/value-diagnostic-work.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15927,6 +16935,12 @@
         "files": [
           "packages/kernel/tests/poison-catalog.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -15976,6 +16990,12 @@
         "files": [
           "packages/kernel/tests/outcome-acceptance.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16026,6 +17046,12 @@
         "files": [
           "packages/kernel/tests/refusal-diagnostics.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16074,6 +17100,12 @@
         "files": [
           "packages/kernel/tests/activation-identity.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16122,6 +17154,12 @@
         "files": [
           "packages/kernel/tests/activation-identity.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16173,6 +17211,12 @@
         "files": [
           "packages/sdk/tests/value-refusal-cost.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16224,6 +17268,12 @@
         "files": [
           "packages/sdk/tests/value-refusal-cost.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16293,6 +17343,12 @@
         "files": [
           "packages/sdk/tests/value-refusal-cost.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16344,6 +17400,12 @@
         "files": [
           "packages/sdk/tests/value-refusal-cost.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16394,6 +17456,12 @@
         "files": [
           "packages/sdk/tests/value-diagnostic-work.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16453,6 +17521,12 @@
         "files": [
           "packages/sdk/tests/value-diagnostic-work.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16496,7 +17570,13 @@
         "tests/tooling/state-owner-probe.mjs",
         "tools02-review8-n8"
       ],
-      "failure_exit": 17
+      "failure_exit": 17,
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "k12c1.adopt-review8-n14",
@@ -16547,6 +17627,12 @@
         "files": [
           "packages/sdk/tests/value-refusal-cost.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16589,7 +17675,13 @@
         "tests/tooling/state-owner-probe.mjs",
         "tools02-review8-n7"
       ],
-      "failure_exit": 17
+      "failure_exit": 17,
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "k12c1.adopt-review8-n9",
@@ -16640,6 +17732,12 @@
         "files": [
           "packages/sdk/tests/capture-work.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16691,6 +17789,12 @@
         "files": [
           "packages/sdk/tests/capture-work.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16733,7 +17837,13 @@
         "tests/tooling/state-owner-probe.mjs",
         "tools02-review8-n11"
       ],
-      "failure_exit": 17
+      "failure_exit": 17,
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
+      }
     },
     {
       "id": "k12c1.adopt-review8-n13",
@@ -16784,6 +17894,12 @@
         "files": [
           "packages/sdk/tests/capture-work.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16833,6 +17949,12 @@
         "files": [
           "packages/kernel/tests/exact-coordinates.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16891,6 +18013,12 @@
         "files": [
           "packages/kernel/tests/exact-coordinates.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16949,6 +18077,12 @@
         "files": [
           "packages/kernel/tests/exact-coordinates.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     },
     {
@@ -16998,6 +18132,12 @@
         "files": [
           "packages/kernel/tests/exact-coordinates.test.ts"
         ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "TOOLS-02",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
     }
   ],
