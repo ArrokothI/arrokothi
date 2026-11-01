@@ -2,6 +2,27 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-11-01 ranges 2–4 ready for review 05.** Payload C `302fee9de7dc857ce58cf1e86d7fbb223af7c5fb` on B
+  `335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b`. Packet verify CI run `41286444190` at C passed. Fresh-clone full
+  verify at C: `checks_passed`, 19 of 19. Adoption `mappings_complete`: 269 closed, 1,280 retired. Self-audit:
+  0 unsafe, 2 minor. The report is [implementation 05](implementation-05.md). WAITING_FOR_REVIEW. Next: review 05,
+  a separate fresh Claude Opus session (owner choice 12), which also checks design 06. No self-acceptance; no hold
+  is lifted.
+
+- **2026-10-31–11-01 binding and final runs.** [Build 03](extraction-build-03.md):
+  - six fixture fixes; second complete pass 776.867 s, all killed;
+  - P3 items;
+  - design 06 routes on all 396 family members;
+  - register reconciled (1,186 entries);
+  - P1 binding, with six origins re-dispositioned to S5.
+
+  The final runs found three more tooling or fixture defects, fixed in `2d33974c`, `e364786f` and `302fee9d`
+  (implementation 05).
+
+- **2026-10-31 owner choice 14 — context references.** [Decision](owner-choice-14.md), three answers: widen the
+  context reference language, reason references absent at their revision or leaving the repository, and make closure
+  context one hop. [Design 06](design-06.md) §5–§6 state the rules and the replaced controls.
+
 - **2026-10-31 owner choice 13 — option A twice.** [Decision](owner-choice-13.md) answers projection 12: one
   complete pass may take up to 1,200 seconds, and design 06 adds a reuse-aware `mutation` route and a counted
   `covered` route, checked in review 05. Resume with the six fixture fixes and a new complete pass. IN_PROGRESS.

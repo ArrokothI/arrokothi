@@ -1,0 +1,322 @@
+{
+ "version": 1,
+ "record": "TOOLS-02 implementer self-audit (design 01 section 5.5, design 02 section 5); an implementer-side stop before H, never evidence for the audit bound.",
+ "implementer": "Claude Code desktop session (claude-opus-5-5), owner choice 12",
+ "seed": 20261026,
+ "size": 50,
+ "population": "retired",
+ "population_count": 1280,
+ "population_sha256": "538b3aaa319f4ecc68e159edb6ed42994f232fcc4700e3181640ead02aee5738",
+ "sampler": "tests/tooling/triage-sample.py",
+ "sample": [
+  "mention-19b06f6aa3d4bbe83c1c32d1",
+  "mention-4ef4e757129b99c0a9014801",
+  "mention-2141b7ceed2e17aa78f69fb1",
+  "mention-bbffff53fc8d1776856263fe",
+  "mention-9c7a714e238f6a8295280978",
+  "mention-d5d17d2ef9422651d5f800e1",
+  "mention-0ee9d471763e053df8474103",
+  "artifact-21fb34d9cd3ad15575371064",
+  "mention-9b2124af1ace05cb0d8d459a",
+  "mention-ea8b0de138636c7a14131504",
+  "mention-84b61100c02b6163b13c1e25",
+  "mention-78d5de82a3174fe7a3d022ac",
+  "mention-7e9b4a3f5db36d23a6f33e88",
+  "mention-3a7b9f6b9274306307638bea",
+  "mention-f81dea7498294c366ab9170d",
+  "mention-60cbf03ded13e3f824b36e7f",
+  "mention-c1322ec55b0e3cf4b2463af5",
+  "mention-8ceaf4a9e348d9732f6474aa",
+  "artifact-dbf5c4bd47aafe731d44ac00",
+  "mention-4a4e1e7db97fe4a23717fd30",
+  "mention-8d19baa85c3c0e54f3d5a71b",
+  "mention-c102533c6ec7396a13e7568c",
+  "mention-fe4f266619ae12fcc094885a",
+  "mention-42323675c2026d159b0f280e",
+  "mention-207f9767942cbf228b54e9c9",
+  "mention-92f368df4bcc2fbd271034ca",
+  "mention-9e1caa5153069319d27dfbae",
+  "mention-6e893291468d98875f6a3be8",
+  "mention-4990328d7e92c4062e04e64e",
+  "mention-d03aca8bc27e690776d40f52",
+  "mention-959e87ffd14f6a0cdf2fedae",
+  "mention-a6a5a6fd5007b5ebecdd744d",
+  "mention-7570ece9385ceb8ff51a5463",
+  "mention-65c1b326bfb93e3196d1405e",
+  "mention-02a037e5f13502651457aff1",
+  "mention-7d8ad1fda575bf846ab49474",
+  "mention-27c9fa6328d6a4d94441dd17",
+  "mention-a4640d77b23d0327e4906c39",
+  "mention-755534d53d5664cf12f85cf6",
+  "mention-6e833b9254cdf6ee19fae9ee",
+  "mention-eba3a8f568b5965aaa9e9574",
+  "mention-b97d340b5ccad5aea2638108",
+  "mention-8b372e5917d25f2452ff6e8a",
+  "mention-b4290aa52aad11606aceeb8c",
+  "mention-3db70a5c5ff487f688db3096",
+  "artifact-e946db253beed0b0eae2f6fd",
+  "mention-2a99688feb1a1c771d6648d4",
+  "mention-da0765b5448736a0a10438e3",
+  "mention-40b67ce136d06ebf3b8366a2",
+  "mention-e0726375113240681efd4149"
+ ],
+ "method": "Each origin read in its minimum context at its pin, with its class, rationale and pointer; a covered_by pointer is judged on whether the named leaf or case asserts the same required result; an unsafe error is a retired origin carrying a counterexample to a current claim with no maintained test at C asserting its required result.",
+ "unsafe_errors": 0,
+ "unsafe_bound": 1,
+ "minor_errors": 2,
+ "result": "within the stop: 0 unsafe errors, at most 1 allowed",
+ "readings": [
+  {
+   "n": 1,
+   "origin": "mention-19b06f6aa3d4bbe83c1c32d1",
+   "verdict": "correct"
+  },
+  {
+   "n": 2,
+   "origin": "mention-4ef4e757129b99c0a9014801",
+   "verdict": "correct"
+  },
+  {
+   "n": 3,
+   "origin": "mention-2141b7ceed2e17aa78f69fb1",
+   "verdict": "correct"
+  },
+  {
+   "n": 4,
+   "origin": "mention-bbffff53fc8d1776856263fe",
+   "verdict": "correct"
+  },
+  {
+   "n": 5,
+   "origin": "mention-9c7a714e238f6a8295280978",
+   "verdict": "correct"
+  },
+  {
+   "n": 6,
+   "origin": "mention-d5d17d2ef9422651d5f800e1",
+   "verdict": "correct"
+  },
+  {
+   "n": 7,
+   "origin": "mention-0ee9d471763e053df8474103",
+   "verdict": "correct"
+  },
+  {
+   "n": 8,
+   "origin": "artifact-21fb34d9cd3ad15575371064",
+   "verdict": "correct"
+  },
+  {
+   "n": 9,
+   "origin": "mention-9b2124af1ace05cb0d8d459a",
+   "verdict": "correct"
+  },
+  {
+   "n": 10,
+   "origin": "mention-ea8b0de138636c7a14131504",
+   "verdict": "correct"
+  },
+  {
+   "n": 11,
+   "origin": "mention-84b61100c02b6163b13c1e25",
+   "verdict": "correct"
+  },
+  {
+   "n": 12,
+   "origin": "mention-78d5de82a3174fe7a3d022ac",
+   "verdict": "minor",
+   "note": "S1 where S5 fits: the row lists reviewer mutations M1 (normal return implies delivered) and M2 (second report overwrites first) as evidence for claims stated elsewhere. Both results are maintained: dispatch.test.ts \"dispatch returns while the report is outstanding; a later report settles it\" and cancellation.test.ts \"delivered, failed, delivered: only the first report stands, and nothing logical changes\". Safe."
+  },
+  {
+   "n": 13,
+   "origin": "mention-7e9b4a3f5db36d23a6f33e88",
+   "verdict": "correct"
+  },
+  {
+   "n": 14,
+   "origin": "mention-3a7b9f6b9274306307638bea",
+   "verdict": "correct"
+  },
+  {
+   "n": 15,
+   "origin": "mention-f81dea7498294c366ab9170d",
+   "verdict": "correct"
+  },
+  {
+   "n": 16,
+   "origin": "mention-60cbf03ded13e3f824b36e7f",
+   "verdict": "correct"
+  },
+  {
+   "n": 17,
+   "origin": "mention-c1322ec55b0e3cf4b2463af5",
+   "verdict": "correct"
+  },
+  {
+   "n": 18,
+   "origin": "mention-8ceaf4a9e348d9732f6474aa",
+   "verdict": "correct"
+  },
+  {
+   "n": 19,
+   "origin": "artifact-dbf5c4bd47aafe731d44ac00",
+   "verdict": "correct"
+  },
+  {
+   "n": 20,
+   "origin": "mention-4a4e1e7db97fe4a23717fd30",
+   "verdict": "correct"
+  },
+  {
+   "n": 21,
+   "origin": "mention-8d19baa85c3c0e54f3d5a71b",
+   "verdict": "correct"
+  },
+  {
+   "n": 22,
+   "origin": "mention-c102533c6ec7396a13e7568c",
+   "verdict": "correct"
+  },
+  {
+   "n": 23,
+   "origin": "mention-fe4f266619ae12fcc094885a",
+   "verdict": "minor",
+   "note": "S1 where S5 fits: the row lists reviewer mutations MY-R1 (initial Event seeded into byInputId) and MY-M1 (normal return implies delivered). Both results are maintained: ingress.test.ts K11-R15-ID-01 leaves and the dispatch pending-report leaf. Safe."
+  },
+  {
+   "n": 24,
+   "origin": "mention-42323675c2026d159b0f280e",
+   "verdict": "correct"
+  },
+  {
+   "n": 25,
+   "origin": "mention-207f9767942cbf228b54e9c9",
+   "verdict": "correct"
+  },
+  {
+   "n": 26,
+   "origin": "mention-92f368df4bcc2fbd271034ca",
+   "verdict": "correct"
+  },
+  {
+   "n": 27,
+   "origin": "mention-9e1caa5153069319d27dfbae",
+   "verdict": "correct"
+  },
+  {
+   "n": 28,
+   "origin": "mention-6e893291468d98875f6a3be8",
+   "verdict": "correct"
+  },
+  {
+   "n": 29,
+   "origin": "mention-4990328d7e92c4062e04e64e",
+   "verdict": "correct"
+  },
+  {
+   "n": 30,
+   "origin": "mention-d03aca8bc27e690776d40f52",
+   "verdict": "correct"
+  },
+  {
+   "n": 31,
+   "origin": "mention-959e87ffd14f6a0cdf2fedae",
+   "verdict": "correct"
+  },
+  {
+   "n": 32,
+   "origin": "mention-a6a5a6fd5007b5ebecdd744d",
+   "verdict": "correct"
+  },
+  {
+   "n": 33,
+   "origin": "mention-7570ece9385ceb8ff51a5463",
+   "verdict": "correct"
+  },
+  {
+   "n": 34,
+   "origin": "mention-65c1b326bfb93e3196d1405e",
+   "verdict": "correct"
+  },
+  {
+   "n": 35,
+   "origin": "mention-02a037e5f13502651457aff1",
+   "verdict": "correct"
+  },
+  {
+   "n": 36,
+   "origin": "mention-7d8ad1fda575bf846ab49474",
+   "verdict": "correct"
+  },
+  {
+   "n": 37,
+   "origin": "mention-27c9fa6328d6a4d94441dd17",
+   "verdict": "correct"
+  },
+  {
+   "n": 38,
+   "origin": "mention-a4640d77b23d0327e4906c39",
+   "verdict": "correct"
+  },
+  {
+   "n": 39,
+   "origin": "mention-755534d53d5664cf12f85cf6",
+   "verdict": "correct"
+  },
+  {
+   "n": 40,
+   "origin": "mention-6e833b9254cdf6ee19fae9ee",
+   "verdict": "correct"
+  },
+  {
+   "n": 41,
+   "origin": "mention-eba3a8f568b5965aaa9e9574",
+   "verdict": "correct"
+  },
+  {
+   "n": 42,
+   "origin": "mention-b97d340b5ccad5aea2638108",
+   "verdict": "correct"
+  },
+  {
+   "n": 43,
+   "origin": "mention-8b372e5917d25f2452ff6e8a",
+   "verdict": "correct"
+  },
+  {
+   "n": 44,
+   "origin": "mention-b4290aa52aad11606aceeb8c",
+   "verdict": "correct"
+  },
+  {
+   "n": 45,
+   "origin": "mention-3db70a5c5ff487f688db3096",
+   "verdict": "correct"
+  },
+  {
+   "n": 46,
+   "origin": "artifact-e946db253beed0b0eae2f6fd",
+   "verdict": "correct"
+  },
+  {
+   "n": 47,
+   "origin": "mention-2a99688feb1a1c771d6648d4",
+   "verdict": "correct"
+  },
+  {
+   "n": 48,
+   "origin": "mention-da0765b5448736a0a10438e3",
+   "verdict": "correct"
+  },
+  {
+   "n": 49,
+   "origin": "mention-40b67ce136d06ebf3b8366a2",
+   "verdict": "correct"
+  },
+  {
+   "n": 50,
+   "origin": "mention-e0726375113240681efd4149",
+   "verdict": "correct"
+  }
+ ]
+}
