@@ -18172,7 +18172,8 @@
     "tests/tooling/source-facts.mjs",
     "packages/kernel/tests/binding-facade.ts",
     "packages/sdk/tests/wrapper-roots.ts",
-    "tests/tooling/test_read_form.py"
+    "tests/tooling/test_read_form.py",
+    "package-lock.json"
   ],
   "dependencies": [
     {

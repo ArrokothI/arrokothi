@@ -6,7 +6,8 @@
   ],
   "files": [
     "tests/fixtures/packet-tools/refusal-guards.json",
-    "tests/fixtures/packet-tools/mutations.json"
+    "tests/fixtures/packet-tools/mutations.json",
+    "package-lock.json"
   ],
   "cases": [
     {
