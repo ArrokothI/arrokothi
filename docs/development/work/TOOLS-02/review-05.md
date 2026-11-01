@@ -7,6 +7,10 @@ entries. The brief's review gate names that kind of defect. T2-3 and T2-4 meet t
 keep the family rule, at the strength stated below. The T2-5 audit found **0 unsafe errors in 150** (bound 3), with
 3 minor errors. The relevance samples found no irrelevant binding. Four P3 observations follow.
 
+This is TOOLS-02's fourth CHANGES REQUIRED, so 006's stop-and-redesign rule applies. The
+[root-cause note](#root-cause-note-006-stop-and-redesign) and [correction brief 05](review-05/brief-05.md) were
+added after the owner's answer. Neither changes the verdict, the findings or the audit.
+
 ## Audit seeds, chosen before any sample was drawn
 
 - **Candidate H:** `19c1f43f2989acc1a501c96ca0f0f08dbba339b9`, over C `302fee9de7dc857ce58cf1e86d7fbb223af7c5fb`,
@@ -294,14 +298,69 @@ same kind of drift.
 *Required change.* State the count at C, or cite the corpus report's `register.by_classification` without copying a
 figure, in both 002 and 017. The new C should keep everything else byte-identical.
 
+## Root-cause note (006 stop-and-redesign)
+
+**The rule applies.** Reviews 01, 02 and 03 of range 1 each returned CHANGES REQUIRED, and review 03 recorded
+the third. 006 stops patching once a packet reaches its third CHANGES REQUIRED. I read this fourth one as still
+past that point. The note was missing from this review when it was first committed (`3e478016`). It was added
+after the owner's answer below, and it changes no verdict, finding or audit result.
+
+**Mechanism.** A figure derived from the corpus was copied by hand into current prose. When the corpus was
+regenerated, the prose kept the old figure.
+- 002 and 017 L-17 took 983 from range 3's checkpoint (`d45c971e`: 909 V-ENV, 41 Proxy, 21 V-D1 and 12
+  re-prototyped).
+- Range 4's recompute made the count 1,174. All 191 added entries are V-ENV.
+- Nothing compares the prose with the corpus report's `register.by_classification`.
+- 002's earlier "853 rule-1 held entries" (891 measured) drifted the same way.
+
+The read-identity mechanism behind reviews 01–03 is not involved. The rule applies here because of the count of
+CHANGES REQUIRED verdicts, not because one subsystem keeps failing.
+
+**Why earlier passes missed it.** T2-4's criterion compares the register with the released claims. The corpus
+check and the self-audit both test the register itself, and neither reads 002 or 017. The prose was updated at
+range 3 and not checked again after range 4, and no review compared a prose count with the corpus report. So the
+gap is in the criterion: the claim had no check that could close it.
+
+**Owner options**, in 006's terms:
+- **Refined finishable claim (recommended).** 002 and 017 L-17 either cite the corpus report's unread rows with no
+  copied figure, or give a figure together with the revision it was measured at. A pinned figure stays true, and
+  a reference has nothing to drift. Two lines change, and the owner has already chosen the bounded review below.
+- **Redesign:** a check that ties every prose count to the corpus. That is far more than this defect needs, and
+  figures in other packets' records would also need it.
+- **Split:** accept ranges 2–4 now and make the correction in cleanup. The owner has already declined this route.
+- **Accepted, recorded limit:** not available. A limit cannot leave a false current claim in BASELINE.
+
+## Owner answer
+
+**The question**, verbatim from this session's wrap-up:
+
+> How should the correction for T2-R5-CLAIM-01 be reviewed?
+
+**The owner's answer**, the selected option verbatim:
+
+> Bounded delta review
+
+The option meant what this section's question proposed when the review was committed (`3e478016`): the
+correction round's review covers only the C..C2 delta and T2-R5-CLAIM-01, and the rest of this review stands for
+the new H.
+
+This departs from 006's rule that every round reviews the cumulative base-to-candidate diff as well as the
+correction delta. The owner's answer allows it for this one round, and only while C2's tree differs from C in the
+correction's files and administrative records. [Brief 05](review-05/brief-05.md) states that condition as a
+criterion. The answer narrows the review, not the verification: C2 still needs a passing Packet verify run.
+
+The owner gave this answer before the root-cause note above existed.
+
 ## Owner question
 
-T2-R5-CLAIM-01 is a two-line documentation correction in payload files, so it needs a new C, CI and H. Should the
-correction round's review cover only the C..C2 delta and this finding, leaving the rest of this review standing for
-the new H? Or do you prefer another route, such as accepting with the correction made in cleanup?
+Which 006 route applies? I recommend the refined finishable claim. Brief 05 is written for that route and needs
+changes under any other.
 
 ## Handoff
 
 This verdict binds exact H `19c1f43f2989acc1a501c96ca0f0f08dbba339b9` only. It grants no acceptance, lifts no hold
-and releases no packet. Evidence is in [review-05/](review-05/), with digests in
-[checks.json](review-05/checks.json).
+and releases no packet. [Correction brief 05](review-05/brief-05.md) carries the next round, once the owner
+chooses the 006 route. The P3 observations are not part of that round. Evidence is in
+[review-05/](review-05/), with digests in [checks.json](review-05/checks.json).
+
+CHANGES REQUIRED — H `19c1f43f2989acc1a501c96ca0f0f08dbba339b9` — TOOLS-02 ranges 2–4 (T2-3, T2-4, T2-5).
