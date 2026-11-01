@@ -272448,9 +272448,7 @@
         {
           "key": "case:state-owner.dropped-coupled-field-results",
           "matched": [
-            "Proxy",
-            "V-ENV",
-            "re-prototyped-built-in"
+            "V-ENV"
           ],
           "classification": "unread",
           "claim": "V-ENV",
