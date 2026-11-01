@@ -4,9 +4,8 @@
   "require_direct_parent": true,
   "administrative_files": [
     "docs/development/007-work-packets.md",
-    "docs/development/work/TOOLS-02/implementation-05.md",
-    "docs/development/work/TOOLS-02/progress.md",
-    "docs/development/work/TOOLS-02/self-audit-05.json"
+    "docs/development/work/TOOLS-02/implementation-06.md",
+    "docs/development/work/TOOLS-02/progress.md"
   ],
   "preserve": [
     {
