@@ -1500,7 +1500,8 @@
           "ordinary"
         ],
         "stage": [
-          "state-owner"
+          "state-owner",
+          "resulting-state"
         ]
       },
       "cases": [
@@ -1518,6 +1519,14 @@
             "bypass": "dropped-coupled-field",
             "environment": "ordinary",
             "stage": "state-owner"
+          }
+        },
+        {
+          "case": "state-owner.dropped-coupled-field-results",
+          "values": {
+            "bypass": "dropped-coupled-field",
+            "environment": "ordinary",
+            "stage": "resulting-state"
           }
         },
         {
