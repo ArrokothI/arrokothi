@@ -68,7 +68,7 @@ class TransferListTests(RepositoryFixture):
 
     def test_a_listed_origin_that_is_not_open_is_refused(self):
         rev = self.two([(0, 'a.md'), (1, 'a.md')], {'a.md': [0, 1]}, revalidate_second=False)
-        self.refuses('a transferred origin is an open revalidation origin', lambda: self.check(rev))
+        self.refuses('a transferred origin retains its revalidation provenance', lambda: self.check(rev))
 
     def test_list_shape_refusals(self):
         for message, change in [

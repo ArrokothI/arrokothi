@@ -274322,7 +274322,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/fault-oracle.test.ts:165:1",
@@ -274882,8 +274882,8 @@
           ],
           "classification": "unread",
           "claim": "V-ENV",
-          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01.",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md"
         },
         {
           "key": "packages/kernel/tests/host-members.test.ts:117:3",
@@ -274893,8 +274893,8 @@
           ],
           "classification": "unread",
           "claim": "V-ENV",
-          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01.",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md"
         },
         {
           "key": "packages/kernel/tests/host-members.test.ts:135:3",
@@ -274904,7 +274904,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/host-members.test.ts:155:3",
@@ -274915,7 +274915,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set. Earlier reading, kept as a note for BINDING-01: Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window."
         },
         {
           "key": "packages/kernel/tests/host-members.test.ts:162:3",
@@ -274925,8 +274925,8 @@
           ],
           "classification": "unread",
           "claim": "V-ENV",
-          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01.",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md"
         },
         {
           "key": "packages/kernel/tests/host-members.test.ts:193:5",
@@ -274936,8 +274936,8 @@
           ],
           "classification": "unread",
           "claim": "V-ENV",
-          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01.",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md"
         },
         {
           "key": "packages/kernel/tests/host-members.test.ts:222:3",
@@ -274948,7 +274948,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set. Earlier reading, kept as a note for BINDING-01: Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window."
         },
         {
           "key": "packages/kernel/tests/host-members.test.ts:232:3",
@@ -274958,8 +274958,8 @@
           ],
           "classification": "unread",
           "claim": "V-ENV",
-          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Was not_held for re-prototyped-built-in (Inherited members read by coordinator or host-member code (DEC-8 own-member reads), not value capture or its serializer window). The CONT-05 V-ENV recipe now also matches an intrinsic member write in the registration or a helper it calls; not reviewed per test against V-ENV, so held conservatively; invalidation-03 holds V-ENV for BINDING-01.",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md"
         },
         {
           "key": "packages/kernel/tests/host-members.test.ts:258:3",
@@ -274969,7 +274969,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/host-members.test.ts:69:3",
@@ -275473,7 +275473,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:190:3",
@@ -275483,7 +275483,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:199:3",
@@ -275493,7 +275493,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:212:3",
@@ -275503,7 +275503,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:231:3",
@@ -275513,7 +275513,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:250:3",
@@ -275523,7 +275523,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:270:3",
@@ -275533,7 +275533,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:288:3",
@@ -275543,7 +275543,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:309:3",
@@ -275553,7 +275553,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:327:3",
@@ -275563,7 +275563,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "BINDING-01 mechanical census: conservatively held at the relocated/changed witness; reclassification stays with TOOLS-02."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:363:3",
@@ -275573,7 +275573,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "BINDING-01 mechanical census: conservatively held at the relocated/changed witness; reclassification stays with TOOLS-02."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:397:3",
@@ -275583,7 +275583,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:424:3",
@@ -275593,7 +275593,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "BINDING-01 mechanical census: conservatively held at the relocated/changed witness; reclassification stays with TOOLS-02."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:463:3",
@@ -275603,7 +275603,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "BINDING-01 mechanical census: conservatively held at the relocated/changed witness; reclassification stays with TOOLS-02."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:589:3",
@@ -275613,7 +275613,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:593:3",
@@ -275623,7 +275623,7 @@
           "classification": "unread",
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
-          "reason": "TOOLS-02 range 4 register reconciliation (design 03 section 1): a match under released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+          "reason": "Held by owner choice 08 rule 1: the V-ENV detector finds intrinsic in its run set; per-test classification is BINDING-01's."
         },
         {
           "key": "packages/kernel/tests/nondisclosure.test.ts:599:1",

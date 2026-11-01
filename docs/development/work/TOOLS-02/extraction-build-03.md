@@ -60,8 +60,14 @@ registered ablations-03 members.
 
 The hold register was recomputed at C, as design 03 §1 describes. It now has 1,186 entries. Existing entries keep
 their classification, claim, decision and reason, with `matched` updated where it changed (101). Stale keys are
-removed (26). New matches are `unread` under a released claim (227); a moved member keeps its witness's claim. The
-new P3 case is registered like its source case. The census changes five members, the host-members leaves that the
+removed (26). Each of those 26 leaves moved, and its old entry is carried whole to its new location. Other new matches are
+`unread` under a released claim (227 added in all); a moved member keeps its witness's claim. The P3 case is
+registered under its recomputed claim, V-ENV.
+
+At C every registry case matches a released claim, including the 152 adoption cases and the 38 range-2 tool-result
+cases. Their entries are `unread` (owner choice 02), and the case register accepts an unread case only with a witness
+attribution. Those 190 cases therefore carry `mechanism_witness` attributions owned by TOOLS-02, in the form the K1.3
+semantic mutant cases already carry. Case and mutant identities are unchanged, and none earns conformance credit. The census changes five members, the host-members leaves that the
 earlier assertion-order repair (`b804e986`) changed, from `unread` to `refused`.
 
 Eleven new test leaves carry per-entry readings, so their entries are `not_held` and their suite targets can earn
@@ -95,3 +101,13 @@ The fifteen transferred origins that triage had retired keep their earlier closu
 135 origins could not close under TOOLS-01's context reference language. The owner widened it in two steps, then made
 closure context one hop after the widened transitive walk proved unbounded. Design 06 §5–§6 states the rules and
 controls. Two accepted controls of §5 and five transitive controls of §6 are replaced, each named there.
+
+## 7. Tooling tests corrected
+
+- `test_transfer_limits.test_a_listed_origin_that_is_not_open_is_refused` expected the refusal message that range 4's
+  `5af5bf86` replaced; its registered guard test had been updated then. It now expects the current message.
+- `test_venv_detector.test_known_leaves_are_rule_1_entries` names the moved host-members leaf at its current line.
+
+## 8. Fresh-clone results at C
+
+Recorded in [implementation 05](implementation-05.md).
