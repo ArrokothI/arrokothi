@@ -1,0 +1,1227 @@
+{
+  "record": "Review 05 reading of each sampled retired origin in its minimum context at its pin, with its class, rationale and pointer (design 01 §5.5 definitions).",
+  "revision": "19c1f43f2989acc1a501c96ca0f0f08dbba339b9",
+  "seed": 1640414241,
+  "population_count": 1280,
+  "population_sha256": "538b3aaa319f4ecc68e159edb6ed42994f232fcc4700e3181640ead02aee5738",
+  "size": 150,
+  "unsafe_bound": 3,
+  "unsafe_errors": 0,
+  "minor_errors": [
+    56,
+    121,
+    144
+  ],
+  "borderline": [
+    16,
+    89
+  ],
+  "by_class": {
+    "covered_elsewhere": 91,
+    "not_a_counterexample": 45,
+    "recorded_limit": 3,
+    "superseded": 11
+  },
+  "readings": [
+    {
+      "index": 0,
+      "origin": "mention-26d58e0f16bf3d5af1f8f2f9",
+      "source": "docs/development/work/K1.2-correction-01/contract.md:552@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "R11-COMMIT-01 row; fault-sweep \"every intercepted operation\" leaf and review-11 seed leaf assert it"
+    },
+    {
+      "index": 1,
+      "origin": "mention-8918d69946cfceeb06e1b95e",
+      "source": "docs/development/work/K1.1-correction-02/implementation-03.md:46@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "process statement"
+    },
+    {
+      "index": 2,
+      "origin": "mention-a72df5f6ad9ac74382728f6a",
+      "source": "docs/development/work/K1.1-correction-02/implementation-01.md:64@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "historical ablation result row; S5 over S1 is the stricter class"
+    },
+    {
+      "index": 3,
+      "origin": "artifact-4992d5c386175b80f363f169",
+      "source": "packages/kernel/tests/refusal-diagnostics.test.ts:1@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "maintained refusal-diagnostics file still maintained at C"
+    },
+    {
+      "index": 4,
+      "origin": "mention-c056931f21cc997e845e5c7b",
+      "source": "docs/development/work/K1.1-correction-01/review-07.md:49@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "verdict row; S5 mixed, iterator/JCS window under L-01"
+    },
+    {
+      "index": 5,
+      "origin": "mention-24814073dce3bba7a5f356a5",
+      "source": "docs/development/work/K1.1/implementation-06.md:156@9fd2faa71bc4",
+      "class": "recorded_limit",
+      "verdict": "safe",
+      "reading": "global replacement during capture: wrapper V-ENV, L-01"
+    },
+    {
+      "index": 6,
+      "origin": "artifact-8cf4a663a90b6f4631e96879",
+      "source": "docs/development/work/K1.2-correction-01/review-08/cost-probe.mjs:1@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "observation-only cost probe; capture-work leaves; timing L-03"
+    },
+    {
+      "index": 7,
+      "origin": "mention-fe4f266619ae12fcc094885a",
+      "source": "docs/development/work/K1.1-correction-01/review-08.md:201@9fd2faa71bc4",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "mutation-result table header"
+    },
+    {
+      "index": 8,
+      "origin": "mention-803672f9d3f52752b65edf28",
+      "source": "docs/development/work/K1.2-correction-01/exact-coverage-04.md:5@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "provenance line"
+    },
+    {
+      "index": 9,
+      "origin": "artifact-cf4132bb86b2ad173e5e394e",
+      "source": "docs/development/work/K1.2-correction-01/review-06/p-chain.mjs:1@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "prototype-chain cost probe; value-diagnostic-work zero-lookup leaves"
+    },
+    {
+      "index": 10,
+      "origin": "mention-5766105aef6599ba38977249",
+      "source": "docs/development/work/K1.1/validation-12/MANIFEST.md:148@9fd2faa71bc4",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "method/provenance"
+    },
+    {
+      "index": 11,
+      "origin": "mention-1c7ea1069d184e04a60555f6",
+      "source": "docs/development/work/K1.1/review-04.md:104@9fd2faa71bc4",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "readiness statement"
+    },
+    {
+      "index": 12,
+      "origin": "mention-34a236d558a3b677915ccfc9",
+      "source": "docs/development/work/K1.1/review-11.md:210@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "required action (coordinator-global sequence); nondisclosure leaves"
+    },
+    {
+      "index": 13,
+      "origin": "mention-70c13d86796438be8686e44a",
+      "source": "docs/development/work/K1.2/implementation-07.md:54@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "method statement"
+    },
+    {
+      "index": 14,
+      "origin": "mention-2a99688feb1a1c771d6648d4",
+      "source": "docs/development/work/K1.1/implementation-01.md:245@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "caller/Driver mutation after acceptance; inspection and dispatch leaves"
+    },
+    {
+      "index": 15,
+      "origin": "mention-6e0bf94dbc1b66e97f20df9e",
+      "source": "docs/development/work/K1.2/review-04.md:89@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "old construction order replaced by COORD-REFACTOR-01; state-owner checks"
+    },
+    {
+      "index": 16,
+      "origin": "mention-bf5f53760e5be8aa1917eb90",
+      "source": "docs/development/work/K1.2-correction-01/review-01.md:126@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe (borderline)",
+      "reading": "R8 near-engine-max caller identity: no maintained near-max test, but 50M DIAG-01 leaves take the same omission branch and 002/identity.md qualify engine allocation"
+    },
+    {
+      "index": 17,
+      "origin": "mention-6f550bdd9b57a5f7e9ab08ec",
+      "source": "docs/development/work/K1.1/implementation-14.md:151@9fd2faa71bc4",
+      "class": "superseded",
+      "verdict": "safe",
+      "reading": "/tmp count-gate script; TOOLS-01 design-02 row"
+    },
+    {
+      "index": 18,
+      "origin": "mention-37ed2a48e235074cfd9996ca",
+      "source": "docs/development/work/K1.2/implementation-06.md:18@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "change summary"
+    },
+    {
+      "index": 19,
+      "origin": "mention-34ef114054e3f3b65e12c9a9",
+      "source": "docs/development/work/K1.1/implementation-15.md:132@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "X9/nondisclosure; nondisclosure leaves"
+    },
+    {
+      "index": 20,
+      "origin": "mention-c64074ec328bd9b44b906bf9",
+      "source": "docs/development/work/K1.2-correction-01/review-02.md:77@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "namespace RangeError is the claim's engine-allocation qualification (002, identity.md)"
+    },
+    {
+      "index": 21,
+      "origin": "mention-286a93d96f3b8228d5ab1d9d",
+      "source": "docs/development/work/K1.2/review-14.md:160@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "limit-restoring ablation; activation-identity producer leaves"
+    },
+    {
+      "index": 22,
+      "origin": "mention-14619b31caf4aa1514e09214",
+      "source": "docs/development/work/K1.2/review-11.md:88@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "next exchange after continue; outcome-acceptance leaves"
+    },
+    {
+      "index": 23,
+      "origin": "artifact-e95b67c1005fb210addcf4ae",
+      "source": "docs/development/work/K1.2-correction-01/review-12-evidence/scope-probe.mjs:1@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "scope probe; fault-oracle exit inventory"
+    },
+    {
+      "index": 24,
+      "origin": "mention-c79cb85397312364984c3a53",
+      "source": "docs/development/work/K1.2-correction-01/review-revision-09-independent-2026-09-30/review.md:145@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "carried P3 observations; capture-refusals re-prototyped leaves, L-08"
+    },
+    {
+      "index": 25,
+      "origin": "mention-63b9ccf3b6a1b755c0a3aaaa",
+      "source": "docs/development/work/K1.2-correction-01/implementation-09.md:456@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "review-11 seed regression value; fault-sweep seed leaf"
+    },
+    {
+      "index": 26,
+      "origin": "mention-9c7a714e238f6a8295280978",
+      "source": "docs/development/work/K1.2-correction-01/exact-coverage-04.md:59@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "exact-coordinate oracle provenance; exact-coordinates leaves"
+    },
+    {
+      "index": 27,
+      "origin": "artifact-a1391856426919155dd8d776",
+      "source": "tests/conformance/architecture/mcp-boundaries.test.ts:1@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "pinned MCP boundary test; current mcp-boundaries leaves"
+    },
+    {
+      "index": 28,
+      "origin": "artifact-9fd619f5375d598ebb2b88aa",
+      "source": "tests/conformance/architecture/kernel-landing-zone.test.ts:1@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "limited kernel-landing-zone origin (C2-LIMIT), S5 retirement keeps members uncredited; current landing-zone leaves"
+    },
+    {
+      "index": 29,
+      "origin": "mention-360d60520f44cb84fcd2a597",
+      "source": "docs/development/work/K1.2/implementation-14.md:119@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "decision-02 C2/C3 matrices; outcome-partial-claim leaves"
+    },
+    {
+      "index": 30,
+      "origin": "mention-4b1c12d2601864e8d40801ab",
+      "source": "docs/development/work/K1.2/implementation-07.md:93@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "saved-reference grant rotation; submission-lifetime leaves"
+    },
+    {
+      "index": 31,
+      "origin": "mention-eb9c1f665dfc02c0c885f292",
+      "source": "docs/development/work/K1.1/review-12.md:110@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "K11-R12-ID-01 closure; nondisclosure leaves"
+    },
+    {
+      "index": 32,
+      "origin": "mention-f0f1207467cb49b31442a5b2",
+      "source": "docs/development/work/K1.1-correction-01/implementation-03.md:154@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "KC1-ARCH-1 ablations; dispatch decision-01 leaves"
+    },
+    {
+      "index": 33,
+      "origin": "mention-37cb8195b82be7f107e130f7",
+      "source": "docs/development/work/K1.2/review-06.md:127@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "wording closure"
+    },
+    {
+      "index": 34,
+      "origin": "mention-38c22ca6d4a2143541f8a6ca",
+      "source": "docs/development/work/K1.2-correction-01/review-revision-10-independent-2026-09-30/review.md:39@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "verdict row over C8-C10 schedules; fault-oracle sweep and controls"
+    },
+    {
+      "index": 35,
+      "origin": "mention-40399c23b73a10734063fb8c",
+      "source": "docs/development/work/K1.1/review-11.md:121@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "frozen receipts/refusals; evidence leaves"
+    },
+    {
+      "index": 36,
+      "origin": "mention-86cb0e38f1da2d6cde8b84a0",
+      "source": "docs/development/work/K1.2/review-10.md:120@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "report overclaim; submission-authority Case B/C leaves and k12.adopt-b14"
+    },
+    {
+      "index": 37,
+      "origin": "mention-a70fde93cb0b10fd4525df37",
+      "source": "docs/development/work/K1.2-correction-01/exact-coverage-04.md:68@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "iteration counts"
+    },
+    {
+      "index": 38,
+      "origin": "mention-78d5de82a3174fe7a3d022ac",
+      "source": "docs/development/work/K1.1-correction-01/review-05.md:149@9fd2faa71bc4",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "mutation-result table header"
+    },
+    {
+      "index": 39,
+      "origin": "artifact-60c388625458463b3781c5a5",
+      "source": "docs/development/work/K1.2-correction-01/review-06/p-chain-outcome.ts:1@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "ordinary foreign-prototype probe; value-diagnostic-work eight-root leaves"
+    },
+    {
+      "index": 40,
+      "origin": "mention-c374eb802461a0b3cbd11b6c",
+      "source": "docs/development/work/K1.2/review-14.md:77@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "reviewer probe inventory; named outcome-acceptance/outcome-hostile leaves"
+    },
+    {
+      "index": 41,
+      "origin": "mention-f8a6a880e07541636b316209",
+      "source": "docs/development/work/K1.1/implementation-08.md:267@9fd2faa71bc4",
+      "class": "superseded",
+      "verdict": "safe",
+      "reading": "V3 Proxy witness; DESIGN-AUDIT-01 decision-01"
+    },
+    {
+      "index": 42,
+      "origin": "mention-20b456da3fa7e06fa95c7eae",
+      "source": "docs/development/work/K1.2-correction-01/implementation-08.md:402@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "validation counts"
+    },
+    {
+      "index": 43,
+      "origin": "mention-fe9ebe10b4adfbef31dbe127",
+      "source": "docs/development/work/K1.2-correction-01/reconstruction.md:45@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "callback revalidation refusals bounded; refusal-diagnostics matched long identity leaves"
+    },
+    {
+      "index": 44,
+      "origin": "mention-5a8dd1738a03563a7a3b9164",
+      "source": "docs/development/work/K1.2-correction-01/review-01/reviewer-coverage-before-report.md:14@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "DEC-3 replay after takeover/terminal; activation-identity replay/terminal leaves"
+    },
+    {
+      "index": 45,
+      "origin": "mention-17712fb81e80466a26863e4b",
+      "source": "docs/development/work/K1.1-correction-01/decision-01.md:65@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "hostile failure reason; dispatch decision-01 hostile-reason leaves"
+    },
+    {
+      "index": 46,
+      "origin": "mention-90908279f6080252148147c1",
+      "source": "docs/development/work/K1.2/review-02.md:203@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "same as 15"
+    },
+    {
+      "index": 47,
+      "origin": "artifact-f1a28bedebfe204b9687fa53",
+      "source": "packages/kernel/tests/receipts.test.ts:1@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "receipts suite artifact; current receipts leaves plus the new P1-bound test"
+    },
+    {
+      "index": 48,
+      "origin": "mention-770a7e17294eecc48f17c510",
+      "source": "docs/development/work/K1.1/review-02.md:152@9fd2faa71bc4",
+      "class": "superseded",
+      "verdict": "safe",
+      "reading": "always-refusing placeholders; K1.2-c01 integration and K1.3 design"
+    },
+    {
+      "index": 49,
+      "origin": "mention-6d41e7dc69268b69dcb8f97f",
+      "source": "docs/development/work/K1.2-correction-01/implementation-03.md:141@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "engine allocation limit (claim qualification)"
+    },
+    {
+      "index": 50,
+      "origin": "mention-cc9910772c68b278bcf16c5b",
+      "source": "docs/development/work/K1.2-correction-01/review-10.md:96@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "DEC-4-6 verdict row; exact-coordinate/aggregate leaves"
+    },
+    {
+      "index": 51,
+      "origin": "mention-c827ca306ebebd477e9334f5",
+      "source": "docs/development/work/K1.2-correction-01/review-11/README.md:48@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "construction-fault probe; fault-sweep seed leaf and state-owner/oracle cases"
+    },
+    {
+      "index": 52,
+      "origin": "mention-a777991fa06f7aa93c48d4c5",
+      "source": "docs/development/work/K1.1/implementation-05.md:303@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "C4 met row; dispatch pin/reservation leaves"
+    },
+    {
+      "index": 53,
+      "origin": "mention-eab865173571040551927d5a",
+      "source": "docs/development/work/K1.2/review-11.md:210@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "C13 single observation; outcome-hostile leaves"
+    },
+    {
+      "index": 54,
+      "origin": "mention-d33af685b0096ea6880fcfc0",
+      "source": "docs/development/work/K1.2-correction-01/review-revision-09-independent-2026-09-30/review.md:142@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "commit-closure observation; fault-sweep seed leaf"
+    },
+    {
+      "index": 55,
+      "origin": "mention-da3b61a850f8806c6f4784e2",
+      "source": "docs/development/work/K1.1-correction-02/implementation-02.md:102@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "read-count probe; value-capture oversized leaves"
+    },
+    {
+      "index": 56,
+      "origin": "mention-48017e5a81931cb348c758da",
+      "source": "docs/development/work/K1.1/implementation-16.md:160@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "minor error",
+      "reading": "auxiliary gate-probe paragraph: S5 with nondisclosure pointers from a file-level template; the paragraph names no nondisclosure result. Identical text at item 17 is S2 (TOOLS-01 design-02). Safe; class/pointer wrong"
+    },
+    {
+      "index": 57,
+      "origin": "mention-9ddde42fcda8aedeb8abc13f",
+      "source": "docs/development/work/K1.1/review-02.md:134@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "retained receipt mutation; evidence leaves"
+    },
+    {
+      "index": 58,
+      "origin": "mention-eba3a8f568b5965aaa9e9574",
+      "source": "docs/development/work/K1.2/review-03.md:85@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "B6 safety-callback reentry; takeover-reentrancy leaves"
+    },
+    {
+      "index": 59,
+      "origin": "mention-b19a9f2545f32a11f5b47724",
+      "source": "docs/development/work/K1.2/review-02.md:56@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "change description"
+    },
+    {
+      "index": 60,
+      "origin": "mention-d56a03133e28934465b31bce",
+      "source": "docs/development/work/K1.2-correction-01/implementation-09.md:519@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "r11 probe stale_exchange; outcome-partial-claim stale leaves"
+    },
+    {
+      "index": 61,
+      "origin": "mention-81ab71ce2ccff2410a024486",
+      "source": "docs/development/work/K1.2-correction-01/implementation-06.md:224@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "negative experiment"
+    },
+    {
+      "index": 62,
+      "origin": "mention-83736f96199f333886eadeb1",
+      "source": "docs/development/work/K1.1/validation-13/MANIFEST.md:58@9fd2faa71bc4",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "method"
+    },
+    {
+      "index": 63,
+      "origin": "mention-729d507e6b75d4e1bea7f7fd",
+      "source": "docs/development/work/K1.2-correction-01/implementation-03.md:178@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "validation row"
+    },
+    {
+      "index": 64,
+      "origin": "mention-28cb3cdbadd90b7b3843a9a2",
+      "source": "docs/development/work/K1.2-correction-01/review-06/README.md:26@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "runner note"
+    },
+    {
+      "index": 65,
+      "origin": "mention-c040f41dcfe8aba46030e5cb",
+      "source": "docs/development/work/K1.2/implementation-13.md:97@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "partial-claim probe; outcome-partial-claim stale matrices"
+    },
+    {
+      "index": 66,
+      "origin": "mention-5829d3cff3cece3724269873",
+      "source": "docs/development/work/K1.2-correction-01/review-01/reviewer-coverage-before-report.md:19@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "R7 long/surrogate internal consumers; exact-coordinates covers surrogate Emission/result IDs, long namespace is asserted by activation-identity leaves (not named)"
+    },
+    {
+      "index": 67,
+      "origin": "mention-9db4b0fb02a119aa932eaa6e",
+      "source": "docs/development/work/K1.2-correction-01/review-11/README.md:28@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "command fence"
+    },
+    {
+      "index": 68,
+      "origin": "mention-67b96cf8eba72c952d1d9c4b",
+      "source": "docs/development/work/K1.1-correction-01/review-05.md:178@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "C2 verdict row; ingress domain-separation and nondisclosure leaves"
+    },
+    {
+      "index": 69,
+      "origin": "mention-d8436ff438d2ff215af91aac",
+      "source": "docs/development/work/K1.2-correction-01/review-10.md:289@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "whole-view probe; whole-view-ambient leaves"
+    },
+    {
+      "index": 70,
+      "origin": "artifact-0e16542de3087c0c508b3601",
+      "source": "packages/kernel/tests/fault-oracle.test.ts:1@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "maintained fault-oracle suite; current controls"
+    },
+    {
+      "index": 71,
+      "origin": "mention-f9c2b07a190c37b2090393ae",
+      "source": "docs/development/work/K1.2/implementation-11.md:154@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "reviewer rejection attempts; submission-authority leaves, k12.adopt-b12/b13"
+    },
+    {
+      "index": 72,
+      "origin": "mention-683a81b3959c14d11e522ed9",
+      "source": "docs/development/work/K1.2/contract.md:99@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "C2 replay/conflict clause; outcome-acceptance and terminal leaves"
+    },
+    {
+      "index": 73,
+      "origin": "mention-205316a34ca914dcf0f187c6",
+      "source": "docs/development/work/K1.1/implementation-15.md:191@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "nondisclosure oracle rerun; nondisclosure leaves"
+    },
+    {
+      "index": 74,
+      "origin": "mention-0e6a59cbc94f8a12fcd0ebc5",
+      "source": "docs/development/work/K1.1/implementation-10.md:298@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "XA/XB descriptor ablations; dispatch descriptor-pollution leaves; serializer half L-01"
+    },
+    {
+      "index": 75,
+      "origin": "mention-272577ebd8fb0381b3bcff19",
+      "source": "docs/development/work/K1.1/implementation-03.md:178@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "JCS substrate ablation; value-capture rules 1-6 leaves"
+    },
+    {
+      "index": 76,
+      "origin": "mention-4cbc3b09d93939edb78631b1",
+      "source": "docs/development/work/K1.1/validation-09/MANIFEST.md:68@9fd2faa71bc4",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "ablation table header"
+    },
+    {
+      "index": 77,
+      "origin": "mention-2dc5e4b39dcd344bab93df7d",
+      "source": "docs/development/work/K1.2-correction-01/handoff-12.md:9@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "open-finding status"
+    },
+    {
+      "index": 78,
+      "origin": "mention-a531138ea284e91aba0e7602",
+      "source": "docs/development/work/K1.1/implementation-07.md:180@9fd2faa71bc4",
+      "class": "superseded",
+      "verdict": "safe",
+      "reading": "V3 Proxy trap; DESIGN-AUDIT-01 decision-01"
+    },
+    {
+      "index": 79,
+      "origin": "mention-38273e895749bf1deb306f1d",
+      "source": "docs/development/work/K1.2-correction-01/review-11/coverage-before-report.md:19@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "reviewer method aims"
+    },
+    {
+      "index": 80,
+      "origin": "mention-6cf53827164452e54a2807ec",
+      "source": "docs/development/work/K1.2-correction-01/implementation-02.md:76@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "C3 whole-refusal row; aggregate-refusal leaves"
+    },
+    {
+      "index": 81,
+      "origin": "mention-59c6c64abeb13cf625b44059",
+      "source": "docs/development/work/K1.2-correction-01/coverage-05.md:35@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "cumulative audit scope"
+    },
+    {
+      "index": 82,
+      "origin": "mention-9c627c81e1dfa617cb113e53",
+      "source": "docs/development/work/K1.2-correction-01/owner-note-10.md:17@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "owner advice"
+    },
+    {
+      "index": 83,
+      "origin": "mention-3df0830f0805c05b82dd7e8c",
+      "source": "docs/development/work/K1.2-correction-01/owner-note-11.md:14@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "owner note"
+    },
+    {
+      "index": 84,
+      "origin": "mention-73370ca344591776c530b45d",
+      "source": "docs/development/work/K1.2-correction-01/review-12.md:100@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "review-12 candidate locations; fault-oracle altered-observation controls"
+    },
+    {
+      "index": 85,
+      "origin": "mention-bfcdab7ec77cda0656daa3a4",
+      "source": "docs/development/work/K1.2-correction-01/implementation-08.md:421@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "attachment inventory"
+    },
+    {
+      "index": 86,
+      "origin": "mention-5efc931219a0ff520ff4ac89",
+      "source": "docs/development/work/K1.1/implementation-03.md:94@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "JCS substrate ablation; value-capture rules 1-6 leaves"
+    },
+    {
+      "index": 87,
+      "origin": "mention-19b06f6aa3d4bbe83c1c32d1",
+      "source": "docs/development/work/K1.2-correction-01/review-01.md:255@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "O1 engine allocation limit (claim qualification)"
+    },
+    {
+      "index": 88,
+      "origin": "mention-f6187867490fa9a6f76746ec",
+      "source": "docs/development/work/K1.1/implementation-10.md:323@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "descriptor-conversion probes; dispatch descriptor leaves; Proxy handler decision-01; serializer L-01"
+    },
+    {
+      "index": 89,
+      "origin": "mention-506b24623f550b0bf4976779",
+      "source": "docs/development/work/K1.2-correction-01/review-02.md:75@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe (borderline)",
+      "reading": "probe-maxlen near-engine-max refusals recorded: same reading as 16"
+    },
+    {
+      "index": 90,
+      "origin": "mention-84b823d6a693c7755df18806",
+      "source": "docs/development/work/K1.1/validation-12/MANIFEST.md:52@9fd2faa71bc4",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "method"
+    },
+    {
+      "index": 91,
+      "origin": "mention-835eb1c9504b07b27eafaacb",
+      "source": "docs/development/work/K1.2-correction-01/implementation-02.md:113@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "engine limit restated"
+    },
+    {
+      "index": 92,
+      "origin": "mention-feff26f5eaed943fb7e9c24d",
+      "source": "docs/development/work/K1.2/review-11.md:157@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "partial-claim matrix requirement; outcome-partial-claim leaves, B14 adoption"
+    },
+    {
+      "index": 93,
+      "origin": "mention-420ca5ad016e72404cc3d66f",
+      "source": "docs/development/work/K1.2/review-11.md:201@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "C4 verdict row; outcome-acceptance batch/second-Outcome leaves"
+    },
+    {
+      "index": 94,
+      "origin": "artifact-42edc8cdfc687dbcb95e30c3",
+      "source": "docs/development/work/K1.2-correction-01/review-02/probe-cost.ts:1@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "cost probe; capture-work/value-refusal-cost leaves; timing L-03"
+    },
+    {
+      "index": 95,
+      "origin": "mention-581d0b4f0b856a9e36a2c5fd",
+      "source": "docs/development/work/K1.2/implementation-14.md:73@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "ablation re-anchoring note; decision-02 leaves"
+    },
+    {
+      "index": 96,
+      "origin": "mention-db7c66e919e8d66a8192b9c1",
+      "source": "docs/development/work/K1.1/implementation-13.md:201@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "mechanical self-checks paragraph also names the X9 global-sequence battery; nondisclosure leaves fit"
+    },
+    {
+      "index": 97,
+      "origin": "mention-c3bfc4ba3bccf33a5306c5b2",
+      "source": "docs/development/work/K1.2-correction-01/diagnostic-closure-04.md:184@66bc041175e6",
+      "class": "superseded",
+      "verdict": "safe",
+      "reading": "handler-trap counts over an accepted Proxy; decision-01"
+    },
+    {
+      "index": 98,
+      "origin": "mention-e050c551a11a699aee95daa8",
+      "source": "docs/development/work/K1.1-correction-02/review-03.md:22@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "payload identity"
+    },
+    {
+      "index": 99,
+      "origin": "artifact-c9cc769a30eca18b1f10d3d0",
+      "source": "docs/development/work/K1.2-correction-01/refusal-cost-probe-03.mjs:1@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "sealed-probe adapter; exact-coordinates and capture-work leaves"
+    },
+    {
+      "index": 100,
+      "origin": "mention-f1cc730e914442a542f39fcb",
+      "source": "docs/development/work/K1.2-correction-01/review-10.md:287@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "scanner evidence-gap reproducer; ambient-reads review-10 six-read leaves"
+    },
+    {
+      "index": 101,
+      "origin": "mention-f8847f84af4834070d48fb49",
+      "source": "docs/development/work/K1.2-correction-01/implementation-09.md:569@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "SCOPE-01 exits; fault-oracle sweep and controls"
+    },
+    {
+      "index": 102,
+      "origin": "mention-5a4e29d0863c77448bdd3433",
+      "source": "docs/development/work/K1.1/implementation-04.md:263@9fd2faa71bc4",
+      "class": "superseded",
+      "verdict": "safe",
+      "reading": "C7 placeholders; K1.2-c01 integration and K1.3 design"
+    },
+    {
+      "index": 103,
+      "origin": "mention-f5e2e4207fd5e49fa8debd3d",
+      "source": "docs/development/work/K1.2-correction-01/coverage-02.md:32@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "O1 documentation requirement (claim qualification)"
+    },
+    {
+      "index": 104,
+      "origin": "mention-8d999585220b210992bf566b",
+      "source": "docs/development/work/K1.2-correction-01/implementation-04.md:169@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "file list"
+    },
+    {
+      "index": 105,
+      "origin": "mention-af90db03d2e22cb5bc72fe67",
+      "source": "docs/development/work/K1.1-correction-01/implementation-02.md:122@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "KC1-ARCH-1 ablation counts; dispatch decision-01 leaves"
+    },
+    {
+      "index": 106,
+      "origin": "mention-5714f02bbc1c8a960eb1cc4e",
+      "source": "docs/development/work/K1.2/review-14.md:186@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "X24 identity-rule ablation superseded by opaque string identity; activation-identity leaves"
+    },
+    {
+      "index": 107,
+      "origin": "artifact-927ac471693384f2a7f96305",
+      "source": "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs:1@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "refusal-cost observations; capture-work/value-capture leaves; Proxy schedules decision-01"
+    },
+    {
+      "index": 108,
+      "origin": "mention-e4a98dbeabb49d5416eccc47",
+      "source": "docs/development/work/K1.2-correction-01/review-09.md:183@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "review-09 required outcome; recovery-ambient 22-schedule leaves"
+    },
+    {
+      "index": 109,
+      "origin": "mention-3e78e96f431bf41219c6052f",
+      "source": "docs/development/work/K1.2/review-01.md:255@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "hold History retention; recovery-history leaves, state-owner dropped History, k12.adopt-b7"
+    },
+    {
+      "index": 110,
+      "origin": "mention-dc5d0d023a95b969790ec693",
+      "source": "docs/development/work/K1.1/review-03.md:77@9fd2faa71bc4",
+      "class": "superseded",
+      "verdict": "safe",
+      "reading": "thrown Proxy with throwing constructor: decision-01 (accessors and Proxies refused unread); ordinary thrown values asserted by value-diagnostic-work \"thrown-value properties are never inspected\""
+    },
+    {
+      "index": 111,
+      "origin": "mention-2a2e30a5ce94aade227d8bca",
+      "source": "docs/development/work/K1.2-correction-01/review-11.md:242@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "review-11 default-parameter/shadowed mutants; fault-sweep seed leaf and owner/oracle cases"
+    },
+    {
+      "index": 112,
+      "origin": "mention-fe8390125be42cd0b060dd01",
+      "source": "docs/development/work/K1.1/implementation-09.md:309@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "N3 bound observation; dispatch K11-R4-DISP-01 leaves"
+    },
+    {
+      "index": 113,
+      "origin": "mention-1b8921b396e0e5803ee92e6d",
+      "source": "docs/development/work/K1.1-correction-02/review-03.md:48@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "verdict row"
+    },
+    {
+      "index": 114,
+      "origin": "mention-38ad16911b006053f663bc7b",
+      "source": "docs/development/work/K1.2/contract.md:288@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "method statement"
+    },
+    {
+      "index": 115,
+      "origin": "mention-2d5894cc10a7c1fad7ecec4e",
+      "source": "docs/development/work/K1.2-correction-01/implementation-09.md:175@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "fault-oracle examples; fault-oracle sweep and controls"
+    },
+    {
+      "index": 116,
+      "origin": "mention-91b13f72c5b91e7c2389a7f7",
+      "source": "docs/development/work/K1.1/validation-17/MANIFEST.md:27@9fd2faa71bc4",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "generation method"
+    },
+    {
+      "index": 117,
+      "origin": "mention-0c55283e33abfe7bb1ea4415",
+      "source": "docs/development/work/K1.2/review-10.md:105@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "lone-surrogate fixture request; submission-authority Case B/C, k12.adopt-b14"
+    },
+    {
+      "index": 118,
+      "origin": "mention-d5d17d2ef9422651d5f800e1",
+      "source": "docs/development/work/K1.2-correction-01/implementation-06.md:342@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "criterion support; recovery-ambient matrix leaves"
+    },
+    {
+      "index": 119,
+      "origin": "mention-d54721eee7035336e7dfe124",
+      "source": "docs/development/work/K1.1/implementation-09.md:298@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "indexed trap liveness; dispatch indexed-pollution leaves"
+    },
+    {
+      "index": 120,
+      "origin": "mention-e52538f3527fc3fc658fda8d",
+      "source": "docs/development/work/K1.2-correction-01/implementation-09.md:291@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "change description"
+    },
+    {
+      "index": 121,
+      "origin": "mention-d28f30021cee83bdfd38b974",
+      "source": "docs/development/work/K1.1/implementation-17.md:145@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "minor error",
+      "reading": "\"reran versus inspected\" paragraph: same file-level template as 56; the paragraph names no nondisclosure/X9 result, so the S5 nondisclosure pointer is wrong. Safe: no counterexample (count-gate subject, TOOLS-01 design-02)"
+    },
+    {
+      "index": 122,
+      "origin": "mention-d5961151f7a33701bedc2711",
+      "source": "docs/development/work/K1.2-correction-01/review-revision-10-independent-2026-09-30/review.md:70@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "sixteen scope combinations; fault-oracle sweep and exit inventory"
+    },
+    {
+      "index": 123,
+      "origin": "mention-fbb6c6eb63ebf38f8e871356",
+      "source": "docs/development/work/K1.2-correction-01/review-12-evidence/README.md:66@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "inspection scope"
+    },
+    {
+      "index": 124,
+      "origin": "mention-da52be7462c27a7d962e0981",
+      "source": "docs/development/work/K1.2-correction-01/review-06.md:16@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "independence disclosure"
+    },
+    {
+      "index": 125,
+      "origin": "mention-532f21cd6a2c9b3fa74fc324",
+      "source": "docs/development/work/K1.1-correction-01/implementation-03.md:152@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "KC1-ARCH-1 counts; dispatch decision-01 leaves"
+    },
+    {
+      "index": 126,
+      "origin": "mention-fdce827752ecaf7944c1992c",
+      "source": "docs/development/work/K1.2-correction-01/reconstruction.md:58@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "inspection projections; exact-coordinates and whole-view leaves"
+    },
+    {
+      "index": 127,
+      "origin": "mention-ef7c0a5908c5e56a8ad220a4",
+      "source": "docs/development/work/K1.2-correction-01/review-06/coverage-map.md:10@66bc041175e6",
+      "class": "recorded_limit",
+      "verdict": "safe",
+      "reading": "V2 wall-clock refusal time; L-03"
+    },
+    {
+      "index": 128,
+      "origin": "mention-407e0e7767983a4213fd9b1f",
+      "source": "docs/development/work/K1.2/implementation-13.md:52@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "method statement"
+    },
+    {
+      "index": 129,
+      "origin": "mention-d2260539c3fb513161a41d3d",
+      "source": "docs/development/work/K1.1-correction-02/review-03.md:42@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "KC2-1 verdict row; value-capture traversal leaves"
+    },
+    {
+      "index": 130,
+      "origin": "mention-37b607ff87320454ec71cc31",
+      "source": "docs/development/work/K1.1-correction-01/implementation-02.md:65@9fd2faa71bc4",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "method statement"
+    },
+    {
+      "index": 131,
+      "origin": "mention-53c21c05ba7d17a1119674b0",
+      "source": "docs/development/work/K1.2/review-14.md:94@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "content-group row; partial-claim C3 leaves and submission-authority Case A/C"
+    },
+    {
+      "index": 132,
+      "origin": "mention-156306c818f53bd251cfa267",
+      "source": "docs/development/work/K1.2-correction-01/cumulative-audit-04.md:50@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "C10 protocol failure; recovery-history leaves"
+    },
+    {
+      "index": 133,
+      "origin": "mention-00b6fe57052ab9c4c4a3b264",
+      "source": "docs/development/work/K1.2-correction-01/implementation-09.md:512@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "validation row"
+    },
+    {
+      "index": 134,
+      "origin": "mention-438b9f76b780d3e40aee99fa",
+      "source": "docs/development/work/K1.1-correction-02/implementation-03.md:25@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "probe provenance"
+    },
+    {
+      "index": 135,
+      "origin": "mention-beb4886ea9096ce69f0ee503",
+      "source": "docs/development/work/K1.1/implementation-09.md:308@9fd2faa71bc4",
+      "class": "superseded",
+      "verdict": "safe",
+      "reading": "V3 Proxy witness; decision-01"
+    },
+    {
+      "index": 136,
+      "origin": "artifact-bb7722eb19e78f33e1f81a58",
+      "source": "packages/kernel/tests/aggregate-refusal.test.ts:1@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "maintained aggregate-refusal suite; current leaves"
+    },
+    {
+      "index": 137,
+      "origin": "artifact-b06e44e7a30c0b735cf084aa",
+      "source": "docs/development/work/K1.1-correction-01/blocker-01.md:76@9fd2faa71bc4",
+      "class": "superseded",
+      "verdict": "safe",
+      "reading": "Driver-returned Promise sanitization; KC1-ARCH-1 decision-01"
+    },
+    {
+      "index": 138,
+      "origin": "mention-19a4e3ae8c7f8168388e1a46",
+      "source": "docs/development/work/K1.2-correction-01/review-10.md:183@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "review-10 six-form scan; ambient-reads leaves"
+    },
+    {
+      "index": 139,
+      "origin": "mention-57e0f9ebce70bc9555dfa611",
+      "source": "docs/development/work/K1.1/validation-07/MANIFEST.md:56@9fd2faa71bc4",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "ablation table header"
+    },
+    {
+      "index": 140,
+      "origin": "mention-6959c62340b0a60694eaeb7c",
+      "source": "docs/development/work/K1.2/implementation-14.md:91@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "closure list; decision-02 leaves"
+    },
+    {
+      "index": 141,
+      "origin": "mention-4b657d8c734dcf083f54df05",
+      "source": "docs/development/work/K1.1/implementation-03.md:104@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "pre-swap 20-vector byte equivalence; value-capture rules leaves"
+    },
+    {
+      "index": 142,
+      "origin": "mention-a4640d77b23d0327e4906c39",
+      "source": "docs/development/work/K1.1/review-05.md:71@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "post-capture live Map.set/Object.freeze; creation/dispatch replacement leaves"
+    },
+    {
+      "index": 143,
+      "origin": "mention-f07e78c6959d261ce298a5aa",
+      "source": "docs/development/work/K1.1/review-10.md:129@9fd2faa71bc4",
+      "class": "superseded",
+      "verdict": "safe",
+      "reading": "C7 placeholders"
+    },
+    {
+      "index": 144,
+      "origin": "artifact-4e300ac8047fcf6b203072a1",
+      "source": "docs/development/work/K1.1/review-06-supplement-01.md:90@9fd2faa71bc4",
+      "class": "recorded_limit",
+      "verdict": "minor error",
+      "reading": "K11-R6-VAL-04 scratch write under an inherited indexed accessor: retired S3/L-01, but SDK value-capture \"K11-R6-VAL-04 one observation survives an indexed accessor installed while observing it\" asserts the non-Proxy result, so S5 is the class (mixed rule S5 > S3); L-01 names global replacement, not prototype pollution. Safe"
+    },
+    {
+      "index": 145,
+      "origin": "mention-8b8a2f79f5dae8bcbc2ff99c",
+      "source": "docs/development/work/K1.1/implementation-02.md:240@9fd2faa71bc4",
+      "class": "superseded",
+      "verdict": "safe",
+      "reading": "accepting-cancel ablation; K1.3 design-01 §9"
+    },
+    {
+      "index": 146,
+      "origin": "mention-987e95326e1d9f680825279b",
+      "source": "docs/development/work/K1.2/review-03-merged.md:119@66bc041175e6",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "visibility vs Runtime authority; submission-authority leaves"
+    },
+    {
+      "index": 147,
+      "origin": "mention-93b1257ee6d9a755a01031d4",
+      "source": "docs/development/work/K1.1-correction-01/implementation-03.md:168@9fd2faa71bc4",
+      "class": "covered_elsewhere",
+      "verdict": "safe",
+      "reading": "KC1-ARCH-1 criterion support; dispatch leaves"
+    },
+    {
+      "index": 148,
+      "origin": "mention-97254e6f7ec572d0b01f34dc",
+      "source": "docs/development/work/K1.1/review-07.md:124@9fd2faa71bc4",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "method statement"
+    },
+    {
+      "index": 149,
+      "origin": "mention-adc496ea8b1c4900d41e5c72",
+      "source": "docs/development/work/K1.2-correction-01/implementation-06.md:146@66bc041175e6",
+      "class": "not_a_counterexample",
+      "verdict": "safe",
+      "reading": "file inventory"
+    }
+  ]
+}

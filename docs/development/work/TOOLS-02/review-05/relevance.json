@@ -1,0 +1,116 @@
+{
+  "record": "Review 05 relevance reading of the closed and extracted samples (design 02 §5). The tool checks binding; this reads relevance.",
+  "closed": {
+    "seed": 1500317432,
+    "population_count": 57,
+    "readings": [
+      {
+        "origin": "artifact-cf86f4b9a38fe1c218b5593b",
+        "provenance": "TOOLS-01 closure, unchanged since B",
+        "reading": "relevant: the composition-boundaries suite bound to its own leaves (unread witnesses)"
+      },
+      {
+        "origin": "artifact-476c4cb998557258d01b848b",
+        "provenance": "TOOLS-01 closure, unchanged since B",
+        "reading": "relevant: non-executable, live-provider profile not run (owner choice 01)"
+      },
+      {
+        "origin": "artifact-58bd5fa05308bf7be5582ac0",
+        "provenance": "TOOLS-01 closure, unchanged since B",
+        "reading": "relevant: non-executable historical command"
+      },
+      {
+        "origin": "artifact-893f58b7b13bd47ccf7f8f30",
+        "provenance": "TOOLS-01 closure, unchanged since B",
+        "reading": "relevant: workflow-boundaries suite bound to its own leaves"
+      },
+      {
+        "origin": "artifact-a45b1c9d40d46e183ebd203d",
+        "provenance": "TOOLS-02 P1 revalidation",
+        "reading": "relevant: inspection.test.ts bound to its own leaves as one unread V-ENV witness; no credit"
+      },
+      {
+        "origin": "additional-e0c4ff8aa1309ff5bc381c10",
+        "provenance": "TOOLS-02 P1 revalidation",
+        "reading": "relevant: DESIGN-AUDIT-01 cleanup record bound to the 53 realm.* probe cases it names"
+      },
+      {
+        "origin": "artifact-a18b918ab468d43e9b337c58",
+        "provenance": "TOOLS-01 closure, unchanged since B",
+        "reading": "relevant: non-executable, live-provider profile not run"
+      },
+      {
+        "origin": "artifact-00894044eb58ada0e1dc436d",
+        "provenance": "TOOLS-02 P1 revalidation",
+        "reading": "relevant: takeover-reentrancy.test.ts bound to its own leaves as one unread witness; no credit"
+      },
+      {
+        "origin": "artifact-63378152d309b4564411b75b",
+        "provenance": "TOOLS-01 closure, unchanged since B",
+        "reading": "relevant: re-prototyped exotics probe bound to its 10 cases"
+      },
+      {
+        "origin": "artifact-ad675d7ffcbba7ef72a017be",
+        "provenance": "TOOLS-01 closure, unchanged since B",
+        "reading": "relevant: non-executable historical command"
+      }
+    ]
+  },
+  "extracted": {
+    "seed": 1015389638,
+    "population_count": 212,
+    "readings": [
+      {
+        "origin": "mention-a93595d948847e833e783b4d",
+        "verdict": "relevant with over-linking",
+        "reading": "COMMIT-01 row: state-owner round-7 c8/c10 cases are this row's decisions; the seven R/H15/H21 cases are the READ-01 row's (one line above). Over-linking, no gap (T2-R5-RELEVANCE-01)"
+      },
+      {
+        "origin": "mention-aaaf6df4d37d0c495c87dae8",
+        "verdict": "relevant",
+        "reading": "inspection-scope paragraph naming the I/X/Z/H/R/C families and old-review adapters; bound to the family adoption cases and the review-03 N3 test"
+      },
+      {
+        "origin": "mention-5412da70d1c9040aac9bb538",
+        "verdict": "relevant",
+        "reading": "review-11 README naming its full-suite mutation runners; READ-01 inspection adoption case"
+      },
+      {
+        "origin": "mention-0262ef8c81cd6ceef5dd4011",
+        "verdict": "relevant",
+        "reading": "review-11 evidence line for run-read-mutant; same READ-01 case"
+      },
+      {
+        "origin": "mention-fdfb8ff7833980b60ee09cd9",
+        "verdict": "relevant",
+        "reading": "round-6 ordering enforcement; recovery H-family adoption cases"
+      },
+      {
+        "origin": "mention-19001b3329f13f52764343d2",
+        "verdict": "relevant",
+        "reading": "probe-identity P1-P4 exact-equality schedules; origin-regressions opaque-identity variants leaf"
+      },
+      {
+        "origin": "artifact-fb7a16748e389543ef6bf980",
+        "verdict": "relevant",
+        "reading": "K1.2 ablations runner; its family and 18 adoption cases"
+      },
+      {
+        "origin": "mention-a6b867bc7a5391547beca384",
+        "verdict": "relevant",
+        "reading": "R4/R5/R7 lossy-equality E1-E3 and R9 path-limit gap; r4/r5/r7, d31/d32/g6 cases"
+      },
+      {
+        "origin": "artifact-0371a0638a275e4aaa462599",
+        "verdict": "relevant",
+        "reading": "raw-output collector that runs every runner; bound to the adoption cases and the N3 test it collects"
+      },
+      {
+        "origin": "mention-91776da8ef8f7a936508edb3",
+        "verdict": "relevant",
+        "reading": "contract evidence row naming probe-host-members-06 and ablations-03-rebound-06; recovery/host-member H cases"
+      }
+    ]
+  },
+  "note": "7 of the 10 closed origins were complete at B (TOOLS-01) with byte-identical closures; all 26 TOOLS-02 closures are the P1 revalidations: 20 maintained test files bound to their own leaves as unread witnesses and 6 DESIGN-AUDIT-01 realm records bound to realm cases or non-executable."
+}
