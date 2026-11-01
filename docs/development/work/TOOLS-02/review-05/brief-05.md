@@ -1,16 +1,17 @@
 # Correction brief 05 — TOOLS-02 ranges 2–4
 
 ```text
-Correct the same released packet TOOLS-02 on codex/tools-02, after the owner chooses the 006 route.
+Correct the same released packet TOOLS-02 on codex/tools-02.
 Base 335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b; reviewed H 19c1f43f2989acc1a501c96ca0f0f08dbba339b9 over
 C 302fee9de7dc857ce58cf1e86d7fbb223af7c5fb; review record docs/development/work/TOOLS-02/review-05.md on
-claude/tools-02-review-05 (verdict commit 3e478016747b890f3de5abd3806ab7c65ea8f29f; this brief, the root-cause
-note and the owner answer were added by the next commit on that branch).
+claude/tools-02-review-05. The verdict is commit 3e478016747b890f3de5abd3806ab7c65ea8f29f. This brief, the
+root-cause note and the owner answer are in cd494bdff1af8ac557728729f91c072387d3bddf. The owner's route is in
+the commit after that.
 Open finding T2-R5-CLAIM-01 (P2); its required outcome and counterexample are in that record. The P3
 observations (T2-R5-WITNESS-01, -TRIAGE-01, -RELEVANCE-01) are not part of this round.
-Owner supplemental decisions: owner choices 01–14 at H, plus the owner's "Bounded delta review" answer in
-review 05's "Owner answer" section. Unresolved authority: the 006 route after this fourth CHANGES REQUIRED.
-Review 05 recommends a refined finishable claim, and this brief is written for that route.
+Owner supplemental decisions: owner choices 01–14 at H, plus two answers recorded in review 05. One is
+"Bounded delta review", in its "Owner answer" section. The other is "Refined claim", in its "Owner route (006)"
+section: 006's refined finishable claim after this fourth CHANGES REQUIRED. Unresolved authority: none.
 Read the brief below first. Answer its questions in implementation 06. This change stays inside design 03 §6's
 approved register, so 006 needs no new design note or design check. Apply 006 and 012: fix the mechanism as
 well as the two lines. Use 008 for the report and 006 for the new C/H plus evidence and push handoff. No
@@ -72,7 +73,5 @@ the 983 inside its dated 2026-10-28 entry, which is historical and stays as it i
 
 ## Stop conditions
 
-- The owner has not yet chosen the 006 route. Under a route other than the refined finishable claim, this
-  brief needs revising before work starts.
 - The correction needs a path outside T2-R5-BOUND's list.
 - At C2, `corpus` reports different register counts from H, or Packet verify fails.

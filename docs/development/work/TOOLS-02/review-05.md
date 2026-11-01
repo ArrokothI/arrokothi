@@ -351,16 +351,27 @@ criterion. The answer narrows the review, not the verification: C2 still needs a
 
 The owner gave this answer before the root-cause note above existed.
 
-## Owner question
+## Owner route (006)
 
-Which 006 route applies? I recommend the refined finishable claim. Brief 05 is written for that route and needs
-changes under any other.
+**The question**, verbatim from this session's wrap-up:
+
+> Which 006 route applies to T2-R5-CLAIM-01?
+
+**The owner's answer**, the selected option verbatim:
+
+> Refined claim
+
+This is 006's refined finishable claim, the route the root-cause note recommends. 002 and 017 L-17 will either
+cite the corpus report's unread rows with no copied figure, or give a figure together with the revision it was
+measured at. The owner chose none of the other three routes: redesign, a split or a recorded limit.
+[Brief 05](review-05/brief-05.md) was written for this route and needs no revision. The correction round may
+start.
 
 ## Handoff
 
 This verdict binds exact H `19c1f43f2989acc1a501c96ca0f0f08dbba339b9` only. It grants no acceptance, lifts no hold
-and releases no packet. [Correction brief 05](review-05/brief-05.md) carries the next round, once the owner
-chooses the 006 route. The P3 observations are not part of that round. Evidence is in
+and releases no packet. [Correction brief 05](review-05/brief-05.md) carries the next round, under the
+refined-claim route the owner chose. The P3 observations are not part of that round. Evidence is in
 [review-05/](review-05/), with digests in [checks.json](review-05/checks.json).
 
 CHANGES REQUIRED — H `19c1f43f2989acc1a501c96ca0f0f08dbba339b9` — TOOLS-02 ranges 2–4 (T2-3, T2-4, T2-5).
