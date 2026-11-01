@@ -3577,7 +3577,7 @@ def context_references(git, revision, referring_path, text):
                              not path.startswith('../') and (markdown or root))
             tree = git.tree(revision)
             folder = destination.endswith('/') and tree.get(destination.rstrip('/'), ('',))[0] == '040000'
-            if not supported and not markdown and folder:
+            if not supported and not markdown and folder and record_like:
                 root, path, supported = True, destination.rstrip('/'), True
             elif not supported and path.startswith('../') and record_like:
                 # Design 06 §5 (owner choice 14): a reference leaving the repository names no entry here.

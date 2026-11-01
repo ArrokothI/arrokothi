@@ -71,7 +71,7 @@ their closures could never pass `context_check`.
   names that record. Under `docs/` it is required and must be covered by a context range, like any sealed record;
 - `<revision>:<path>` names the record at that revision, required in the same way. Its revision is consumed with the
   reference, as a qualified link's is;
-- a trailing-slash spelling of an existing directory is a directory candidate, covered or reasoned;
+- a trailing-slash spelling of an existing directory that names `docs/` is a directory candidate, covered or reasoned;
 - text that resolves to no entry and holds characters outside the path alphabet, such as `docs/development/$`, is a
   candidate that needs a reason. It is never ignored.
 

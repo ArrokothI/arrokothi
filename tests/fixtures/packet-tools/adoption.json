@@ -4037,8 +4037,7 @@
           "packages/sdk": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
           "packages/sdk/README.md": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
           "packages/sdk/package.json": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
-          "packages/sdk/src": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
-          "packages/sdk/tests": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+          "packages/sdk/src": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
         }
       }
     },
@@ -13075,8 +13074,7 @@
           "packages/kernel": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
           "packages/kernel/src/coordinator.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
           "packages/kernel/src/envelope.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
-          "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
-          "packages/kernel/tests": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+          "packages/kernel/src/values.ts": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
         }
       }
     },
@@ -39528,8 +39526,7 @@
           "packages/sdk": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
           "packages/sdk/README.md": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
           "packages/sdk/package.json": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
-          "packages/sdk/src": "Production or tool source the text names; production files are targets, not context (D04-CHK-06).",
-          "packages/sdk/tests": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
+          "packages/sdk/src": "Production or tool source the text names; production files are targets, not context (D04-CHK-06)."
         }
       }
     },
@@ -87575,8 +87572,7 @@
           }
         ],
         "context_reasons": {
-          "mental-model/concepts/values.md": "A current document or directory the text names; the closure binds through its links, not as context.",
-          "packages/kernel/tests/sweep": "A test or test-side path the text names; it binds through the closure links, not as context."
+          "mental-model/concepts/values.md": "A current document or directory the text names; the closure binds through its links, not as context."
         }
       }
     },
@@ -185058,8 +185054,7 @@
           }
         ],
         "context_reasons": {
-          "docs/development/work/K1.2-correction-01/review-04": "A current document or directory the text names; the closure binds through its links, not as context.",
-          "mental-model": "A current document or directory the text names; the closure binds through its links, not as context."
+          "docs/development/work/K1.2-correction-01/review-04": "A current document or directory the text names; the closure binds through its links, not as context."
         }
       }
     },
@@ -250234,11 +250229,9 @@
           "ce0b5a7098a9f65cf16dc55ce6eb013946564508": "A revision the text cites as provenance; this context reads the origin and its records at their pinned revisions.",
           "dc03b365cbc65bdcb68333bc7ad74726cb62835d": "A revision the text cites as provenance; this context reads the origin and its records at their pinned revisions.",
           "docs/guides": "A current document or directory the text names; the closure binds through its links, not as context.",
-          "mental-model": "A current document or directory the text names; the closure binds through its links, not as context.",
           "mental-model/concepts/values.md": "A current document or directory the text names; the closure binds through its links, not as context.",
           "mental-model/mechanisms/creation.md": "A current document or directory the text names; the closure binds through its links, not as context.",
-          "mental-model/roadmap.md": "A current document or directory the text names; the closure binds through its links, not as context.",
-          "packages": "A current document or directory the text names; the closure binds through its links, not as context."
+          "mental-model/roadmap.md": "A current document or directory the text names; the closure binds through its links, not as context."
         }
       }
     }
