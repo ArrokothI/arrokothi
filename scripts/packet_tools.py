@@ -102,6 +102,13 @@ CONTEXT_LINK = re.compile(r'\[[^\]\n]*\]\(([^)\n]*)\)')
 CONTEXT_TOKEN = re.compile(r'[^\s`\x27"<>()[\]{},;]+')
 CONTEXT_LOCAL = re.compile(r'[\w.@/-]+', re.ASCII)
 CONTEXT_GITHUB = re.compile(r'https://github\.com/ArrokothI/arrokothi/blob/([0-9a-f]{7,40})/([\w.@/-]+)', re.ASCII)
+# TOOLS-02 design 06 §5 (owner choice 14): external URLs and `<revision>:<path>` spellings.
+CONTEXT_SCHEME = re.compile(r'[A-Za-z][A-Za-z0-9+.-]*://')
+CONTEXT_REPOSITORY = 'https://github.com/ArrokothI/arrokothi/'
+CONTEXT_GITHUB_TREE = re.compile(r'https://github\.com/ArrokothI/arrokothi/tree/([0-9a-f]{40})(?:/([\w.@/-]+))?/?', re.ASCII)
+CONTEXT_OTHER_GITHUB = re.compile(r'https://github\.com/(?!ArrokothI/arrokothi/)[\w.-]+/[\w.-]+(?:/|$)', re.ASCII)
+CONTEXT_CODE = ('.mjs', '.cjs', '.js', '.ts', '.mts', '.py')
+CONTEXT_REVISION_PATH = re.compile(r'([0-9a-f]{7,40}):((?:docs|packages|tests|scripts|examples|mental-model)/[\w./@-]*\w)', re.ASCII)
 SEALED_PREFIXES = ('docs/',)
 # TOOLS-02 T2-2 (design 02 §2.1): operations whose output is fixture data; each refuses an unclean checkout at
 # dispatch. `verify` keeps its own clean_payload; `candidate` and `gate` print no fixture data.
@@ -3500,14 +3507,20 @@ def context_minimum(git, origin):
 
 def context_references(git, revision, referring_path, text):
     """A deliberately small reference language, not a Markdown resolver. Required records
-    are classified only after normalization. Unsupported spellings of record references refuse."""
+    are classified only after normalization. Unsupported spellings of record references refuse.
+    TOOLS-02 design 06 §5 (owner choice 14) widens it in plain text only: a relative spelling of an existing
+    file, and `<revision>:<path>`, name records that must be covered; a trailing-slash directory is a
+    candidate; text naming no entry (including a revision:path absent at its revision) is a candidate that
+    needs a reason. A URL of another host or repository is external text unless the path after its host
+    names an entry of this repository; Markdown links are not parsed in source code."""
     references, masked = [], list(text)
-    for match in CONTEXT_LINK.finditer(text):
+    # Design 06 §5: source code is not Markdown, so `a[i](call)` in a sealed script is plain text.
+    for match in () if referring_path.endswith(CONTEXT_CODE) else CONTEXT_LINK.finditer(text):
         references.append((match.group(1), True))
         masked[match.start():match.end()] = ' ' * (match.end() - match.start())
     remaining = ''.join(masked)
     references.extend((match.group().rstrip('.:'), False) for match in CONTEXT_TOKEN.finditer(remaining))
-    required, candidates = set(), set()
+    required, candidates, consumed = set(), set(), set()
     for raw, markdown in references:
         destination = raw.split('#', 1)[0]
         if not destination:
@@ -3517,6 +3530,27 @@ def context_references(git, revision, referring_path, text):
         root = CONTEXT_PATH.fullmatch(destination)
         path = posixpath.normpath(posixpath.join(posixpath.dirname(referring_path), destination))
         decoded = unquote(destination).replace('\\', '/')
+        pinned_tree = CONTEXT_GITHUB_TREE.fullmatch(destination)
+        if pinned_tree:
+            # Design 06 §5: a pinned tree view names the repository, or a path, at that revision.
+            pin, tree_path = pinned_tree.groups()
+            if tree_path:
+                consumed.add(pin)
+            tree_revision = git.commit(pin)
+            entry = git.tree(tree_revision).get(tree_path) if tree_path else None
+            if tree_path and tree_path.startswith(SEALED_PREFIXES) and entry is not None and entry[0] != '040000':
+                git.blob(tree_revision, tree_path)
+                required.add((tree_revision, tree_path))
+            else:
+                candidates.add(tree_path or pin)
+            continue
+        if CONTEXT_SCHEME.match(destination) and not qualified and not destination.startswith(CONTEXT_REPOSITORY):
+            # An external URL is text, unless the path after its host names an entry of this repository (a disguise).
+            after_host = re.sub(r'^[A-Za-z][A-Za-z0-9+.-]*://[^/]*/?', '', decoded).split('?', 1)[0].rstrip('/')
+            if CONTEXT_OTHER_GITHUB.match(destination) or not after_host.startswith(SEALED_PREFIXES) or \
+                    git.tree(revision).get(after_host) is None:
+                continue
+        revision_path = None if markdown else CONTEXT_REVISION_PATH.fullmatch(destination)
         record_like = ('docs/' in decoded or path.startswith(SEALED_PREFIXES) and
                        (markdown or git.tree(revision).get(path, ('',))[0] in
                         ('100644', '100755', '120000')))
@@ -3524,18 +3558,56 @@ def context_references(git, revision, referring_path, text):
             pin, path = qualified.groups()
             reference_revision = git.commit(git.run('rev-parse', '--verify', pin + '^{commit}').decode().strip())
             supported = posixpath.normpath(path) == path
+        elif revision_path:
+            pin, path = revision_path.groups()
+            consumed.add(pin)
+            try:
+                reference_revision = git.commit(git.run('rev-parse', '--verify', '--quiet', pin + '^{commit}').decode().strip())
+            except CheckError:
+                reference_revision = None
+            supported = posixpath.normpath(path) == path
+            if reference_revision is None or git.tree(reference_revision).get(path) is None:
+                candidates.add(destination)
+                continue
         else:
             reference_revision = revision
             if not markdown and root:
                 path = destination
             supported = bool(local and not destination.startswith('/') and
                              not path.startswith('../') and (markdown or root))
+            tree = git.tree(revision)
+            folder = destination.endswith('/') and tree.get(destination.rstrip('/'), ('',))[0] == '040000'
+            if not supported and not markdown and folder:
+                root, path, supported = True, destination.rstrip('/'), True
+            elif not supported and path.startswith('../') and record_like:
+                # Design 06 §5 (owner choice 14): a reference leaving the repository names no entry here.
+                candidates.add(destination)
+                continue
+            elif not supported and not markdown and local and not destination.startswith('/') and \
+                    not path.startswith('../') and tree.get(path, ('',))[0] in ('100644', '100755', '120000'):
+                supported = True
+            elif not supported and not markdown and record_like and tree.get(path) is None and \
+                    tree.get(destination) is None and tree.get(destination.rstrip('/')) is None:
+                candidates.add(destination)
+                continue
+            elif not supported and markdown and record_like and not CONTEXT_SCHEME.match(destination):
+                # A link whose destination, stripped of <>, a title, a query and percent-encoding, names no entry is
+                # unresolvable text; one that names an entry is a disguised spelling and still refuses.
+                bare = unquote(re.split(r'[ ?]', destination.strip('<>'), maxsplit=1)[0]).replace('\\', '/')
+                named = posixpath.normpath(posixpath.join(posixpath.dirname(referring_path), bare))
+                if bare and tree.get(named) is None and tree.get(bare) is None and tree.get(bare.lstrip('./')) is None:
+                    candidates.add(destination)
+                    continue
         require(not record_like or supported, 'unsupported sealed-record reference: ' + raw)
         if not supported:
             continue
         entry = git.tree(reference_revision).get(path)
-        if path.startswith(SEALED_PREFIXES) and (entry is None or entry[0] != '040000'):
-            # Missing files and symlinks must not become reasonable-away candidates.
+        if path.startswith(SEALED_PREFIXES) and entry is None:
+            # Design 06 §5 (owner choice 14): a record absent at the revision it is read at is unresolvable text
+            # that needs a reason; a record present at that revision must still be covered.
+            candidates.add(path)
+        elif path.startswith(SEALED_PREFIXES) and entry[0] != '040000':
+            # Symlinks must not become reasonable-away candidates.
             git.blob(reference_revision, path)
             required.add((reference_revision, path))
         elif root or markdown:
@@ -3545,12 +3617,13 @@ def context_references(git, revision, referring_path, text):
     # Qualified references consume their revision as part of the reference, not as a free SHA.
     for match in CONTEXT_GITHUB.finditer(remaining):
         candidates.discard(match.group(1))
+    candidates -= consumed
     return required, candidates
 
 
 def context_check(git, origin, closure):
-    """Recorded ranges cover the minimum context and every sealed record it names, transitively;
-    every other path or revision candidate in that text is covered or reasoned."""
+    """Recorded ranges cover the minimum context and every sealed record it names (one hop, TOOLS-02 design 06
+    §6); every other path or revision candidate in that text is covered or reasoned."""
     ranges = closure.get('context')
     require(isinstance(ranges, list) and bool(ranges) and all(
         isinstance(row, dict) and isinstance(row.get('path'), str) and type(row.get('start')) is int and
@@ -3567,7 +3640,13 @@ def context_check(git, origin, closure):
     require(uncertain is None, 'the minimum context is uncertain (' + str(uncertain) + '): ' + origin['id'])
     require(covers(origin['revision'], origin['path'], start, end), 'the context does not cover the minimum: ' + origin['id'])
     seen, candidates_seen, used = set(), set(), set()
-    queue = [(origin['revision'], origin['path'], text)]
+    # TOOLS-02 design 06 §6 (owner choice 14): one hop. Only the minimum context is read for references; the
+    # records it names must be covered, and are not walked. A binary origin names nothing.
+    try:
+        git.blob(origin['revision'], origin['path']).decode('utf-8')
+        queue = [(origin['revision'], origin['path'], text)]
+    except UnicodeDecodeError:
+        queue = []
     while queue:
         revision, referring_path, current = queue.pop()
         required, candidates = context_references(git, revision, referring_path, current)
@@ -3579,7 +3658,6 @@ def context_check(git, origin, closure):
             record = git.blob(reference_revision, path)
             require(covers(reference_revision, path, 1, max(len(source_lines(record)), 1)),
                     'a named sealed record is outside the context: ' + path + '@' + reference_revision)
-            queue.append((reference_revision, path, record.decode('utf-8', 'replace')))
         for candidate in sorted(candidates):
             candidates_seen.add(candidate)
             if candidate in reasons:

@@ -6964,6 +6964,91 @@
       ]
     },
     {
+      "id": "state-owner.dropped-coupled-field-results",
+      "source": "TOOLS-02 P3 CR1-R1-TOOLS-01 (COORD-REFACTOR-01 review 01; design 01 lines 430-432): the four dropped-field mutants against the resulting-state assertions of the recovery-history, hold, grant and takeover-receipt suites",
+      "assertion": "state-owner.dropped-coupled-field-results.bypass-killed",
+      "files": [
+        "packages/kernel/tests/recovery-history.test.ts",
+        "packages/kernel/tests/hold-permitted.test.ts",
+        "packages/kernel/tests/submission-lifetime.test.ts",
+        "packages/kernel/tests/takeover.test.ts",
+        "tests/fixtures/packet-tools/state-owner-controls.json",
+        "tests/tooling/assertion-reporter.mjs",
+        "tests/tooling/state-owner-probe.mjs"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/state-owner-probe.mjs",
+        "dropped-coupled-field-results"
+      ],
+      "timeout_seconds": 360,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "state-owner-bypass",
+      "input": {
+        "family": "dropped-coupled-field-results",
+        "killers": [
+          "a) code hold lifecycle: entered, updated on reason change, cleared_by_declaration; all retained",
+          "b) protocol hold via takeover: entered, then cleared_by_takeover with resultingEpoch",
+          "c) ended_by_outcome: code hold ends with the exchange, history survives dispatch and completion",
+          "d) both holds plus Outcome: 2 entered + 2 ended_by_outcome",
+          "e) idempotent duplicates append nothing",
+          "f) history is immutable: list edits and record edits leave the next inspect unchanged",
+          "g) cross-scope: control activity on B leaves A's history unchanged and undisclosed",
+          "c) valid Outcome while both held ends both (fresh Execution)",
+          "the first send's grant still accepts after two redeliveries, including hold-ending submission",
+          "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced",
+          "a) code hold permits declare_code_availability and submit_outcome; redeliver/takeover refused, declaration clears",
+          "a) code hold does not fence a valid Outcome: submitOutcome ends the hold with progressRevision+1",
+          "c) both holds read declare_code_availability + submit_outcome; takeover blocked until code clears",
+          "d) permitted lists are frozen snapshots: mutation throws or leaves the next inspect unchanged",
+          "same Activation ID, same batch and progress, epoch + 1, a dispatch-intent receipt, a fresh delivery"
+        ]
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "COORD-REFACTOR-01",
+        "decision": "docs/development/work/TOOLS-01/owner-choice-08.md",
+        "reason": "Its run set starts node:child_process children the V-ENV detector cannot read. It records the resulting-state killers that COORD-REFACTOR-01 design 01 promised for the four dropped-field mutants (TOOLS-02 P3 CR1-R1-TOOLS-01); it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "CR1-4b the control arm drops its history append (binding kept)",
+          "operator": "drop-coupled-commit",
+          "path": "packages/kernel/src/state.ts",
+          "before": "    appendOwn(record.recoveryHistory, stored);\n    exchange.codeHold = codeHold;\n    exchange.protocolFailureHold = protocolFailureHold;",
+          "after": "    exchange.codeHold = codeHold;\n    exchange.protocolFailureHold = protocolFailureHold;",
+          "id": "mutation-a02bd4bd9e461923d696ae8325980348ca1b544aff7cb197625379dc9287d184"
+        },
+        {
+          "name": "CR1-4b the control arm drops its code-hold write (binding kept)",
+          "operator": "drop-coupled-commit",
+          "path": "packages/kernel/src/state.ts",
+          "before": "    appendOwn(record.recoveryHistory, stored);\n    exchange.codeHold = codeHold;\n    exchange.protocolFailureHold = protocolFailureHold;",
+          "after": "    appendOwn(record.recoveryHistory, stored);\n    exchange.protocolFailureHold = protocolFailureHold;",
+          "id": "mutation-1407f7436327a94a55426c5a8a55fedecfacecf2756c0b3be45d050679e1f4fe"
+        },
+        {
+          "name": "CR1-4b the takeover arm drops its receipt append (binding kept)",
+          "operator": "drop-coupled-commit",
+          "path": "packages/kernel/src/state.ts",
+          "before": "    appendOwn(record.receipts, receipt);\n    if (cleared !== null)",
+          "after": "    if (cleared !== null)",
+          "id": "mutation-533839533f2a7486d5acc2fe51cfd723cbddeef387a66f31c9cd33e2d6fbf394"
+        },
+        {
+          "name": "CR1-4b the takeover arm drops its grant write (binding kept)",
+          "operator": "drop-coupled-commit",
+          "path": "packages/kernel/src/state.ts",
+          "before": "    exchange.submission = submission;\n",
+          "after": "",
+          "id": "mutation-3190d6d47f3abd799f5d5749153b7242ca0afed03ef3178e0d8e25d0ab69c951"
+        }
+      ]
+    },
+    {
       "id": "state-owner.callback-inside-apply",
       "source": "COORD-REFACTOR-01 brief 01 CR1-4; design 01 revision 1 (D01-CHK-2, -3, -4)",
       "assertion": "state-owner.callback-inside-apply.bypass-killed",

@@ -23,6 +23,32 @@
         "#applyTakeover: prepares without changing anything, then commits exactly its declared statements"
       ]
     },
+    "dropped-coupled-field-results": {
+      "files": [
+        "packages/kernel/tests/recovery-history.test.ts",
+        "packages/kernel/tests/hold-permitted.test.ts",
+        "packages/kernel/tests/submission-lifetime.test.ts",
+        "packages/kernel/tests/takeover.test.ts"
+      ],
+      "test_count": 27,
+      "killers": [
+        "a) code hold lifecycle: entered, updated on reason change, cleared_by_declaration; all retained",
+        "b) protocol hold via takeover: entered, then cleared_by_takeover with resultingEpoch",
+        "c) ended_by_outcome: code hold ends with the exchange, history survives dispatch and completion",
+        "d) both holds plus Outcome: 2 entered + 2 ended_by_outcome",
+        "e) idempotent duplicates append nothing",
+        "f) history is immutable: list edits and record edits leave the next inspect unchanged",
+        "g) cross-scope: control activity on B leaves A's history unchanged and undisclosed",
+        "c) valid Outcome while both held ends both (fresh Execution)",
+        "the first send's grant still accepts after two redeliveries, including hold-ending submission",
+        "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced",
+        "a) code hold permits declare_code_availability and submit_outcome; redeliver/takeover refused, declaration clears",
+        "a) code hold does not fence a valid Outcome: submitOutcome ends the hold with progressRevision+1",
+        "c) both holds read declare_code_availability + submit_outcome; takeover blocked until code clears",
+        "d) permitted lists are frozen snapshots: mutation throws or leaves the next inspect unchanged",
+        "same Activation ID, same batch and progress, epoch + 1, a dispatch-intent receipt, a fresh delivery"
+      ]
+    },
     "callback-inside-apply": {
       "files": [
         "packages/kernel/tests/control-commits.test.ts",

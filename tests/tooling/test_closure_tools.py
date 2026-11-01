@@ -56,7 +56,8 @@ class ClosureTests(RepositoryFixture):
 
     def test_a_test_file_origin_closes_with_targets_witnesses_and_its_context(self):
         result = self.close(self.closure())
-        self.assertEqual(result, {'ranges': 3, 'candidates': 3, 'reasoned': 1})
+        # One hop (TOOLS-02 design 06 §6): note.md is named; deeper.md, named only by note.md, is not walked.
+        self.assertEqual(result, {'ranges': 3, 'candidates': 2, 'reasoned': 1})
 
     def test_unread_witness_preserves_closure_without_credit(self):
         facts = self.facts()
@@ -122,16 +123,17 @@ class ClosureTests(RepositoryFixture):
         with self.assertRaisesRegex(tool.CheckError, 'does not cover the minimum'):
             self.close(closure)
 
-    def test_named_sealed_records_are_context_transitively(self):
+    def test_named_sealed_records_are_context_one_hop(self):
+        """Owner choice 14 replaces the transitive walk: the records the minimum context names must be covered;
+        a record named only by one of them is not walked."""
         closure = self.closure(context=self.ranges(('packages/kernel/tests/a.test.ts', 1, 3), ('docs/records/note.md', 1, 1)))
-        with self.assertRaisesRegex(tool.CheckError, 'named sealed record is outside the context: docs/records/deeper.md'):
-            self.close(closure)
+        self.assertEqual(self.close(closure)['ranges'], 2)
+        with self.assertRaisesRegex(tool.CheckError, 'named sealed record is outside the context: docs/records/note.md'):
+            self.close(self.closure(context=self.ranges(('packages/kernel/tests/a.test.ts', 1, 3))))
 
     def test_a_reason_cannot_waive_mandatory_sealed_context(self):
         for omitted, ranges in [
-                ('docs/records/note.md', self.ranges(('packages/kernel/tests/a.test.ts', 1, 3))),
-                ('docs/records/deeper.md', self.ranges(('packages/kernel/tests/a.test.ts', 1, 3),
-                                                     ('docs/records/note.md', 1, 1)))]:
+                ('docs/records/note.md', self.ranges(('packages/kernel/tests/a.test.ts', 1, 3)))]:
             with self.subTest(omitted=omitted):
                 reasons = {'a1b2c3d': 'Historical revision.', omitted: 'Omit this required record.'}
                 with self.assertRaisesRegex(tool.CheckError, 'a named sealed record is outside the context: ' + omitted):

@@ -370,7 +370,7 @@
       "id": "adoption",
       "operation": "corpus",
       "spec": "tests/fixtures/packet-tools/adoption.json",
-      "expected": "revalidation_complete"
+      "expected": "mappings_complete"
     },
     {
       "id": "dimensions",
@@ -683,9 +683,9 @@
     }
   ],
   "limits": [
-    "TOOLS-02 ranges 2\u20134 under owner choice 06. No product semantic changes; no acceptance claim.",
+    "TOOLS-02 ranges 2\u20134 under owner choices 06 and 12. No product semantic changes; no acceptance claim.",
     "T2-3 invocation-bound assertion witness; T2-4 unread classification under owner choice 02 and design 03 \u00a76.",
-    "T2-5 triage remains pending until its batch work and self-audit complete.",
+    "T2-5: every open origin is closed under P1 or retired with a checked pointer; design 06 adds shared and covered P1-M routes (owner choice 13) and widens the context reference language (owner choice 14). Retirement earns no credit.",
     "Inherited K1.3 checks include the bounded race search; external live-provider and large-memory profiles remain not run."
   ]
 }
