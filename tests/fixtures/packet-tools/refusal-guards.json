@@ -7610,11 +7610,11 @@
     },
     {
       "id": "guard.context_check.557d3f1c1daa356e",
-      "assertion": "test_closure_tools.ClosureTests.test_named_sealed_records_are_context_transitively",
+      "assertion": "test_closure_tools.ClosureTests.test_named_sealed_records_are_context_one_hop",
       "category": "tool-refusal",
       "source": "scripts/packet_tools.py: context_check",
       "input": {
-        "test": "test_closure_tools.ClosureTests.test_named_sealed_records_are_context_transitively"
+        "test": "test_closure_tools.ClosureTests.test_named_sealed_records_are_context_one_hop"
       },
       "files": [],
       "argv": [
