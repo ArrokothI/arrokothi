@@ -1,11 +1,11 @@
 # Owner progress summary
 
-Snapshot: checked 2026-11-02 against remote main `335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b`.
+Snapshot: checked 2026-11-02 against remote main `3475d5d6922b38af6e7637193afb646567d796f9`.
 TOOLS-02 ranges 2–4 are independently accepted at H2 `0c2573eb61b399508df49d9dad16c732d7e1fd3b`, over payload C2
 `272489a0c3a6e853d17f3ba89f719a627f859847`. Reviews 05 and 06 are recorded at
 `6f3dffb6b7f4da338d0362e3ffee44332f5db0d0`, and the acceptance transcription A is at
-`83a87d804813b05d432022fdafac7c5cfcbe91ef`. Their [cleanup](work/TOOLS-02/cleanup-02.md) is complete, and
-integration is pending the owner's merge. K1.3's [integration](work/K1.3/integration-01.md) is recorded at
+`83a87d804813b05d432022fdafac7c5cfcbe91ef`. Their [cleanup](work/TOOLS-02/cleanup-02.md) is complete, and they are
+[integrated](work/TOOLS-02/integration-02.md) at `3475d5d6` (PR #64). K1.3's [integration](work/K1.3/integration-01.md) is recorded at
 `71f9b048` (PR #62); its owner closure remains pending. The benchmark branch head inspected was
 `8de04779d279dba82cf834d419e465d2b677ef46`, unchanged since 2026-09-13. Its E1 ledger still records
 `BLOCKED_EXTERNAL` and no gate result. The [status ledger](007-work-packets.md) and linked records own acceptance,
@@ -23,7 +23,7 @@ integration and release.
 | BINDING-01 | Independently accepted at H `b7a24c79`; integrated at `cd8d9250` (PR #53) |
 | COORD-REFACTOR-01 | Independently accepted at H `23c8919f`; integrated at `d17ea6d1` (PR #56) |
 | TOOLS-01 | Independently accepted at H `a50c3886`; integrated at `8f829003` (PR #45) |
-| TOOLS-02 | Independently accepted (released 2026-10-23, [release 01](work/TOOLS-02/release-01.md), scope B). Range 1 (T2-1, T2-2) is accepted at H `34ab91a5de23beb4997cdd2ae209a3b67aac50a0` and integrated at `4015599e` (PR #59). Ranges 2–4 (T2-3 to T2-5) are accepted at H2 above; cleanup is complete and integration is pending the owner's merge. The packet must be integrated before K1.4 acceptance |
+| TOOLS-02 | Independently accepted and integrated (released 2026-10-23, [release 01](work/TOOLS-02/release-01.md), scope B). Range 1 (T2-1, T2-2) is accepted at H `34ab91a5de23beb4997cdd2ae209a3b67aac50a0` and integrated at `4015599e` (PR #59). Ranges 2–4 (T2-3 to T2-5) are accepted at H2 above and integrated at `3475d5d6` (PR #64). This meets K1.4's TOOLS-02 prerequisite |
 | TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
 | K1.1-correction-03 | Independently accepted at H `4b121d7b`; integrated at `b976f3a3` (PR #48) |
 | Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-28; TOOLS-02 adds L-17) under 006 working principle 6 |
@@ -237,7 +237,8 @@ moved from 983 to 1,174, and nothing compared the two. Current prose now cites t
 figure to the revision it was measured at.
 
 Status: ranges 2–4 are independently accepted at H2 `0c2573eb`, by review 06 over review 05. Their
-[cleanup](work/TOOLS-02/cleanup-02.md) is complete, and integration is pending the owner's merge. Limits:
+[cleanup](work/TOOLS-02/cleanup-02.md) is complete, and they are [integrated](work/TOOLS-02/integration-02.md) at
+`3475d5d6` (PR #64). Limits:
 - Some closures rest on reading, not on a mechanism. 98 family members close through `covered` pointers and 114
   through shared mutation routes, at about S5's strength. Review 05 mutated 12 sampled `covered` members, and each
   had a pointer that failed.
@@ -341,14 +342,11 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-TOOLS-02 is independently accepted. Integration of ranges 2–4 waits for the owner's merge of its cleanup branch.
-K1.3 is integrated, and its owner closure remains pending. No successor is released. The remaining dependencies below
-come from 007.
+TOOLS-02 is independently accepted and integrated. K1.3 is integrated, and its owner closure remains pending. No
+successor is released. The remaining dependencies below come from 007.
 
-1. **TOOLS-02 integration.** The owner merges `claude/tools-02-cleanup-02`. The integration receipt then records the
-   merge. Review 05's open P3 notes (carried forward below) block nothing and are the owner's to route.
-2. **K1.4** owns the SDK host bridge and full K1/E1 gate, after K1.3 integration and TOOLS-02 acceptance
-   and integration. It is unreleased. The supported SDK surface changes there, as
+1. **K1.4** owns the SDK host bridge and full K1/E1 gate. Its packet prerequisites, K1.3 integration and TOOLS-02
+   acceptance and integration, are now met, but it needs its own owner release and is unreleased. The supported SDK surface changes there, as
    [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies, including BINDING-01’s startup check or an
    explicit L-01 limit in the public bridge contract.
 
