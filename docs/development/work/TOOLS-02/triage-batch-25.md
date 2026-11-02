@@ -1,0 +1,9 @@
+# Triage batch 25 — reviewer-12 fault oracle and scope
+
+2026-10-31, Codex GPT-6. Current reading `23d473a9`. Historical source pin `66bc041175e6fc191c2e7cf88de198111e7d97c9` for K1.2-correction-01. Origins 1,335–1,372 add 35 retirements and 3 extraction plans. The totals are **1,169 retired / 203 plans**. The distinct counts are **14 new-test groups and 152 mutation adoptions**. Projections to origin 1,518 are 16 tests and 169 adoptions cumulatively, or 16 and 174 using the rate since origin 431. The full-pass measurement is due at triage end.
+
+The original classifier accepted three deliberately altered observations. The current fault-oracle tests reject each one: a revoked setup grant after refusal, an accepted answer that disagrees with retained holds, and arbitrary progress corruption mislabeled as an apply prefix. The current exit inventory and fault sweep include the eleven early exits and five callback decisions from the sixteen-row scope probe. The historical clean reachability results describe different evidence from the fault injection checks. Both entire probe sources, their result records, guide and report contexts were read.
+
+The cumulative mutation references keep the existing family routes. Four previously recorded S5 pointers used IDs from value-cost.json, while the adoption validator checks IDs against mutations.json. For the N15 probe the corrected pointer names work-charge.array-surplus alongside the three exact SDK leaves. Two diagnostic lookup origins retain their SDK leaves and one diagnostic family origin retains its V1, V2 and V3 cases. Their rationales still identify the supplementary value-cost evidence. This correction changes no disposition or count.
+
+The manifest comparison checked the origin fields outside state/triage and all derived tables. The packet remains IN_PROGRESS. Resume at origin 1,373, `K1.2-correction-01/review-revision-09-independent-2026-09-30/README.md:6`, `mention-51725074199c1d6fa4638dfc`.

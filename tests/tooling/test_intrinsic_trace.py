@@ -49,6 +49,15 @@ class IntrinsicTraceTests(unittest.TestCase):
         self.results[0] = {'id': 'tA', 'refused': [], 'credit': 'target_reading'}
         self.refused('a target at a leaf with a detector site earns no credit: tA')
 
+    def test_a_recorded_reading_can_earn_credit_but_unread_cannot(self):
+        self.register['t.test.ts:3:1'] = {'classification': 'not_held',
+            'reading': {'facts': 'Core assertion after initialization', 'claim': 'V-ENV'}}
+        self.members['m1']['status'] = 'preserved'
+        self.results[0] = {'id': 'tA', 'refused': [], 'credit': 'target_reading'}
+        self.trace()
+        self.register['t.test.ts:3:1'] = {'classification': 'unread'}
+        self.refused('earns no preserved credit')
+
     def test_a_regex_only_match_is_not_traced(self):
         # q.test.ts:1:1 carries no detector site, so its preserved member m2 and credited target tB pass the trace.
         self.assertEqual(self.trace()['keys'], 2)

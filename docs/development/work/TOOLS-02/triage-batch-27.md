@@ -1,0 +1,9 @@
+# Triage batch 27 — correction sweep families
+
+2026-10-31, Codex GPT-6. Current reading `8f1bc136`. Historical source pin `66bc041175e6fc191c2e7cf88de198111e7d97c9` for K1.2-correction-01. Origins 1,416–1,425 add 6 retirements and 4 extraction plans. The totals are **1,215 retired / 210 plans**. The distinct counts are **14 new-test groups and 152 mutation adoptions**. Projections to origin 1,518 are 15 tests and 162 adoptions cumulatively, or 16 and 166 using the rate since origin 431. The full-pass measurement is due at triage end.
+
+The string probe's current SDK owner retains the edge and byte-charge obligations. The T4 adoption weakens both current extent guards to reach the historical unsafe scan. In sweeps-08, all 34 members and the sealed inside/outside results retain the individual round-7 and inspection readings. The default helper and shadowed index variants now point to the state owner and the future-position oracle. K1 shares the H19 host-prototype variant, K3 the H15 controlScopes decision. K2 changes the descriptor passed to defineProperty from null-prototype to ordinary. The value-cost registry already mutates this same core defineData decision with O-DEFINEDATA-LITERAL.
+
+The five sweeps-09 edits were checked against current ownership. The setup grant, report answer, Outcome receipt sequence, hidden recovery index and post-callback refusal position respectively have complete-decision mutation checks. The raw collector invokes the earlier families and retains their provenance. Their historical execution gives no fresh control/kill credit.
+
+The manifest comparison checked the origin fields outside state/triage and all derived tables. The packet remains IN_PROGRESS. Resume at origin 1,426, `K1.1-reference-01/cleanup-01.md:78`, `mention-73eefb699295321abe34a160`.

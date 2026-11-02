@@ -2,7 +2,7 @@
 // This preload is test tooling. Test modules receive no new load-time intrinsic reference (D1).
 import { writeFileSync, realpathSync } from 'node:fs';
 import { registerHooks } from 'node:module';
-import { resolve, sep } from 'node:path';
+import { resolve, relative, sep } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { types } from 'node:util';
@@ -25,12 +25,22 @@ const AssertionError = strictAssert.AssertionError;
 const nestingGet = AsyncLocalStorage.prototype.getStore, nestingRun = AsyncLocalStorage.prototype.run;
 const witnessed = new WeakMap(), wrappers = new WeakMap(), regexps = new WeakMap();
 const nesting = new AsyncLocalStorage();
+// TOOLS-02 design 02 §3: opt-in invocation binding; value-cost keeps its original contract.
+const targetMode = process.env.ARROKOTHI_TARGET_WITNESS === '1';
+const invocations = new AsyncLocalStorage();
 const WITNESS = Symbol.for('arrokothi.value-cost.witness');
 const MODULES = Symbol.for('arrokothi.value-cost.modules');
 globalThis[WITNESS] = witnessed;
 witnessed.sourceOffsets = new Map();
 const TEST_SIDE = ['packages/kernel/tests', 'packages/sdk/tests'].map(path => pathToFileURL(resolve(realpathSync(process.cwd()), path) + sep).href);
-const testSide = url => typeof url === 'string' && TEST_SIDE.some(root => url.startsWith(root));
+const testSide = url => {
+  if (typeof url !== 'string') return false;
+  if (!targetMode) return TEST_SIDE.some(root => url.startsWith(root));
+  if (!url.startsWith('file:')) return false;
+  const path = relative(realpathSync(process.cwd()), fileURLToPath(url)).split(sep).join('/');
+  return !path.startsWith('../') && !path.split('/').includes('node_modules') &&
+    (path.split('/').includes('tests') || /\.test\.(?:[cm]?[jt]sx?)$/.test(path));
+};
 const snapshots = [];
 const globals = ['Object','Array','RegExp','Function','String','Number','Boolean','Symbol','BigInt','Error','WeakMap','WeakSet','Reflect'];
 const globalDescriptors = globals.map(name => descriptor(globalThis, name));
@@ -117,8 +127,9 @@ function passingScalar(meta, args) {
   return false;
 }
 function invoke(meta, site, receiver, args) {
+  const invocation = targetMode ? apply(nestingGet, invocations, []) : undefined;
   let admitted = false;
-  try { admitted = !apply(nestingGet, nesting, []) && !passingScalar(meta, args) && eligible(meta, site, args); } catch { /* preflight never supplies credit */ }
+  try { admitted = (!targetMode || invocation !== undefined) && !apply(nestingGet, nesting, []) && !passingScalar(meta, args) && eligible(meta, site, args); } catch { /* preflight never supplies credit */ }
   return apply(nestingRun, nesting, [true, () => {
     let result;
     try { result = apply(meta.real, receiver, args); }
@@ -128,6 +139,7 @@ function invoke(meta, site, receiver, args) {
       if (admitted && error instanceof AssertionError) put(witnessed, error, {
         kind: 'assert.' + (meta.name === 'default' ? 'ok' : meta.name), module: site.module,
         anchor: { line: site.line, column: site.column, expression: site.expression },
+        ...(targetMode ? { invocation } : {}),
       }); else del(witnessed, error);
       throw error;
     }
@@ -163,6 +175,17 @@ const calls = {
 };
 strictModule.__arrokothiAt = legacyModule.__arrokothiAt = calls.at;
 strictModule.__arrokothiRegexp = legacyModule.__arrokothiRegexp = calls.regexp;
+function invocationCallback(callback, hook = false) {
+  const wrapped = function(...args) {
+    const context = args[0];
+    const identity = !hook && typeof context?.filePath === 'string' && typeof context?.fullName === 'string'
+      ? {file: context.filePath, fullName: context.fullName} : undefined;
+    return apply(nestingRun, invocations, [identity, () => apply(callback, this, args)]);
+  };
+  Object.defineProperty(wrapped, 'length', {value: callback.length});
+  return wrapped;
+}
+strictModule.__arrokothiInvocation = legacyModule.__arrokothiInvocation = invocationCallback;
 const specifiers = new Map([['assert','arrokothi-witness:assert'],['node:assert','arrokothi-witness:assert'],
   ['assert/strict','arrokothi-witness:assert/strict'],['node:assert/strict','arrokothi-witness:assert/strict']]);
 function moduleSource(url) {
@@ -183,8 +206,46 @@ function instrument(text, url) {
       else for (const binding of clause.namedBindings.elements) bindings.add(binding.name.text);
     }
   }
-  if (bindings.size === 0) return text;
-  if (/__arrokothiWitness(?:At|Regexp)/.test(text)) throw Error('witness injected binding collision');
+  if (bindings.size === 0 && !targetMode) return text;
+  if (/__arrokothiWitness(?:At|Regexp|Invocation)/.test(text)) throw Error('witness injected binding collision');
+  if (targetMode) {
+    const named = new Map(), namespaces = new Set();
+    for (const statement of ast.statements) {
+      if (!ts.isImportDeclaration(statement) || statement.moduleSpecifier.text !== 'node:test') continue;
+      const clause = statement.importClause;
+      if (clause?.isTypeOnly) continue;
+      if (clause?.name) named.set(clause.name.text, 'test');
+      if (clause?.namedBindings) {
+        if (ts.isNamespaceImport(clause.namedBindings)) namespaces.add(clause.namedBindings.name.text);
+        else for (const binding of clause.namedBindings.elements)
+          if (!binding.isTypeOnly) named.set(binding.name.text, (binding.propertyName ?? binding.name).text);
+      }
+    }
+    const hooks = new Set(['before','after','beforeEach','afterEach']);
+    function callbacks(node, contexts = new Set()) {
+      let inner = contexts;
+      if (ts.isCallExpression(node)) {
+        let callee = node.expression;
+        if (ts.isPropertyAccessExpression(callee) && ['skip','only','todo'].includes(callee.name.text)) callee = callee.expression;
+        let kind = ts.isIdentifier(callee) ? named.get(callee.text) : undefined;
+        if (ts.isPropertyAccessExpression(callee) && ts.isIdentifier(callee.expression)) {
+          if (namespaces.has(callee.expression.text)) kind = callee.name.text;
+          else if (contexts.has(callee.expression.text) && (callee.name.text === 'test' || hooks.has(callee.name.text))) kind = callee.name.text;
+        }
+        const callback = node.arguments.at(-1);
+        if ((['test','it'].includes(kind) || hooks.has(kind)) && callback &&
+            (ts.isArrowFunction(callback) || ts.isFunctionExpression(callback))) {
+          edits.push({pos:callback.getStart(ast),text:'__arrokothiWitnessInvocation(',order:2},
+            {pos:callback.end,text:hooks.has(kind) ? ', true)' : ')',order:-1});
+          if (!hooks.has(kind) && callback.parameters.length && ts.isIdentifier(callback.parameters[0].name)) {
+            inner = new Set(contexts); inner.add(callback.parameters[0].name.text);
+          }
+        }
+      }
+      ts.forEachChild(node, child => callbacks(child, inner));
+    }
+    callbacks(ast);
+  }
   function walk(node) {
     if (ts.isCallExpression(node)) {
       let root = node.expression;
@@ -202,7 +263,7 @@ function instrument(text, url) {
   edits.sort((a,b)=>b.pos-a.pos||b.order-a.order);
   for (const edit of edits) text = text.slice(0,edit.pos)+edit.text+text.slice(edit.pos);
   witnessed.sourceOffsets.set(fileURLToPath(url), 1);
-  return `import { __arrokothiAt as __arrokothiWitnessAt, __arrokothiRegexp as __arrokothiWitnessRegexp } from 'node:assert/strict';\n` + text;
+  return `import { __arrokothiAt as __arrokothiWitnessAt, __arrokothiRegexp as __arrokothiWitnessRegexp${targetMode ? ', __arrokothiInvocation as __arrokothiWitnessInvocation' : ''} } from 'node:assert/strict';\n` + text;
 }
 registerHooks({
   resolve(specifier, context, next) {

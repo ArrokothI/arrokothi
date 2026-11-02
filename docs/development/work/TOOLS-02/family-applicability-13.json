@@ -1,0 +1,77 @@
+{
+  "revision": "b804e986f5be2f39bd5f2d75dcc6673534ff870b",
+  "source_pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "method": "Read-only exact anchor counts, not execution or mutation kills",
+  "members": [
+    {
+      "member": "R1 quoted binding name reads the optional controlScopes",
+      "historical_target": "packages/kernel/src/coordinator.ts",
+      "before": "  const controls = hostMember(caller, \"controlScopes\") as readonly string[] | undefined;",
+      "current_matches": 1
+    },
+    {
+      "member": "R2 computed binding name reads the optional controlScopes",
+      "historical_target": "packages/kernel/src/coordinator.ts",
+      "before": "  const controls = hostMember(caller, \"controlScopes\") as readonly string[] | undefined;",
+      "current_matches": 1
+    },
+    {
+      "member": "R3 assignment destructuring reads the optional controlScopes",
+      "historical_target": "packages/kernel/src/coordinator.ts",
+      "before": "  const controls = hostMember(caller, \"controlScopes\") as readonly string[] | undefined;",
+      "current_matches": 1
+    },
+    {
+      "member": "R4 bare binding reads the optional controlScopes",
+      "historical_target": "packages/kernel/src/coordinator.ts",
+      "before": "  const controls = hostMember(caller, \"controlScopes\") as readonly string[] | undefined;",
+      "current_matches": 1
+    },
+    {
+      "member": "R5 a cast makes the optional controlScopes required",
+      "historical_target": "packages/kernel/src/coordinator.ts",
+      "before": "  const controls = hostMember(caller, \"controlScopes\") as readonly string[] | undefined;",
+      "current_matches": 1
+    },
+    {
+      "member": "R6 a rest copy then an optional read",
+      "historical_target": "packages/kernel/src/coordinator.ts",
+      "before": "  const controls = hostMember(caller, \"controlScopes\") as readonly string[] | undefined;",
+      "current_matches": 1
+    },
+    {
+      "member": "R7 an in-operator guard consults the prototype chain",
+      "historical_target": "packages/kernel/src/coordinator.ts",
+      "before": "  const controls = hostMember(caller, \"controlScopes\") as readonly string[] | undefined;",
+      "current_matches": 1
+    },
+    {
+      "member": "R8 a String.prototype method replaces an index read",
+      "historical_target": "packages/kernel/src/envelope.ts",
+      "before": "    const bracketed = issue.path.length > 0 && (issue.path[0] as string) === \"[\";",
+      "current_matches": 1
+    },
+    {
+      "member": "R9 the occurrences suffix access respelled as an ordinary optional access",
+      "historical_target": "packages/kernel/src/values.ts",
+      "before": "      (entry as { occurrences: number }).occurrences += 1;",
+      "current_matches": 0,
+      "relocation": {
+        "path": "packages/sdk/src/internal/value-capture.ts",
+        "matches": 1
+      }
+    },
+    {
+      "member": "R10 SELF-R7-UNSUPPORTED-01 restored: name written through [[Set]]",
+      "historical_target": "packages/kernel/src/unsupported.ts",
+      "before": "  override readonly name = \"UnsupportedKernelSurfaceError\";\n",
+      "current_matches": 1
+    },
+    {
+      "member": "R10 SELF-R7-UNSUPPORTED-01 restored: name written through [[Set]]",
+      "historical_target": "packages/kernel/src/unsupported.ts",
+      "before": "    this.surface = surface;",
+      "current_matches": 1
+    }
+  ]
+}

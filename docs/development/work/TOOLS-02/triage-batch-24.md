@@ -1,0 +1,13 @@
+# Triage batch 24 — reviewer-11 inspection and fault evidence
+
+2026-10-31, Codex GPT-6. Current reading `0f516461`. Historical source pin `66bc041175e6fc191c2e7cf88de198111e7d97c9` for K1.2-correction-01. Origins 1,289–1,334 add 29 retirements and 17 extraction plans. The totals are **1,134 retired / 200 plans**. The distinct counts are **14 new-test groups and 152 mutation adoptions**. Projections to origin 1,518 are 16 tests and 173 adoptions cumulatively, or 17 and 181 using the rate since origin 431. The full-pass measurement is due at triage end.
+
+Read all report, guide, fence and coverage contexts, all nine scripts, their sealed controls and results, and the earlier source versions used by the two adapted probes. The history matrix differs only in import paths. The whole-view comparison differs only in import and output paths. The maintained suites retain the original 22 and 30 schedules respectively.
+
+The Pick-cast read during inspection still needs the existing planned adoption at the `ExecutionReader.inspection()` return. The three clean runtime arms require zero getter calls, an unchanged RUNNING view, two receipts and one entered history record. The sealed mutant counted a read, threw or accepted a nested terminal Outcome according to the arm. The source analysis examples also illustrate the documented limitations of type-strengthening checks. The owner adopted amendment 03 and the integrated contract explicitly names those limitations and binds the runtime obligation to the poison sweep.
+
+The default-parameter helper originally called a mutating coordinator `#mint`. That helper was removed when writes moved to the state owner. The shadowed-name variant wrote the old mutable record's position. Its counterpart is a write during state-owner preparation. The `nextAcceptance` and `applySequence` oracle controls, the state-owner write guard and the maintained review-11 fault seed distinguish the current decisions. The seed injects at Activation construction and compares both the whole view and the next receipt position. The sealed clean run returned 3 and each old mutant returned 4. The earlier default variant that replaced the builder and the later variant that inserted after it share this requirement.
+
+The source family references retain their prior mutation plans. Historical suite counts, the identity checker and the command list supply provenance. P1 binding and fresh control/kill runs remain ahead.
+
+The manifest comparison checked the origin fields outside state/triage and all derived tables. The packet remains IN_PROGRESS. Resume at origin 1,335, `K1.2-correction-01/review-12-evidence/README.md:17`, `mention-7921b2e0d676846d3c107b6f`.

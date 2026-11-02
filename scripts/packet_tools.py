@@ -42,6 +42,9 @@ CATALOG_REPORTER = 'tests/tooling/catalog-reporter.mjs'
 # Design 05 §4 source facts and reach: parsed with the pinned TypeScript subset, counted from raw V8 coverage.
 SOURCE_FACTS = 'tests/tooling/source-facts.mjs'
 REACH_COVERAGE = 'tests/tooling/reach-coverage.mjs'
+TARGET_WITNESS = 'tests/tooling/value-cost-witness.mjs'
+TARGET_POLICY = 'tests/tooling/value-cost-source-policy.mjs'
+TARGET_FILES = (CATALOG_REPORTER, REACH_COVERAGE, TARGET_WITNESS, TARGET_POLICY)
 # Design 05 §2.3 rule 5: the reads-phase preload, and how each fs operation is compared at pin and C.
 # TOOLS-02 design 04 §1: a recursive listing is a `tree` read. Design 05 §1 admits each row through READ_ARGUMENTS;
 # glob and cp have no represented dependency identity (kind `pattern`), so admission refuses them.
@@ -53,7 +56,14 @@ READ_KIND = {'readFile': 'bytes', 'open': 'bytes', 'createReadStream': 'bytes', 
 NODE_BUILTINS = {'assert', 'async_hooks', 'buffer', 'child_process', 'crypto', 'events', 'fs', 'http', 'https', 'module',
                  'net', 'os', 'path', 'perf_hooks', 'process', 'readline', 'stream', 'string_decoder', 'test', 'timers',
                  'url', 'util', 'vm', 'worker_threads', 'zlib'}
-REGISTER_CLASSES = ('held', 'superseded', 'not_held')
+REGISTER_CLASSES = ('held', 'superseded', 'unread', 'not_held')
+CLAIM_RELEASES = {
+    'V-ENV': ('docs/development/work/BINDING-01/hold-release-01.md', ['L-01']),
+    'V-D1': ('docs/development/work/K1.1-correction-03/hold-release-01.md', ['L-03', 'L-04', 'L-05', 'L-06', 'L-07', 'L-13']),
+    'Proxy': ('docs/development/work/K1.1-correction-03/hold-release-01.md', ['L-09']),
+    're-prototyped-built-in': ('docs/development/work/K1.1-correction-03/hold-release-01.md', ['L-08']),
+}
+VENV_RELEASE = CLAIM_RELEASES['V-ENV'][0]
 # CONT-05: property writes on named intrinsics, plus conservative prototype/helper aliases.
 VENV_INTRINSICS = (r'(?:Object|Function|Array|String|Number|Boolean|BigInt|Symbol|Date|RegExp|'
                    r'Error|AggregateError|EvalError|RangeError|ReferenceError|SyntaxError|TypeError|URIError|'
@@ -81,7 +91,7 @@ REGISTER_MINIMUM = {
 TEST_SUFFIXES = ('.test.ts', '.test.mjs', '.test.js')
 # P1-M (design 05 D04-CHK-03, D05-CHK-06): census kinds over pinned runner bytes, and member routes.
 CENSUS_KINDS = ('structural', 'python_ast', 'loop', 'filter', 'inherits', 'bindings')
-MEMBER_ROUTES = ('pending', 'mutation', 'witness', 'no_longer_applicable', 'equivalence', 'survivor', 'limit')
+MEMBER_ROUTES = ('pending', 'mutation', 'witness', 'no_longer_applicable', 'equivalence', 'survivor', 'limit', 'covered')
 FAMILY_ROLES = ('runner', 'mixed')
 # P1-R and the P1 preamble (design 05 §4, D04-CHK-06): origin closure links and minimum contexts.
 CLOSURE_LINKS = ('target', 'counterexample', 'family', 'case', 'member')
@@ -92,6 +102,13 @@ CONTEXT_LINK = re.compile(r'\[[^\]\n]*\]\(([^)\n]*)\)')
 CONTEXT_TOKEN = re.compile(r'[^\s`\x27"<>()[\]{},;]+')
 CONTEXT_LOCAL = re.compile(r'[\w.@/-]+', re.ASCII)
 CONTEXT_GITHUB = re.compile(r'https://github\.com/ArrokothI/arrokothi/blob/([0-9a-f]{7,40})/([\w.@/-]+)', re.ASCII)
+# TOOLS-02 design 06 §5 (owner choice 14): external URLs and `<revision>:<path>` spellings.
+CONTEXT_SCHEME = re.compile(r'[A-Za-z][A-Za-z0-9+.-]*://')
+CONTEXT_REPOSITORY = 'https://github.com/ArrokothI/arrokothi/'
+CONTEXT_GITHUB_TREE = re.compile(r'https://github\.com/ArrokothI/arrokothi/tree/([0-9a-f]{40})(?:/([\w.@/-]+))?/?', re.ASCII)
+CONTEXT_OTHER_GITHUB = re.compile(r'https://github\.com/(?!ArrokothI/arrokothi/)[\w.-]+/[\w.-]+(?:/|$)', re.ASCII)
+CONTEXT_CODE = ('.mjs', '.cjs', '.js', '.ts', '.mts', '.py')
+CONTEXT_REVISION_PATH = re.compile(r'([0-9a-f]{7,40}):((?:docs|packages|tests|scripts|examples|mental-model)/[\w./@-]*\w)', re.ASCII)
 SEALED_PREFIXES = ('docs/',)
 # TOOLS-02 T2-2 (design 02 §2.1): operations whose output is fixture data; each refuses an unclean checkout at
 # dispatch. `verify` keeps its own clean_payload; `candidate` and `gate` print no fixture data.
@@ -106,14 +123,14 @@ AREA_ROOT_FILE = re.compile(r'(?<![\w/.-])(AGENTS\.md|CLAUDE\.md|README\.md|pack
 SUMMARY_LABELS = ('tests', 'suites', 'pass', 'fail', 'cancelled', 'skipped', 'todo')
 # R1-04 (owner choice 09): what the catalog reporter forwards about a failing result, kept on its leaf.
 FAILURE_FIELDS = (('type', 'failure_type'), ('cause_name', 'cause_name'), ('cause_code', 'cause_code'),
-                  ('stack', 'cause_stack'))
+                  ('stack', 'cause_stack'), ('witnessed', 'witnessed'))
 TARGET_FAILURES = {'testCodeFailure': 'error', 'cancelledByParent': 'cancelled', 'testTimeoutFailure': 'timeout',
                    'hookFailed': 'hook'}
 # Adoption format 2 (design 04, design 05 §4): origin states and the tables every manifest carries.
 ORIGIN_STATES = ('pending', 'pending_revalidation', 'triaged', 'complete')
 FORMAT_2_TABLES = ('origins', 'counterexamples', 'suite_targets', 'preserved', 'families', 'holds', 'areas',
                    'moves', 'floor', 'helper_reviews')
-COUNTEREXAMPLE_KINDS = ('behavior', 'mutation', 'held_witness', 'superseded_witness', 'prose_pending')
+COUNTEREXAMPLE_KINDS = ('behavior', 'mutation', 'held_witness', 'superseded_witness', 'unread_witness', 'prose_pending')
 TARGET_FIELDS = ('id', 'counterexample', 'command', 'file', 'test_path', 'declaration', 'input_anchors',
                  'assertion_anchors', 'relation', 'discrimination')
 # P1-H's refusal of a target on a held or superseded leaf, appended after the P1-T checks.
@@ -128,6 +145,28 @@ LISTED_MEMBERS = 'docs/development/work/TOOLS-01/owner-choice-11/limited-members
 CATEGORY_DECISIONS = {'Proxy': ('docs/development/work/DESIGN-AUDIT-01/decision-01.md',),
                       're-prototyped-built-in': ('docs/development/work/DESIGN-AUDIT-01/decision-01.md',),
                       'V-D1': ('docs/development/work/K1.2/decision-05.md', 'docs/development/work/K1.2/invalidation-02.md')}
+
+# TOOLS-02 design 01 §5.3. Further rows require an accepted decision at the packet base,
+# added with their first use and independently read in the triage audit.
+TRIAGE_DECISIONS = (
+    'docs/development/work/DESIGN-AUDIT-01/decision-01.md',
+    'docs/development/work/DESIGN-AUDIT-01/decision-02.md',
+    'docs/development/work/BINDING-01/design-01.md',
+    'docs/development/work/COORD-REFACTOR-01/design-01.md',
+    'docs/development/work/K1.2/decision-05.md',
+    'docs/development/work/K1.3/design-01.md',
+    'docs/development/work/K1.2-correction-01/integration-01.md',
+    'docs/development/work/TOOLS-01/design-02.md',
+    'docs/development/work/K1.1-correction-01/decision-01.md',
+)
+# Archived accepted decisions use the repository's fixed retention snapshot, never a
+# manifest-selected revision or a restored copy of historical evidence.
+TRIAGE_DECISION_REVISIONS = {
+    'docs/development/work/K1.1-correction-01/decision-01.md':
+        '9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49',
+}
+TRIAGE_LIMITS = 'docs/development/017-known-limitations.md'
+TRIAGE_CLASSES = ('not_a_counterexample', 'covered_elsewhere', 'superseded', 'recorded_limit')
 
 
 class CheckError(Exception):
@@ -560,6 +599,13 @@ def holds_table(git, rev, holds):
     for claim in claims.values():
         require(isinstance(claim.get('owner'), str) and bool(claim['owner']) and
                 bool(unique_text(claim.get('decisions', []), 'hold decisions')), 'hold claim needs owner and decisions')
+        require(claim.get('status') in ('held', 'released'), 'a claim names its held or released status')
+        if claim['status'] == 'released':
+            expected = CLAIM_RELEASES.get(claim['id'])
+            require(expected is not None and claim.get('release') == expected[0] and claim.get('limits') == expected[1],
+                    'a released claim names its fixed release and limits')
+            require(claim['id'] != 'V-ENV' or claim.get('scope') == 'core', 'V-ENV release is scoped to the core')
+            git.blob(rev, claim['release'])
         for path in claim['decisions']:
             git.blob(rev, path)
     return claims
@@ -592,7 +638,7 @@ def transfer_lists(git, rev, rows):
 
 def transferred_origins(git, rev, rows, origins, lists):
     """P1-R under owner choices 04 and 05: revalidation origins an owner decision moved to TOOLS-02. Each
-    names its decision record at C and must still be open for revalidation; a closed one is stale. R1-03:
+    names its decision record at C and retains its original mapping after T2-5 disposition. R1-03:
     the origins transferred under a decision are exactly those its pinned list names."""
     require(isinstance(rows, list), 'transferred origins are a list')
     found = {}
@@ -600,8 +646,9 @@ def transferred_origins(git, rev, rows, origins, lists):
         require(isinstance(row, dict) and isinstance(row.get('origin'), str) and isinstance(row.get('decision'), str)
                 and row['origin'] not in found, 'a transferred origin is unique and names its owner decision')
         git.blob(rev, row['decision'])
-        require(origins.get(row['origin'], {}).get('state') == 'pending_revalidation',
-                'a transferred origin is an open revalidation origin: ' + row['origin'])
+        require(origins.get(row['origin'], {}).get('state') in ('pending_revalidation', 'triaged', 'complete') and
+                'legacy' in origins.get(row['origin'], {}),
+                'a transferred origin retains its revalidation provenance: ' + row['origin'])
         require(row['origin'] in lists.get(row['decision'], {}),
                 "a transferred origin is in its decision's pinned list: " + row['origin'])
         found[row['origin']] = row['decision']
@@ -633,13 +680,13 @@ def later_limit_list(git, rev, entry):
     return listed
 
 
-def limited_origins(git, rev, rows, lists, members, targets, results, register):
+def limited_origins(git, rev, rows, lists, members, targets, results, register, claims):
     """C2-LIMIT (owner choice 04 §1, amended by owner choice 08 §2.4 and owner choice 11). Each origin transferred
     under owner choice 04 carries `limited`: the pinned unbound-member list and its extras, each `{member, target}`,
     and, where owner choice 11 lists a member of that origin, its pinned list under `listed`. An extra is admitted
-    only through its target record: the only suite target naming that member, declared at a rule-1 held leaf with
-    a literal title and refused by P1-H alone. Titles are never compared. A listed member counts while it is refused
-    without a credited target or held by rule 1 (owner answers to design 06 revision 4). A later owner decision may
+    only through its target record: the only suite target naming that member, declared at an unread released-V-ENV leaf with
+    a literal title and refused by P1-H unread alone. Titles are never compared. A listed member counts while it is refused
+    without a credited target or unread under released V-ENV (TOOLS-02 design 03 §6). A later owner decision may
     list further members of a limited origin when a packet changes their tests (K1.1-correction-03 owner choice 01):
     the origin cites it under `added`, `{decision, members, sha256}`, and each such member counts as listed. Per
     origin, those members must equal its listed members plus admitted extras, and the decision's list restates the
@@ -651,10 +698,12 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register):
             by_member.setdefault(target['member'], []).append(target)
     credited = {member for member, mapped in by_member.items() if any(not results[row['id']]['refused'] for row in mapped)}
 
-    def rule_1_held(key):
+    def released_venv_unread(key):
         row = members[key]
         entry = register.get(f"{row['file']}:{row['current'][0]}:{row['current'][1]}", {}) if row.get('current') else {}
-        return row['status'] == 'held' and entry.get('claim') == 'V-ENV' and entry.get('decision') == VENV_RECORD
+        return (row['status'] == 'unread' and entry.get('classification') == 'unread' and
+                entry.get('claim') == 'V-ENV' and entry.get('decision') == VENV_RELEASE and
+                claims.get('V-ENV', {}).get('status') == 'released')
 
     limited, listed_all, owner_listed, later = {}, None, None, {}
     for row in rows:
@@ -711,13 +760,13 @@ def limited_origins(git, rev, rows, lists, members, targets, results, register):
                     'an extra limited member maps through its only target: ' + extra['member'])
             declaration, result = mapped[0]['declaration'], results[extra['target']]
             entry = register.get(f"{mapped[0]['file']}:{declaration['line']}:{declaration['column']}", {})
-            require(entry.get('classification') == 'held' and entry.get('claim') == 'V-ENV' and
-                    entry.get('decision') == VENV_RECORD and result.get('title_kind') == 'literal' and
-                    result['refused'] == [P1H_TARGET_REFUSAL.format('held')],
-                    "an extra limited member's target passes P1-T at a rule-1 held leaf: " + extra['member'])
+            require(entry.get('classification') == 'unread' and entry.get('claim') == 'V-ENV' and
+                    entry.get('decision') == VENV_RELEASE and claims.get('V-ENV', {}).get('status') == 'released' and
+                    result.get('title_kind') == 'literal' and result['refused'] == [P1H_TARGET_REFUSAL.format('unread')],
+                    "an extra limited member's target passes P1-T at an unread released-V-ENV leaf: " + extra['member'])
             extras.add(extra['member'])
         unbound = {key for key in in_origin if (members[key]['status'] == 'refused' and key not in credited) or
-                   (key in listed and rule_1_held(key))}
+                   (key in listed and released_venv_unread(key))}
         require(unbound == listed | extras, f'the refused members without a credited target differ from the limit: {origin} '
                                             f'(unlisted {sorted(unbound - listed - extras)[:3]}, bound {sorted(listed - unbound)[:3]})')
         limited[origin] = {'listed': len(listed), 'extras': sorted(extras)}
@@ -750,8 +799,8 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             expected = {name: value for name, value in old.items() if name != 'origin'}
             require(row.get('legacy') == expected, 'migrated row differs from the format-1 source: ' + key)
             require(row['state'] != 'pending', 'a revision-2 mapping cannot return to pending')
-        # Prose triage arrives with the mentions (design 05 §6 step 11); a complete origin is checked below.
-        require(row['state'] != 'triaged', 'prose triage is not implemented in this format revision: ' + key)
+        # TOOLS-02 T2-5: retirement is checked against C below, separately from P1 closure.
+        require(row['state'] == 'triaged' or 'triage' not in row, 'only a triaged origin carries retirement: ' + key)
     area_ids, area_of, tree_paths = area_map(git, rev, spec['areas'])
     claims = holds_table(git, rev, spec['holds'])
     require(set(REGISTER_MINIMUM) <= set(claims), 'P1-H claims cannot leave the holds table')
@@ -782,14 +831,18 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
                    {target['file'] for target in targets.values() if isinstance(target.get('file'), str) and
                     blob_id(git, rev, target['file'])})
     with contextlib.ExitStack() as stack:
-        context = target_context(git, rev, spec, stack, toolchain) if targets or tested else None
+        context = target_context(git, rev, spec, stack, toolchain) if targets or tested or any(
+            isinstance(row.get('triage'), dict) and row['triage'].get('class') == 'covered_elsewhere' for row in rows.values()) else None
         environment = child_environment(environment_declaration(None))[0] if context is None else context['environment']
         detected = {}
         register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain,
                                  registry['cases'], spec['registry'], detected)
         results = [check_target(git, rev, target, counterexamples, registry, context) for target in targets.values()]
         evaluations, all_earlier = preserved_census(git, rev, spec, intake, context, register) if tested else ([], None)
-        _, family_counts = family_table(git, rev, spec['families'], origins, counterexamples, registry, environment, toolchain)
+        _, family_counts = family_table(git, rev, spec['families'], origins, counterexamples, registry, environment, toolchain,
+                                        context)
+        retirements = {key: triage_origin(git, rev, key, row, rows, registry, context)
+                       for key, row in rows.items() if row['state'] == 'triaged'}
     for target, result in zip(targets.values(), results):
         declaration = target.get('declaration') or {}
         entry = register.get(f"{target['file']}:{declaration.get('line')}:{declaration.get('column')}")
@@ -807,7 +860,8 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
     register_counts = Counter((row['classification'], row.get('claim')) for row in register.values())
     members = {row['member']: row for row in table}
     witness_records(counterexamples, members, claims, register)
-    facts = {'target': {key: {'refused': bool(result['refused']), 'member': targets[key].get('member')}
+    facts = {'target': {key: {'refused': bool(result['refused']), 'member': targets[key].get('member'),
+                                 'counterexample': targets[key]['counterexample']}
                         for key, result in zip(targets, results)},
              'counterexample': counterexamples, 'member': members,
              'family': unique_records(spec['families'], 'families'),
@@ -819,7 +873,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
     pending = sorted(key for key, row in rows.items() if row['state'] in ('pending', 'pending_revalidation'))
     lists = transfer_lists(git, rev, spec.get('transfer_lists', []))
     transferred = transferred_origins(git, rev, spec.get('transferred', []), rows, lists)
-    limited = limited_origins(git, rev, spec.get('transferred', []), lists, members, targets, results, register)
+    limited = limited_origins(git, rev, spec.get('transferred', []), lists, members, targets, results, register, claims)
     trace = intrinsic_trace(detected, register, members, targets, results)
     unexplained = [key for key in pending if rows[key]['state'] == 'pending_revalidation' and key not in transferred]
     return {'operation': 'corpus', 'format': 2, 'revision': rev,
@@ -828,6 +882,7 @@ def corpus_format_2(git, rev, spec, intake, toolchain=None):
             'transferred': {'origins': len(transferred), 'by_decision': dict(Counter(transferred.values())),
                             'limited': limited},
             'origins': len(rows), 'states': dict(states), 'pending_revalidation': dict(revalidation),
+            'retirements': dict(Counter(retirements.values())),
             'closures': {'complete': len(closures), 'context_ranges': sum(row['ranges'] for row in closures.values()),
                          'context_candidates': sum(row['candidates'] for row in closures.values()),
                          'context_reasoned': sum(row['reasoned'] for row in closures.values())},
@@ -892,7 +947,8 @@ def regenerate(git, revision, spec_path, write=False, toolchain=None):
                    {target['file'] for target in targets.values() if isinstance(target.get('file'), str) and
                     blob_id(git, rev, target['file'])})
     with contextlib.ExitStack() as stack:
-        context = target_context(git, rev, spec, stack, toolchain) if targets or tested else None
+        context = target_context(git, rev, spec, stack, toolchain) if targets or tested or any(
+            isinstance(row.get('triage'), dict) and row['triage'].get('class') == 'covered_elsewhere' for row in rows.values()) else None
         environment = child_environment(environment_declaration(None))[0] if context is None else context['environment']
         register = hold_register(git, rev, spec['holds'].get('register'), claims, scope, environment, toolchain,
                                  registry['cases'], spec['registry'])
@@ -1154,19 +1210,64 @@ def run_targets(files, case, environment, mutant=None, offsets=None):
             refused = apply_edits(directory, mutation_edits(mutant))
             if refused is not None:
                 return {'status': 'not_applicable', 'exit': None, 'output': '', **refused}
-        events = Path(side) / 'events.jsonl'
+        # Source policy covers the entire copied production tree, including non-packages trees.
+        production = sorted(name for name in files if re.search(r'\.(?:[cm]?[jt]sx?)$', name) and
+                            not {'tests', 'node_modules', '.git'} & set(PurePosixPath(name).parts) and
+                            not re.search(r'\.test\.(?:[cm]?[jt]sx?)$', name))
+        policy_script = ('import {sourcePolicy} from "./' + TARGET_POLICY + '"; '
+                         'console.log(JSON.stringify(sourcePolicy(process.cwd(), ' + json.dumps(production) + ', true)));')
+        policy = command(['node', '--input-type=module', '-e', policy_script], directory,
+                         case['timeout_seconds'], case['output_limit_bytes'], environment)
+        try:
+            certificate = json.loads(policy['output']) if policy['status'] == 'finished' and policy['exit'] == 0 else None
+        except ValueError:
+            certificate = None
+        if certificate is None or not certificate.get('ok'):
+            return {'status': 'setup_error', 'exit': policy['exit'], 'output': policy['output'],
+                    'source_policy': certificate, 'tree': None}
         coverage = Path(side) / 'coverage'
         coverage.mkdir()
-        argv = ['node', *flags, '--test-reporter=' + str(directory / CATALOG_REPORTER),
-                '--test-reporter-destination=' + str(events), *selected]
-        run_environment = environment if offsets is None else dict(environment, NODE_V8_COVERAGE=str(coverage))
-        run = command(argv, directory, case['timeout_seconds'], case['output_limit_bytes'], run_environment)
-        try:
-            rows = [json.loads(line) for line in events.read_text().splitlines()] if events.exists() else None
-            tree = None if rows is None else catalog_tree(rows, directory, selected)
-        except (ValueError, CheckError):
-            tree = None
+        run_environment = dict(environment, ARROKOTHI_TARGET_WITNESS='1')
+        trees, runs = [], []
+        for index, selected_file in enumerate(selected):
+            events = Path(side) / ('events-' + str(index) + '.jsonl')
+            # Direct script entry keeps the reporter and exact error object in the same process.
+            argv = ['node', *(flag for flag in flags if flag != '--test'), '--import', './' + TARGET_WITNESS,
+                    '--test-reporter=' + str(directory / CATALOG_REPORTER),
+                    '--test-reporter-destination=' + str(events), selected_file]
+            current = command(argv, directory, case['timeout_seconds'], case['output_limit_bytes'], run_environment)
+            runs.append(current)
+            try:
+                rows = [json.loads(line) for line in events.read_text().splitlines()] if events.exists() else None
+                current_tree = None if rows is None else catalog_tree(rows, directory, [selected_file])
+                if current_tree is not None:
+                    for facts in current_tree['files'].values():
+                        for pair in facts['pairs']:
+                            witness = (pair.get('failure') or {}).get('witnessed')
+                            if witness:
+                                module = witness.get('module', '')
+                                witness['module'] = os.path.relpath(unquote(module[7:]), directory) if module.startswith('file://') else module
+                                invocation = witness.get('invocation')
+                                if invocation:
+                                    invocation['file'] = os.path.relpath(invocation['file'], directory)
+                trees.append(current_tree)
+            except (ValueError, CheckError):
+                trees.append(None)
+        run = next((item for item in runs if item['status'] != 'finished'), None) or {
+            'status': 'finished', 'exit': next((item['exit'] for item in runs if item['exit'] != 0), 0),
+            'output': ''.join(item['output'] for item in runs)}
+        run['source_policy'] = certificate
+        tree = None if any(item is None for item in trees) else {
+            'valid': all(item['valid'] for item in trees),
+            'refused': {key: value for item in trees for key, value in item['refused'].items()},
+            'files': {key: value for item in trees for key, value in item['files'].items()}}
         if offsets is not None and run['status'] == 'finished':
+            # Reach uses the original source coordinates. Instrumentation inserts text in test
+            # modules, so collect this control separately without the witness and require it to pass.
+            reach_control = command(['node', *flags, *selected], directory, case['timeout_seconds'],
+                                    case['output_limit_bytes'], dict(environment, NODE_V8_COVERAGE=str(coverage)))
+            if reach_control['status'] != 'finished' or reach_control['exit'] != 0:
+                return {**reach_control, 'tree': tree, 'source_policy': certificate}
             sites = [(path, offset) for path, offset in offsets if offset is not None]
             request = Path(side) / 'request.json'
             request.write_text(json.dumps([{'file': str(directory / path), 'offsets': [offset], 'processes': 'any'}
@@ -1218,10 +1319,10 @@ def target_observation(pair):
 
 
 def target_outcome(run, mutant, reached):
-    """F3 under owner choice 09: the target-set route reports what it observed and never returns `killed`.
+    """TOOLS-02 T2-3: only an eligible assertion bound to each expected invocation earns a kill.
     `survived`: every leaf passed; `wrong_kill`: every expected target passed and another leaf did not;
     otherwise `observed`, with one outcome per expected target. The run-level categories (timeout,
-    output_limit, not_applicable, setup_error, malformed, uncovered) stay distinct. None of them is credit."""
+    output_limit, not_applicable, setup_error, malformed, uncovered) stay distinct and uncredited."""
     if run['status'] != 'finished':
         return dict(status=run['status'], matches=run.get('matches'))
     leaves = target_leaves(run)
@@ -1241,7 +1342,21 @@ def target_outcome(run, mutant, reached):
              for pair in facts['pairs'] if pair['leaf']}
     observed = [dict(target=name + ' > ' + ' > '.join(path), **target_observation(pairs.get((name, path))))
                 for name, path in sorted(expected)]
-    return {'status': 'observed', 'targets': observed, 'failures': len(failed), 'kill': 'none (owner choice 09)'}
+    killers = []
+    for name, path in sorted(expected):
+        pair = pairs.get((name, path)) or {}
+        failure = pair.get('failure') or {}
+        witness = failure.get('witnessed') or {}
+        invocation = witness.get('invocation') or {}
+        module = witness.get('module', '')
+        test_module = (not PurePosixPath(module).is_absolute() and '..' not in PurePosixPath(module).parts and
+                       ('tests' in PurePosixPath(module).parts or re.search(r'\.test\.(?:[cm]?[jt]sx?)$', module)))
+        if (pair.get('verdict') == 'failed' and failure.get('type') == 'testCodeFailure' and
+                witness.get('anchor') and test_module and invocation == {'file': name, 'fullName': ' > '.join(path)}):
+            killers.append({'target': name + ' > ' + ' > '.join(path), 'site': witness})
+    if len(killers) == len(expected) and run.get('source_policy', {}).get('ok') is True:
+        return {'status': 'killed', 'killed_by': killers, 'targets': observed, 'failures': len(failed)}
+    return {'status': 'observed', 'targets': observed, 'failures': len(failed), 'kill': 'no qualifying target witness'}
 
 
 def target_control(files, case, environment, mutants):
@@ -1252,6 +1367,10 @@ def target_control(files, case, environment, mutants):
     leaves = target_leaves(run)
     valid = run['status'] == 'finished' and run['exit'] == 0 and leaves is not None and \
         all(verdict == 'passed' for verdict in leaves.values()) and run.get('reach') is not None
+    if leaves is not None:
+        names = [(name, ' > '.join(pair['path'])) for name, facts in run['tree']['files'].items()
+                 for pair in facts['pairs'] if pair['leaf']]
+        require(len(names) == len(set(names)), 'target leaf joined full names must be unique')
     return run, leaves, valid, run.get('reach') or {}
 
 
@@ -1266,7 +1385,7 @@ def mutations(git, revision, registry_path, *, cases_only=False):
         shared[path_name(name)] = git.blob(rev, name)
     shared.update(dependency_files(git, rev, registry.get('dependencies', [])))
     if any('targets' in case for case in registry['cases']):
-        shared.update({name: git.blob(rev, name) for name in (CATALOG_REPORTER, REACH_COVERAGE)})
+        shared.update({name: git.blob(rev, name) for name in TARGET_FILES})
     environment, environment_record = child_environment(environment_declaration(registry.get('environment')))
     case_ids, mutant_ids, results = set(), {}, []
     for case in registry['cases']:
@@ -1322,7 +1441,7 @@ def mutations(git, revision, registry_path, *, cases_only=False):
                         outcome['observation'].get('failures', [case['assertion']])[0]
                 if state == 'wrong_kill':
                     result['first_failure'] = outcome['first_failure']
-                if state == 'observed':
+                if state in ('observed', 'killed') and targeted:
                     result['targets'] = outcome['targets']
                 if case['id'] in registry.get('determinism_sample', []):
                     repeated_run = run_targets(files, case, environment, mutant) if targeted else \
@@ -1913,7 +2032,7 @@ def check_target(git, rev, target, counterexamples, registry, context):
         elif not {path for path, _, _ in mutation_edits(mutation)} & operation_files:
             refuse('the mutated file holds no cited operation anchor')
         else:
-            # Owner choice 09: no target-set mutant earns a kill in TOOLS-01, so this stays pending (TOOLS-02).
+            # This catalog check binds declarations only. The mutation runner separately establishes the kill.
             facts['credit'] = 'target_mutation_pending_execution'
     return facts
 
@@ -2589,20 +2708,30 @@ def hold_register(git, rev, register, claims, files, environment, toolchain=None
                 'a held or superseded entry names its held claim')
         entries[row['key']] = row
     for row in entries.values():
-        if row['classification'] == 'not_held':
-            require('decision' not in row, 'a not_held entry names no hold decision: ' + row['key'])
+        kind = row['classification']
+        claim = claims.get(row.get('claim'), {})
+        released = claim.get('status') == 'released'
+        require(kind != 'held' or not released, 'a released claim cannot retain a held entry: ' + row['key'])
+        if kind == 'unread':
+            require(released and row.get('decision') == claim.get('release') and 'reading' not in row and 'limit' not in row,
+                    'an unread entry names its released claim and release only: ' + row['key'])
             continue
-        require(('decision' in row) != ('reading' in row),
-                'a held or superseded entry names exactly one of its decision or its reading: ' + row['key'])
+        if kind == 'not_held':
+            require('decision' not in row, 'a not_held entry names no hold decision: ' + row['key'])
+            if 'reading' not in row:
+                continue
+        else:
+            require(('decision' in row) != ('reading' in row),
+                    'a held or superseded entry names exactly one of its decision or its reading: ' + row['key'])
         if 'decision' in row:
             require(row['decision'] in claims[row['claim']]['decisions'],
                     "a held or superseded entry's decision governs its claim: " + row['key'])
         else:
             reading = row['reading']
             require(isinstance(reading, dict) and set(reading) == {'facts', 'claim'} and isinstance(reading['facts'], str) and
-                    bool(reading['facts'].strip()) and reading['claim'] == row['claim'],
+                    bool(reading['facts'].strip()) and reading['claim'] in claims and reading['claim'] == row.get('claim'),
                     'a reading states its facts and the claim they bear on: ' + row['key'])
-        require(row['claim'] not in CATEGORY_DECISIONS or row.get('decision') in CATEGORY_DECISIONS[row['claim']],
+        require(kind == 'not_held' or row['claim'] not in CATEGORY_DECISIONS or row.get('decision') in CATEGORY_DECISIONS[row['claim']],
                 'a category entry names its existing decision: ' + row['key'])
     matches = register_matches(git, rev, files, recipes, environment, toolchain)
     matches += register_case_matches(git, rev, cases, recipes, registry_path, environment, toolchain)
@@ -2611,10 +2740,16 @@ def hold_register(git, rev, register, claims, files, environment, toolchain=None
         require(entries[row['key']].get('matched') == row['claims'], 'register entry records other matched claims: ' + row['key'])
     for key, row in entries.items():
         venv = 'V-ENV' in row['matched']
-        require(not venv or row['classification'] != 'not_held', 'a V-ENV match is held by owner choice 08 rule 1: ' + key)
-        require(not venv or row.get('claim') != 'V-ENV' or (row['classification'] == 'held' and row.get('decision') == VENV_RECORD),
+        released_matches = [claim for claim in row['matched'] if claims[claim]['status'] == 'released']
+        require(row['classification'] != 'not_held' or not released_matches or
+                (isinstance(row.get('reading'), dict) and row['reading'].get('claim') in released_matches),
+                'a not_held match under a released claim needs a per-entry reading: ' + key)
+        # Existing active holds retain their old decision rule; released matches use the new reading route.
+        active_venv = venv and claims['V-ENV']['status'] == 'held'
+        require(not active_venv or row['classification'] != 'not_held', 'a V-ENV match is held by owner choice 08 rule 1: ' + key)
+        require(not active_venv or row.get('claim') != 'V-ENV' or (row['classification'] == 'held' and row.get('decision') == VENV_RECORD),
                 'a V-ENV match held under V-ENV names owner choice 08: ' + key)
-        require(row.get('decision') != VENV_RECORD or (venv and row.get('claim') == 'V-ENV'),
+        require(row.get('decision') != VENV_RECORD or (active_venv and row.get('claim') == 'V-ENV'),
                 'owner choice 08 holds V-ENV matches only: ' + key)
     for case in cases:
         attributed = (case.get('claim') or {}).get('kind') in CASE_ATTRIBUTIONS
@@ -2634,16 +2769,18 @@ def intrinsic_trace(detected, register, members, targets, results):
     current leaf has one is preserved; no target at such a leaf earns credit. Closures link only unrefused targets
     and attributed witnesses (origin_closure), and C2-LIMIT's extras sit at rule-1 held leaves (limited_origins)."""
     traced = {key for key, sites in detected.items() if sites}
-    unheld = sorted(key for key in traced if register.get(key, {}).get('classification') not in ('held', 'superseded'))
+    unheld = sorted(key for key in traced if register.get(key, {}).get('classification') not in ('held', 'superseded', 'unread') and
+                    not (register.get(key, {}).get('classification') == 'not_held' and register.get(key, {}).get('reading')))
     require(not unheld, 'a key with a detector site is held or superseded: ' + ', '.join(unheld[:3]))
+    uncredited = {key for key in traced if register[key]['classification'] != 'not_held'}
     leaf = lambda path, line, column: f'{path}:{line}:{column}'
     at_leaf = [row for row in members.values() if row.get('current') and leaf(row['file'], *row['current']) in traced]
-    preserved = sorted(row['member'] for row in at_leaf if row['status'] == 'preserved')
+    preserved = sorted(row['member'] for row in at_leaf if row['status'] == 'preserved' and leaf(row['file'], *row['current']) in uncredited)
     require(not preserved, 'a member at a leaf with a detector site earns no preserved credit: ' + ', '.join(preserved[:3]))
     results = {row['id']: row for row in results}
     held_targets = [key for key, target in targets.items()
                     if leaf(target.get('file'), (target.get('declaration') or {}).get('line'),
-                            (target.get('declaration') or {}).get('column')) in traced]
+                            (target.get('declaration') or {}).get('column')) in uncredited]
     credited = sorted(key for key in held_targets if 'credit' in results[key] or not results[key]['refused'])
     require(not credited, 'a target at a leaf with a detector site earns no credit: ' + ', '.join(credited[:3]))
     return {'sites': sum(len(detected[key]) for key in traced), 'keys': len(traced),
@@ -2862,7 +2999,7 @@ def preserved_table(evaluations):
         first = rows[0]
         reasons = sorted({reason for row in rows for reason in row['reasons']})
         register = first.get('register')
-        status = register if register in ('held', 'superseded') else 'refused' if reasons else 'preserved'
+        status = register if register in ('held', 'superseded', 'unread') else 'refused' if reasons else 'preserved'
         record = {'member': f'{pin_path}:{line}:{column}@{pin_blob[:12]}', 'origins': sorted(row['origin'] for row in rows),
                   'file': first['file'], 'pin_blob': pin_blob, 'title': first['title'], 'title_kind': first['title_kind'],
                   'status': status, 'reasons': reasons}
@@ -3169,18 +3306,61 @@ def member_key(member):
     return member.get('key', member['label'].split()[0])
 
 
-def member_route(git, rev, family_id, member, counterexamples, mutants):
+def covered_pointer(pointer, cases, context, label):
+    """Design 06 §2: a covered member names a scheduled registry case or one passing catalog leaf, as S5 does."""
+    require(isinstance(pointer, dict) and pointer.get('kind') in ('case', 'leaf'),
+            'a covered route points at a registry case or a catalog leaf: ' + label)
+    if pointer['kind'] == 'case':
+        require(set(pointer) == {'kind', 'id'} and pointer.get('id') in cases,
+                'a covered case is a scheduled registry case: ' + label)
+        return
+    require(set(pointer) == {'kind', 'command', 'file', 'test_path'} and isinstance(pointer['file'], str) and
+            isinstance(pointer['test_path'], list) and bool(pointer['test_path']) and
+            all(isinstance(name, str) and bool(name) for name in pointer['test_path']) and
+            context is not None and pointer['command'] in context['catalogs'],
+            'a covered leaf names a catalog command, file and full path: ' + label)
+    catalog = context['catalog'](pointer['command'])
+    leaves = [pair for pair in catalog['tree']['files'].get(pointer['file'], {'pairs': []})['pairs']
+              if pair['leaf'] and pair['path'] == pointer['test_path']]
+    require(pointer['file'] in catalog['selection'] and len(leaves) == 1 and leaves[0]['verdict'] == 'passed',
+            'a covered leaf is one passing catalog leaf: ' + label)
+
+
+def member_route(git, rev, family_id, member, counterexamples, mutants, families=None, cases=(), context=None):
     """P1-M routes. Only a registered mutation can later earn a kill; every other route is counted, never a kill."""
     route = member.get('route')
     require(isinstance(route, dict) and route.get('kind') in MEMBER_ROUTES, 'member needs a known route: ' + member['label'])
     kind = route['kind']
     text = lambda name: isinstance(route.get(name), str) and bool(route[name].strip())
+    if kind == 'mutation' and 'via' in route:
+        # Design 06 §1 (owner choice 13): a copy of another family's member names that member's registered mutant.
+        via = route['via']
+        require(isinstance(via, dict) and set(via) == {'family', 'label', 'reading'} and via['family'] != family_id and
+                isinstance(via['reading'], str) and bool(via['reading'].strip()),
+                'a shared mutation route names another family\'s member and its reading: ' + member['label'])
+        source = next((other for other in (families or {}).get(via['family'], {}).get('members', [])
+                       if other['label'] == via['label']), None)
+        require(source is not None and member.get('reuses', {'family': via['family'], 'label': via['label']}) ==
+                {'family': via['family'], 'label': via['label']},
+                'a shared mutation route names an existing member, the one this member reuses: ' + member['label'])
+        mutant = mutants.get((route.get('case'), route.get('mutant')))
+        require(mutant is not None and mutant.get('obligation') == f"{via['family']}#{member_key(source)}",
+                'a shared mutation route needs the source member\'s registered mutant: ' + member['label'])
+        return 'mutation_shared'
+    if kind == 'covered':
+        # Design 06 §2 (owner choice 13): counted with its reading, never a kill.
+        pointers = route.get('covered_by') if isinstance(route.get('covered_by'), list) else [route.get('covered_by')]
+        require(text('reading') and bool(pointers) and set(route) == {'kind', 'covered_by', 'reading'},
+                'a covered route needs its pointers and reading: ' + member['label'])
+        for pointer in pointers:
+            covered_pointer(pointer, cases, context, member['label'])
+        return kind
     if kind == 'mutation':
         mutant = mutants.get((route.get('case'), route.get('mutant')))
         require(mutant is not None and mutant.get('obligation') == f'{family_id}#{member_key(member)}',
                 'a mutation route needs a registered mutant whose obligation is this member: ' + member['label'])
     elif kind == 'witness':
-        require(counterexamples.get(route.get('counterexample'), {}).get('kind') in ('held_witness', 'superseded_witness'),
+        require(counterexamples.get(route.get('counterexample'), {}).get('kind') in ('held_witness', 'superseded_witness', 'unread_witness'),
                 'a witness route names a held or superseded counterexample: ' + member['label'])
     elif kind == 'no_longer_applicable':
         require(text('reason') and text('authority'), 'no-longer-applicable needs its reason and authority: ' + member['label'])
@@ -3195,7 +3375,7 @@ def member_route(git, rev, family_id, member, counterexamples, mutants):
     return kind
 
 
-def family_table(git, rev, rows, origins, counterexamples, registry, environment, toolchain):
+def family_table(git, rev, rows, origins, counterexamples, registry, environment, toolchain, context=None):
     """P1-M: recompute every family's census over pinned bytes and check each member's links and route."""
     families = unique_records(rows, 'families')
     census = Census(git, rev, families, origins, environment, toolchain)
@@ -3221,7 +3401,8 @@ def family_table(git, rev, rows, origins, counterexamples, registry, environment
                             for other in families[link['family']]['members']),
                         'a reuse link names an existing member with the same key: ' + member['label'])
                 count['reused'] += 1
-            count['route:' + member_route(git, rev, family_id, member, counterexamples, mutants)] += 1
+            count['route:' + member_route(git, rev, family_id, member, counterexamples, mutants, families,
+                                          {case['id'] for case in registry['cases']}, context)] += 1
     for count in counts.values():
         count['distinct'] = count['occurrences'] - count['inherited'] - count['reused']
     return families, {role: dict(count) for role, count in counts.items()}
@@ -3326,14 +3507,20 @@ def context_minimum(git, origin):
 
 def context_references(git, revision, referring_path, text):
     """A deliberately small reference language, not a Markdown resolver. Required records
-    are classified only after normalization. Unsupported spellings of record references refuse."""
+    are classified only after normalization. Unsupported spellings of record references refuse.
+    TOOLS-02 design 06 §5 (owner choice 14) widens it in plain text only: a relative spelling of an existing
+    file, and `<revision>:<path>`, name records that must be covered; a trailing-slash directory is a
+    candidate; text naming no entry (including a revision:path absent at its revision) is a candidate that
+    needs a reason. A URL of another host or repository is external text unless the path after its host
+    names an entry of this repository; Markdown links are not parsed in source code."""
     references, masked = [], list(text)
-    for match in CONTEXT_LINK.finditer(text):
+    # Design 06 §5: source code is not Markdown, so `a[i](call)` in a sealed script is plain text.
+    for match in () if referring_path.endswith(CONTEXT_CODE) else CONTEXT_LINK.finditer(text):
         references.append((match.group(1), True))
         masked[match.start():match.end()] = ' ' * (match.end() - match.start())
     remaining = ''.join(masked)
     references.extend((match.group().rstrip('.:'), False) for match in CONTEXT_TOKEN.finditer(remaining))
-    required, candidates = set(), set()
+    required, candidates, consumed = set(), set(), set()
     for raw, markdown in references:
         destination = raw.split('#', 1)[0]
         if not destination:
@@ -3343,6 +3530,27 @@ def context_references(git, revision, referring_path, text):
         root = CONTEXT_PATH.fullmatch(destination)
         path = posixpath.normpath(posixpath.join(posixpath.dirname(referring_path), destination))
         decoded = unquote(destination).replace('\\', '/')
+        pinned_tree = CONTEXT_GITHUB_TREE.fullmatch(destination)
+        if pinned_tree:
+            # Design 06 §5: a pinned tree view names the repository, or a path, at that revision.
+            pin, tree_path = pinned_tree.groups()
+            if tree_path:
+                consumed.add(pin)
+            tree_revision = git.commit(pin)
+            entry = git.tree(tree_revision).get(tree_path) if tree_path else None
+            if tree_path and tree_path.startswith(SEALED_PREFIXES) and entry is not None and entry[0] != '040000':
+                git.blob(tree_revision, tree_path)
+                required.add((tree_revision, tree_path))
+            else:
+                candidates.add(tree_path or pin)
+            continue
+        if CONTEXT_SCHEME.match(destination) and not qualified and not destination.startswith(CONTEXT_REPOSITORY):
+            # An external URL is text, unless the path after its host names an entry of this repository (a disguise).
+            after_host = re.sub(r'^[A-Za-z][A-Za-z0-9+.-]*://[^/]*/?', '', decoded).split('?', 1)[0].rstrip('/')
+            if CONTEXT_OTHER_GITHUB.match(destination) or not after_host.startswith(SEALED_PREFIXES) or \
+                    git.tree(revision).get(after_host) is None:
+                continue
+        revision_path = None if markdown else CONTEXT_REVISION_PATH.fullmatch(destination)
         record_like = ('docs/' in decoded or path.startswith(SEALED_PREFIXES) and
                        (markdown or git.tree(revision).get(path, ('',))[0] in
                         ('100644', '100755', '120000')))
@@ -3350,18 +3558,56 @@ def context_references(git, revision, referring_path, text):
             pin, path = qualified.groups()
             reference_revision = git.commit(git.run('rev-parse', '--verify', pin + '^{commit}').decode().strip())
             supported = posixpath.normpath(path) == path
+        elif revision_path:
+            pin, path = revision_path.groups()
+            consumed.add(pin)
+            try:
+                reference_revision = git.commit(git.run('rev-parse', '--verify', '--quiet', pin + '^{commit}').decode().strip())
+            except CheckError:
+                reference_revision = None
+            supported = posixpath.normpath(path) == path
+            if reference_revision is None or git.tree(reference_revision).get(path) is None:
+                candidates.add(destination)
+                continue
         else:
             reference_revision = revision
             if not markdown and root:
                 path = destination
             supported = bool(local and not destination.startswith('/') and
                              not path.startswith('../') and (markdown or root))
+            tree = git.tree(revision)
+            folder = destination.endswith('/') and tree.get(destination.rstrip('/'), ('',))[0] == '040000'
+            if not supported and not markdown and folder and record_like:
+                root, path, supported = True, destination.rstrip('/'), True
+            elif not supported and path.startswith('../') and record_like:
+                # Design 06 §5 (owner choice 14): a reference leaving the repository names no entry here.
+                candidates.add(destination)
+                continue
+            elif not supported and not markdown and local and not destination.startswith('/') and \
+                    not path.startswith('../') and tree.get(path, ('',))[0] in ('100644', '100755', '120000'):
+                supported = True
+            elif not supported and not markdown and record_like and tree.get(path) is None and \
+                    tree.get(destination) is None and tree.get(destination.rstrip('/')) is None:
+                candidates.add(destination)
+                continue
+            elif not supported and markdown and record_like and not CONTEXT_SCHEME.match(destination):
+                # A link whose destination, stripped of <>, a title, a query and percent-encoding, names no entry is
+                # unresolvable text; one that names an entry is a disguised spelling and still refuses.
+                bare = unquote(re.split(r'[ ?]', destination.strip('<>'), maxsplit=1)[0]).replace('\\', '/')
+                named = posixpath.normpath(posixpath.join(posixpath.dirname(referring_path), bare))
+                if bare and tree.get(named) is None and tree.get(bare) is None and tree.get(bare.lstrip('./')) is None:
+                    candidates.add(destination)
+                    continue
         require(not record_like or supported, 'unsupported sealed-record reference: ' + raw)
         if not supported:
             continue
         entry = git.tree(reference_revision).get(path)
-        if path.startswith(SEALED_PREFIXES) and (entry is None or entry[0] != '040000'):
-            # Missing files and symlinks must not become reasonable-away candidates.
+        if path.startswith(SEALED_PREFIXES) and entry is None:
+            # Design 06 §5 (owner choice 14): a record absent at the revision it is read at is unresolvable text
+            # that needs a reason; a record present at that revision must still be covered.
+            candidates.add(path)
+        elif path.startswith(SEALED_PREFIXES) and entry[0] != '040000':
+            # Symlinks must not become reasonable-away candidates.
             git.blob(reference_revision, path)
             required.add((reference_revision, path))
         elif root or markdown:
@@ -3371,12 +3617,13 @@ def context_references(git, revision, referring_path, text):
     # Qualified references consume their revision as part of the reference, not as a free SHA.
     for match in CONTEXT_GITHUB.finditer(remaining):
         candidates.discard(match.group(1))
+    candidates -= consumed
     return required, candidates
 
 
 def context_check(git, origin, closure):
-    """Recorded ranges cover the minimum context and every sealed record it names, transitively;
-    every other path or revision candidate in that text is covered or reasoned."""
+    """Recorded ranges cover the minimum context and every sealed record it names (one hop, TOOLS-02 design 06
+    §6); every other path or revision candidate in that text is covered or reasoned."""
     ranges = closure.get('context')
     require(isinstance(ranges, list) and bool(ranges) and all(
         isinstance(row, dict) and isinstance(row.get('path'), str) and type(row.get('start')) is int and
@@ -3393,7 +3640,13 @@ def context_check(git, origin, closure):
     require(uncertain is None, 'the minimum context is uncertain (' + str(uncertain) + '): ' + origin['id'])
     require(covers(origin['revision'], origin['path'], start, end), 'the context does not cover the minimum: ' + origin['id'])
     seen, candidates_seen, used = set(), set(), set()
-    queue = [(origin['revision'], origin['path'], text)]
+    # TOOLS-02 design 06 §6 (owner choice 14): one hop. Only the minimum context is read for references; the
+    # records it names must be covered, and are not walked. A binary origin names nothing.
+    try:
+        git.blob(origin['revision'], origin['path']).decode('utf-8')
+        queue = [(origin['revision'], origin['path'], text)]
+    except UnicodeDecodeError:
+        queue = []
     while queue:
         revision, referring_path, current = queue.pop()
         required, candidates = context_references(git, revision, referring_path, current)
@@ -3405,7 +3658,6 @@ def context_check(git, origin, closure):
             record = git.blob(reference_revision, path)
             require(covers(reference_revision, path, 1, max(len(source_lines(record)), 1)),
                     'a named sealed record is outside the context: ' + path + '@' + reference_revision)
-            queue.append((reference_revision, path, record.decode('utf-8', 'replace')))
         for candidate in sorted(candidates):
             candidates_seen.add(candidate)
             if candidate in reasons:
@@ -3415,6 +3667,80 @@ def context_check(git, origin, closure):
                         'an unreasoned path or revision candidate in the context: ' + candidate)
     require(set(reasons) <= used, 'context reasons name absent or mandatory candidates: ' + origin['id'])
     return {'ranges': len(ranges), 'candidates': len(seen) + len(candidates_seen), 'reasoned': len(used)}
+
+
+def triage_origin(git, rev, key, row, origins, registry, context):
+    """T2-5 retirement validates a resolvable pointer, never awards P1 credit or proves relevance."""
+    triage = row.get('triage')
+    require(isinstance(triage, dict) and triage.get('class') in TRIAGE_CLASSES,
+            'a triaged origin names a retirement class: ' + key)
+    require(isinstance(triage.get('rationale'), str) and bool(triage['rationale'].strip()),
+            'a triaged origin states its rationale: ' + key)
+    kind = triage['class']
+    pointer = {'covered_elsewhere': 'covered_by', 'superseded': 'decision', 'recorded_limit': 'limit'}.get(kind)
+    require(set(triage) == {'class', 'rationale'} | ({pointer} if pointer else set()) and 'closure' not in row,
+            'a retirement carries only its class pointer and no closure: ' + key)
+    if kind == 'superseded':
+        decisions = triage['decision'] if isinstance(triage['decision'], list) else [triage['decision']]
+        require(bool(decisions), 'mixed supersession has at least one decision: ' + key)
+        for decision in decisions:
+            require(decision in TRIAGE_DECISIONS, 'a retirement names a listed superseding decision: ' + key)
+            git.blob(TRIAGE_DECISION_REVISIONS.get(decision, rev), decision)
+            if decision == 'docs/development/work/BINDING-01/design-01.md':
+                git.blob(rev, VENV_RELEASE)
+    elif kind == 'recorded_limit':
+        limits = set(re.findall(r'^\|\s*(L-[0-9]+)\s*\|', git.blob(rev, TRIAGE_LIMITS).decode(), re.M))
+        require(isinstance(triage['limit'], str) and triage['limit'] in limits,
+                'a retirement names a current 017 limit: ' + key)
+    elif kind == 'covered_elsewhere':
+        # A mixed origin can carry several S5 results. Every pointer is checked; the rationale
+        # states which result each covers (design 01 §5.4), with one retirement class throughout.
+        covered_by = triage['covered_by']
+        coverages = covered_by if isinstance(covered_by, list) else [covered_by]
+        require(bool(coverages), 'mixed coverage has at least one pointer: ' + key)
+        for covered in coverages:
+            require(isinstance(covered, dict) and covered.get('kind') in ('leaf', 'case', 'origin'),
+                    'coverage names a leaf, registry case or closed origin: ' + key)
+            if covered['kind'] == 'leaf':
+                require(set(covered) == {'kind', 'command', 'file', 'test_path'} and
+                        isinstance(covered['command'], str) and isinstance(covered['file'], str) and
+                        isinstance(covered['test_path'], list) and bool(covered['test_path']) and
+                        all(isinstance(name, str) and bool(name) for name in covered['test_path']) and
+                        context is not None and covered['command'] in context['catalogs'],
+                        'leaf coverage names a catalog command, file and full path: ' + key)
+                catalog = context['catalog'](covered['command'])
+                leaves = [pair for pair in catalog['tree']['files'].get(covered['file'], {'pairs': []})['pairs']
+                          if pair['leaf'] and pair['path'] == covered['test_path']]
+                require(covered['file'] in catalog['selection'] and len(leaves) == 1 and leaves[0]['verdict'] == 'passed',
+                        'coverage names a single passing catalog leaf: ' + key)
+            elif covered['kind'] == 'case':
+                require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and
+                        covered['id'] in {case['id'] for case in registry['cases']},
+                        'coverage names an existing scheduled registry case: ' + key)
+            else:
+                require(set(covered) == {'kind', 'id'} and isinstance(covered['id'], str) and
+                        origins.get(covered['id'], {}).get('state') == 'complete',
+                        'coverage names a complete origin, never a retired one: ' + key)
+    return kind
+
+
+def counterexample_executable(key, facts):
+    """T2-5: a behavior/mutation record must reach executable evidence; unread witnesses remain uncredited."""
+    cx = facts['counterexample'][key]
+    if any(row.get('counterexample') == key and not row['refused'] for row in facts['target'].values()):
+        return True
+    if any(facts['member'].get(member, {}).get('status') == 'preserved' for member in cx.get('members', [])):
+        return True
+    for link in cx.get('evidence', []):
+        if not isinstance(link, dict) or set(link) != {'kind', 'id'} or not isinstance(link['id'], str):
+            continue
+        if link['kind'] == 'case' and link['id'] in facts['case']:
+            return True
+        if link['kind'] == 'family':
+            family = facts['family'].get(link['id'])
+            if family is not None and family['members'] and all(member['route']['kind'] != 'pending' for member in family['members']):
+                return True
+    return False
 
 
 def origin_closure(git, rev, key, row, origin, facts):
@@ -3443,7 +3769,7 @@ def origin_closure(git, rev, key, row, origin, facts):
         if member['status'] == 'refused':
             require(any(facts['target'][target]['member'] == member['member'] for target in linked['target']),
                     'a refused member of this origin has no linked target: ' + member['member'])
-        elif member['status'] in ('held', 'superseded'):
+        elif member['status'] in ('held', 'superseded', 'unread'):
             expected_kind = member['status'] + '_witness'
             require(any(facts['counterexample'][cx]['kind'] == expected_kind and
                         key in facts['counterexample'][cx]['origins'] and
@@ -3456,16 +3782,21 @@ def origin_closure(git, rev, key, row, origin, facts):
                 'a linked family still has pending members: ' + family['id'])
     require(bool(members) or non_executable is not None or any(linked.values()),
             'a closure without members, links or a non-executable reason: ' + key)
+    for cx in linked['counterexample']:
+        record = facts['counterexample'][cx]
+        require(record['kind'] in ('held_witness', 'superseded_witness', 'unread_witness') or
+                (record['kind'] in ('behavior', 'mutation') and counterexample_executable(cx, facts)),
+                'a linked counterexample reaches executable evidence: ' + cx)
     return context_check(git, origin, closure)
 
 
 def witness_records(counterexamples, members, claims, register):
     """P1-H: a held or superseded witness names its claim and the members the register classifies so."""
     for key, row in counterexamples.items():
-        if row['kind'] not in ('held_witness', 'superseded_witness'):
+        if row['kind'] not in ('held_witness', 'superseded_witness', 'unread_witness'):
             continue
         require(row.get('claim') in claims, 'a witness names a held claim: ' + key)
-        expected = 'held' if row['kind'] == 'held_witness' else 'superseded'
+        expected = row['kind'].removesuffix('_witness')
         linked = unique_text(row.get('members', []), 'witness members')
         for member in linked:
             record = members.get(member)

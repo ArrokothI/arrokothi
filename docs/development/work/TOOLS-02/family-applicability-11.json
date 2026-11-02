@@ -1,0 +1,60 @@
+{
+  "revision": "5bea95d7ffa794ca7259bea0778f421c3a258edd",
+  "method": "Read-only unique-anchor checks over current tracked bytes. Six confirmed new obligations only; remaining family routes are incomplete because the observed cap fires. No mutation executed.",
+  "members": [
+    {
+      "member": "H1 hold history built from an entry whose resultingEpoch is optional (review 09's read)",
+      "original_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The optional read would admit ambient data into a hold record. Current fixed History builders still require own fields; the ordinary pollution leaf asserts the exact record. No registered production edit restores this optional read."
+    },
+    {
+      "member": "H10 takeover record loses its resulting epoch",
+      "original_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The takeover History builder still owns resultingEpoch. The complete-decision takeover check constrains epochs in the answer/Activation, but not this History field; dropping it requires an adoption against the existing History leaf."
+    },
+    {
+      "member": "H11 declaration records claim attempt-submission authority",
+      "original_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The declaration builder is still current. k12.adopt-b9 mutates Outcome-ending attempt_submission History, the opposite operation/authority boundary, and is not this adoption. The complete-decision oracle does not independently assert this History authority field."
+    },
+    {
+      "member": "H12 takeover receipt token through the diagnostic spelling",
+      "original_anchor_count": 2,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "Initial dispatch now has the same mintReceipt line, so scope the current anchor to writerEpoch = currentEpoch + 1. Unlike Z11, this changes the actual minted receipt, not only the returned receipt. Short ASCII sweep identities do not distinguish the lossy spelling."
+    },
+    {
+      "member": "H15 ordinary optional controlScopes read restored",
+      "original_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The hostMember call remains unique. Ordinary caller.controlScopes would consult ambient inheritance; current registry/oracle control-authority scenarios do not introduce this inherited scope. The maintained pollution leaf names the actual distinguishing input."
+    },
+    {
+      "member": "H16 ordinary optional isSafeToReplace call restored",
+      "original_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The guarded hostMember/ReflectApply site remains unique. The historical optional call would invoke an inherited ambient method installed during request capture; the maintained leaf refuses it and requires zero calls. No current registry production edit restores this Driver read."
+    }
+  ]
+}

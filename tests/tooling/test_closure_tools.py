@@ -47,9 +47,26 @@ class ClosureTests(RepositoryFixture):
         return tool.origin_closure(self.reader, self.pin, (origin or self.test_origin)['id'], {'closure': closure},
                                    origin or self.test_origin, facts or self.facts())
 
+    def test_hollow_counterexample_cannot_close_an_origin(self):
+        facts = self.facts(member={}, counterexample={'cx': {'kind': 'behavior', 'origins': ['origin.test']}})
+        with self.assertRaisesRegex(tool.CheckError, 'reaches executable evidence'):
+            self.close(self.closure(links=[{'kind': 'counterexample', 'id': 'cx'}]), facts=facts)
+        facts['counterexample']['cx']['evidence'] = [{'kind': 'case', 'id': 'case.one'}]
+        self.assertEqual(self.close(self.closure(links=[{'kind': 'counterexample', 'id': 'cx'}]), facts=facts)['ranges'], 3)
+
     def test_a_test_file_origin_closes_with_targets_witnesses_and_its_context(self):
         result = self.close(self.closure())
-        self.assertEqual(result, {'ranges': 3, 'candidates': 3, 'reasoned': 1})
+        # One hop (TOOLS-02 design 06 §6): note.md is named; deeper.md, named only by note.md, is not walked.
+        self.assertEqual(result, {'ranges': 3, 'candidates': 2, 'reasoned': 1})
+
+    def test_unread_witness_preserves_closure_without_credit(self):
+        facts = self.facts()
+        facts['member']['m.held']['status'] = 'unread'
+        facts['counterexample']['witness.one']['kind'] = 'unread_witness'
+        self.assertEqual(self.close(self.closure(), facts=facts)['ranges'], 3)
+        facts['counterexample']['witness.one']['kind'] = 'held_witness'
+        with self.assertRaisesRegex(tool.CheckError, 'no linked witness'):
+            self.close(self.closure(), facts=facts)
 
     def test_a_refused_member_needs_a_linked_target(self):
         with self.assertRaisesRegex(tool.CheckError, 'refused member of this origin has no linked target'):
@@ -106,16 +123,17 @@ class ClosureTests(RepositoryFixture):
         with self.assertRaisesRegex(tool.CheckError, 'does not cover the minimum'):
             self.close(closure)
 
-    def test_named_sealed_records_are_context_transitively(self):
+    def test_named_sealed_records_are_context_one_hop(self):
+        """Owner choice 14 replaces the transitive walk: the records the minimum context names must be covered;
+        a record named only by one of them is not walked."""
         closure = self.closure(context=self.ranges(('packages/kernel/tests/a.test.ts', 1, 3), ('docs/records/note.md', 1, 1)))
-        with self.assertRaisesRegex(tool.CheckError, 'named sealed record is outside the context: docs/records/deeper.md'):
-            self.close(closure)
+        self.assertEqual(self.close(closure)['ranges'], 2)
+        with self.assertRaisesRegex(tool.CheckError, 'named sealed record is outside the context: docs/records/note.md'):
+            self.close(self.closure(context=self.ranges(('packages/kernel/tests/a.test.ts', 1, 3))))
 
     def test_a_reason_cannot_waive_mandatory_sealed_context(self):
         for omitted, ranges in [
-                ('docs/records/note.md', self.ranges(('packages/kernel/tests/a.test.ts', 1, 3))),
-                ('docs/records/deeper.md', self.ranges(('packages/kernel/tests/a.test.ts', 1, 3),
-                                                     ('docs/records/note.md', 1, 1)))]:
+                ('docs/records/note.md', self.ranges(('packages/kernel/tests/a.test.ts', 1, 3)))]:
             with self.subTest(omitted=omitted):
                 reasons = {'a1b2c3d': 'Historical revision.', omitted: 'Omit this required record.'}
                 with self.assertRaisesRegex(tool.CheckError, 'a named sealed record is outside the context: ' + omitted):

@@ -1,0 +1,26 @@
+{
+  "reading_revision": "310128e5",
+  "family": "family.k12c1.diagnostic-ablations-04",
+  "historical_target": "packages/kernel/src/values.ts",
+  "current_target": "packages/sdk/src/internal/value-capture.ts",
+  "description_anchor": "const describe = (value: unknown): string => value === null ? \"null\" : typeof value;",
+  "description_count": 1,
+  "T1_T2_T3_registry": "value-cost.c1.value-diagnostic-work",
+  "T4": {
+    "anchors": [
+      {
+        "before": "  if (units > 2 * BOUNDARY_LIMITS.stringScalarValues) return TOO_LONG;\n",
+        "after": "",
+        "count": 1
+      },
+      {
+        "before": "  if (units > STRING_SCAN_LIMIT) return TOO_LONG;\n",
+        "after": "",
+        "count": 1
+      }
+    ],
+    "sole_inner_scanner_caller": "scanText",
+    "planned_group": "k12c1-diagnostic-t4",
+    "status": "planned_not_executed"
+  }
+}

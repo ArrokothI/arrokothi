@@ -68,11 +68,11 @@ class FamilyCensusTests(RepositoryFixture):
         return {'id': extra.pop('id', 'family.runner'), 'origin': self.origins[runner], 'role': 'runner', 'census': census,
                 'members': [{'label': label, 'route': {'kind': 'pending'}} for label in members], **extra}
 
-    def table(self, *families, registry=None, counterexamples=None):
+    def table(self, *families, registry=None, counterexamples=None, context=None):
         origins = {row['id']: row for row in tool.inventory(self.reader, self.rev, 'inventory.json')['origins']}
         environment = tool.child_environment(tool.environment_declaration(None))[0]
         return tool.family_table(self.reader, self.rev, list(families), origins, counterexamples or {},
-                                 registry or {'cases': []}, environment, self.toolchain)[1]
+                                 registry or {'cases': []}, environment, self.toolchain, context)[1]
 
     def observed(self, **changes):
         spec = {'revision': self.rev, 'path': 'out.txt', 'sha256': tool.digest((self.root / 'out.txt').read_bytes()),
@@ -228,6 +228,70 @@ class FamilyCensusTests(RepositoryFixture):
         with self.assertRaisesRegex(tool.CheckError, 'reuse link names an existing member'):
             self.table(self.family(), second)
 
+    # Design 06 (owner choice 13): shared mutation routes and covered routes.
+    def shared(self, via=None, mutant='m1', reuses=None):
+        self.build({'runner.mjs': RUNNER, 'runner-two.mjs': RUNNER, 'runner-three.mjs': RUNNER})
+        second = self.family('runner-two.mjs', id='family.two')
+        third = self.family('runner-three.mjs', id='family.three')
+        second['members'][0]['route'] = {'kind': 'mutation', 'case': 'case', 'mutant': mutant, 'via': via if via is not None else
+                                         {'family': 'family.runner', 'label': 'M1 first', 'reading': 'The adapter runs M1 unchanged.'}}
+        if reuses is not None:
+            second['members'][0]['reuses'] = reuses
+        registry = {'cases': [{'id': 'case', 'mutants': [{'id': 'm1', 'obligation': 'family.runner#M1'},
+                                                         {'id': 'm2', 'obligation': 'family.runner#M2'}]}]}
+        return lambda: self.table(self.family(), second, third, registry=registry)
+
+    def test_a_shared_mutation_route_names_the_source_members_mutant(self):
+        counts = self.shared()()['runner']
+        self.assertEqual((counts['route:mutation_shared'], counts.get('route:mutation', 0)), (1, 0))
+        self.git('reset', '-q', '--hard', self.b)
+        counts = self.shared(reuses={'family': 'family.runner', 'label': 'M1 first'})()['runner']
+        self.assertEqual((counts['route:mutation_shared'], counts['reused']), (1, 1))
+
+    def test_a_shared_mutation_route_refuses_another_members_mutant(self):
+        for via, mutant, reuses, message in (
+                ({'family': 'family.two', 'label': 'M1 first', 'reading': 'r'}, 'm1', None, 'names another family'),
+                ({'family': 'family.runner', 'label': 'M1 first', 'reading': ' '}, 'm1', None, 'names another family'),
+                ({'family': 'family.runner', 'label': 'M9 absent', 'reading': 'r'}, 'm1', None, 'names an existing member'),
+                ({'family': 'family.runner', 'label': 'M1 first', 'reading': 'r'}, 'm1',
+                 {'family': 'family.three', 'label': 'M1 first'}, 'the one this member reuses'),
+                ({'family': 'family.runner', 'label': 'M1 first', 'reading': 'r'}, 'm2', None, "source member's registered mutant")):
+            with self.subTest(via=via, mutant=mutant):
+                self.git('reset', '-q', '--hard', self.b)
+                with self.assertRaisesRegex(tool.CheckError, message):
+                    self.shared(via, mutant, reuses)()
+
+    def leaf_context(self, verdict='passed'):
+        tree = {'files': {'tests/a.test.mjs': {'pairs': [{'leaf': True, 'path': ['suite', 'leaf'], 'verdict': verdict}]}}}
+        return {'catalogs': {'repository-tests': {}}, 'catalog': lambda command: {'selection': ['tests/a.test.mjs'], 'tree': tree}}
+
+    def test_a_covered_route_names_a_scheduled_case_or_passing_leaf(self):
+        self.build({'runner.mjs': RUNNER})
+        family = self.family()
+        family['members'][0]['route'] = {'kind': 'covered', 'covered_by': {'kind': 'case', 'id': 'case'},
+                                         'reading': 'The case mutates the same commit.'}
+        family['members'][1]['route'] = {'kind': 'covered', 'reading': 'The oracle leaf compares the whole view.',
+                                         'covered_by': [{'kind': 'leaf', 'command': 'repository-tests', 'file': 'tests/a.test.mjs',
+                                                         'test_path': ['suite', 'leaf']}]}
+        registry = {'cases': [{'id': 'case', 'mutants': []}]}
+        counts = self.table(family, registry=registry, context=self.leaf_context())['runner']
+        self.assertEqual((counts['route:covered'], counts.get('route:mutation', 0)), (2, 0))
+        for context, message in ((None, 'catalog command, file and full path'), (self.leaf_context('failed'), 'one passing catalog leaf')):
+            with self.subTest(context=context):
+                with self.assertRaisesRegex(tool.CheckError, message):
+                    self.table(family, registry=registry, context=context)
+
+    def test_a_covered_route_refuses_a_missing_reading_or_unknown_pointer(self):
+        self.build({'runner.mjs': RUNNER})
+        for route, message in (({'kind': 'covered', 'covered_by': {'kind': 'case', 'id': 'case'}, 'reading': ' '}, 'pointers and reading'),
+                               ({'kind': 'covered', 'covered_by': {'kind': 'origin', 'id': 'x'}, 'reading': 'r'}, 'registry case or a catalog leaf'),
+                               ({'kind': 'covered', 'covered_by': {'kind': 'case', 'id': 'absent'}, 'reading': 'r'}, 'scheduled registry case')):
+            with self.subTest(route=route):
+                family = self.family()
+                family['members'][0]['route'] = route
+                with self.assertRaisesRegex(tool.CheckError, message):
+                    self.table(family, registry={'cases': [{'id': 'case', 'mutants': []}]})
+
 
 class RepositoryFamilyTests(unittest.TestCase):
     """D05-CHK-09 on the pinned records: the crashed validation-08/27 run of ablations-03 is not a complete output."""
@@ -237,7 +301,9 @@ class RepositoryFamilyTests(unittest.TestCase):
         rev = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
         manifest = json.loads((ROOT / 'tests/fixtures/packet-tools/adoption.json').read_text())
         families = {row['id']: row for row in manifest['families']}
-        sealed, family = families['family.k12c1.review-04'], dict(families['family.k12c1.ablations-03'])
+        # The census check runs on its own: member routes stay pending here (design 06 routes are checked elsewhere).
+        unrouted = lambda row: dict(row, members=[dict(member, route={'kind': 'pending'}) for member in row['members']])
+        sealed, family = unrouted(families['family.k12c1.review-04']), unrouted(families['family.k12c1.ablations-03'])
         partial = 'docs/development/work/K1.2-correction-01/validation-08/27-revision4-ablations.txt'
         family['observed'] = dict(family['observed'], path=partial, tree='81dca4575ea56cfdde5b5f8ed72c439c7ec31821',
                                   sha256=tool.digest(reader.blob(family['observed']['revision'], partial)))

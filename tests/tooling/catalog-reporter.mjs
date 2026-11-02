@@ -6,10 +6,11 @@ const forwarded = new Set(['test:start', 'test:pass', 'test:fail']);
 const summary = /^(tests|suites|pass|fail|cancelled|skipped|todo) (\d+)$/;
 
 export default async function* catalogReporter(events) {
+  const witnessed = globalThis[Symbol.for('arrokothi.value-cost.witness')];
   for await (const { type, data } of events) {
     if (forwarded.has(type)) {
       const row = { type, name: data.name, nesting: data.nesting, file: data.file ?? null,
-        line: data.line ?? null, column: data.column ?? null };
+        line: data.line === undefined ? null : data.line - (witnessed?.sourceOffsets?.get(data.file) ?? 0), column: data.column ?? null };
       if (type !== 'test:start') {
         row.testNumber = data.testNumber ?? null;
         row.skip = data.skip !== undefined && data.skip !== false;
@@ -21,6 +22,7 @@ export default async function* catalogReporter(events) {
           row.failure_type = error.failureType ?? null;
           const cause = error.cause;
           const object = cause !== null && (typeof cause === 'object' || typeof cause === 'function');
+          if (witnessed) row.witnessed = object ? witnessed.get(cause) ?? null : null;
           row.cause_name = object && typeof cause.name === 'string' ? cause.name : null;
           row.cause_code = object && typeof cause.code === 'string' ? cause.code : null;
           const stack = object ? cause.stack : undefined;

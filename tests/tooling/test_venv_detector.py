@@ -337,7 +337,7 @@ class StructureTests(RepositoryFixture):
         }
 
     def hold(self):
-        claims = {claim: {'decisions': decisions} for claim, decisions in self.decisions.items()}
+        claims = {claim: {'status': 'held', 'decisions': decisions} for claim, decisions in self.decisions.items()}
         environment = tool.child_environment(tool.environment_declaration(None))[0]
         return tool.hold_register(self.reader, self.rev, {'recipes': json.loads(json.dumps(tool.REGISTER_MINIMUM)),
                                                           'entries': list(self.entries.values())},
@@ -404,15 +404,16 @@ class RepositoryRuleOneTests(RepositoryFixture):
     def test_known_leaves_are_rule_1_entries(self):
         manifest = json.loads((ROOT / 'tests/fixtures/packet-tools/adoption.json').read_text())
         entries = {row['key']: row for row in manifest['holds']['register']['entries']}
-        # Declaration sites after BINDING-01 relocation; the same witnesses retain their rule-1 holds.
+        # Declaration sites after BINDING-01 relocation and TOOLS-02's assertion-order repair (b804e986); the same
+        # witnesses retain their rule-1 holds.
         keys = ['packages/kernel/tests/creation.test.ts:404:3', 'packages/kernel/tests/dispatch.test.ts:687:3',
                 'packages/sdk/tests/value-capture.test.ts:1246:3', 'packages/sdk/tests/value-capture.test.ts:1263:3',
-                'packages/kernel/tests/host-members.test.ts:159:3', 'packages/kernel/tests/dispatch.test.ts:1462:3',
+                'packages/kernel/tests/host-members.test.ts:162:3', 'packages/kernel/tests/dispatch.test.ts:1462:3',
                 'packages/sdk/tests/value-capture.test.ts:2371:3', 'packages/sdk/tests/value-capture.test.ts:2109:3',
                 'packages/kernel/tests/creation.test.ts:596:3', 'packages/kernel/tests/ingress.test.ts:503:3']
         self.assertEqual({key: (entries[key]['classification'], entries[key]['claim'], entries[key]['decision'])
-                          for key in keys}, dict.fromkeys(keys, ('held', 'V-ENV', tool.VENV_RECORD)))
-        self.assertIn('not value capture or its serializer window', entries['packages/kernel/tests/host-members.test.ts:159:3']['reason'])
+                          for key in keys}, dict.fromkeys(keys, ('unread', 'V-ENV', tool.VENV_RELEASE)))
+        self.assertIn('not value capture or its serializer window', entries['packages/kernel/tests/host-members.test.ts:162:3']['reason'])
         self.assertIn('Earlier reading, kept as a note for BINDING-01', entries['packages/kernel/tests/creation.test.ts:596:3']['reason'])
         venv = next(row for row in manifest['holds']['claims'] if row['id'] == 'V-ENV')
         self.assertIn(tool.VENV_RECORD, venv['decisions'])

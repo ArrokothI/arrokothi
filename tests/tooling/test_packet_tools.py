@@ -61,7 +61,7 @@ class RepositoryFixture(unittest.TestCase):
         record = gzip.compress(json.dumps({'results': [{'assumption': 'A10', 'passed': True, 'facts': {
             'process_isolation': {'distinct_processes': True}, 'order_model_holds': False}}]}).encode(), mtime=0)
         (self.root / 'floor.json.gz').write_bytes(record)
-        claims = [{'id': claim, 'owner': 'BINDING-01' if claim == 'V-ENV' else 'K1.1-correction-03',
+        claims = [{'id': claim, 'status': 'held', 'owner': 'BINDING-01' if claim == 'V-ENV' else 'K1.1-correction-03',
                    'decisions': ['decision.md', *(tool.CATEGORY_DECISIONS.get(claim) or (tool.VENV_RECORD,))]}
                   for claim in ('V-D1', 'Proxy', 're-prototyped-built-in', 'V-ENV')]
         return {'holds': {'claims': claims, 'register': {'recipes': json.loads(json.dumps(tool.REGISTER_MINIMUM)),
@@ -184,6 +184,25 @@ class CandidateTests(RepositoryFixture):
                                                            'reason': 'A sealed record with a trailing blank line.'}])
         result = tool.candidate(self.reader, c, h, 'spec.json')
         self.assertEqual((result['result'], result['whitespace_exceptions']), ('facts_verified', ['sealed-notes.md']))
+
+    def test_a_raw_review_log_needs_its_exception_while_editable_payload_stays_checked(self):
+        """TOOLS-02 P3 KC3-R3-RAW-02: K1.1-correction-03 review 03's checker stopped on `git diff --check` warnings
+        in preserved raw review logs. A recorded exception exempts the frozen log; editable payload is still checked."""
+        self.write('review/candidate-diff-check.txt', 'raw.md:3: trailing whitespace.\n+line with spaces   \n')
+        sealed = self.commit('raw review log')
+        preserve = [{'revision': self.b, 'path': 'sealed.txt'}, {'revision': sealed, 'path': 'review/candidate-diff-check.txt'}]
+        exception = [{'path': 'review/candidate-diff-check.txt', 'revision': sealed, 'reason': 'Raw checker output, kept byte for byte.'}]
+        c, h = self.candidate_pair(preserve=preserve)
+        with self.assertRaises(tool.CheckError):
+            tool.candidate(self.reader, c, h, 'spec.json')
+        self.git('reset', '-q', '--hard', sealed)
+        c, h = self.candidate_pair(preserve=preserve, whitespace_exceptions=exception)
+        self.assertEqual(tool.candidate(self.reader, c, h, 'spec.json')['result'], 'facts_verified')
+        self.git('reset', '-q', '--hard', sealed)
+        self.write('editable.md', 'An editable payload line with spaces   \n')
+        c, h = self.candidate_pair(preserve=preserve, whitespace_exceptions=exception)
+        with self.assertRaises(tool.CheckError):
+            tool.candidate(self.reader, c, h, 'spec.json')
 
     def test_missing_preservation_source_is_not_empty_success(self):
         c, h = self.candidate_pair(preserve=[{'revision': self.b, 'path': 'missing'}])

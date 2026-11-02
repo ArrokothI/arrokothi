@@ -1,0 +1,93 @@
+[
+  {
+    "ordinal": 1512,
+    "origin": "additional-1107d4b2a4d8c1365842b8ae",
+    "source": {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/guards/round3_mutants.py",
+      "line": 1,
+      "sha256": "0eafce9f87097beafdc21e6b45ece93c3b01b3a717d0339e8331101a28a55e9b",
+      "disposition": "Preserve final-review evidence; adopt under P1. RM1/RM2/RM3/RM5 remain closed by reading; no executable kill claimed for them."
+    },
+    "disposition": "P1-R non-executable record",
+    "reading": "RM1 restores obsolete A-hard/B-hard obligations, RM2 replaces all 51 option responses with generic text, RM3 falsely attributes poison blocking to frozen intrinsics, RM4 removes a hostile label, and RM5 removes binding pinning. Read the complete runner and sealed round3-mutants.json. The two historical validators let RM1/2/3/5 survive; coverage.json readings audit.RM1/RM2/RM3/RM5 retain distinct semantic reasons. RM4 is rejected by corpus.validate for hostile-label coverage. This is preserved historical evidence-tooling scope, with no new executable kill or product guarantee claimed."
+  },
+  {
+    "ordinal": 1513,
+    "origin": "additional-1f7c234896b1fdf09bc26cdb",
+    "source": {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/frozen-graph.mjs",
+      "line": 1,
+      "sha256": "6e276d7d3a8d4d87df7512b8baf6ed093cad9589c16a1c31a55e172c4c8fb9c1",
+      "disposition": "Binding/hardening corpus intake; preserve held V-ENV evidence; no claim correction in TOOLS-01."
+    },
+    "disposition": "S1",
+    "reading": "The complete program and both frozen-graph.txt observations measure which Node v25.2.1 objects are frozen and whether thirteen global bindings remain writable/configurable. It asserts no required ArrokothI or evidence-tooling result. Its measurements are historical environment facts, not a maintained cross-version fingerprint. The cleanup intake separately carries the actual replacement-form counterexamples, including Map/Reflect and Object.freeze, under its existing realm cases."
+  },
+  {
+    "ordinal": 1514,
+    "origin": "additional-b60e2b509343b39e0bc4e392",
+    "source": {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-creation.mts",
+      "line": 1,
+      "sha256": "69aec585c3a508ab481c93270f9a6db89e9037f8d5449334e64ca27990cc12f1",
+      "disposition": "Binding/hardening corpus intake; preserve held V-ENV evidence; no claim correction in TOOLS-01."
+    },
+    "disposition": "P1-R cases",
+    "reading": "Both sealed creation outcomes were read. The live-object Proxy hop changes JSON numeric serialization and incorrectly replays different content at the old pin. BINDING-01 moves the current core to canonical bytes. The existing two realm.kernel-lexical-creation cases invoke the maintained realm-byte-port creation control/hop, with a request getter installing the same lexical shadow. Their recorded observations require different-content conflict, same-content replay and unchanged first retained payload. Revalidate both cases and context without promoting unread attribution."
+  },
+  {
+    "ordinal": 1515,
+    "origin": "additional-0b2b45755c80ff73e7789650",
+    "source": {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/kernel-lexical-shadow.mts",
+      "line": 1,
+      "sha256": "1bf9e15ca13da33acd25ef189d91c83308ae97a4fe31d860ad1fd725ebb68df9",
+      "disposition": "Binding/hardening corpus intake; preserve held V-ENV evidence; no claim correction in TOOLS-01."
+    },
+    "disposition": "P1-R cases",
+    "reading": "All four sealed control/JSON/Object/Array outcomes were read. Historical coherent Proxy capture steers the old serializer despite unchanged globalThis bindings. The existing four realm.kernel-lexical-shadow cases invoke realm-byte-port shadow after core module initialization. Canonical bytes and parsed content must agree on first and later calls under each lexical shadow. The old live-object Kernel operation was replaced by BINDING-01. Preserve each current byte-core route and its unread attribution until a per-entry reading supports credit."
+  },
+  {
+    "ordinal": 1516,
+    "origin": "additional-a11f3d5bded83b931874b438",
+    "source": {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/lexical-shadow-probe.mjs",
+      "line": 1,
+      "sha256": "b51a1bc1e9f37c23e66f4a51800cbba1af531211b44bc52e42e01308f9c74302",
+      "disposition": "Binding/hardening corpus intake; preserve held V-ENV evidence; no claim correction in TOOLS-01."
+    },
+    "disposition": "P1-R cases",
+    "reading": "Read the whole canonicalize@3.0.0 probe and all three observations. Ordinary and frozen-but-unpinned processes admit a lexical JSON declaration and steer bytes; full non-writable/non-configurable pins reject the declaration with SyntaxError and keep bytes unchanged. The three existing realm.lexical-shadow cases preserve these separate environment outcomes and the observation-comparison removal mutant. They are mechanism witnesses, not an ambient SDK guarantee."
+  },
+  {
+    "ordinal": 1517,
+    "origin": "additional-4312cb8d9b027fa1ae60a720",
+    "source": {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/review-03/hop/pin-forms-probe.mjs",
+      "line": 1,
+      "sha256": "f1c447fee85fb4a0357ba9717b8fbb6efbc91aca8c4f97da0d54051e529075c8",
+      "disposition": "Binding/hardening corpus intake; preserve held V-ENV evidence; no claim correction in TOOLS-01."
+    },
+    "disposition": "P1-R cases",
+    "reading": "Read the whole runner and all 24 sealed observations. JSON/Object/Array each vary assignment, defineProperty, declaration and a pre-existing lexical binding against full versus writable-only pins. Assignment is blocked in both pin modes; full pins also block definition and later declaration; writable-only pins permit those changes. A declaration installed before either pin survives the startup descriptor check. Preserve all 24 registry cases, including recursive-error outcomes for writable-only JSON/Object definitions. The realm comparison checks the expected observation and a corrupt-observation negative control, with a comparison-removal mutant."
+  },
+  {
+    "ordinal": 1518,
+    "origin": "additional-e0c4ff8aa1309ff5bc381c10",
+    "source": {
+      "revision": "b759d0abc01915ea5abc94b4607c6f9101bbbcc7",
+      "path": "docs/development/work/DESIGN-AUDIT-01/cleanup-01.md",
+      "line": 1,
+      "sha256": "5485f5ae35856281fcbe39147fd051857c4a364dac319deafee340c5448f4a09",
+      "disposition": "Policy-only intake DA01-R3-PROXY-02: all-Proxy refusal scope stays an open owner decision."
+    },
+    "disposition": "P1-R mixed record and cases",
+    "reading": "Read the complete cleanup. Status, identities, commands and process retrospective are records. DA01-R3-GUARD-01 is retained by the four explicit reading-only RM entries and sealed RM4 coverage control. DA01-R3-HOP-01 has the 24 pin-form, sixteen Map/Reflect zone, four Object.freeze, three lexical-shadow and six maintained core-port cases. Keep the pre-pin declaration and full-versus-writable-only distinctions. DA01-R3-PROXY-02 was answered by DESIGN-AUDIT-01 decision-01, with coherent Proxy acceptance superseded; decision-02/BINDING-01 replace the old live-object core. The historical policy-only transfer is therefore expanded to the more demanding existing-case closure, plus its separate non-executable reading rationale. No historical evidence changes."
+  }
+]

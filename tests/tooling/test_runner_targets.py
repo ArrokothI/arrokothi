@@ -1,10 +1,9 @@
-"""F3 target-set and multi-edit mutants (design 05 D05-04; design 06 R1-04 under owner choice 09). The
-target-set route reports what it observed at a site the passing control reached and never returns
-`killed`; discovery runs are metadata, never credit. Run-level categories stay distinct."""
+"""TOOLS-02 T2-3: target-set kills require a test-side assertion bound to the named invocation.
+The TOOLS-01 refusal corpus stays maintained, with qualifying real/helper assertions now credited."""
 import json
 
 from test_packet_tools import RepositoryFixture, tool
-from test_target_tools import ROOT
+from test_target_tools import ROOT, pinned_toolchain
 
 SOURCE = """export function compute(n) { return n + 1; }
 export function other(n) { return n * 2; }
@@ -66,7 +65,7 @@ def tests(name, before, after, **extra):
 
 class TargetSetRunnerTests(RepositoryFixture):
     def run_registry(self, mutants, tests=TESTS, source=SOURCE, helper=None, timeout=60):
-        for path in (tool.CATALOG_REPORTER, tool.REACH_COVERAGE):
+        for path in tool.TARGET_FILES:
             self.write(path, (ROOT / path).read_text())
         self.write('src/value.mjs', source)
         self.write('tests/a.test.mjs', tests)
@@ -74,7 +73,14 @@ class TargetSetRunnerTests(RepositoryFixture):
         if helper:
             self.write('tests/helper.mjs', helper)
             files.append('tests/helper.mjs')
-        self.document('registry.json', {'version': 1, 'cases': [{
+        dependencies = [row for row in json.loads((ROOT / 'tests/fixtures/packet-tools/mutations.json').read_text())['dependencies'] if row['path'] == 'node_modules/typescript']
+        for name, data in pinned_toolchain().items():
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        self.write('.gitignore', 'node_modules/\n')
+        self.write('package-lock.json', (ROOT / 'package-lock.json').read_text())
+        self.document('registry.json', {'version': 1, 'dependencies': dependencies, 'cases': [{
             'id': 'targets', 'targets': {'flags': ['--test'], 'files': ['tests/a.test.mjs']},
             'files': files, 'timeout_seconds': timeout, 'output_limit_bytes': 1048576, 'mutants': mutants}]})
         rev = self.commit('target-set registry')
@@ -94,17 +100,18 @@ class TargetSetRunnerTests(RepositoryFixture):
         ])
         self.assertEqual(result['cases'][0]['control'], 'passed')
         self.assertEqual({name: row['status'] for name, row in rows.items()},
-                         {'assertion': 'observed', 'wrong': 'wrong_kill', 'equivalent': 'survived', 'unreached': 'uncovered',
-                          'multi': 'observed'})
+                         {'assertion': 'killed', 'wrong': 'wrong_kill', 'equivalent': 'survived', 'unreached': 'uncovered',
+                          'multi': 'killed'})
         self.assertEqual(self.outcomes(rows['assertion']), {'tests/a.test.mjs > compute adds one': 'assertion'})
         self.assertEqual(rows['assertion']['targets'][0]['origin'], 'not established')
         self.assertEqual(rows['wrong']['first_failure'], 'tests/a.test.mjs > other doubles')
-        self.assertFalse(any('killed_by' in row for row in rows.values()))
-        self.assertNotIn('killed', result['counts'])
+        self.assertEqual(rows['assertion']['killed_by'][0]['site']['invocation'],
+                         {'file': 'tests/a.test.mjs', 'fullName': 'compute adds one'})
+        self.assertEqual(result['counts']['killed'], 2)
         self.assertEqual(result['result'], 'attention_required')
         self.assertEqual(self.git('status', '--porcelain'), '')
 
-    def test_no_observed_outcome_becomes_a_kill(self):
+    def test_only_qualified_target_failures_become_kills(self):
         """Owner choice 09: an assertion in the target, a TypeError before it, skips, a todo, cancellation,
         a test timeout, a hook, a renamed target, production and trimmed-stack AssertionErrors, a plain Error
         with the assertion code, a helper assertion, missing and malformed provenance, and a qualifying-
@@ -133,18 +140,18 @@ class TargetSetRunnerTests(RepositoryFixture):
             src('helper', 'return n + 1;', 'return n + 3;', expected=(HELPER_TARGET,)),
             src('missing-provenance', 'return n + 1;', 'throw 42;'),
             src('empty-stack', 'return n + 1;',
-                "const error = new Error('x'); error.name = 'AssertionError'; error.stack = ''; throw error;"),
+                "const error = new Error('x'); error.name = 'Assertion' + 'Error'; error.stack = ''; throw error;"),
             src('numeric-stack', 'return n + 1;',
-                "const error = new Error('x'); error.name = 'AssertionError'; Object.defineProperty(error, 'stack', { value: 42 }); throw error;"),
+                "const error = new Error('x'); error.name = 'Assertion' + 'Error'; Object.defineProperty(error, 'stack', { value: 42 }); throw error;"),
             mutant('mixed', expected=(COMPUTE, OTHER), edits=[('src/value.mjs', 'return n + 1;', 'return n + 2;'),
                                                               ('tests/a.test.mjs', "test('other doubles',", "test('other triples',")]),
         ], tests=CORPUS_TESTS, source=CORPUS_SOURCE, helper=HELPER)
         self.assertEqual(result['cases'][0]['control'], 'passed')
-        self.assertEqual({name for name, row in rows.items() if row['status'] != 'observed'}, set())
-        self.assertNotIn('killed', result['counts'])
+        self.assertEqual({name: row['status'] for name, row in rows.items() if row['status'] != 'observed'},
+                         {'assertion': 'killed', 'helper': 'killed', 'production': 'setup_error', 'trimmed': 'setup_error'})
         compute, child = 'tests/a.test.mjs > compute adds one', 'tests/a.test.mjs > parent > child computes'
         expected = {'assertion': 'assertion', 'type-error': 'error', 'skip': 'skipped', 'todo': 'todo', 't-skip': 'skipped',
-                    'hook': 'hook', 'renamed': 'absent', 'production': 'assertion', 'trimmed': 'assertion',
+                    'hook': 'hook', 'renamed': 'absent',
                     'plain-code': 'assertion', 'missing-provenance': 'error', 'empty-stack': 'assertion',
                     'numeric-stack': 'assertion'}
         self.assertEqual({name: self.outcomes(rows[name])[compute] for name in expected}, expected)
@@ -152,15 +159,59 @@ class TargetSetRunnerTests(RepositoryFixture):
         self.assertEqual(self.outcomes(rows['helper']), {'tests/a.test.mjs > helper checks': 'assertion'})
         self.assertEqual(self.outcomes(rows['mixed']), {compute: 'assertion', 'tests/a.test.mjs > other doubles': 'absent'})
         provenance = {name: rows[name]['targets'][0]['provenance'] for name in
-                      ('assertion', 'trimmed', 'missing-provenance', 'empty-stack', 'numeric-stack')}
-        self.assertEqual(provenance, {'assertion': 'frames', 'trimmed': 'frames', 'missing-provenance': 'absent',
+                      ('assertion', 'missing-provenance', 'empty-stack', 'numeric-stack')}
+        self.assertEqual(provenance, {'assertion': 'frames', 'missing-provenance': 'absent',
                                       'empty-stack': 'unusable', 'numeric-stack': 'unusable'})
-        causes = {name: rows[name]['targets'][0]['cause'] for name in ('type-error', 'plain-code', 'trimmed')}
+        causes = {name: rows[name]['targets'][0]['cause'] for name in ('type-error', 'plain-code')}
         self.assertEqual(causes, {'type-error': {'name': 'TypeError', 'code': None},
-                                  'plain-code': {'name': 'Error', 'code': 'ERR_ASSERTION'},
-                                  'trimmed': {'name': 'AssertionError', 'code': 'ERR_ASSERTION'}})
-        self.assertTrue(all(item['origin'] == 'not established' for row in rows.values() for item in row['targets']
+                                  'plain-code': {'name': 'Error', 'code': 'ERR_ASSERTION'}})
+        self.assertTrue(all(item['origin'] == 'not established' for row in rows.values() for item in row.get('targets', [])
                             if item['outcome'] in ('assertion', 'error')))
+
+    def test_forged_shape_nested_and_cross_leaf_failures_are_uncredited(self):
+        source = """let saved;
+export function save(error) { saved = error; }
+export function compute(n) { return n + 1; }
+"""
+        checks = """import { test, beforeEach } from 'node:test';
+import assert from 'node:assert/strict';
+import { save, compute } from '../src/value.mjs';
+test('A catches an assertion', () => { try { assert.equal(0, 1); } catch (error) { save(error); } });
+test('compute adds one', () => { assert.equal(compute(1), 2); });
+"""
+        rows, _ = self.run_registry([
+            src('cross-leaf', 'return n + 1;', 'throw saved;'),
+            src('forge-shape', 'return n + 1;', "throw Object.assign(new Error('fake'), {name: 'Assertion' + 'Error', code: 'ERR_ASSERTION', stack: 'Error\\n    at tests/a.test.mjs:5:1'});"),
+            tests('nested', 'assert.equal(compute(1), 2);', "assert.throws(() => assert.equal(compute(1), 99)); throw new Error('ordinary');"),
+            tests('hook', "test('compute adds one',", "beforeEach(() => assert.equal(1, 2)); test('compute adds one',"),
+        ], source=source, tests=checks)
+        self.assertEqual({name: row['status'] for name, row in rows.items()},
+                         {'cross-leaf': 'observed', 'forge-shape': 'observed', 'nested': 'observed', 'hook': 'observed'})
+        self.assertEqual(rows['cross-leaf']['run']['tree']['files']['tests/a.test.mjs']['pairs'][1]
+                         ['failure']['witnessed']['invocation']['fullName'], 'A catches an assertion')
+
+    def test_duplicate_joined_names_refuse_the_control(self):
+        checks = TESTS + "test('compute adds one', () => {});\n"
+        with self.assertRaisesRegex(tool.CheckError, 'joined full names must be unique'):
+            self.run_registry([src('real', 'return n + 1;', 'return n + 2;')], tests=checks)
+
+    def test_policy_failure_cannot_credit_a_real_assertion(self):
+        rows, _ = self.run_registry([src('policy', 'return n + 1;', "const label = 'AssertionError'; return n + 2;")])
+        self.assertEqual(rows['policy']['status'], 'setup_error')
+        self.assertFalse(rows['policy']['run']['source_policy']['ok'])
+
+    def test_callback_length_subtests_and_aliases_keep_invocation(self):
+        checks = """import { test as check, describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { compute } from '../src/value.mjs';
+check('callback', (t, done) => { assert.equal(compute(1), 2); done(); });
+describe('suite', () => { it('alias', () => assert.equal(compute(1), 2)); });
+check('parent', async (t) => { await t.test('child', () => assert.equal(compute(1), 2)); });
+"""
+        expected = [('tests/a.test.mjs', path) for path in (['callback'], ['suite', 'alias'], ['parent', 'child'])]
+        rows, _ = self.run_registry([src('real', 'return n + 1;', 'return n + 2;', expected=expected)], tests=checks)
+        self.assertEqual(rows['real']['status'], 'killed')
+        self.assertEqual(len(rows['real']['killed_by']), 3)
 
     def test_run_level_categories_stay_distinct(self):
         rows, _ = self.run_registry([src('hang', 'return n + 1;', 'for (;;) {}')], timeout=8)

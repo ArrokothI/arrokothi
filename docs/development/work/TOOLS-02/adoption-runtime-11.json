@@ -1,0 +1,2182 @@
+{
+  "version": 1,
+  "owner_choice": "owner-choice-11.md",
+  "previous_attempt_ledger": "adoption-runtime-09.json",
+  "scope": "All 67 committed adoption cases added since 95c39561; one control and each of their 69 mutants, no retries or determinism repeats.",
+  "revision": "577c37b2967743af71e8ce4c4603a9d0b26d6b3e",
+  "fresh_clone": "/private/tmp/tools02-final-triage-20261031.9jo9oipj",
+  "node": "v26.10.0",
+  "method": "Selected committed existing-registry entries, packet_tools target_control/run_targets/target_outcome or run_case/observation/execution_outcome. No alternate registry.",
+  "full_pass_seconds": 172.75,
+  "summed_case_seconds": 172.338,
+  "cap_seconds": 600,
+  "result": "all_controls_passed_all_mutants_killed",
+  "raw_local_path": "/private/tmp/tools02-full-built-pass-577c37b2.json",
+  "raw_sha256": "47389dc720e8a7be52119052ca952c433d6a559033f79f26545928feb24323c3",
+  "reproduction": "Select the committed mutations.json cases whose IDs are absent at 95c395617cf5f266f3a6bd35bd20eba82e781671, retain registry order, and run each control plus each mutant using packet_tools. This full pass uses the existing registry. Clone with --no-local and npm ci first. The normal mutations operation runs these entries along with the prior corpus.",
+  "preflight": "A first launcher import wrote its own __pycache__, and pristine refused before any case ran. Removed only that generated cache, then invoked Python with -B. No adoption attempt occurred in the refused launcher.",
+  "cases": [
+    {
+      "case": "k12.adopt-a6",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.892,
+      "mutants": [
+        {
+          "id": "mutation-4e006eda2ea14ad2275c44e7bde6872bddba9ddbd0557ef3a2e5f4229dc95edf",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C7 Effects, obligations and waits are refused whole > an Effect-bearing Outcome is refused at envelope validation and leaves no action record",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 559,
+                  "column": 18,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+                  "fullName": "K1.2-C7 Effects, obligations and waits are refused whole > an Effect-bearing Outcome is refused at envelope validation and leaves no action record"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-a9",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.453,
+      "mutants": [
+        {
+          "id": "mutation-d449e21c5d85ad71a4c1786ee83bf993c17b976ebab2dfb799aea1c98ca40a16",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/recovery.test.ts > K1.2-C9 unavailable pinned code holds the exchange, visibly > while held, redelivery and takeover are refused; nothing is resent",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 559,
+                  "column": 18,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/recovery.test.ts",
+                  "fullName": "K1.2-C9 unavailable pinned code holds the exchange, visibly > while held, redelivery and takeover are refused; nothing is resent"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-a11",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 2.584,
+      "mutants": [
+        {
+          "id": "mutation-ff504c560619828dd0184d6b0a1ac897a89d1566d506f3581f4f5aacc8d6e900",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/activation-identity.test.ts > O3 unknown envelope field long: bounded diagnostic, whole refusal",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 559,
+                  "column": 18,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/activation-identity.test.ts",
+                  "fullName": "O3 unknown envelope field long: bounded diagnostic, whole refusal"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-a12",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.538,
+      "mutants": [
+        {
+          "id": "mutation-0566166667cf5b392d257b744dbe8712c82afcbacab4c0665dd3f6ac089cb6f1",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step > Emission identity is a pure function of accepted identities",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/outcome-acceptance.test.ts",
+                "anchor": {
+                  "line": 466,
+                  "column": 5,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+                  "fullName": "K1.2-C4 one decision: the whole batch, the progress, the Emissions and the next step > Emission identity is a pure function of accepted identities"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-a13",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.763,
+      "mutants": [
+        {
+          "id": "mutation-fda7a1adb51a5a7f26d06659c99e3c16fc5dd6d4c3c25ef492fe0583d2ef4cab",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/outcome-hostile.test.ts > K1.2-C13 envelope fields are own data, observed once > each field is read exactly once, and the accepted decision is the one reading",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/outcome-hostile.test.ts",
+                "anchor": {
+                  "line": 132,
+                  "column": 5,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/outcome-hostile.test.ts",
+                  "fullName": "K1.2-C13 envelope fields are own data, observed once > each field is read exactly once, and the accepted decision is the one reading"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-a14",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.47,
+      "mutants": [
+        {
+          "id": "mutation-c37ea3957d429b4be6105b7bd88d0f92cbfaa0901235f7f1a153f31f6b826950",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C3 a new proposal must answer the open exchange, or it is refused whole > an over-limit Emission list is refused without reading any element",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/outcome-acceptance.test.ts",
+                "anchor": {
+                  "line": 331,
+                  "column": 5,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+                  "fullName": "K1.2-C3 a new proposal must answer the open exchange, or it is refused whole > an over-limit Emission list is refused without reading any element"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-b9",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.554,
+      "mutants": [
+        {
+          "id": "mutation-e1bd0a43ecc3a560a26da47d66f5a5926b9af575cd476d234c0fcd3079ad340f",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/history-attribution.test.ts > K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully > ended_by_outcome records attempt_submission, never a control claim",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/history-attribution.test.ts",
+                "anchor": {
+                  "line": 80,
+                  "column": 5,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/history-attribution.test.ts",
+                  "fullName": "K12-R3-HISTORY-02 a Runtime submitter without control power ends holds truthfully > ended_by_outcome records attempt_submission, never a control claim"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-b10",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.52,
+      "mutants": [
+        {
+          "id": "mutation-ad312f631fdfd771a4e2cf6adc15036266503489ba873310bd4419f0bfd144e2",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/submission-lifetime.test.ts > K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > the first send's grant still accepts after two redeliveries, including hold-ending submission",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 552,
+                  "column": 5,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/submission-lifetime.test.ts",
+                  "fullName": "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > the first send's grant still accepts after two redeliveries, including hold-ending submission"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-b11",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.361,
+      "mutants": [
+        {
+          "id": "mutation-e9cf4cecc7e79b3c5c0d4f7f99fcf8eb347fdf9b74b54b3486fa48e88434c13e",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/submission-lifetime.test.ts > K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 552,
+                  "column": 5,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/submission-lifetime.test.ts",
+                  "fullName": "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-b15",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 2.082,
+      "mutants": [
+        {
+          "id": "mutation-192fec61e839de9e3f6c8c53530dfdc8685bb28dc6fcd5e8756f96dcc11eaa6c",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/outcome-partial-claim.test.ts > K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority > stale epoch 1 + base missing + current grant + valid content -> stale_exchange",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/outcome-partial-claim.test.ts",
+                "anchor": {
+                  "line": 126,
+                  "column": 11,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+                  "fullName": "K12-R11 partial stale epoch: well-formed stale writerEpoch with malformed base is stale whatever authority > stale epoch 1 + base missing + current grant + valid content -> stale_exchange"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-b20",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.956,
+      "mutants": [
+        {
+          "id": "mutation-b14f138c1d88776b85bf216744626d345991b2027ec861783c56b449cf8ca18c",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/outcome-partial-claim.test.ts > K1.2 decision-02 malformed Activation identity distinguishing schedules (C3) > current coordinates + identity missing + absent grant + valid content -> unauthorized_submission",
+              "site": {
+                "kind": "assert.match",
+                "module": "packages/kernel/tests/outcome-partial-claim.test.ts",
+                "anchor": {
+                  "line": 596,
+                  "column": 11,
+                  "expression": "assert.match"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/outcome-partial-claim.test.ts",
+                  "fullName": "K1.2 decision-02 malformed Activation identity distinguishing schedules (C3) > current coordinates + identity missing + absent grant + valid content -> unauthorized_submission"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-a2",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.485,
+      "mutants": [
+        {
+          "id": "mutation-b2d44f2580e4694aef0282ab3de820356952ef0734f3df48ee129643edc59be7",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts > a replay is answered even after the next exchange has started, and the new exchange is untouched",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 552,
+                  "column": 5,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+                  "fullName": "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts > a replay is answered even after the next exchange has started, and the new exchange is untouched"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-b3",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.512,
+      "mutants": [
+        {
+          "id": "mutation-852484bba799ab0b4a75b8c3fbfd7fb9842a7b3f95c486cd173be8d79700e7f6",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/hold-permitted.test.ts > K12-R1-HOLD-01 permitted actions predict the controls that work > b) protocol hold alone permits request_takeover and submit_outcome; redeliver refused, takeover clears",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/hold-permitted.test.ts",
+                "anchor": {
+                  "line": 122,
+                  "column": 5,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/hold-permitted.test.ts",
+                  "fullName": "K12-R1-HOLD-01 permitted actions predict the controls that work > b) protocol hold alone permits request_takeover and submit_outcome; redeliver refused, takeover clears"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-b4",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.622,
+      "mutants": [
+        {
+          "id": "mutation-1db700d2d8da717a0a98fb12506d011e2d6e22a528ff5c2c8d8da4e63c77aafd",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/delivery-attribution.test.ts > K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact attribution > Test A \"mixed redeliveries across takeover retain exact attribution\"",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/delivery-attribution.test.ts",
+                "anchor": {
+                  "line": 59,
+                  "column": 5,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/delivery-attribution.test.ts",
+                  "fullName": "K12-R1-DELIVERY-01 mixed redeliveries across takeover retain exact attribution > Test A \"mixed redeliveries across takeover retain exact attribution\""
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-b7",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.453,
+      "mutants": [
+        {
+          "id": "mutation-9447fc5d73aeb5f4663bf1f9d58d28d876045b3ae128324429aa7c1c123107ce",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/transaction.test.ts > K12-R1-DOC-01 an Outcome ending one hold commits its history atomically > Test E \"Outcome ending one hold commits history in the same decision\"",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/transaction.test.ts",
+                "anchor": {
+                  "line": 294,
+                  "column": 5,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/transaction.test.ts",
+                  "fullName": "K12-R1-DOC-01 an Outcome ending one hold commits its history atomically > Test E \"Outcome ending one hold commits history in the same decision\""
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-b12",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.676,
+      "mutants": [
+        {
+          "id": "mutation-86b76c972f56d502c688dc7025cd17c334db3f7fcba2ec87c1833a4c3bdcea8e",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/submission-authority.test.ts > K12-R9 authority before content on a well-formed current claim (Case A) > grant-less and forged current proposals with invalid content are unauthorized without content disclosure",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/submission-authority.test.ts",
+                "anchor": {
+                  "line": 352,
+                  "column": 9,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/submission-authority.test.ts",
+                  "fullName": "K12-R9 authority before content on a well-formed current claim (Case A) > grant-less and forged current proposals with invalid content are unauthorized without content disclosure"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-b13",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.667,
+      "mutants": [
+        {
+          "id": "mutation-647a91765d04c10a0f15784c9d4efd260920393256f42de5091ffc2166e74201",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/submission-authority.test.ts > K12-R9 authority before content on a well-formed current claim (Case A) > over-capacity proposals without authority are unauthorized, not capacity disclosures",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/submission-authority.test.ts",
+                "anchor": {
+                  "line": 401,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/submission-authority.test.ts",
+                  "fullName": "K12-R9 authority before content on a well-formed current claim (Case A) > over-capacity proposals without authority are unauthorized, not capacity disclosures"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-b14",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.536,
+      "mutants": [
+        {
+          "id": "mutation-a976f84d56bc0a2c6bd80ee5795e254f6edd1f293e1581fd8a3b24082cfa01ed",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/submission-authority.test.ts > K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C) > valid grant with malformed claim and invalid content is malformed, not unauthorized",
+              "site": {
+                "kind": "assert.match",
+                "module": "packages/kernel/tests/submission-authority.test.ts",
+                "anchor": {
+                  "line": 494,
+                  "column": 5,
+                  "expression": "assert.match"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/submission-authority.test.ts",
+                  "fullName": "K12-R9 entitled malformed and content-invalid attempts reach later validation (Case C) > valid grant with malformed claim and invalid content is malformed, not unauthorized"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-review09-r5",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.377,
+      "mutants": [
+        {
+          "id": "mutation-6060d7a974870ac00c1c6ab5ee32fd69420043c264d84c3fc9132144d01d3546",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/submission-lifetime.test.ts > K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced",
+              "site": {
+                "kind": "assert.notEqual",
+                "module": "packages/kernel/tests/submission-lifetime.test.ts",
+                "anchor": {
+                  "line": 112,
+                  "column": 5,
+                  "expression": "assert.notEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/submission-lifetime.test.ts",
+                  "fullName": "K12-R6-EVID-01 submission authority follows Runtime attempts, not delivery attempts > takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12.adopt-review09-r7",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.459,
+      "mutants": [
+        {
+          "id": "mutation-8d864793a9a0272c220ab34fb4fef524289a74c2b872e3fd6c94aae5597a7df8",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/outcome-acceptance.test.ts > K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts > changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 559,
+                  "column": 18,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/outcome-acceptance.test.ts",
+                  "fullName": "K1.2-C2 an exact duplicate replays; anything else under an accepted identity conflicts > changed content under an accepted Activation ID conflicts - including invalid content and a changed epoch"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x8",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.521,
+      "mutants": [
+        {
+          "id": "mutation-509390623b0b674dd29837ae3716602076db314ffa2e349a65e155149b665ca9",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 123,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x9",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.424,
+      "mutants": [
+        {
+          "id": "mutation-dcf4e6cd8919bd695e587219ba88441d7af6383cb0d8b538b1706b125bfc790e",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 136,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x10",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.762,
+      "mutants": [
+        {
+          "id": "mutation-5dc3984622d7a72e92fbe3d44dc13c5f958c17db0c48b53f6480f47ba6706fef",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 26,
+                  "column": 3,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x11",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.571,
+      "mutants": [
+        {
+          "id": "mutation-fa985a368cf5ef02f4e78fa00326b74c32b7eeaa1abce950390c75808f130734",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 86,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x12",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.467,
+      "mutants": [
+        {
+          "id": "mutation-b5abed56212f01872e6ddcfd67168d79b29deee8e0bd1585f11abd0959357481",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 186,
+                  "column": 9,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x13",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.581,
+      "mutants": [
+        {
+          "id": "mutation-7f3af4ce8c787b5dd57f4c91fc742825430127fcd06d58a0138f0663e1cee371",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 70,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x14",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.897,
+      "mutants": [
+        {
+          "id": "mutation-36b0828203edf086e5b273f8dc3c927c55ed8e2032159e2bba9c885b3a00dee7",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 26,
+                  "column": 3,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x15",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.414,
+      "mutants": [
+        {
+          "id": "mutation-f1614b10e2ceb7925cc8e8c3ea1189f0c62c5be9b488c6b5141f04072e5a1159",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 123,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x16",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.514,
+      "mutants": [
+        {
+          "id": "mutation-3627d5555ef77b5f5c8ec256160af0bb0c62adad2e0fb982f899c5452a78a454",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 187,
+                  "column": 9,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x17",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.47,
+      "mutants": [
+        {
+          "id": "mutation-733bfe5eb4dcded7480d9cd0bab7869db4bcc3fd9ef40d696cd6733cc712c3b9",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 123,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x18",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.406,
+      "mutants": [
+        {
+          "id": "mutation-2c244a0838cb7c24c9a101f056566959c7e3ebafc18dae5a0fb0768159d3b446",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 96,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x19",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.393,
+      "mutants": [
+        {
+          "id": "mutation-050f4ad1253b124c1394cd34ae85a00505e0586f0b72159c8084037d75eabcbd",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 85,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x20",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.399,
+      "mutants": [
+        {
+          "id": "mutation-5b24938ef334efd47fa0010b2296a88f9242a1ee1d34c68903a63d1ea994b911",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 91,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x21",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.434,
+      "mutants": [
+        {
+          "id": "mutation-cf3743ddf6f5e6d36c298fbb6ddb9dcf09357236088abb6f02841bcc27cdf0b4",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 92,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x22",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.422,
+      "mutants": [
+        {
+          "id": "mutation-23eee04ca912441b1010d0630e3b561134ba024b27741e948f4dc5e7e6b2e783",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 161,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-x23",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.442,
+      "mutants": [
+        {
+          "id": "mutation-60c1480634a7d7325cf4761f8998c6f12cf4a374bb5ea266081396b5afcba50d",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 165,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-diagnostics-v1",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 5.614,
+      "mutants": [
+        {
+          "id": "mutation-8a0fea43a88d650472448af41701fd332cf6e6e261b11bfcd1f49f642c36d4df",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/sdk/tests/value-refusal-cost.test.ts > V-D1 every issue family: nonfinite",
+              "site": {
+                "kind": "assert.ok",
+                "module": "packages/sdk/tests/value-refusal-cost.test.ts",
+                "anchor": {
+                  "line": 49,
+                  "column": 3,
+                  "expression": "assert.ok"
+                },
+                "invocation": {
+                  "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+                  "fullName": "V-D1 every issue family: nonfinite"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-diagnostics-v2",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 5.066,
+      "mutants": [
+        {
+          "id": "mutation-2a16e8516cab39583dfbeaa1e85c9e534d1248aa5badda8d88d60c196cc744b5",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/sdk/tests/value-refusal-cost.test.ts > V-D1 every issue family: nonfinite",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/sdk/tests/value-refusal-cost.test.ts",
+                "anchor": {
+                  "line": 100,
+                  "column": 5,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+                  "fullName": "V-D1 every issue family: nonfinite"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-diagnostics-v3",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 5.722,
+      "mutants": [
+        {
+          "id": "mutation-1731cf011f2945325c227caf27a4a3b0f49da3837284db3f5485a547848d40b1",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/sdk/tests/value-refusal-cost.test.ts > V-D1 suffix counts preserve late codes and first occurrence order across root consumers",
+              "site": {
+                "kind": "assert.match",
+                "module": "packages/sdk/tests/value-refusal-cost.test.ts",
+                "anchor": {
+                  "line": 395,
+                  "column": 3,
+                  "expression": "assert.match"
+                },
+                "invocation": {
+                  "file": "packages/sdk/tests/value-refusal-cost.test.ts",
+                  "fullName": "V-D1 suffix counts preserve late codes and first occurrence order across root consumers"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z1",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.389,
+      "mutants": [
+        {
+          "id": "mutation-476da72a3801717d261a6bcc5cb97505da6e525128ba45f33344454de5e2652a",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 49,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z2",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.375,
+      "mutants": [
+        {
+          "id": "mutation-f9376ca88b5acb077c60d25e350c7ea027ea371ed225aee4a5a09df0e565e8fd",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 46,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z3",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.379,
+      "mutants": [
+        {
+          "id": "mutation-4e589609f7613f6e0e827ff22c240ba071a54814358480d69851e8bcc3717015",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 26,
+                  "column": 3,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z4",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.379,
+      "mutants": [
+        {
+          "id": "mutation-93c1de368a2af34011a00024b03d9a7bd43edd507b8843d756f13e20e08245b1",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 63,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z5",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.388,
+      "mutants": [
+        {
+          "id": "mutation-33c689898dc3bbc3b07b5d9289c2d36f0162cd44fa51a27519cc3d5018ba2d0c",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 26,
+                  "column": 3,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z6",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.417,
+      "mutants": [
+        {
+          "id": "mutation-c3919857d924e4ab103ce0a5a1145f25280f96bf519b50b25bfbf0bd4f896989",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 552,
+                  "column": 5,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z7",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.396,
+      "mutants": [
+        {
+          "id": "mutation-e9e71b41f8196a759faec02fc6827782ff827befc30bb1d8ef73be91b36448f6",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 64,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z8",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.404,
+      "mutants": [
+        {
+          "id": "mutation-210b921a5de485277658dba7eb6132f97252f25407b27771ad35bba37cde86b0",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 80,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z9",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.418,
+      "mutants": [
+        {
+          "id": "mutation-3ed15af54e9f21c973b2aec52714a38e193be86eb077891d504b9455b5402000",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 77,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z10",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.413,
+      "mutants": [
+        {
+          "id": "mutation-eebb7e8adfee6c3c84c96345b15bff2216ffb0d3274c3d9294cb4f0b6dd46805",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 123,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z11",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.467,
+      "mutants": [
+        {
+          "id": "mutation-3fd9c223ba3c1fc0441fd1ea43fb89f18149c68904f58f3ef267859bc21a7724",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 96,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z12",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.396,
+      "mutants": [
+        {
+          "id": "mutation-874e11f6dc75b5b807cca2698439987d7e34cc377930f79f3634303a8ed36b3f",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 70,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z13",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.377,
+      "mutants": [
+        {
+          "id": "mutation-58b945a5fc269434cbc522ee6c7278d4245667d25d396b0ee33b3a91dcd65009",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 51,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z14",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.394,
+      "mutants": [
+        {
+          "id": "mutation-a2088209671a743d9da11ada36108c719f5240bf0b3641837b3d10d3857830b1",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 54,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z15",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.389,
+      "mutants": [
+        {
+          "id": "mutation-a81d3f6d1d502ed37ef5f611560dc29dda01628006cef626eca14a579fa4622d",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 55,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-coordinate-z16",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.408,
+      "mutants": [
+        {
+          "id": "mutation-bf5e6b76398915ccfc6982f5b03aedbb8ed67562f11df0b9b33b9fd99c3a863b",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 86,
+                  "column": 7,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h1",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 2.077,
+      "mutants": [
+        {
+          "id": "mutation-eceea9554acdeb316acedd7d6791d3cf09152c12b85eb17aa7d6c0d0f3a2cab8",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/recovery-ambient.test.ts > K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation > protocol-enter / data",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/recovery-ambient.test.ts",
+                "anchor": {
+                  "line": 232,
+                  "column": 3,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/recovery-ambient.test.ts",
+                  "fullName": "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation > protocol-enter / data"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "mutation-87d77a4efc5fc0bff25bd6e32e5279deee1da35273fa122fba9d8ff8109b61e0",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/recovery-ambient.test.ts > K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation > protocol-enter / data",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/recovery-ambient.test.ts",
+                "anchor": {
+                  "line": 232,
+                  "column": 3,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/recovery-ambient.test.ts",
+                  "fullName": "K12C1-R9-HISTORY-01 review-09 matrix: inherited resultingEpoch during control observation > protocol-enter / data"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h10",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.345,
+      "mutants": [
+        {
+          "id": "mutation-df5cbfa6915c7b88066d6e676a674784e16ab3aefeea940c5b09d23704cc7664",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/recovery-history.test.ts > K12-R1-HISTORY-01 recovery history is retained Execution evidence > b) protocol hold via takeover: entered, then cleared_by_takeover with resultingEpoch",
+              "site": {
+                "kind": "assert.equal",
+                "module": "packages/kernel/tests/recovery-history.test.ts",
+                "anchor": {
+                  "line": 117,
+                  "column": 5,
+                  "expression": "assert.equal"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/recovery-history.test.ts",
+                  "fullName": "K12-R1-HISTORY-01 recovery history is retained Execution evidence > b) protocol hold via takeover: entered, then cleared_by_takeover with resultingEpoch"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h11",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.294,
+      "mutants": [
+        {
+          "id": "mutation-d39403a1e8e8e47b7d7cd7ee163410a3199b12eecb35ec87253fc6049c4fff45",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/history-attribution.test.ts > K12-R3-HISTORY-02 explicit control transitions still record control authority > entered, protocol entered, and cleared_by_takeover are control-origin",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/history-attribution.test.ts",
+                "anchor": {
+                  "line": 124,
+                  "column": 5,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/history-attribution.test.ts",
+                  "fullName": "K12-R3-HISTORY-02 explicit control transitions still record control authority > entered, protocol entered, and cleared_by_takeover are control-origin"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h12",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.411,
+      "mutants": [
+        {
+          "id": "mutation-e79ecbfda90fa5ca4ea337c0727788f4fc86377092d5226dab797a0e65ff613b",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/exact-coordinates.test.ts > DEC-4 exact retained coordinates: \"actor-\u00e9\" complete",
+              "site": {
+                "kind": "assert.deepEqual",
+                "module": "packages/kernel/tests/exact-coordinates.test.ts",
+                "anchor": {
+                  "line": 96,
+                  "column": 7,
+                  "expression": "assert.deepEqual"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/exact-coordinates.test.ts",
+                  "fullName": "DEC-4 exact retained coordinates: \"actor-\u00e9\" complete"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h15",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.348,
+      "mutants": [
+        {
+          "id": "mutation-f497faffa4b48efc161fda566ef674b5654781fa5943f68d7d958c15e26967cf",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 controlScopes comes from the caller, never from Object.prototype > residue Object.prototype.controlScopes gives a visibility-only caller no takeover",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 559,
+                  "column": 18,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/host-members.test.ts",
+                  "fullName": "correction DEC-8 controlScopes comes from the caller, never from Object.prototype > residue Object.prototype.controlScopes gives a visibility-only caller no takeover"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h16",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.862,
+      "mutants": [
+        {
+          "id": "mutation-874f0915d9d35f1e93716f795d30e0372e2839b32bd4da8e8cd59df22f779f91",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a Driver without the method is refused even when the request's getter installs an inherited one",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 559,
+                  "column": 18,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/host-members.test.ts",
+                  "fullName": "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a Driver without the method is refused even when the request's getter installs an inherited one"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "mutation-632b434c60781a49063d54e051cb2b5c497f02e11655e2eed8dad1b15bc295f4",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a Driver without the method is refused even when the request's getter installs an inherited one",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 559,
+                  "column": 18,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/host-members.test.ts",
+                  "fullName": "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a Driver without the method is refused even when the request's getter installs an inherited one"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "state-owner.tools02-h7",
+      "control_valid": true,
+      "baseline_sha256": "6f35e752416f7047b2a315e549dec971ee5c43d3f9db6ce289b9aee657a9d7a4",
+      "seconds": 58.789,
+      "mutants": [
+        {
+          "id": "mutation-31b8db55bc82d15e2cac1e99cee73bad9effa301e674a38aa8a6fd0fe914ab45",
+          "status": "killed",
+          "reached": null,
+          "killed_by": [
+            "recoverExecution: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+          ],
+          "output_sha256": "c25852de5571e9bcf87ccbebb41e9448a9eef522c4eb71d3d6dda15a0a2faead"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h17",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.56,
+      "mutants": [
+        {
+          "id": "mutation-43fa21cebbae4d4b360d3a917d0bf871168fab8253783feeece73813c7113e2f",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 coordinator limits come from the options, never from Object.prototype > residue mailboxCapacity and emissionsPerOutcome at construction declare nothing",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 552,
+                  "column": 5,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/host-members.test.ts",
+                  "fullName": "correction DEC-8 coordinator limits come from the options, never from Object.prototype > residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h18",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.309,
+      "mutants": [
+        {
+          "id": "mutation-396510935970d7695ec7735fb390c64425c144f4bdcee0fe6a8e658cdd0df9b6",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 coordinator limits come from the options, never from Object.prototype > residue mailboxCapacity and emissionsPerOutcome at construction declare nothing",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 552,
+                  "column": 5,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/host-members.test.ts",
+                  "fullName": "correction DEC-8 coordinator limits come from the options, never from Object.prototype > residue mailboxCapacity and emissionsPerOutcome at construction declare nothing"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h20",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.318,
+      "mutants": [
+        {
+          "id": "mutation-ebc784cdb97248253092436607f0223c320e8d886372e6d216bf9a9f16e8caae",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a function-object Driver is not answered by Function.prototype",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 559,
+                  "column": 18,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/host-members.test.ts",
+                  "fullName": "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a function-object Driver is not answered by Function.prototype"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "k12c1.adopt-recovery-h21",
+      "control_valid": true,
+      "baseline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 1.384,
+      "mutants": [
+        {
+          "id": "mutation-ade3d79012cee5a7f80377e21878b06f5218db7120ab6ad0fef4751e60d29a34",
+          "status": "killed",
+          "reached": true,
+          "killed_by": [
+            {
+              "target": "packages/kernel/tests/host-members.test.ts > correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a class-based Driver's own prototype method is honored (trusted host structure)",
+              "site": {
+                "kind": "assert.fail",
+                "module": "packages/kernel/tests/harness.ts",
+                "anchor": {
+                  "line": 552,
+                  "column": 5,
+                  "expression": "assert.fail"
+                },
+                "invocation": {
+                  "file": "packages/kernel/tests/host-members.test.ts",
+                  "fullName": "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype > a class-based Driver's own prototype method is honored (trusted host structure)"
+                }
+              }
+            }
+          ],
+          "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "case": "state-owner.tools02-h22",
+      "control_valid": true,
+      "baseline_sha256": "fff9f7ee92a58d202aac19746f0a0233fac308d4557f566a1e731670df4a4572",
+      "seconds": 2.773,
+      "mutants": [
+        {
+          "id": "mutation-f5bfebab16fcb55cc90236967d2aadac0b3f6607110dc8c6994b3416f1d2f37c",
+          "status": "killed",
+          "reached": null,
+          "killed_by": [
+            "every guarded descriptor read follows its own-value check in the same function"
+          ],
+          "output_sha256": "d33588d4b11f9413c2ba437018fb367407e6e1c1a03a388bb96efefc8b1f5a21"
+        }
+      ]
+    }
+  ]
+}

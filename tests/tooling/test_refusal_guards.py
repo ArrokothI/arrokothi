@@ -518,7 +518,7 @@ class RefusalGuardTests(base.RepositoryFixture):
         self.refuses('unknown origin state', self.format_two(lambda d: d['origins'][1].update(state='accepted')))
 
     def test_format_two_closure(self):
-        self.refuses('prose triage is not implemented', self.format_two(lambda d: d['origins'][1].update(state='triaged')))
+        self.refuses('only a triaged origin carries retirement', self.format_two(lambda d: d['origins'][1].update(triage={})))
 
     def test_format_two_empty_tables(self):
         self.refuses('the area map lists its areas', self.format_two(lambda d: d.update(areas=[])))
@@ -737,7 +737,7 @@ class RefusalGuardTests(base.RepositoryFixture):
 
     # Design 05 step 7: target-set and multi-edit mutants (F3).
     def target_registry(self, case_change=None, mutant=None):
-        for path in (tool.CATALOG_REPORTER, tool.REACH_COVERAGE):
+        for path in tool.TARGET_FILES:
             self.write(path, (target_tests.ROOT / path).read_text())
         self.write('src/value.mjs', runner_tests.SOURCE)
         self.write('tests/a.test.mjs', runner_tests.TESTS)
@@ -746,7 +746,14 @@ class RefusalGuardTests(base.RepositoryFixture):
                 'mutants': [mutant or runner_tests.mutant('kill', 'return n + 1;', 'return n + 2;')]}
         if case_change:
             case_change(case)
-        self.document('registry.json', {'version': 1, 'cases': [case]})
+        dependencies = [row for row in json.loads((target_tests.ROOT / 'tests/fixtures/packet-tools/mutations.json').read_text())['dependencies'] if row['path'] == 'node_modules/typescript']
+        for name, data in target_tests.pinned_toolchain().items():
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        self.write('.gitignore', 'node_modules/\n')
+        self.write('package-lock.json', (target_tests.ROOT / 'package-lock.json').read_text())
+        self.document('registry.json', {'version': 1, 'dependencies': dependencies, 'cases': [case]})
         rev = self.commit('target registry')
         return lambda: tool.mutations(self.reader, rev, 'registry.json')
 
@@ -807,6 +814,49 @@ class RefusalGuardTests(base.RepositoryFixture):
 
     def test_route_survivor(self):
         self.refuses('its finding and owner', self.route({'kind': 'survivor', 'finding': 'missed'}))
+
+    # Design 06 (owner choice 13): shared mutation routes and covered routes.
+    def shared_route(self, via, two=False):
+        files = {'runner.mjs': family_tests.RUNNER, 'runner-two.mjs': family_tests.RUNNER} if two else None
+        extra = (lambda case: family_tests.FamilyCensusTests.family(case, 'runner-two.mjs', id='family.two'),) if two else ()
+        return self.census(lambda family: family['members'][0].update(
+            route={'kind': 'mutation', 'case': 'c', 'mutant': 'm', 'via': via}), files, extra=extra)
+
+    def test_route_shared_shape(self):
+        self.refuses("names another family's member", self.shared_route(
+            {'family': 'family.runner', 'label': 'M1 first', 'reading': 'the same mutation'}))
+
+    def test_route_shared_source(self):
+        self.refuses('names an existing member, the one', self.shared_route(
+            {'family': 'family.two', 'label': 'M9 absent', 'reading': 'the same mutation'}))
+
+    def test_route_shared_mutant(self):
+        self.refuses("source member's registered mutant", self.shared_route(
+            {'family': 'family.two', 'label': 'M1 first', 'reading': 'the same mutation'}, two=True))
+
+    def test_route_covered_reading(self):
+        self.refuses('pointers and reading', self.route({'kind': 'covered', 'covered_by': {'kind': 'case', 'id': 'c'}, 'reading': ' '}))
+
+    def test_route_covered_kind(self):
+        self.refuses('registry case or a catalog leaf', self.route(
+            {'kind': 'covered', 'covered_by': {'kind': 'origin', 'id': 'o'}, 'reading': 'r'}))
+
+    def test_route_covered_case(self):
+        self.refuses('a covered case is a scheduled registry case', self.route(
+            {'kind': 'covered', 'covered_by': {'kind': 'case', 'id': 'absent'}, 'reading': 'r'}))
+
+    def test_route_covered_leaf(self):
+        self.refuses('a covered leaf names a catalog command', self.route(
+            {'kind': 'covered', 'reading': 'r', 'covered_by': {'kind': 'leaf', 'command': 'repository-tests',
+                                                               'file': 'tests/a.test.mjs', 'test_path': ['s', 'leaf']}}))
+
+    def test_route_covered_leaf_verdict(self):
+        tree = {'files': {'tests/a.test.mjs': {'pairs': [{'leaf': True, 'path': ['s', 'leaf'], 'verdict': 'failed'}]}}}
+        context = {'catalogs': {'repository-tests': {}}, 'catalog': lambda command: {'selection': ['tests/a.test.mjs'], 'tree': tree}}
+        self.refuses('one passing catalog leaf', self.census(lambda family: family['members'][0].update(route={
+            'kind': 'covered', 'reading': 'r', 'covered_by': {'kind': 'leaf', 'command': 'repository-tests',
+                                                             'file': 'tests/a.test.mjs', 'test_path': ['s', 'leaf']}}),
+            context=context))
 
     def test_route_limit(self):
         self.refuses('names its record', self.route({'kind': 'limit'}))

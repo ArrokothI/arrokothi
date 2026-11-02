@@ -1,0 +1,13 @@
+{
+  "reading_revision": "1a6f6651",
+  "family": "family.k12c1.sweeps-08",
+  "member": "review 11 READ-01: inspection reads a member introduced through a Pick cast",
+  "historical_anchor": "return ok(viewOf(record));",
+  "current_target": "packages/kernel/src/coordinator.ts",
+  "current_anchor": "    return ok(record.inspection());",
+  "current_replacement": "    const summary: Pick<ExecutionReader, \"executionId\"> = record;\n    (summary as { executionId: string; resultingEpoch: number }).resultingEpoch;\n    return ok(record.inspection());",
+  "anchor_count": 1,
+  "relocation_reading": "The old viewOf(record) return and ExecutionRecord planner type were replaced by ExecutionReader.inspection(). The reader owns no resultingEpoch and its class chain still reaches Object.prototype. Preserve the Pick cast and unused property read at the current unique return. No missing-anchor retirement.",
+  "planned_group": "k12c1-sweep8-inspection",
+  "status": "planned_not_executed"
+}

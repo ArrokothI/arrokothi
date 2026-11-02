@@ -9,7 +9,8 @@
     "tool-result",
     "held-capture",
     "state-owner-bypass",
-    "k13-semantic"
+    "k13-semantic",
+    "historical-family-adoption"
   ],
   "families": [
     {
@@ -1037,7 +1038,10 @@
           "read-matrix-pin-crossing",
           "read-matrix-exists-mode-only",
           "read-matrix-rule-p",
-          "read-matrix-rule-o"
+          "read-matrix-rule-o",
+          "target-invocation",
+          "target-policy",
+          "target-witness"
         ],
         "environment": [
           "POSIX-Python"
@@ -1326,6 +1330,30 @@
             "environment": "POSIX-Python",
             "stage": "result-classification"
           }
+        },
+        {
+          "case": "result.target-invocation",
+          "values": {
+            "failure": "target-invocation",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-policy",
+          "values": {
+            "failure": "target-policy",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
+        },
+        {
+          "case": "result.target-witness",
+          "values": {
+            "failure": "target-witness",
+            "environment": "POSIX-Python",
+            "stage": "result-classification"
+          }
         }
       ]
     },
@@ -1472,7 +1500,8 @@
           "ordinary"
         ],
         "stage": [
-          "state-owner"
+          "state-owner",
+          "resulting-state"
         ]
       },
       "cases": [
@@ -1490,6 +1519,14 @@
             "bypass": "dropped-coupled-field",
             "environment": "ordinary",
             "stage": "state-owner"
+          }
+        },
+        {
+          "case": "state-owner.dropped-coupled-field-results",
+          "values": {
+            "bypass": "dropped-coupled-field",
+            "environment": "ordinary",
+            "stage": "resulting-state"
           }
         },
         {
@@ -1629,6 +1666,1389 @@
             "site": "deadline-terminal",
             "environment": "ordinary",
             "stage": "k13-semantic"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tools02-historical-adoptions",
+      "domains": {
+        "group": [
+          "k12-mutation-a6",
+          "k12-mutation-a9",
+          "k12-mutation-a11",
+          "k12-mutation-a12",
+          "k12-mutation-a13",
+          "k12-mutation-a14",
+          "k12-mutation-b9",
+          "k12-mutation-b10",
+          "k12-mutation-b11",
+          "k12-mutation-b15",
+          "k12-mutation-b20",
+          "k12-mutation-a2",
+          "k12-mutation-b3",
+          "k12-mutation-b4",
+          "k12-mutation-b7",
+          "k12-mutation-b12",
+          "k12-mutation-b13",
+          "k12-mutation-b14",
+          "k12-review09-r5",
+          "k12-review09-r7",
+          "k12c1-coordinate-x8",
+          "k12c1-coordinate-x9",
+          "k12c1-coordinate-x10",
+          "k12c1-coordinate-x11",
+          "k12c1-coordinate-x12",
+          "k12c1-coordinate-x13",
+          "k12c1-coordinate-x14",
+          "k12c1-coordinate-x15",
+          "k12c1-coordinate-x16",
+          "k12c1-coordinate-x17",
+          "k12c1-coordinate-x18",
+          "k12c1-coordinate-x19",
+          "k12c1-coordinate-x20",
+          "k12c1-coordinate-x21",
+          "k12c1-coordinate-x22",
+          "k12c1-coordinate-x23",
+          "k12c1-diagnostics-v1",
+          "k12c1-diagnostics-v2",
+          "k12c1-diagnostics-v3",
+          "k12c1-coordinate-z1",
+          "k12c1-coordinate-z2",
+          "k12c1-coordinate-z3",
+          "k12c1-coordinate-z4",
+          "k12c1-coordinate-z5",
+          "k12c1-coordinate-z6",
+          "k12c1-coordinate-z7",
+          "k12c1-coordinate-z8",
+          "k12c1-coordinate-z9",
+          "k12c1-coordinate-z10",
+          "k12c1-coordinate-z11",
+          "k12c1-coordinate-z12",
+          "k12c1-coordinate-z13",
+          "k12c1-coordinate-z14",
+          "k12c1-coordinate-z15",
+          "k12c1-coordinate-z16",
+          "k12c1-recovery-h1",
+          "k12c1-recovery-h10",
+          "k12c1-recovery-h11",
+          "k12c1-recovery-h12",
+          "k12c1-recovery-h15",
+          "k12c1-recovery-h16",
+          "k12c1-recovery-h7",
+          "k12c1-recovery-h17",
+          "k12c1-recovery-h18",
+          "k12c1-recovery-h20",
+          "k12c1-recovery-h21",
+          "k12c1-recovery-h22",
+          "k12c1-round7-r7",
+          "k12c1-round7-r8",
+          "k12c1-round7-r10",
+          "k12c1-round7-r11",
+          "k12c1-round7-r12",
+          "k12c1-round7-c8",
+          "k12c1-round7-c10",
+          "k12c1-base-i1",
+          "k12c1-base-d19",
+          "k12c1-base-d31",
+          "k12c1-base-d32",
+          "k12c1-base-g1",
+          "k12c1-base-g3",
+          "k12c1-base-g6",
+          "k12c1-base-i3",
+          "k12c1-base-i4",
+          "k12c1-base-i5",
+          "k12c1-base-i6",
+          "k12c1-base-i7",
+          "k12c1-base-d35",
+          "k12c1-base-d1",
+          "k12c1-base-d2",
+          "k12c1-base-d3",
+          "k12c1-base-d4",
+          "k12c1-base-d5",
+          "k12c1-base-d6",
+          "k12c1-base-d7",
+          "k12c1-base-d8",
+          "k12c1-base-d9",
+          "k12c1-base-d10",
+          "k12c1-base-d11",
+          "k12c1-base-d12",
+          "k12c1-base-d13",
+          "k12c1-base-d14",
+          "k12c1-base-d15",
+          "k12c1-base-d16",
+          "k12c1-base-d17",
+          "k12c1-base-d18",
+          "k12c1-base-d21",
+          "k12c1-base-d22",
+          "k12c1-base-d23",
+          "k12c1-base-d24",
+          "k12c1-base-d25",
+          "k12c1-base-d26",
+          "k12c1-base-d27",
+          "k12c1-base-d28",
+          "k12c1-base-d29",
+          "k12c1-base-d30",
+          "k12c1-base-d33",
+          "k12c1-base-d34",
+          "k12c1-base-r1",
+          "k12c1-base-r2",
+          "k12c1-base-r6",
+          "k12c1-base-r8",
+          "k12c1-base-r11",
+          "k12c1-base-r12",
+          "k12c1-base-r4",
+          "k12c1-base-r5",
+          "k12c1-base-r7",
+          "k12c1-base-g7",
+          "k12c1-base-g9",
+          "k12c1-base-g14",
+          "k12c1-diagnostic-t4",
+          "k12c1-sweep8-inspection",
+          "k12c1-review3-n6",
+          "k12c1-review4-x1",
+          "k12c1-review4-x2",
+          "k12c1-review4-x3",
+          "k12c1-review6-w1",
+          "k12c1-review6-w3",
+          "k12c1-review6-w4",
+          "k12c1-review6-w5",
+          "k12c1-review8-n5",
+          "k12c1-review8-n6",
+          "k12c1-review8-n8",
+          "k12c1-review8-n14",
+          "k12c1-review8-n7",
+          "k12c1-review8-n9",
+          "k12c1-review8-n10",
+          "k12c1-review8-n11",
+          "k12c1-review8-n13",
+          "k12c1-review8-f1",
+          "k12c1-review8-f2",
+          "k12c1-review8-f3",
+          "k12c1-review8-f4"
+        ],
+        "environment": [
+          "ordinary"
+        ],
+        "stage": [
+          "historical-family-adoption"
+        ]
+      },
+      "cases": [
+        {
+          "case": "k12.adopt-a6",
+          "values": {
+            "group": "k12-mutation-a6",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-a9",
+          "values": {
+            "group": "k12-mutation-a9",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-a11",
+          "values": {
+            "group": "k12-mutation-a11",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-a12",
+          "values": {
+            "group": "k12-mutation-a12",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-a13",
+          "values": {
+            "group": "k12-mutation-a13",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-a14",
+          "values": {
+            "group": "k12-mutation-a14",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-b9",
+          "values": {
+            "group": "k12-mutation-b9",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-b10",
+          "values": {
+            "group": "k12-mutation-b10",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-b11",
+          "values": {
+            "group": "k12-mutation-b11",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-b15",
+          "values": {
+            "group": "k12-mutation-b15",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-b20",
+          "values": {
+            "group": "k12-mutation-b20",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-a2",
+          "values": {
+            "group": "k12-mutation-a2",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-b3",
+          "values": {
+            "group": "k12-mutation-b3",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-b4",
+          "values": {
+            "group": "k12-mutation-b4",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-b7",
+          "values": {
+            "group": "k12-mutation-b7",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-b12",
+          "values": {
+            "group": "k12-mutation-b12",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-b13",
+          "values": {
+            "group": "k12-mutation-b13",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-b14",
+          "values": {
+            "group": "k12-mutation-b14",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-review09-r5",
+          "values": {
+            "group": "k12-review09-r5",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12.adopt-review09-r7",
+          "values": {
+            "group": "k12-review09-r7",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x8",
+          "values": {
+            "group": "k12c1-coordinate-x8",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x9",
+          "values": {
+            "group": "k12c1-coordinate-x9",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x10",
+          "values": {
+            "group": "k12c1-coordinate-x10",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x11",
+          "values": {
+            "group": "k12c1-coordinate-x11",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x12",
+          "values": {
+            "group": "k12c1-coordinate-x12",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x13",
+          "values": {
+            "group": "k12c1-coordinate-x13",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x14",
+          "values": {
+            "group": "k12c1-coordinate-x14",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x15",
+          "values": {
+            "group": "k12c1-coordinate-x15",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x16",
+          "values": {
+            "group": "k12c1-coordinate-x16",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x17",
+          "values": {
+            "group": "k12c1-coordinate-x17",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x18",
+          "values": {
+            "group": "k12c1-coordinate-x18",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x19",
+          "values": {
+            "group": "k12c1-coordinate-x19",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x20",
+          "values": {
+            "group": "k12c1-coordinate-x20",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x21",
+          "values": {
+            "group": "k12c1-coordinate-x21",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x22",
+          "values": {
+            "group": "k12c1-coordinate-x22",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-x23",
+          "values": {
+            "group": "k12c1-coordinate-x23",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-diagnostics-v1",
+          "values": {
+            "group": "k12c1-diagnostics-v1",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-diagnostics-v2",
+          "values": {
+            "group": "k12c1-diagnostics-v2",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-diagnostics-v3",
+          "values": {
+            "group": "k12c1-diagnostics-v3",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z1",
+          "values": {
+            "group": "k12c1-coordinate-z1",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z2",
+          "values": {
+            "group": "k12c1-coordinate-z2",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z3",
+          "values": {
+            "group": "k12c1-coordinate-z3",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z4",
+          "values": {
+            "group": "k12c1-coordinate-z4",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z5",
+          "values": {
+            "group": "k12c1-coordinate-z5",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z6",
+          "values": {
+            "group": "k12c1-coordinate-z6",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z7",
+          "values": {
+            "group": "k12c1-coordinate-z7",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z8",
+          "values": {
+            "group": "k12c1-coordinate-z8",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z9",
+          "values": {
+            "group": "k12c1-coordinate-z9",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z10",
+          "values": {
+            "group": "k12c1-coordinate-z10",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z11",
+          "values": {
+            "group": "k12c1-coordinate-z11",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z12",
+          "values": {
+            "group": "k12c1-coordinate-z12",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z13",
+          "values": {
+            "group": "k12c1-coordinate-z13",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z14",
+          "values": {
+            "group": "k12c1-coordinate-z14",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z15",
+          "values": {
+            "group": "k12c1-coordinate-z15",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-coordinate-z16",
+          "values": {
+            "group": "k12c1-coordinate-z16",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-recovery-h1",
+          "values": {
+            "group": "k12c1-recovery-h1",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-recovery-h10",
+          "values": {
+            "group": "k12c1-recovery-h10",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-recovery-h11",
+          "values": {
+            "group": "k12c1-recovery-h11",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-recovery-h12",
+          "values": {
+            "group": "k12c1-recovery-h12",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-recovery-h15",
+          "values": {
+            "group": "k12c1-recovery-h15",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-recovery-h16",
+          "values": {
+            "group": "k12c1-recovery-h16",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "state-owner.tools02-h7",
+          "values": {
+            "group": "k12c1-recovery-h7",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-recovery-h17",
+          "values": {
+            "group": "k12c1-recovery-h17",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-recovery-h18",
+          "values": {
+            "group": "k12c1-recovery-h18",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-recovery-h20",
+          "values": {
+            "group": "k12c1-recovery-h20",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-recovery-h21",
+          "values": {
+            "group": "k12c1-recovery-h21",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "state-owner.tools02-h22",
+          "values": {
+            "group": "k12c1-recovery-h22",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "state-owner.tools02-round7-r7",
+          "values": {
+            "group": "k12c1-round7-r7",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "state-owner.tools02-round7-r8",
+          "values": {
+            "group": "k12c1-round7-r8",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "state-owner.tools02-round7-r10",
+          "values": {
+            "group": "k12c1-round7-r10",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "state-owner.tools02-round7-r11",
+          "values": {
+            "group": "k12c1-round7-r11",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "state-owner.tools02-round7-r12",
+          "values": {
+            "group": "k12c1-round7-r12",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "state-owner.tools02-round7-c8",
+          "values": {
+            "group": "k12c1-round7-c8",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "state-owner.tools02-round7-c10",
+          "values": {
+            "group": "k12c1-round7-c10",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-i1",
+          "values": {
+            "group": "k12c1-base-i1",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d19",
+          "values": {
+            "group": "k12c1-base-d19",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d31",
+          "values": {
+            "group": "k12c1-base-d31",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d32",
+          "values": {
+            "group": "k12c1-base-d32",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-g1",
+          "values": {
+            "group": "k12c1-base-g1",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-g3",
+          "values": {
+            "group": "k12c1-base-g3",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-g6",
+          "values": {
+            "group": "k12c1-base-g6",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-i3",
+          "values": {
+            "group": "k12c1-base-i3",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-i4",
+          "values": {
+            "group": "k12c1-base-i4",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-i5",
+          "values": {
+            "group": "k12c1-base-i5",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-i6",
+          "values": {
+            "group": "k12c1-base-i6",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-i7",
+          "values": {
+            "group": "k12c1-base-i7",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d35",
+          "values": {
+            "group": "k12c1-base-d35",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d1",
+          "values": {
+            "group": "k12c1-base-d1",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d2",
+          "values": {
+            "group": "k12c1-base-d2",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d3",
+          "values": {
+            "group": "k12c1-base-d3",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d4",
+          "values": {
+            "group": "k12c1-base-d4",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d5",
+          "values": {
+            "group": "k12c1-base-d5",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d6",
+          "values": {
+            "group": "k12c1-base-d6",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d7",
+          "values": {
+            "group": "k12c1-base-d7",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d8",
+          "values": {
+            "group": "k12c1-base-d8",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d9",
+          "values": {
+            "group": "k12c1-base-d9",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d10",
+          "values": {
+            "group": "k12c1-base-d10",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d11",
+          "values": {
+            "group": "k12c1-base-d11",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d12",
+          "values": {
+            "group": "k12c1-base-d12",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d13",
+          "values": {
+            "group": "k12c1-base-d13",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d14",
+          "values": {
+            "group": "k12c1-base-d14",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d15",
+          "values": {
+            "group": "k12c1-base-d15",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d16",
+          "values": {
+            "group": "k12c1-base-d16",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d17",
+          "values": {
+            "group": "k12c1-base-d17",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d18",
+          "values": {
+            "group": "k12c1-base-d18",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d21",
+          "values": {
+            "group": "k12c1-base-d21",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d22",
+          "values": {
+            "group": "k12c1-base-d22",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d23",
+          "values": {
+            "group": "k12c1-base-d23",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d24",
+          "values": {
+            "group": "k12c1-base-d24",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d25",
+          "values": {
+            "group": "k12c1-base-d25",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d26",
+          "values": {
+            "group": "k12c1-base-d26",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d27",
+          "values": {
+            "group": "k12c1-base-d27",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d28",
+          "values": {
+            "group": "k12c1-base-d28",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d29",
+          "values": {
+            "group": "k12c1-base-d29",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d30",
+          "values": {
+            "group": "k12c1-base-d30",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d33",
+          "values": {
+            "group": "k12c1-base-d33",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-d34",
+          "values": {
+            "group": "k12c1-base-d34",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-r1",
+          "values": {
+            "group": "k12c1-base-r1",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-r2",
+          "values": {
+            "group": "k12c1-base-r2",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-r6",
+          "values": {
+            "group": "k12c1-base-r6",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-r8",
+          "values": {
+            "group": "k12c1-base-r8",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-r11",
+          "values": {
+            "group": "k12c1-base-r11",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-r12",
+          "values": {
+            "group": "k12c1-base-r12",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-r4",
+          "values": {
+            "group": "k12c1-base-r4",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-r5",
+          "values": {
+            "group": "k12c1-base-r5",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-r7",
+          "values": {
+            "group": "k12c1-base-r7",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-g7",
+          "values": {
+            "group": "k12c1-base-g7",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-g9",
+          "values": {
+            "group": "k12c1-base-g9",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-base-g14",
+          "values": {
+            "group": "k12c1-base-g14",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-diagnostic-t4",
+          "values": {
+            "group": "k12c1-diagnostic-t4",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-sweep8-inspection",
+          "values": {
+            "group": "k12c1-sweep8-inspection",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review3-n6",
+          "values": {
+            "group": "k12c1-review3-n6",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review4-x1",
+          "values": {
+            "group": "k12c1-review4-x1",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review4-x2",
+          "values": {
+            "group": "k12c1-review4-x2",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review4-x3",
+          "values": {
+            "group": "k12c1-review4-x3",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review6-w1",
+          "values": {
+            "group": "k12c1-review6-w1",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review6-w3",
+          "values": {
+            "group": "k12c1-review6-w3",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review6-w4",
+          "values": {
+            "group": "k12c1-review6-w4",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review6-w5",
+          "values": {
+            "group": "k12c1-review6-w5",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review8-n5",
+          "values": {
+            "group": "k12c1-review8-n5",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review8-n6",
+          "values": {
+            "group": "k12c1-review8-n6",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "state-owner.tools02-review8-n8",
+          "values": {
+            "group": "k12c1-review8-n8",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review8-n14",
+          "values": {
+            "group": "k12c1-review8-n14",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "state-owner.tools02-review8-n7",
+          "values": {
+            "group": "k12c1-review8-n7",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review8-n9",
+          "values": {
+            "group": "k12c1-review8-n9",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review8-n10",
+          "values": {
+            "group": "k12c1-review8-n10",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "state-owner.tools02-review8-n11",
+          "values": {
+            "group": "k12c1-review8-n11",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review8-n13",
+          "values": {
+            "group": "k12c1-review8-n13",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review8-f1",
+          "values": {
+            "group": "k12c1-review8-f1",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review8-f2",
+          "values": {
+            "group": "k12c1-review8-f2",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review8-f3",
+          "values": {
+            "group": "k12c1-review8-f3",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
+          }
+        },
+        {
+          "case": "k12c1.adopt-review8-f4",
+          "values": {
+            "group": "k12c1-review8-f4",
+            "environment": "ordinary",
+            "stage": "historical-family-adoption"
           }
         }
       ]

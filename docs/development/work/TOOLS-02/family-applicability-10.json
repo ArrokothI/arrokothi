@@ -1,0 +1,151 @@
+{
+  "revision": "cb2d4f3be2b766c9c8402c678e0b600030aed0d8",
+  "method": "Read-only unique-anchor checks over current tracked bytes; no mutant execution. All absent anchors receive individual relocation readings.",
+  "members": [
+    {
+      "member": "Z1-mint-receipt-token",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1,
+        1
+      ],
+      "reading": "The mutating #mint helper was removed. Its two old callers were input_ingress and initial dispatch; both now prebuild their receipt. Re-anchor those two calls as the one historical adoption, excluding takeover and Outcome receipt sites."
+    },
+    {
+      "member": "Z2-creation-receipt-token",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    {
+      "member": "Z3-activation-executionId",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    {
+      "member": "Z4-activation-activationId",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    {
+      "member": "Z5-takeover-activation-copy",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    {
+      "member": "Z6-replay-map-key",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The accepted-Outcomes map insertion moved into the owner Outcome arm; the exact Activation-ID key is unchanged. Mutate this insertion, not the lookup or a type-only site."
+    },
+    {
+      "member": "Z7-event-destination",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "Activation Event conversion moved into state.ts, and application entries now hold destination directly. Re-anchor the application-input branch; the new timeout branch is outside the historical input class."
+    },
+    {
+      "member": "Z8-redeliver-answer",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    {
+      "member": "Z9-dispatch-grant-exec",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "Initial grant construction moved from an ActivationRecord object field into a prebuilt submission local. Its Execution-ID field remains visible to the Driver and tested exactly."
+    },
+    {
+      "member": "Z10-acknowledged-ids",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    {
+      "member": "Z11-takeover-answer-batch-receipt",
+      "original_coordinator_anchor_count": 1,
+      "current_target": "packages/kernel/src/coordinator.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "The original exact-once anchor remains live; preserve its wrong lossy projection against the existing exact-coordinate oracle."
+    },
+    {
+      "member": "Z12-view-activation-id",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "toActivationView moved intact to state.ts; the Activation-ID projection remains current."
+    },
+    {
+      "member": "Z13-view-execution-id",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "viewOf moved to state.ts; its Execution-ID projection remains current."
+    },
+    {
+      "member": "Z14-view-queued-ids",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "viewOf queued-ID collection moved to state.ts; the exact Event-ID projection remains current."
+    },
+    {
+      "member": "Z15-view-mailbox-destination",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/state.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "Mailbox projection moved to state.ts and its application branch adds an InputId cast because timeout Events have no input ID. Preserve the application input destination projection; do not mutate the timeout branch."
+    },
+    {
+      "member": "Z16-view-hold-activation",
+      "original_coordinator_anchor_count": 0,
+      "current_target": "packages/kernel/src/plan.ts",
+      "current_anchor_counts": [
+        1
+      ],
+      "reading": "holdsOf moved to plan.ts; the code-hold Activation-ID projection remains exact. This differs from X11 changing retained hold state."
+    }
+  ]
+}

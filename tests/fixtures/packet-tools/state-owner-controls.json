@@ -3,7 +3,10 @@
   "source": "COORD-REFACTOR-01 CR1-4 (brief 01; design 01 revision 1): one case per bypass family; a kill is an assertion failure of a named killer",
   "families": {
     "write-outside-apply": {
-      "files": ["packages/kernel/tests/control-commits.test.ts", "packages/kernel/tests/state-plans.test.ts"],
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts",
+        "packages/kernel/tests/state-plans.test.ts"
+      ],
       "test_count": 118,
       "killers": [
         "each record field has fixed arms, and the coordinator changes accepted state only by handing plans over",
@@ -11,15 +14,47 @@
       ]
     },
     "dropped-coupled-field": {
-      "files": ["packages/kernel/tests/control-commits.test.ts"],
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts"
+      ],
       "test_count": 98,
       "killers": [
         "#applyControl: prepares without changing anything, then commits exactly its declared statements",
         "#applyTakeover: prepares without changing anything, then commits exactly its declared statements"
       ]
     },
+    "dropped-coupled-field-results": {
+      "files": [
+        "packages/kernel/tests/recovery-history.test.ts",
+        "packages/kernel/tests/hold-permitted.test.ts",
+        "packages/kernel/tests/submission-lifetime.test.ts",
+        "packages/kernel/tests/takeover.test.ts"
+      ],
+      "test_count": 27,
+      "killers": [
+        "a) code hold lifecycle: entered, updated on reason change, cleared_by_declaration; all retained",
+        "b) protocol hold via takeover: entered, then cleared_by_takeover with resultingEpoch",
+        "c) ended_by_outcome: code hold ends with the exchange, history survives dispatch and completion",
+        "d) both holds plus Outcome: 2 entered + 2 ended_by_outcome",
+        "e) idempotent duplicates append nothing",
+        "f) history is immutable: list edits and record edits leave the next inspect unchanged",
+        "g) cross-scope: control activity on B leaves A's history unchanged and undisclosed",
+        "c) valid Outcome while both held ends both (fresh Execution)",
+        "the first send's grant still accepts after two redeliveries, including hold-ending submission",
+        "takeover creates a new grant whose first send survives redelivery while the retired grant stays fenced",
+        "a) code hold permits declare_code_availability and submit_outcome; redeliver/takeover refused, declaration clears",
+        "a) code hold does not fence a valid Outcome: submitOutcome ends the hold with progressRevision+1",
+        "c) both holds read declare_code_availability + submit_outcome; takeover blocked until code clears",
+        "d) permitted lists are frozen snapshots: mutation throws or leaves the next inspect unchanged",
+        "same Activation ID, same batch and progress, epoch + 1, a dispatch-intent receipt, a fresh delivery"
+      ]
+    },
     "callback-inside-apply": {
-      "files": ["packages/kernel/tests/control-commits.test.ts", "packages/kernel/tests/state-plans.test.ts", "tests/conformance/architecture/kernel-state-ownership.test.ts"],
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts",
+        "packages/kernel/tests/state-plans.test.ts",
+        "tests/conformance/architecture/kernel-state-ownership.test.ts"
+      ],
       "test_count": 127,
       "killers": [
         "every call resolves to zone code, a classified primordial or an inventoried foreign call; the owner reaches none",
@@ -28,11 +63,121 @@
       ]
     },
     "view-aliases-state": {
-      "files": ["packages/kernel/tests/state-plans.test.ts"],
+      "files": [
+        "packages/kernel/tests/state-plans.test.ts"
+      ],
       "test_count": 20,
       "killers": [
         "every reader member returns a primitive, a reader, frozen data or a fresh list of frozen values",
         "editing every container of a returned view changes neither the next view nor the Execution"
+      ]
+    },
+    "tools02-h7": {
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts"
+      ],
+      "test_count": 98,
+      "killers": [
+        "recoverExecution: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+      ]
+    },
+    "tools02-h22": {
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts"
+      ],
+      "test_count": 47,
+      "killers": [
+        "every guarded descriptor read follows its own-value check in the same function"
+      ]
+    },
+    "tools02-round7-r7": {
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts"
+      ],
+      "test_count": 47,
+      "killers": [
+        "the zone uses only permitted syntax"
+      ]
+    },
+    "tools02-round7-r8": {
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts"
+      ],
+      "test_count": 47,
+      "killers": [
+        "every reported site is inventoried, at its exact count, with a reason"
+      ]
+    },
+    "tools02-round7-r10": {
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts"
+      ],
+      "test_count": 47,
+      "killers": [
+        "an accessor installed on Error.prototype.name receives nothing, and the error still names itself"
+      ]
+    },
+    "tools02-round7-r11": {
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts"
+      ],
+      "test_count": 47,
+      "killers": [
+        "every reported site is inventoried, at its exact count, with a reason"
+      ]
+    },
+    "tools02-round7-r12": {
+      "files": [
+        "packages/kernel/tests/ambient-reads.test.ts"
+      ],
+      "test_count": 47,
+      "killers": [
+        "every reported site is inventoried, at its exact count, with a reason"
+      ]
+    },
+    "tools02-round7-c8": {
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts"
+      ],
+      "test_count": 98,
+      "killers": [
+        "requestTakeover: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+      ]
+    },
+    "tools02-round7-c10": {
+      "files": [
+        "packages/kernel/tests/control-commits.test.ts"
+      ],
+      "test_count": 98,
+      "killers": [
+        "requestTakeover: nothing changes before the hand-over, the basis is bound after the last callback, and only prebuilt values are handed over"
+      ]
+    },
+    "tools02-review8-n8": {
+      "files": [
+        "packages/sdk/tests/value-capture-static.test.ts"
+      ],
+      "test_count": 6,
+      "killers": [
+        "every reported site is inventoried, at its exact count, with a reason"
+      ]
+    },
+    "tools02-review8-n7": {
+      "files": [
+        "packages/sdk/tests/capture-metering.test.ts"
+      ],
+      "test_count": 30,
+      "killers": [
+        "the real values.ts passes every rule"
+      ]
+    },
+    "tools02-review8-n11": {
+      "files": [
+        "packages/sdk/tests/capture-metering.test.ts"
+      ],
+      "test_count": 30,
+      "killers": [
+        "the real values.ts passes every rule"
       ]
     }
   }

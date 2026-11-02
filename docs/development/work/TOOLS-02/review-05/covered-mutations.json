@@ -1,0 +1,444 @@
+{
+  "record": "Design 06 §2 check: each sampled covered member's decision mutated at C in a separate --no-local clone, then its pointers run. Covered-member sample: random.Random(1640414241).sample(range(98), 12) over the covered members in adoption.json order -> [2, 3, 17, 18, 44, 46, 55, 63, 79, 82, 89, 91]; 63 (sweeps-08 C1) is the same decision as C2. A pointer set holds when at least one pointer fails under the mutation.",
+  "sample_indices": [
+    2,
+    3,
+    17,
+    18,
+    44,
+    46,
+    55,
+    63,
+    79,
+    82,
+    89,
+    91
+  ],
+  "results": [
+    {
+      "member": "ablations-07 C2 (sample 2)",
+      "mutation": "C2-current-early-postfix",
+      "edits": [
+        {
+          "path": "packages/kernel/src/state.ts",
+          "before": "    const position = receipt.position;\n    const submission = plan.submission;\n    const activation = plan.activation;\n    // The prebuilt records are appended first",
+          "after": "    const position = record.nextAcceptancePosition++;\n    const submission = plan.submission;\n    const activation = plan.activation;\n    // The prebuilt records are appended first"
+        }
+      ],
+      "files": {
+        "fault-oracle.test.ts": {
+          "tests": 320,
+          "fail": 9,
+          "failing_sample": [
+            "a located exception in a scenario whose uninjected call does not accept",
+            "every located exception needs its location",
+            "every part of every permitted decision is compared",
+            "every recorded example reclassifies as recorded, and reaches exactly its declared classes",
+            "takeover: accepted, clearing a protocol hold / threw inside the declared takeover apply window: receipt appended, clearing record not / next acceptance position",
+            "takeover: accepted, clearing a protocol hold / threw inside the declared takeover apply window: receipt appended, clearing record not / next refusal position"
+          ]
+        },
+        "control-commits.test.ts": {
+          "tests": 98,
+          "fail": 18,
+          "failing_sample": [
+            "#applyTakeover: prepares without changing anything, then commits exactly its declared statements",
+            "10–11: an early write through an alias",
+            "13: an early write inside a local closure",
+            "14: an early append inside a callback handed to a helper",
+            "15: an early Map mutation",
+            "16: an early freeze of a record list"
+          ]
+        }
+      },
+      "case_controls": {
+        "oracle.nextAcceptance": {
+          "exit": 1,
+          "passed": false
+        },
+        "oracle.applySequence": {
+          "exit": 1,
+          "passed": false
+        }
+      }
+    },
+    {
+      "member": "ablations-07 C2, behavioural form (sample 2)",
+      "mutation": "C2-current-double-advance",
+      "edits": [
+        {
+          "path": "packages/kernel/src/state.ts",
+          "before": "    if (cleared !== null) appendOwn(record.recoveryHistory, cleared);\n    record.nextAcceptancePosition = position + 1;",
+          "after": "    if (cleared !== null) appendOwn(record.recoveryHistory, cleared);\n    record.nextAcceptancePosition = position + 2;"
+        }
+      ],
+      "files": {
+        "fault-oracle.test.ts": {
+          "tests": 320,
+          "fail": 26,
+          "failing_sample": [
+            "K1.3, 017 L-28: an Outcome prefix that breaks the post-state predicate (owner choice 06)",
+            "a declared apply sequence that no longer matches the source",
+            "a located exception in a scenario whose uninjected call does not accept",
+            "a prefix that breaks it is permitted observed as the owner's refusal, and a violation observed with its probes accepted",
+            "a takeover answer with another receipt",
+            "an Outcome answer naming other Emissions"
+          ]
+        }
+      },
+      "case_controls": {}
+    },
+    {
+      "member": "ablations-07 C3 (sample 3)",
+      "mutation": "C3-current-compound-initializer",
+      "edits": [
+        {
+          "path": "packages/kernel/src/state.ts",
+          "before": "    const position = receipt.position;\n    const submission = plan.submission;\n    const activation = plan.activation;\n    // The prebuilt records are appended first",
+          "after": "    const position = (record.nextAcceptancePosition += 1) - 1;\n    const submission = plan.submission;\n    const activation = plan.activation;\n    // The prebuilt records are appended first"
+        }
+      ],
+      "files": {
+        "fault-oracle.test.ts": {
+          "tests": 320,
+          "fail": 9,
+          "failing_sample": [
+            "a located exception in a scenario whose uninjected call does not accept",
+            "every located exception needs its location",
+            "every part of every permitted decision is compared",
+            "every recorded example reclassifies as recorded, and reaches exactly its declared classes",
+            "takeover: accepted, clearing a protocol hold / threw inside the declared takeover apply window: receipt appended, clearing record not / next acceptance position",
+            "takeover: accepted, clearing a protocol hold / threw inside the declared takeover apply window: receipt appended, clearing record not / next refusal position"
+          ]
+        },
+        "control-commits.test.ts": {
+          "tests": 98,
+          "fail": 18,
+          "failing_sample": [
+            "#applyTakeover: prepares without changing anything, then commits exactly its declared statements",
+            "10–11: an early write through an alias",
+            "13: an early write inside a local closure",
+            "14: an early append inside a callback handed to a helper",
+            "15: an early Map mutation",
+            "16: an early freeze of a record list"
+          ]
+        }
+      },
+      "case_controls": {
+        "oracle.nextAcceptance": {
+          "exit": 1,
+          "passed": false
+        },
+        "oracle.applySequence": {
+          "exit": 1,
+          "passed": false
+        }
+      }
+    },
+    {
+      "member": "ablations-06 H6 (sample 17)",
+      "mutation": "H6-current: clearing History appended after the exchange writes",
+      "edits": [
+        {
+          "path": "packages/kernel/src/state.ts",
+          "before": "    appendOwn(record.receipts, receipt);\n    if (cleared !== null) appendOwn(record.recoveryHistory, cleared);\n    record.nextAcceptancePosition = position + 1;\n    exchange.submission = submission;\n    exchange.activation = activation;\n    exchange.receipt = receipt;\n    exchange.protocolFailureHold = null;\n  }",
+          "after": "    appendOwn(record.receipts, receipt);\n    record.nextAcceptancePosition = position + 1;\n    exchange.submission = submission;\n    exchange.activation = activation;\n    exchange.receipt = receipt;\n    exchange.protocolFailureHold = null;\n    if (cleared !== null) appendOwn(record.recoveryHistory, cleared);\n  }"
+        }
+      ],
+      "files": {
+        "fault-oracle.test.ts": {
+          "tests": 320,
+          "fail": 32,
+          "failing_sample": [
+            "K1.3, 017 L-28: an Outcome prefix that breaks the post-state predicate (owner choice 06)",
+            "a declared apply sequence that no longer matches the source",
+            "a located exception in a scenario whose uninjected call does not accept",
+            "a prefix that breaks it is permitted observed as the owner's refusal, and a violation observed with its probes accepted",
+            "a takeover answer with another receipt",
+            "an Outcome answer naming other Emissions"
+          ]
+        }
+      },
+      "case_controls": {
+        "oracle.applySequence": {
+          "exit": 17,
+          "passed": false
+        }
+      }
+    },
+    {
+      "member": "ablations-06 H8 (sample 18)",
+      "mutation": "H8-verbatim: recovery answer projects the pre-decision holds",
+      "edits": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(commit), changed: true });",
+          "after": "writerEpoch: pinned.writerEpoch, recoveryHolds: holdsOf(exchange), changed: true });"
+        }
+      ],
+      "files": {
+        "fault-oracle.test.ts": {
+          "tests": 320,
+          "fail": 1,
+          "failing_sample": [
+            "the example scenarios' sweep and the whole exit inventory are clean"
+          ]
+        }
+      },
+      "case_controls": {
+        "oracle.recoveryAnswer": {
+          "exit": 1,
+          "passed": false
+        }
+      }
+    },
+    {
+      "member": "original-ablations-02 A1 (sample 44)",
+      "mutation": "A1-verbatim: acknowledge every queued Event",
+      "edits": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "      if (inBatch(entry.eventId)) {",
+          "after": "      if (true) {"
+        }
+      ],
+      "files": {
+        "fault-oracle.test.ts": {
+          "tests": 320,
+          "fail": 318,
+          "failing_sample": [
+            "K1.3, 017 L-28: an Outcome prefix that breaks the post-state predicate (owner choice 06)",
+            "a changed progress revision labelled as an Outcome apply fault by method name is a violation",
+            "a declaration matching more than one return",
+            "a declared alternate whose answer disagrees with its state",
+            "a declared apply sequence that no longer matches the source",
+            "a delivery row left absent, at the capability's freeze"
+          ]
+        }
+      },
+      "case_controls": {
+        "oracle.outcomeAnswer": {
+          "exit": 17,
+          "passed": false
+        }
+      }
+    },
+    {
+      "member": "original-ablations-02 A4 (sample 46)",
+      "mutation": "A4-verbatim: takeover mints a new Activation ID",
+      "edits": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const activation: Activation = PrimordialObjectFreeze({ ...exchange.activation, writerEpoch });",
+          "after": "const activation: Activation = PrimordialObjectFreeze({ ...exchange.activation, writerEpoch, activationId: `${exchange.activation.activationId}-takeover` });"
+        }
+      ],
+      "files": {
+        "fault-oracle.test.ts": {
+          "tests": 320,
+          "fail": 318,
+          "failing_sample": [
+            "K1.3, 017 L-28: an Outcome prefix that breaks the post-state predicate (owner choice 06)",
+            "a changed progress revision labelled as an Outcome apply fault by method name is a violation",
+            "a declaration matching more than one return",
+            "a declared alternate whose answer disagrees with its state",
+            "a declared apply sequence that no longer matches the source",
+            "a delivery row left absent, at the capability's freeze"
+          ]
+        }
+      },
+      "case_controls": {
+        "oracle.takeoverAnswer": {
+          "exit": 17,
+          "passed": false
+        }
+      }
+    },
+    {
+      "member": "original-ablations-02 B6 (sample 55)",
+      "mutation": "B6-current: post-callback revalidation removed",
+      "edits": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "g it). Re-establish that the same\n    // unresolved exchange at the same current epoch still governs, before minting anything. No\n    // Driver/host code runs between this block and the commit below.\n    if (isTerminal(record.state)) {\n      return err(\n        this.#refusal(\n          \"terminal_destination\",\n          `Execution ${diagnosticIdentity(record.executionId)} ended as ${record.state}; there is no exchange to take over`,\n          record,\n        ),\n      );\n    }\n    // Readers are fresh windows, so the exchange is compared by its Activation ID: an exchange keeps\n    // its ID across takeovers, and a new exchange always has a new one.\n    const current = record.activation;\n    if (current === null || current.activation.activationId !== exchange.activation.activationId) {\n      if (current === null) {\n        return err(\n          this.#refusal(\n            \"no_unresolved_exchange\",\n            `Activation ${diagnosticIdentity(named.activationId)} resolved while establishing safe replacement; there is no unresolved exchange to take over`,\n            record,\n          ),\n        );\n      }\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `Activation ${diagnosticIdentity(named.activationId)} is not the unresolved exchange of Execution ${diagnosticIdentity(record.executionId)}`,\n          record,\n        ),\n      );\n    }\n    if (exchange.activation.writerEpoch !== currentEpoch) {\n      return err(\n        this.#refusal(\n          \"stale_exchange\",\n          `writer epoch ${named.writerEpoch} is not the current epoch ${exchange.activation.writerEpoch} of Activation ${diagnosticIdentity(named.activationId)}; a takeover names the attempt it supersedes and advances past it once`,\n          record,\n        ),\n      );\n    }\n    // The pre-callback hold check above narrows `exchange.codeHold` to null for the rest of this\n    // flow, but the callback may have replaced it synchronously. Read it back through a helper\n    // whose declared return type restores the full union, so a hold established during the callback\n    // is honored rather than acted on from the earlier no-hold observation.\n    const postCallbackHold: StoredHold | null = currentHoldOf(exchange);\n    if (postCallbackHold !== null) {\n      return err(\n        this.#refusal(\n          \"recovery_held\",\n          `Activation ${diagnosticIdentity(named.activationId)} cannot be taken over while its pinned code is unavailable: ${postCallbackHold.reason}`,\n          record,\n        ),\n      );\n    }\n\n    // -- ",
+          "after": "g it). Re-establish that the same\n    // unresolved exchange at the same current epoch still governs, before minting anything. No\n    // Driver/host code runs between this block and the commit below.\n\n    // -- "
+        }
+      ],
+      "files": {
+        "fault-oracle.test.ts": {
+          "tests": 320,
+          "fail": 5,
+          "failing_sample": [
+            "a safety-callback baseline without the callback's decision",
+            "an exit no scenario takes",
+            "every recorded example reclassifies as recorded, and reaches exactly its declared classes",
+            "rebuilt from the child's record, it is clean",
+            "the example scenarios' sweep and the whole exit inventory are clean",
+            "the exit inventory"
+          ]
+        }
+      },
+      "case_controls": {
+        "oracle.callbackRan": {
+          "exit": 1,
+          "passed": false
+        }
+      }
+    },
+    {
+      "member": "K1.2 review-09 R3 (sample 89)",
+      "mutation": "R3-current: exact replay requires the current grant",
+      "edits": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "        if (capture.outcome !== null && capture.outcome.identity === already.identity) {",
+          "after": "        if (capture.outcome !== null && capture.outcome.identity === already.identity && submission === record.activation?.submission) {"
+        }
+      ],
+      "files": {
+        "fault-oracle.test.ts": {
+          "tests": 320,
+          "fail": 4,
+          "failing_sample": [
+            "an exact replay returning another decision",
+            "every recorded example reclassifies as recorded, and reaches exactly its declared classes",
+            "rebuilt from the child's record, it is clean",
+            "the example scenarios' sweep and the whole exit inventory are clean",
+            "the exit inventory",
+            "the reference decision is checked"
+          ]
+        }
+      },
+      "case_controls": {
+        "oracle.referenceReplay": {
+          "exit": 17,
+          "passed": false
+        }
+      }
+    },
+    {
+      "member": "K1.2 review-09 R6 (sample 91)",
+      "mutation": "R6-current: base-revision currency not checked",
+      "edits": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    if (baseForCurrency !== null && baseForCurrency !== intent.activation.baseProgressRevision) {",
+          "after": "    if (false) {"
+        }
+      ],
+      "files": {
+        "fault-oracle.test.ts": {
+          "tests": 320,
+          "fail": 2,
+          "failing_sample": [
+            "rebuilt from the child's record, it is clean",
+            "the example scenarios' sweep and the whole exit inventory are clean",
+            "the exit inventory"
+          ]
+        }
+      },
+      "case_controls": {
+        "oracle.returned": {
+          "exit": 1,
+          "passed": false
+        }
+      }
+    },
+    {
+      "member": "review-03 N3 (sample 79)",
+      "mutation": "N3-verbatim: recovery control renders messages",
+      "edits": [
+        {
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "recovery request is not acceptable: ${explainDiagnosticIssues(issues, false)}",
+          "after": "recovery request is not acceptable: ${explainDiagnosticIssues(issues, true)}"
+        }
+      ],
+      "files": {
+        "origin-regressions.test.ts": {
+          "tests": 9,
+          "fail": 1,
+          "failing_sample": [
+            "malformed recovery retains the located code without the nonempty issue message"
+          ]
+        }
+      },
+      "case_controls": {}
+    },
+    {
+      "member": "review-08 N2 (sample 82)",
+      "mutation": "N2-sdk: foreign array diagnostic reads constructor",
+      "edits": [
+        {
+          "path": "packages/sdk/src/internal/value-capture.ts",
+          "before": "message: `expected a plain array, received ${describe(container)}` }",
+          "after": "message: `expected a plain array, received ${describe(container)}${(() => { try { return (container as { constructor?: unknown }).constructor ? \"\" : \"\"; } catch { return \"\"; } })()}` }"
+        }
+      ],
+      "files": {
+        "value-diagnostic-work.test.ts": {
+          "tests": 20,
+          "fail": 2,
+          "failing_sample": [
+            "V-D1 foreign array: deep prototype diagnostics do zero lookups before and after detail eight",
+            "decision-03 ordinary objects and arrays retain zero diagnostic lookups without a Proxy exemption"
+          ]
+        }
+      },
+      "case_controls": {}
+    },
+    {
+      "member": "sweeps-08 K1 shared route via ablations-06 H19",
+      "mutation": "K1-copy: hostMember walks on to every built-in prototype",
+      "edits": [
+        {
+          "path": "packages/kernel/src/envelope.ts",
+          "before": "  while (current !== null && current !== PrimordialObjectPrototype && current !== PrimordialFunctionPrototype) {",
+          "after": "  while (current !== null) {"
+        }
+      ],
+      "files": {
+        "host-members.test.ts": {
+          "tests": 12,
+          "fail": 8,
+          "failing_sample": [
+            "a Driver without the method is refused even when the request's getter installs an inherited one",
+            "a class-based Driver without the method is not answered by Object.prototype",
+            "a function-object Driver is not answered by Function.prototype",
+            "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+            "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+            "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype"
+          ]
+        }
+      },
+      "case_controls": {}
+    },
+    {
+      "member": "ablations-06 H19 source mutant",
+      "mutation": "H19-source: hostMember answers from Object.prototype",
+      "edits": [
+        {
+          "path": "packages/kernel/src/envelope.ts",
+          "before": "  while (current !== null && current !== PrimordialObjectPrototype && current !== PrimordialFunctionPrototype) {",
+          "after": "  while (current !== null && current !== PrimordialFunctionPrototype) {"
+        }
+      ],
+      "files": {
+        "host-members.test.ts": {
+          "tests": 12,
+          "fail": 7,
+          "failing_sample": [
+            "a Driver without the method is refused even when the request's getter installs an inherited one",
+            "a class-based Driver without the method is not answered by Object.prototype",
+            "correction DEC-8 controlScopes comes from the caller, never from Object.prototype",
+            "correction DEC-8 coordinator limits come from the options, never from Object.prototype",
+            "correction DEC-8 isSafeToReplace comes from the Driver, never from Object.prototype",
+            "residue Object.prototype.controlScopes gives a visibility-only caller no protocol-failure report"
+          ]
+        }
+      },
+      "case_controls": {}
+    }
+  ],
+  "extra": "H13 (ablations-06, not sampled): its historical edit is byte-identical to state-owner.dropped-coupled-field mutant \"CR1-4b the takeover arm drops its receipt append\", which CI run 41286444190 killed."
+}

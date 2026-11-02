@@ -1,0 +1,127 @@
+{
+  "revision": "8d1f17af",
+  "source_pin": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+  "family": "family.k12c1.review-08.mutants",
+  "members": [
+    {
+      "member": "F1",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-f1",
+      "reading": "Refusal executionId stays exact for long/non-ASCII identities; original mintRefusal call remains unique."
+    },
+    {
+      "member": "F2",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-f2",
+      "reading": "visibleExecutions moved to KernelState reader listing. Keep exact per-record IDs at appendOwn, not lossy diagnostics."
+    },
+    {
+      "member": "F3",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-f3",
+      "reading": "viewOf moved to state.ts. Its creationKey remains the exact request key, with the unique original field anchor."
+    },
+    {
+      "member": "F4",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-f4",
+      "reading": "Fresh creation answer is now prebuilt before state apply. Re-anchor the unique const answer initializer; initialEventId remains exact."
+    },
+    {
+      "member": "N1",
+      "route": "same_registered_decision",
+      "case": "value-cost.c1.value-diagnostic-work",
+      "reading": "MD3 changes the same thrown-constructor diagnostic decision."
+    },
+    {
+      "member": "N2",
+      "route": "same_registered_decision",
+      "case": "value-cost.c1.value-diagnostic-work",
+      "reading": "MD1 changes the same describe constructor lookup for a foreign array."
+    },
+    {
+      "member": "N3",
+      "route": "same_registered_decision",
+      "case": "value-cost.c1.value-diagnostic-work",
+      "reading": "MD1 changes the same describe constructor lookup for a foreign object."
+    },
+    {
+      "member": "N4",
+      "route": "same_registered_decision",
+      "case": "value-cost.c1.value-diagnostic-work",
+      "reading": "MD4 changes the same function-name diagnostic lookup."
+    },
+    {
+      "member": "N5",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-n5",
+      "reading": "At 131072 UTF-16 units, exact astral values remain accepted. Inner scalar preflight remains unique after SDK relocation."
+    },
+    {
+      "member": "N6",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-n6",
+      "reading": "At 131073 units, reject by length before character reads. Outer scanText now also guards; weaken both preflights by one, retaining one historical adoption."
+    },
+    {
+      "member": "N7",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-n7",
+      "reading": "Historical inner preflight moved behind outer scanText. Re-anchor the premature index read immediately before the outer guard: SC2 sees the element observation before spend. This preserves the zero-read counterexample without a new heap/timing test."
+    },
+    {
+      "member": "N8",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-n8",
+      "reading": "observeArrayLength remains current and unique in SDK. Its ordinary length observation stays once; the exact access-inventory count structurally catches a second cast/read even though Proxy observation is superseded."
+    },
+    {
+      "member": "N9",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-n9",
+      "reading": "Object symbols listing moved behind listOwnSymbols. Add the historical uncharged duplicate at its current call. Existing oracle extra names listing is a different operation."
+    },
+    {
+      "member": "N10",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-n10",
+      "reading": "Object prototype observation moved behind prototypeOf. Re-anchor duplicate at captureObject; ordinary accepted objects also distinguish it. MD2 labels only refused foreign values; SC6 targets an array loop."
+    },
+    {
+      "member": "N11",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-n11",
+      "reading": "describedValue split into observeDescriptor/readMember/checkMember. Duplicate descriptor before current object checkMember, preserving old object-member schedule. Existing aliased-descriptor case targets array positions."
+    },
+    {
+      "member": "N12",
+      "route": "same_registered_decision",
+      "case": "value-cost.c1.value-refusal-cost",
+      "reading": "RC-ELEMENT-READ-TWICE re-anchors both observeElement and readMember ordinary reads after describedValue split."
+    },
+    {
+      "member": "N13",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-n13",
+      "reading": "Array listing moved behind listOwnNames. Duplicate uncharged names listing at the current array owner. Current registry extra names listing targets object capture, a different input class."
+    },
+    {
+      "member": "N14",
+      "route": "planned_new_adoption",
+      "group": "k12c1-review8-n14",
+      "reading": "SDK collector retains exactly eight initial details before weighted suffixes, not seven. Unique original threshold is current; V1 unbounded collection changes a different decision."
+    },
+    {
+      "member": "N15",
+      "route": "same_registered_decision",
+      "case": "value-cost.byte-charges",
+      "reading": "Exact surplus-charge span remains current in SDK; N15 uncharged/charged-as-one cases exist."
+    },
+    {
+      "member": "N16",
+      "route": "same_registered_decision",
+      "case": "value-cost.byte-charges",
+      "reading": "Original boolean charge return changed to STOPPED; current N16 case changes the same names.length structure charge to enumerable.length."
+    }
+  ]
+}
