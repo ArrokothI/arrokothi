@@ -1,13 +1,15 @@
 # Owner progress summary
 
-Snapshot: checked 2026-10-28 against remote main `71f9b0485f9bf2d71c978f3d822c72f328353b43`.
-K1.3 is independently accepted at H `47c0b7f1c089260991649a6d814ad7db22b54a2f`, over payload C
-`c7abff65ceca3e3b21fd64ffee12ea2f636f5cbc`; review 03 is recorded at
-`3ad961d354ac551a3629b5f24e2e89085a6e5701` and its acceptance transcription A at
-`5da5ec2d0223a98e311101d7c3969339c789e716`. Its [cleanup](work/K1.3/cleanup-01.md) is complete;
-[integration](work/K1.3/integration-01.md) is recorded at `71f9b048` (PR #62); owner closure remains pending. The benchmark checkout inspected was
-`8de04779d279dba82cf834d419e465d2b677ef46`; its E1 ledger still records `BLOCKED_EXTERNAL` and no gate result.
-The [status ledger](007-work-packets.md) and linked records own acceptance, integration and release.
+Snapshot: checked 2026-11-02 against remote main `335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b`.
+TOOLS-02 ranges 2–4 are independently accepted at H2 `0c2573eb61b399508df49d9dad16c732d7e1fd3b`, over payload C2
+`272489a0c3a6e853d17f3ba89f719a627f859847`. Reviews 05 and 06 are recorded at
+`6f3dffb6b7f4da338d0362e3ffee44332f5db0d0`, and the acceptance transcription A is at
+`83a87d804813b05d432022fdafac7c5cfcbe91ef`. Their [cleanup](work/TOOLS-02/cleanup-02.md) is complete, and
+integration is pending the owner's merge. K1.3's [integration](work/K1.3/integration-01.md) is recorded at
+`71f9b048` (PR #62); its owner closure remains pending. The benchmark branch head inspected was
+`8de04779d279dba82cf834d419e465d2b677ef46`, unchanged since 2026-09-13. Its E1 ledger still records
+`BLOCKED_EXTERNAL` and no gate result. The [status ledger](007-work-packets.md) and linked records own acceptance,
+integration and release.
 
 | Area | Current position |
 |---|---|
@@ -21,11 +23,11 @@ The [status ledger](007-work-packets.md) and linked records own acceptance, inte
 | BINDING-01 | Independently accepted at H `b7a24c79`; integrated at `cd8d9250` (PR #53) |
 | COORD-REFACTOR-01 | Independently accepted at H `23c8919f`; integrated at `d17ea6d1` (PR #56) |
 | TOOLS-01 | Independently accepted at H `a50c3886`; integrated at `8f829003` (PR #45) |
-| TOOLS-02 | In progress (released 2026-10-23, [release 01](work/TOOLS-02/release-01.md), scope B). Range 1 (T2-1, T2-2) independently accepted at H `34ab91a5de23beb4997cdd2ae209a3b67aac50a0` and integrated at `4015599e` (PR #59). Ranges 2–4 (T2-3 to T2-5) open. The whole packet must be accepted and integrated before K1.4 acceptance |
+| TOOLS-02 | Independently accepted (released 2026-10-23, [release 01](work/TOOLS-02/release-01.md), scope B). Range 1 (T2-1, T2-2) is accepted at H `34ab91a5de23beb4997cdd2ae209a3b67aac50a0` and integrated at `4015599e` (PR #59). Ranges 2–4 (T2-3 to T2-5) are accepted at H2 above; cleanup is complete and integration is pending the owner's merge. The packet must be integrated before K1.4 acceptance |
 | TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
 | K1.1-correction-03 | Independently accepted at H `4b121d7b`; integrated at `b976f3a3` (PR #48) |
-| Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-16 and L-18–L-28) under 006 working principle 6 |
-| K1.3 | Independently accepted at H above; cleanup complete; integrated at `71f9b048` (PR #62); owner closure pending; no successor released |
+| Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-28; TOOLS-02 adds L-17) under 006 working principle 6 |
+| K1.3 | Independently accepted at H `47c0b7f1`; cleanup complete; integrated at `71f9b048` (PR #62); owner closure pending; no successor released |
 | K1 / E1 | Open; benchmark E1 is BLOCKED_EXTERNAL with NO_RESULT at the inspected revision; supported-entry fixture confirmation remains pending |
 
 ## What has been achieved
@@ -104,7 +106,7 @@ The lesson is to check the state that will actually exist. Counts and agreement 
 fields missed both changed disposition values and a newly appended timeout. The accepted mechanism
 checks the complete successor and makes its application explicit.
 
-Status: independently accepted at H in the snapshot; [cleanup](work/K1.3/cleanup-01.md) complete;
+Status: independently accepted at H `47c0b7f1`; [cleanup](work/K1.3/cleanup-01.md) complete;
 integrated at `71f9b048` (PR #62); owner closure pending. Limits: this is the in-process private Kernel, not the supported SDK
 bridge or an E1 result. It provides no persistence, physical stop, live trusted dependency-result ingress
 or automatic recovery from an interrupted commit. A later governed call whose successor still violates
@@ -156,7 +158,7 @@ historical evidence while keeping observations, credit and acceptance distinct. 
   plus negative controls for the tooling's own refusal and comparison rules. Target-set observations
   remain separate and earn no kill.
 - Revalidation of 154 earlier origin mappings: 107 close through checked routes and 47 remain
-  explicitly transferred. A further 1,395 origins remain pending for TOOLS-02.
+  explicitly transferred. The 1,395 origins it left pending went to TOOLS-02, which disposes of them (below).
 - A conservative intrinsic-contact register, attributed held witnesses and an advisory report of open
   origins in touched areas. The accepted corpus retains 49 preserved members and 15 target readings;
   it claims zero adoption kills.
@@ -198,15 +200,52 @@ made the census's threat model cooperative test code and recorded evasive forms 
 ([owner choice 05](work/TOOLS-02/owner-choice-05.md)).
 
 Status: range 1 is independently accepted at H `34ab91a5` and [integrated](work/TOOLS-02/integration-01.md) at
-`4015599e` (PR #59); TOOLS-02 stays in progress. Limits:
-- Range 1 is part of TOOLS-02, not the packet. Target-set kill provenance (T2-3), the hold register's match with
-  current claims (T2-4) and origin triage (T2-5) are open. The origin corpus and the hold register are unchanged
-  apart from the two transferred origins above.
+`4015599e` (PR #59). Limits:
+- Range 1 is part of TOOLS-02, not the whole packet. It changed neither the origin corpus nor the hold register,
+  apart from the two transferred origins above. Ranges 2–4 (below) deal with both.
 - The census assumes cooperative test code. A test written to hide a read from the trace can keep preservation
   credit (017 L-18). Reads the tracer cannot see, such as native or module-loader reads, are outside it.
 - One value-cost registry case may exceed its 900 s timeout on a loaded local machine (L-16). The Packet verify
   CI run at range 1's C passed it.
 - This is development tooling. It changes no Kernel behaviour, claim or hold, and gives no E1 result.
+
+**The inherited evidence corpus, disposed of.** TOOLS-02's ranges 2–4 answered three questions. Can a mutation kill
+be shown to come from the named test's own assertion? Can the hold register agree with the claims the owner has
+released? Can every origin TOOLS-01 left open get one checked disposition? The evidence tooling now:
+
+- credits a target-set kill only from a witnessed assertion of the named test, run in its own process, which binds
+  the file and the full test name. Forged frames, rethrows across tests, hooks, and production code that names
+  `AssertionError` earn nothing.
+- marks hold-register entries matched only by a released claim (V-ENV, V-D1, Proxy, re-prototyped built-in) as
+  `unread`, unless an entry has its own reading. An unread entry earns no credit and assigns no semantic limit, and
+  the corpus check refuses any mismatch. No entry is held. At the reviewed C, 1,174 of the 1,186 entries are unread
+  (017 L-17).
+- gives each of the 1,549 origins exactly one disposition:
+  - 269 are closed under P1;
+  - 1,280 are retired by a declared rule: 793 covered elsewhere, 395 not a counterexample, 71 superseded and 21
+    recorded limits.
+
+  Retirement earns no credit and deletes no evidence. The reviewer drew a seeded sample of 150 retired origins and
+  found 0 unsafe errors (bound 3). Both relevance samples of 10 found every binding relevant.
+- extracts 16 new regression tests, in `origin-regressions`, `control-observation`, `nondisclosure` and
+  `builder-docs-anchor`, and 152 adoption cases with 179 mutants. All the mutants are killed in one complete pass
+  within the owner's 1,200 s cap.
+
+The lesson from its review history is to state a figure taken from regenerated evidence together with its source.
+The docs copied the register's unread count by hand at one checkpoint. The corpus was then recomputed, the count
+moved from 983 to 1,174, and nothing compared the two. Current prose now cites the corpus report's rows and pins the
+figure to the revision it was measured at.
+
+Status: ranges 2–4 are independently accepted at H2 `0c2573eb`, by review 06 over review 05. Their
+[cleanup](work/TOOLS-02/cleanup-02.md) is complete, and integration is pending the owner's merge. Limits:
+- Some closures rest on reading, not on a mechanism. 98 family members close through `covered` pointers and 114
+  through shared mutation routes, at about S5's strength. Review 05 mutated 12 sampled `covered` members, and each
+  had a pointer that failed.
+- The triage is audited by sampling, not exhaustively. The audit found three minor errors in 150. Closure context
+  is one hop by design, so it reads less than TOOLS-01 did.
+- Unread register entries carry no credit until a packet reads them (L-17).
+- This is development tooling plus regression tests. It changes no product source, Kernel claim or hold, and gives
+  no E1 result.
 
 **Metered value refusal cost.** K1.1-correction-03 answered whether refusing a live value can be
 proven to cost no more than accepting one at the limits, and whether capture can refuse Proxies and
@@ -302,23 +341,12 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-TOOLS-02 remains in progress. K1.3’s implementation, review and cleanup are complete; the owner’s merge
-is complete; owner closure remains pending. No successor is released. The remaining dependencies below come from 007.
+TOOLS-02 is independently accepted. Integration of ranges 2–4 waits for the owner's merge of its cleanup branch.
+K1.3 is integrated, and its owner closure remains pending. No successor is released. The remaining dependencies below
+come from 007.
 
-1. **TOOLS-02 ranges 2–4** follow range 1's integration, released with the owner's scope B
-   ([release 01](work/TOOLS-02/release-01.md)): target-set kill provenance (T2-3), the hold register under current
-   claims (T2-4), then origin triage with a sampled audit (T2-5). T2-4's design 03 sits on its own branch, outside
-   range 1. The ranges also carry:
-   - the remaining extraction, mention triage and mutation-family work;
-   - the transferred origins: [choice 11](work/TOOLS-01/owner-choice-11.md)'s three origins, the limited member
-     `kernel-landing-zone.test.ts:1200:9@deedd7950724`, the origins K1.1-correction-03 transferred, and the two
-     `mcp-boundaries` origins range 1 reopened;
-   - the P3 items from K1.1-correction-03's review 03 and from the [BINDING-01](work/BINDING-01/cleanup-01.md)
-     and [COORD-REFACTOR-01](work/COORD-REFACTOR-01/cleanup-01.md) cleanups;
-   - the rule-1 V-ENV hold-register entries and the origins those two packets reopened, without new credit;
-   - revalidation of entries held under the released V-D1 and classification claims.
-
-   TOOLS-02 must be accepted and integrated before K1.4 acceptance; 007 does not make it a prerequisite for K1.3.
+1. **TOOLS-02 integration.** The owner merges `claude/tools-02-cleanup-02`. The integration receipt then records the
+   merge. Review 05's open P3 notes (carried forward below) block nothing and are the owner's to route.
 2. **K1.4** owns the SDK host bridge and full K1/E1 gate, after K1.3 integration and TOOLS-02 acceptance
    and integration. It is unreleased. The supported SDK surface changes there, as
    [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies, including BINDING-01’s startup check or an
@@ -339,7 +367,9 @@ Carry forward:
 - the limits stated in the K1.2-correction-01 report and review: finite sweeps, and runs on Node 25 only, with no
   Node 22 run (the poison sweep needs Node 22.15 or later);
 - the audit review's three non-blocking P3 intake items for TOOLS-01 or the successor corpus, listed in
-  the cleanup record.
+  the cleanup record;
+- TOOLS-02 review 05's three P3 notes and its design 06 §5 note, listed in
+  [cleanup 02](work/TOOLS-02/cleanup-02.md).
 
 Their scope remains in the ledger's pinned reviews. No new external benchmark result is claimed here.
 

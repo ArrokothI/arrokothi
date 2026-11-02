@@ -2,6 +2,16 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-11-02 ACCEPTED; cleanup complete; integration pending the owner's merge.** Review 06, the bounded delta
+  review by the separate Claude Opus session that wrote review 05: "ACCEPT — H
+  `0c2573eb61b399508df49d9dad16c732d7e1fd3b` — TOOLS-02 ranges 2–4 (T2-3, T2-4, T2-5)." It closes T2-R5-CLAIM-01.
+  Reviews 05 and 06 were recorded at `6f3dffb6` on `claude/tools-02-review-05` and merged into
+  `claude/tools-02-cleanup-02`. 007's row is ACCEPTED. [Cleanup 02](cleanup-02.md) was done by a fresh Claude Code
+  session; `next_release: none`.
+  - Open and non-blocking, for the owner to route: T2-R5-WITNESS-01, T2-R5-TRIAGE-01, T2-R5-RELEVANCE-01, and review
+    05's design 06 §5 note.
+  - No implementation work remains. The integration receipt follows the owner's merge.
+
 - **2026-11-01–02 correction of review 05 ready for its bounded delta review.** Review 05 (separate Claude Opus
   session, `claude/tools-02-review-05` at `e20a0904`, not merged here): CHANGES REQUIRED of H
   `19c1f43f2989acc1a501c96ca0f0f08dbba339b9`, finding T2-R5-CLAIM-01 (P2). 002 and 017 L-17 said 983 unread register
