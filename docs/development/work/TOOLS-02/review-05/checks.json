@@ -1,0 +1,308 @@
+{
+  "record": "Review 05 command results and evidence digests. Fresh clones: git clone --no-local of the local repository, checkout of C or H, npm ci exit 0, Node v26.10.0, Python 3.13.5, macOS 26.6.2 arm64.",
+  "identity": {
+    "B": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+    "C": "302fee9de7dc857ce58cf1e86d7fbb223af7c5fb",
+    "H": "19c1f43f2989acc1a501c96ca0f0f08dbba339b9",
+    "seed_commit": "4562bc14"
+  },
+  "candidate": {
+    "command": "python3 -B scripts/packet_tools.py candidate --payload C --head H --spec docs/development/work/TOOLS-02/verification.json",
+    "exit": 0,
+    "result": "facts_verified",
+    "file": "candidate.json"
+  },
+  "corpus": {
+    "command": "python3 -B scripts/packet_tools.py corpus --revision C --spec tests/fixtures/packet-tools/adoption.json",
+    "exit": 0,
+    "seconds": 360.95,
+    "result": "mappings_complete",
+    "states": {
+      "triaged": 1280,
+      "complete": 269
+    },
+    "retirements": {
+      "superseded": 71,
+      "not_a_counterexample": 395,
+      "covered_elsewhere": 793,
+      "recorded_limit": 21
+    },
+    "closures": {
+      "complete": 269,
+      "context_ranges": 1284,
+      "context_candidates": 1393,
+      "context_reasoned": 366
+    },
+    "families": {
+      "runner": {
+        "families": 20,
+        "census_reading": 1,
+        "occurrences": 401,
+        "route:mutation": 178,
+        "route:covered": 97,
+        "route:mutation_shared": 113,
+        "route:equivalence": 4,
+        "inherited": 89,
+        "route:no_longer_applicable": 2,
+        "reused": 39,
+        "route:pending": 7,
+        "distinct": 273
+      },
+      "mixed": {
+        "families": 6,
+        "census_reading": 4,
+        "occurrences": 14,
+        "route:pending": 12,
+        "inherited": 2,
+        "reused": 2,
+        "route:covered": 1,
+        "route:mutation_shared": 1,
+        "distinct": 10
+      }
+    },
+    "register": {
+      "entries": 1186,
+      "by_classification": {
+        "not_held:V-ENV": 11,
+        "superseded:Proxy": 1,
+        "unread:Proxy": 41,
+        "unread:V-D1": 21,
+        "unread:V-ENV": 1100,
+        "unread:re-prototyped-built-in": 12
+      },
+      "rule_1": 0
+    }
+  },
+  "tool_tests": {
+    "command": "python3 -B -m unittest discover -s tests/tooling -p <module>.py",
+    "modules": {
+      "test_runner_targets": 12,
+      "test_value_cost_probe": 29,
+      "test_released_holds": 64,
+      "test_case_register": 4,
+      "test_transfer_limits": 53,
+      "test_family_tools": 22,
+      "test_context_references": 16,
+      "test_closure_tools": 22,
+      "test_triage_tools": 16,
+      "test_venv_register": 4,
+      "test_refusal_guards": 220
+    },
+    "total": 462,
+    "all_ok": true
+  },
+  "ci": {
+    "run": 41286444190,
+    "job": 124788600198,
+    "artifact": 13079501063,
+    "artifact_digest": "sha256:fa98a22db70d05101f7c6122b96b758eb32e2f9022bdd0adf3a123948c8acb80",
+    "run_txt": [
+      "revision=302fee9de7dc857ce58cf1e86d7fbb223af7c5fb",
+      "spec=docs/development/work/TOOLS-02/verification.json",
+      "head=302fee9de7dc857ce58cf1e86d7fbb223af7c5fb",
+      "node=v26.10.0 npm=11.19.1 python=Python 3.13.17",
+      "runner=Linux x86_64 cpus=4",
+      "started=2026-11-01T07:51:58Z",
+      "finished=2026-11-01T10:08:56Z",
+      "exit=0"
+    ],
+    "summary": {
+      "result": "checks_passed",
+      "checks": [
+        [
+          "tool-tests",
+          true,
+          null,
+          {
+            "tests": 777
+          }
+        ],
+        [
+          "inventory",
+          true,
+          "provenance_verified",
+          null
+        ],
+        [
+          "adoption",
+          true,
+          "mappings_complete",
+          null
+        ],
+        [
+          "dimensions",
+          true,
+          "coverage_reported",
+          null
+        ],
+        [
+          "registered-mutants",
+          true,
+          "selected_cases_passed",
+          null
+        ],
+        [
+          "refusal-mutants",
+          true,
+          "selected_cases_passed",
+          null
+        ],
+        [
+          "value-cost-mutants",
+          true,
+          "selected_cases_passed",
+          null
+        ],
+        [
+          "refusal-census",
+          true,
+          null,
+          {}
+        ],
+        [
+          "oracle-census",
+          true,
+          null,
+          {}
+        ],
+        [
+          "typecheck",
+          true,
+          null,
+          {}
+        ],
+        [
+          "repository-tests",
+          true,
+          null,
+          {
+            "tests": 4766,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        ],
+        [
+          "archive-tests",
+          true,
+          null,
+          {
+            "tests": 4,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        ],
+        [
+          "kernel-sweeps",
+          true,
+          null,
+          {}
+        ],
+        [
+          "race-search",
+          true,
+          null,
+          {}
+        ],
+        [
+          "value-cost-dimensions",
+          true,
+          null,
+          {}
+        ],
+        [
+          "value-cost-continuations",
+          true,
+          null,
+          {}
+        ],
+        [
+          "example-tests",
+          true,
+          null,
+          {
+            "tests": 18,
+            "fail": 0,
+            "cancelled": 0,
+            "skipped": 0,
+            "todo": 0
+          }
+        ],
+        [
+          "builder-docs",
+          true,
+          null,
+          {}
+        ],
+        [
+          "area-gate",
+          true,
+          "reported",
+          null
+        ]
+      ]
+    },
+    "registered_kills": 339,
+    "refusal_kills": 358,
+    "value_cost_kills": 238,
+    "target_set_kills_witness_bound": "167/167"
+  },
+  "shared_routes": {
+    "total": 114,
+    "same_label": 104,
+    "cross_label": [
+      {
+        "copy": "family.k12c1.ablations-07#C13 the recovery answer projected after ",
+        "source": "family.k12c1.ablations-06#H7 recovery answer projected after the d"
+      },
+      {
+        "copy": "family.k12c1.review-06#W2-rootissues-drops-weight",
+        "source": "family.k12c1.ablations#G9 lose captured suffix multiplicity"
+      },
+      {
+        "copy": "family.k12c1.review-06#W6-render-counts-suffix-as-one",
+        "source": "family.k12c1.ablations-03#V3 count each summarized suffix as one i"
+      },
+      {
+        "copy": "family.k12c1.sweeps-08#K1 hostMember walks on to the built-in p",
+        "source": "family.k12c1.ablations-06#H19 hostMember answers from Object.proto"
+      },
+      {
+        "copy": "family.k12c1.sweeps-08#K3 an ordinary read of the optional cont",
+        "source": "family.k12c1.ablations-06#H15 ordinary optional controlScopes read"
+      },
+      {
+        "copy": "family.k12c1.review-02#R3 projection after the root label (inve",
+        "source": "family.k12c1.ablations#G13 project after root prefix"
+      },
+      {
+        "copy": "family.k12c1.review-03#N9 redelivery hold reason renders raw mi",
+        "source": "family.k12c1.ablations#D35 unbounded identity at coordinator.ts"
+      },
+      {
+        "copy": "family.k12c1.review-11.run-read-mutant#read-mutant",
+        "source": "family.k12c1.sweeps-08#review 11 READ-01: inspection reads a me"
+      },
+      {
+        "copy": "family.k12.review-09#R1 content validated before submission a",
+        "source": "family.k12.ablations#B12 content validated before submission "
+      },
+      {
+        "copy": "family.k12c1.probe-reviewed-h-07#UNSUPPORTED-NAME PROBE",
+        "source": "family.k12c1.ablations-07#R10 SELF-R7-UNSUPPORTED-01 restored: nam"
+      }
+    ],
+    "readings": "C13/H7, W2/G9, W6/V3, K3/H15, N9/D35, READ-01, R1/B12 identical edits; UNSUPPORTED-NAME/R10 same decision; review-02 R3/G13 relocation (R3 anchor absent at C); K1/H19 tested: H19 target leaf fails under K1 (covered-mutations.json)"
+  },
+  "files": {
+    "audit-retired.json": "f6cc8104ba81dc7dc13ba86e094734e4f901fb836092fd8c40b69b75aac119d5",
+    "candidate.json": "83ee1b04cd9d68e9ce56a3aeaadf03166ec9d14af0dea8d374243c22e0b48020",
+    "covered-mutations.json": "4176360bf35b28f67bbcacb61dcd42e6edc445754f4184ee1a0ce317283d732d",
+    "packet-verify-41286444190.zip": "fa98a22db70d05101f7c6122b96b758eb32e2f9022bdd0adf3a123948c8acb80",
+    "relevance.json": "3eacdca0d97ebd45e8305debfb669c9726c5d3c03fe6b3d9c24a744f01e99bca",
+    "samples.json": "0fdbf7a947a84d45d28b0b671db0b95a93cc81c7f509661501a377dd827cdbeb"
+  }
+}

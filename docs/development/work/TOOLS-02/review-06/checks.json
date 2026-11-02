@@ -1,0 +1,112 @@
+{
+ "record": "TOOLS-02 review 06: bounded delta review of H2 under correction brief 05",
+ "identity": {
+  "B": "335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+  "C": "302fee9de7dc857ce58cf1e86d7fbb223af7c5fb",
+  "H": "19c1f43f2989acc1a501c96ca0f0f08dbba339b9",
+  "C2": "272489a0c3a6e853d17f3ba89f719a627f859847",
+  "H2": "0c2573eb61b399508df49d9dad16c732d7e1fd3b",
+  "parents": {
+   "C2": "19c1f43f2989acc1a501c96ca0f0f08dbba339b9",
+   "H2": "272489a0c3a6e853d17f3ba89f719a627f859847"
+  },
+  "origin_codex_tools_02": "0c2573eb61b399508df49d9dad16c732d7e1fd3b"
+ },
+ "bound": {
+  "C..H2": [
+   "docs/development/002-implemented-kernel-baseline.md",
+   "docs/development/007-work-packets.md",
+   "docs/development/017-known-limitations.md",
+   "docs/development/work/TOOLS-02/implementation-05.md",
+   "docs/development/work/TOOLS-02/implementation-06.md",
+   "docs/development/work/TOOLS-02/progress.md",
+   "docs/development/work/TOOLS-02/self-audit-05.json",
+   "docs/development/work/TOOLS-02/verification.json"
+  ],
+  "H..C2": [
+   "docs/development/002-implemented-kernel-baseline.md",
+   "docs/development/017-known-limitations.md",
+   "docs/development/work/TOOLS-02/verification.json"
+  ],
+  "C2..H2": [
+   "docs/development/007-work-packets.md",
+   "docs/development/work/TOOLS-02/implementation-06.md",
+   "docs/development/work/TOOLS-02/progress.md"
+  ],
+  "verification_json_fields_changed_C_to_C2": [
+   "administrative_files"
+  ],
+  "administrative_files_C2": [
+   "docs/development/007-work-packets.md",
+   "docs/development/work/TOOLS-02/implementation-06.md",
+   "docs/development/work/TOOLS-02/progress.md"
+  ],
+  "007_lines_other_than_TOOLS-02_row_identical_C_to_H2": true,
+  "progress_md_removed_lines_C_to_H2": 0
+ },
+ "claim": {
+  "corpus_register_by_classification": {
+   "C_run_41286444190": {
+    "not_held:V-ENV": 11,
+    "superseded:Proxy": 1,
+    "unread:Proxy": 41,
+    "unread:V-D1": 21,
+    "unread:V-ENV": 1100,
+    "unread:re-prototyped-built-in": 12
+   },
+   "C2_run_41358816946": {
+    "not_held:V-ENV": 11,
+    "superseded:Proxy": 1,
+    "unread:Proxy": 41,
+    "unread:V-D1": 21,
+    "unread:V-ENV": 1100,
+    "unread:re-prototyped-built-in": 12
+   }
+  },
+  "unread_total_C": 1174,
+  "pinned_figure_in_002_and_017": 1174,
+  "pinned_revision": "302fee9de7dc857ce58cf1e86d7fbb223af7c5fb"
+ },
+ "ci": {
+  "run": 41358816946,
+  "workflow": "Packet verify",
+  "event": "workflow_dispatch",
+  "workflow_ref": "main 335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b",
+  "job": {
+   "name": "verify",
+   "id": 125004566098,
+   "conclusion": "success",
+   "started": "2026-11-01T22:46:42Z",
+   "completed": "2026-11-02T01:03:16Z"
+  },
+  "run_txt": [
+   "revision=272489a0c3a6e853d17f3ba89f719a627f859847",
+   "spec=docs/development/work/TOOLS-02/verification.json",
+   "head=272489a0c3a6e853d17f3ba89f719a627f859847",
+   "node=v26.10.0 npm=11.19.1 python=Python 3.13.17",
+   "runner=Linux x86_64 cpus=4",
+   "started=2026-11-01T22:47:02Z",
+   "finished=2026-11-02T01:03:11Z",
+   "exit=0"
+  ],
+  "artifact": {
+   "id": 13109200965,
+   "name": "packet-verify-272489a0c3a6e853d17f3ba89f719a627f859847",
+   "size": 2540558,
+   "github_digest": "sha256:831b5b7bc418a1a31216d3c14ac8b190267821c25d2f0af60e595b15d867a637",
+   "downloaded_sha256": "831b5b7bc418a1a31216d3c14ac8b190267821c25d2f0af60e595b15d867a637"
+  },
+  "summary": {
+   "result": "checks_passed",
+   "checks": 19,
+   "all_passed": true,
+   "identical_to_C_run_41286444190": true
+  },
+  "detail_differences_vs_C_run": {
+   "revision fields": "C replaced by C2 in inventory, adoption, dimensions, mutant and area-gate results",
+   "registered-mutants": "one killed_by name differs only in a runner temp directory name",
+   "refusal-mutants": "two killed_by names differ only in a lambda address and a scratch-repository commit SHA",
+   "area-gate changed_paths": "123 -> 124: B..rev diff (121 -> 123) united with administrative_files; implementation-06.md is declared at C2 and absent until H2; advisory, 0 ungated in both"
+  }
+ }
+}
