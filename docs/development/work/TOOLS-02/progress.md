@@ -2,6 +2,15 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **2026-11-01–02 correction of review 05 ready for its bounded delta review.** Review 05 (separate Claude Opus
+  session, `claude/tools-02-review-05` at `e20a0904`, not merged here): CHANGES REQUIRED of H
+  `19c1f43f2989acc1a501c96ca0f0f08dbba339b9`, finding T2-R5-CLAIM-01 (P2). 002 and 017 L-17 said 983 unread register
+  entries; the count at C is 1,174. The owner chose "Refined claim" and "Bounded delta review". Payload C2
+  `272489a0c3a6e853d17f3ba89f719a627f859847` makes both passages cite the corpus report's `register.by_classification`
+  unread rows, with the figure pinned to `302fee9d`. Its `verification.json` names the H2 records. Packet verify CI run
+  `41358816946` at C2 passed. The report is [implementation 06](implementation-06.md). WAITING_FOR_REVIEW. The P3
+  observations stay open for the owner.
+
 - **2026-11-01 ranges 2–4 ready for review 05.** Payload C `302fee9de7dc857ce58cf1e86d7fbb223af7c5fb` on B
   `335ae7e6b6ddf7fa3c32a8605559268ed8a4e39b`. Packet verify CI run `41286444190` at C passed. Fresh-clone full
   verify at C: `checks_passed`, 19 of 19. Adoption `mappings_complete`: 269 closed, 1,280 retired. Self-audit:
