@@ -1,8 +1,7 @@
 # Brief 01 — K1.4
 
 Planner: the owner's Claude Code desktop session (`claude-opus-5-5`), 2026-10-28, at the owner's request
-("let's release the new packet"), using Prompt D. This brief is a draft for the owner's decisions below; it
-releases nothing. It is written under
+("let's release the new packet"), using Prompt D. The owner's answers are recorded at the end; [release 01](release-01.md) releases it. It is written under
 [006 working principle 6](../../006-development-process.md#working-principles) and
 [017](../../017-known-limitations.md): build right now what is expensive to change, and record the rest
 as limits.
@@ -136,3 +135,20 @@ refused cleanly, or if K14-G cannot be stated as a finishable check because the 
    stated limit in the bridge contract.
 5. **Roles.** Implementer: a GPT-6 session. Design check, adversary (Prompt E) and review: separate Opus
    sessions. Run Prompt E before the build, as for K1.3?
+
+**Owner answers (2026-11-02/03), verbatim:** to the five recommendations above, "yes, but opus implement, and
+GPT6 verify." Their effects on this brief:
+- **Decision 1: A, split.** K1.4 is the bridge, K14-1 to K14-6. A new packet, `K1.4-gate`, holds K14-G. It depends
+  on K1.4 accepted and integrated and on the benchmark's E1 release. The K1 milestone closes when K1.4 and
+  K1.4-gate are both ACCEPTED. K2.1 and R1.1, which wait on the gate (PLAN-01), depend on K1.4-gate. The stop
+  condition about an unavailable E1 fixture moves to K1.4-gate.
+- **Decision 2: A.** Legacy tool and model calls, children, user-input requests and memory bindings run natively
+  inside the legacy Driver as Trusted Execution. They are documented as unmediated, with no Kernel guarantee for
+  those paths, until their owning packets (K2, K4). K14-4 lists each as preserved and unmediated, or refused.
+- **Decision 3: keep, deprecated.** `Application.harness` and the synchronous host methods stay for one release as
+  deprecated legacy accessors. No 0.9 breaking removal in K1.4.
+- **Decision 4: startup check.** K14-5 closes by the startup check: it resolves the serializer's free identifiers and
+  refuses on mismatch, with a refusal test.
+- **Decision 5: roles changed.** A fresh Claude Opus session implements. Codex GPT-6 sessions verify: the design
+  check, the Prompt E adversary before the build, and the independent review. A fresh session does the Prompt C
+  cleanup.

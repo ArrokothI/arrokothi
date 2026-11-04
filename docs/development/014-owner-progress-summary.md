@@ -1,6 +1,6 @@
 # Owner progress summary
 
-Snapshot: checked 2026-11-02 against remote main `3475d5d6922b38af6e7637193afb646567d796f9`.
+Snapshot: checked 2026-11-02 against remote main `3475d5d6922b38af6e7637193afb646567d796f9`; K1.4 release 01 is added on 2026-11-03 by the PR that carries this edit.
 TOOLS-02 ranges 2–4 are independently accepted at H2 `0c2573eb61b399508df49d9dad16c732d7e1fd3b`, over payload C2
 `272489a0c3a6e853d17f3ba89f719a627f859847`. Reviews 05 and 06 are recorded at
 `6f3dffb6b7f4da338d0362e3ffee44332f5db0d0`, and the acceptance transcription A is at
@@ -28,6 +28,7 @@ integration and release.
 | K1.1-correction-03 | Independently accepted at H `4b121d7b`; integrated at `b976f3a3` (PR #48) |
 | Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-28; TOOLS-02 adds L-17) under 006 working principle 6 |
 | K1.3 | Independently accepted at H `47c0b7f1`; cleanup complete; integrated at `71f9b048` (PR #62); owner closure pending; no successor released |
+| K1.4 | Released 2026-11-03 ([release 01](work/K1.4/release-01.md)); not started. The gate is split into K1.4-gate, not released |
 | K1 / E1 | Open; benchmark E1 is BLOCKED_EXTERNAL with NO_RESULT at the inspected revision; supported-entry fixture confirmation remains pending |
 
 ## What has been achieved
