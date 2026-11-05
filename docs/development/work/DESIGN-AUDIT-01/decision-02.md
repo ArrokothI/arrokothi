@@ -75,3 +75,14 @@ owner release and brief.
 - Any packet release.
 - The binding packet's contract, which its brief and design note produce.
 - Hold changes. All three claim holds stay as recorded.
+
+## Amendment note (2026-11-05)
+
+Added by the K1.4 implementer's Claude Code desktop session (`claude-opus-5-5`), at the owner's instruction. The
+record above is unchanged. [K1.4 owner choices 01](../K1.4/owner-choices-01.md) Q1 amends one sentence of the
+dependency-direction paragraph, "A public SDK package therefore never depends on the private Kernel package":
+- K1.4 routes `@arrokothi/sdk` through the Kernel, so the SDK takes a workspace dependency on `@arrokothi/kernel`;
+- the Kernel package stays `private`;
+- the SDK is unpublishable until a release packet decides how to publish it.
+
+The wrapper's own direction is unchanged: the wrapper imports no Kernel module.

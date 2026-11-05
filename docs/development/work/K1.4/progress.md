@@ -2,9 +2,12 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS (2026-11-05), design. [Design 01](design-01.md) is written and pushed. Next: a Codex GPT-6
-  Prompt E attack (`codex/k1.4-attack`), then a Codex GPT-6 design check (`codex/k1.4-design-check`) that also
-  answers the owner questions (design 01 §16, Q1–Q8). **No code before the check.** The implementer stops here.
+- **Phase:** IN_PROGRESS (2026-11-05), design. [Design 01](design-01.md) is pushed (`e06e6e71`). The owner
+  accepted all eight §16 recommendations: [owner choices 01](owner-choices-01.md). Q1 is recorded as a dated
+  amendment note on [decision-02](../DESIGN-AUDIT-01/decision-02.md): the Kernel stays private and the SDK takes a
+  workspace dependency, so the SDK is unpublishable until a release packet decides. Next: a Codex GPT-6 Prompt E
+  attack (`codex/k1.4-attack`), then a Codex GPT-6 design check (`codex/k1.4-design-check`). **No code before the
+  check.** The implementer stops here.
 - Design 01 in brief: one legacy Driver privately owns the 0.8.x `Harness` as the native Runtime. Each Kernel
   Execution has one native lineage whose root shares the Kernel ID. Each exchange runs one native step: `continue`,
   `await` with input subscriptions at native quiescence, or `complete`/`fail`. A lineage scheduler gives each
