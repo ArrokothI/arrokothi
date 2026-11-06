@@ -131,7 +131,7 @@ export async function preflight(context: PreflightContext, input: StartExecution
         checkOperations(stage.callables ?? [], `${at}.callables`, ceiling);
       } else {
         hasEffects = true;
-        if ((input.structuralSpawnBudget === undefined && input.ownerExecutionId === undefined) || input.structuralSpawnBudget === 0) warn("spawn_budget_missing", at, "Child calls need lineage spawn credits as well as Effect authorization.");
+        if (input.structuralSpawnBudget === undefined || input.structuralSpawnBudget === 0) warn("spawn_budget_missing", at, "Child calls need lineage spawn credits as well as Effect authorization.");
         const child = rootDefinition?.id === stage.child.definitionId && rootDefinition.version === stage.child.definitionVersion
           ? rootDefinition
           : await services.definitions.getVersion(stage.child.definitionId as ExecutionDefinition["id"], stage.child.definitionVersion);
@@ -173,7 +173,8 @@ export async function preflight(context: PreflightContext, input: StartExecution
   if (input.structuredMemory !== undefined) for (const issue of structuredMemoryBindingIssues(input.structuredMemory)) error("invalid_memory_binding", issue.path, issue.message);
   if (input.structuralSpawnBudget !== undefined) for (const issue of spawnBudgetCapacityIssues(input.structuralSpawnBudget)) error("invalid_spawn_budget", "structuralSpawnBudget", issue.message);
   if (hasEffects && !options.authorizer) warn("effects_denied_by_default", "authorizer", "No EffectAuthorizer is configured. Every proposed Effect is denied, including writes and child calls.");
-  if (input.ownerExecutionId !== undefined && !await services.store.readExecution(input.ownerExecutionId)) error("owner_missing", "ownerExecutionId", "The trusted host ownership parent does not exist.");
+  if ((input as { readonly ownerExecutionId?: unknown }).ownerExecutionId !== undefined) error("owner_unsupported", "ownerExecutionId", "Host-supplied ownership is not supported through the Kernel; Kernel composition is K4's.");
+  if (options.runtime?.maxActivationsPerRun !== undefined) warn("option_ignored", "runtime.maxActivationsPerRun", "Ignored: Kernel dispatch bounds each host call through RunOptions.maxActivations.");
   if (options.memory?.executions) add("info", "memory_execution_scope", "memory.executions", "Memory grants are restricted to named Execution IDs; preflight does not allocate an ID or promise that this new Execution matches.");
   if (options.controllers) add("info", "custom_wiring_scope", "controllers", "Custom controller ports are trusted extension points; preflight cannot prove their wiring, exposure, policy, or handler behavior.");
   return { ok: !diagnostics.some(d => d.severity === "error"), diagnostics };

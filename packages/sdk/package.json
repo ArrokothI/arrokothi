@@ -1,6 +1,7 @@
 {
   "name": "@arrokothi/sdk",
   "version": "0.8.1",
+  "private": true,
   "description": "Application bootstrap, preflight, and host driving for ArrokothI Agents and Workflows.",
   "type": "module",
   "exports": {
@@ -15,6 +16,7 @@
   },
   "dependencies": {
     "@arrokothi/core": "0.8.1",
+    "@arrokothi/kernel": "0.8.1",
     "canonicalize": "3.0.0"
   },
   "publishConfig": {

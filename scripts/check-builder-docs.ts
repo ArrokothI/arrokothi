@@ -77,9 +77,18 @@ for (const directory of manifests) {
   const manifest = JSON.parse(await read(join(root, directory, "package.json"))) as { name: string; exports: Record<string, unknown> };
   for (const key of Object.keys(manifest.exports)) packagePaths.add(manifest.name + (key === "." ? "" : key.slice(1)));
 }
+// K1.4 (owner choices 01 Q1): the SDK depends on the private Kernel, through its package root and
+// only from these files. `legacy-bridge-boundaries.test.ts` holds this list equal to
+// SDK_KERNEL_IMPORTERS, the list the landing-zone quarantine names. Examples never import the Kernel.
+const SDK_KERNEL_IMPORTERS = [
+  "packages/sdk/src/application.ts",
+  "packages/sdk/src/host.ts",
+  "packages/sdk/src/legacy-bridge/codec.ts",
+  "packages/sdk/src/legacy-bridge/driver.ts",
+];
 let imports = 0;
-for (const directory of [example, "packages/sdk/src"]) {
-  for (const file of (await readdir(join(root, directory))).filter((name) => name.endsWith(".ts"))) {
+for (const [directory, recursive] of [[example, false], ["packages/sdk/src", true]] as const) {
+  for (const file of (await readdir(join(root, directory), { recursive })).filter((name) => name.endsWith(".ts")).map((name) => name.split(sep).join("/")).sort()) {
     const source = ts.createSourceFile(file, await read(join(root, directory, file)), ts.ScriptTarget.Latest, true);
     for (const node of source.statements) {
       if ((!ts.isImportDeclaration(node) && !ts.isExportDeclaration(node)) || !node.moduleSpecifier || !ts.isStringLiteral(node.moduleSpecifier)) continue;
@@ -87,6 +96,10 @@ for (const directory of [example, "packages/sdk/src"]) {
       if (/packages\/core\/src|@arrokothi\/core\/src/.test(specifier)) errors.push(`${directory}/${file}: deep kernel import: ${specifier}`);
       if (!specifier.startsWith("@arrokothi/")) continue;
       imports++;
+      if (specifier === "@arrokothi/kernel" || specifier.startsWith("@arrokothi/kernel/")) {
+        if (specifier !== "@arrokothi/kernel" || !SDK_KERNEL_IMPORTERS.includes(`${directory}/${file}`)) errors.push(`${directory}/${file}: the private Kernel is admitted only through @arrokothi/kernel from the named SDK host and bridge files: ${specifier}`);
+        continue;
+      }
       if (!packagePaths.has(specifier)) errors.push(`${directory}/${file}: not a public export: ${specifier}`);
       if (!file.endsWith(".test.ts") && specifier === "@arrokothi/core/testing") errors.push(`${directory}/${file}: runtime starter imports test-only surface: ${specifier}`);
     }
@@ -102,7 +115,10 @@ const workspace = JSON.parse(await read(join(root, "package.json")));
 const sdk = JSON.parse(await read(join(root, "packages/sdk/package.json")));
 const core = JSON.parse(await read(join(root, "packages/core/package.json")));
 const lock = JSON.parse(await read(join(root, "package-lock.json")));
+const kernel = JSON.parse(await read(join(root, "packages/kernel/package.json")));
 if (!workspace.workspaces.includes("packages/sdk") || sdk.name !== "@arrokothi/sdk" || sdk.dependencies?.["@arrokothi/core"] !== core.version) errors.push("SDK workspace/name/core dependency is inconsistent");
+if (sdk.dependencies?.["@arrokothi/kernel"] !== kernel.version || kernel.private !== true) errors.push("SDK Kernel dependency is inconsistent: the SDK depends on the private @arrokothi/kernel at its version");
+if (sdk.private !== true) errors.push("packages/sdk/package.json must be private: it depends on the private Kernel until a release packet decides publication (K1.4 owner choices 02 D)");
 if (lock.packages["packages/sdk"]?.version !== sdk.version || !lock.packages["node_modules/@arrokothi/sdk"]?.link) errors.push("SDK lockfile integration is missing");
 if (!workspace.scripts.test.includes("packages/sdk/tests/") || !workspace.scripts["test:packages"].includes("packages/sdk/tests/")) errors.push("SDK tests are absent from standard suites");
 for (const file of (await readdir(join(root, "packages/core/src"), { recursive: true })).filter(name => name.endsWith(".ts"))) {

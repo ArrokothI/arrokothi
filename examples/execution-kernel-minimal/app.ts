@@ -7,7 +7,7 @@ import type {
   OperationRef,
 } from "@arrokothi/core";
 import { createApplication, defineAgent } from "@arrokothi/sdk";
-import type { Harness } from "@arrokothi/core";
+import type { LegacyHarnessView } from "@arrokothi/sdk";
 import type { CapabilityCatalog, CapabilityExecutor, EffectAuthorizer } from "@arrokothi/core/ports";
 import {
   ScriptedModelProvider, createAllowListAuthorizer, createCapabilityCatalog, portableModelFeatures,
@@ -110,7 +110,8 @@ export interface AppOptions {
 }
 
 export interface App {
-  readonly harness: Harness;
+  /** Native diagnostics (deprecated view): readers only. */
+  readonly harness: LegacyHarnessView;
   readonly provider: ScriptedModelProvider;
   /** Publishes the definition and creates one root Execution with its operation ceiling. */
   start(question: string): Promise<ExecutionId>;

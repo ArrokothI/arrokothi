@@ -11,7 +11,7 @@
 import { dirname, posix } from "node:path";
 import ts from "typescript";
 import type { ModuleGraph } from "./module-graph.ts";
-import { moduleDependenciesIn, UNRESOLVABLE_MODULE_TARGET } from "./module-graph.ts";
+import { importSpecifiersIn, moduleDependenciesIn, resolveSpecifier, UNRESOLVABLE_MODULE_TARGET, type Workspace } from "./module-graph.ts";
 
 /** One ownership zone: a set of repo-relative path prefixes with a single owner. */
 export interface Zone {
@@ -61,7 +61,42 @@ export const HOST_SDK: Zone = {
   roots: ["packages/sdk/src"],
 };
 
-export const ZONES: readonly Zone[] = [TARGET_KERNEL, LEGACY_CORE, RUNTIME_INTEGRATIONS, HOST_SDK];
+/**
+ * The legacy bridge (K1.4): the Driver whose native Runtime is the 0.8.x Harness, its lineage
+ * scheduler, root identity scope, codec, lineage classifier and the deprecated Harness view. It sits
+ * inside `host-sdk`'s root; `zoneOf` attributes each file to exactly one of the two.
+ */
+export const LEGACY_BRIDGE: Zone = {
+  id: "legacy-bridge",
+  roots: ["packages/sdk/src/legacy-bridge"],
+};
+
+export const ZONES: readonly Zone[] = [TARGET_KERNEL, LEGACY_CORE, RUNTIME_INTEGRATIONS, HOST_SDK, LEGACY_BRIDGE];
+
+/**
+ * The one zone that owns `file` (K1.4 design 02, D01-CHK-12): the zone whose matching root is
+ * longest, so a nested zone takes its files from the zone around it. Two zones with an equal-length
+ * matching root are refused rather than resolved by declaration order.
+ */
+export function zoneOf(file: string, zones: readonly Zone[] = ZONES): Zone | undefined {
+  let best: Zone | undefined;
+  let length = -1;
+  let tied = false;
+  for (const zone of zones) {
+    for (const root of zone.roots) {
+      if (file !== root && !file.startsWith(`${root}/`)) continue;
+      if (root.length > length) {
+        best = zone;
+        length = root.length;
+        tied = false;
+      } else if (root.length === length && zone !== best) {
+        tied = true;
+      }
+    }
+  }
+  if (tied) throw new Error(`${file} matches two zones with equal-length roots; zone attribution must be unique`);
+  return best;
+}
 
 /** Entry modules whose transitive graph defines everything the target Kernel zone depends on. */
 export const TARGET_KERNEL_ENTRY_MODULES: readonly string[] = ["packages/kernel/src/index.ts"];
@@ -379,4 +414,107 @@ export function zoneImportViolations(sources: ReadonlyMap<string, string>, rules
     }
   }
   return out;
+}
+
+// -- K1.4: the legacy bridge's structural rules (K14-3) ----------------------------------------------
+
+/**
+ * The SDK files that import the Kernel, all through its package root (owner choices 01 Q1).
+ * `kernel-landing-zone.test.ts`'s quarantine and `check:builder-docs` admit exactly these.
+ */
+export const SDK_KERNEL_IMPORTERS: readonly string[] = [
+  "packages/sdk/src/application.ts",
+  "packages/sdk/src/host.ts",
+  "packages/sdk/src/legacy-bridge/codec.ts",
+  "packages/sdk/src/legacy-bridge/driver.ts",
+];
+
+/** The one SDK file that may construct the native `Harness`. */
+export const HARNESS_CONSTRUCTOR_FILE = "packages/sdk/src/legacy-bridge/driver.ts";
+
+const SDK_WRAPPER_ROOT = "packages/sdk/src/internal";
+const KERNEL_PACKAGE = "packages/kernel/";
+const SDK_PACKAGE = "packages/sdk/";
+
+export interface BridgeViolation {
+  readonly rule: "K14-3-ROOT" | "K14-3-CORE" | "K14-3-WRAPPER" | "K14-3-HARNESS";
+  readonly from: string;
+  readonly specifier: string;
+  readonly reason: string;
+}
+
+/**
+ * Value bindings of the legacy package that could construct a `Harness` in `source`: a named value
+ * import or re-export of `Harness` (under any local name), a value namespace import or star re-export
+ * of `@arrokothi/core`, or a dynamic import of it. Type-only forms construct nothing.
+ */
+function harnessValueForms(source: string): string[] {
+  const file = ts.createSourceFile("source.ts", source, ts.ScriptTarget.Latest, true);
+  const out: string[] = [];
+  const legacyRoot = (node: ts.Expression | undefined): boolean =>
+    node !== undefined && ts.isStringLiteralLike(node) && node.text === "@arrokothi/core";
+  const visit = (node: ts.Node): void => {
+    if (ts.isImportDeclaration(node) && legacyRoot(node.moduleSpecifier) && !node.importClause?.isTypeOnly) {
+      const named = node.importClause?.namedBindings;
+      if (named !== undefined && ts.isNamespaceImport(named)) out.push("namespace import");
+      if (named !== undefined && ts.isNamedImports(named)) {
+        for (const element of named.elements) {
+          if (!element.isTypeOnly && (element.propertyName ?? element.name).text === "Harness") out.push("Harness import");
+        }
+      }
+    }
+    if (ts.isExportDeclaration(node) && legacyRoot(node.moduleSpecifier) && !node.isTypeOnly) {
+      const clause = node.exportClause;
+      if (clause === undefined || ts.isNamespaceExport(clause)) out.push("star re-export");
+      else for (const element of clause.elements) {
+        if (!element.isTypeOnly && (element.propertyName ?? element.name).text === "Harness") out.push("Harness re-export");
+      }
+    }
+    if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword && legacyRoot(node.arguments[0])) {
+      out.push("dynamic import");
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  return out;
+}
+
+/**
+ * Every edge in `sources` (repo-relative path to text) that the bridge rules forbid:
+ * - ROOT: an SDK file reaches the Kernel other than through the specifier `@arrokothi/kernel`;
+ * - CORE: a `legacy-core` file reaches the Kernel or the SDK, bridge included;
+ * - WRAPPER: the SDK value wrapper reaches the Kernel or the bridge (decision-02's direction);
+ * - HARNESS: an SDK file other than the Driver holds a value binding that could construct a `Harness`.
+ *
+ * Every dependency form the module graph normalises (type-only, import types, re-exports, dynamic
+ * imports, references) counts for ROOT, CORE and WRAPPER, because naming a module is reaching it.
+ */
+export function bridgeBoundaryViolations(workspace: Workspace, sources: ReadonlyMap<string, string>): BridgeViolation[] {
+  const violations: BridgeViolation[] = [];
+  for (const [from, text] of sources) {
+    const zone = zoneOf(from)?.id;
+    const inSdk = zone === HOST_SDK.id || zone === LEGACY_BRIDGE.id;
+    const inWrapper = from === SDK_WRAPPER_ROOT || from.startsWith(`${SDK_WRAPPER_ROOT}/`);
+    for (const specifier of importSpecifiersIn(text)) {
+      if (specifier === UNRESOLVABLE_MODULE_TARGET) continue;
+      const resolution = resolveSpecifier(workspace, from, specifier);
+      if (resolution.kind !== "internal") continue;
+      const target = resolution.file;
+      if (inSdk && target.startsWith(KERNEL_PACKAGE) && specifier !== "@arrokothi/kernel") {
+        violations.push({ rule: "K14-3-ROOT", from, specifier, reason: `reaches ${target}; the SDK reaches the Kernel only through @arrokothi/kernel` });
+      }
+      if (zone === LEGACY_CORE.id && (target.startsWith(KERNEL_PACKAGE) || target.startsWith(SDK_PACKAGE))) {
+        violations.push({ rule: "K14-3-CORE", from, specifier, reason: `reaches ${target}; the legacy core depends on neither the Kernel nor the SDK and its bridge` });
+      }
+      if (inWrapper && (target.startsWith(KERNEL_PACKAGE) || zoneOf(target)?.id === LEGACY_BRIDGE.id)) {
+        violations.push({ rule: "K14-3-WRAPPER", from, specifier, reason: `reaches ${target}; the value wrapper imports neither the Kernel nor the bridge` });
+      }
+    }
+    if (inSdk && from !== HARNESS_CONSTRUCTOR_FILE) {
+      for (const form of harnessValueForms(text)) {
+        violations.push({ rule: "K14-3-HARNESS", from, specifier: "@arrokothi/core", reason: `${form}: only ${HARNESS_CONSTRUCTOR_FILE} may construct the native Harness` });
+      }
+    }
+  }
+  return violations;
 }

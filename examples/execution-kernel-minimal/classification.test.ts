@@ -11,8 +11,8 @@ for (const label of ["ready", "needs_review"]) {
       resolver: new StaticModelResolver({ primary: { provider: provider.id, model: "offline", portableFeatures: portableModelFeatures({ structuredOutput: true }) } }),
       providers: new ModelProviderRegistry([provider]),
     };
-    const { harness, executionId } = await startClassification(models, "An ordinary draft");
-    assert.equal((await settleOffline(harness, executionId)).lifecycle, "COMPLETED");
+    const { application, harness, executionId } = await startClassification(models, "An ordinary draft");
+    assert.equal((await settleOffline(application, executionId)).lifecycle, "COMPLETED");
     const [emission] = await harness.emissionsOf(executionId);
     assert.ok(emission?.body.kind === "text");
     assert.deepEqual(JSON.parse(emission.body.text), { category: label, reason: "The supplied draft fits this category." });

@@ -46,10 +46,19 @@ test('SDK capture is internal and its transitive graph imports no Kernel', async
   }), []);
   const sdk = workspace.packages.get('@arrokothi/sdk')!;
   assert.deepEqual([...sdk.exports.keys()], ['.']);
+  // K1.4 (design 02 D01-CHK-06): the bridge codec now encodes through the capture, so the public
+  // graph reaches internal/. Kept property: only the bridge codec imports it, and the public entry
+  // exports none of its bindings (K14-5 adds the wrapper export in range B).
   const publicGraph = await walkModuleGraph(workspace, ['packages/sdk/src/index.ts']);
-  assert.equal([...publicGraph.files].some(file => file.startsWith('packages/sdk/src/internal/')), false);
+  const internalImporters = publicGraph.edges
+    .filter(edge => edge.resolution.kind === 'internal' && edge.resolution.file.startsWith('packages/sdk/src/internal/') && !edge.from.startsWith('packages/sdk/src/internal/'))
+    .map(edge => edge.from);
+  assert.deepEqual([...new Set(internalImporters)], ['packages/sdk/src/legacy-bridge/codec.ts']);
   const sdkPublic = await import('../../sdk/src/index.ts');
-  assert.deepEqual(Object.keys(sdkPublic).sort(), ['ApplicationConfigurationError', 'createApplication', 'defineAgent', 'defineWorkflow', 'definitionRef']);
+  assert.deepEqual(Object.keys(sdkPublic).sort(), [
+    'ApplicationConfigurationError', 'ApplicationInputError', 'ApplicationStartError', 'LegacyHarnessMutationRefused',
+    'createApplication', 'defineAgent', 'defineWorkflow', 'definitionRef',
+  ]);
 });
 
 test('the relocated capture implementation is byte-identical to released B before its new byte bridge', async () => {
