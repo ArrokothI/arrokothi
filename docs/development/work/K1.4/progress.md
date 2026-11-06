@@ -2,12 +2,18 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS (2026-11-05), design. [Design 01](design-01.md) is pushed (`e06e6e71`). The owner
-  accepted all eight §16 recommendations: [owner choices 01](owner-choices-01.md). Q1 is recorded as a dated
-  amendment note on [decision-02](../DESIGN-AUDIT-01/decision-02.md): the Kernel stays private and the SDK takes a
-  workspace dependency, so the SDK is unpublishable until a release packet decides. Next: a Codex GPT-6 Prompt E
-  attack (`codex/k1.4-attack`), then a Codex GPT-6 design check (`codex/k1.4-design-check`). **No code before the
-  check.** The implementer stops here.
+- **Phase:** IN_PROGRESS (2026-11-06), build.
+  Prompt E [attack 01](https://github.com/ArrokothI/arrokothi/blob/cffb2c81244f7f0955e9b20d30fac70e8a1e1e5d/docs/development/work/K1.4/attack-01.md)
+  (`cffb2c81`, 2 P1, 9 P2) and
+  [design check 01](https://github.com/ArrokothI/arrokothi/blob/5f18c44c6e086d68311862cc95f1417a9c1f17de/docs/development/work/K1.4/design-check-01.md)
+  (`5f18c44c`, APPROVED WITH REQUIRED CHANGES D01-CHK-01..14) ran on design 01 at `6831b112`. The owner answered
+  "Accept all": [owner choices 02](owner-choices-02.md) (A: root created in `start`; B: breaking changes accepted,
+  `maxActivationsPerRun` PD; C: 017 entries approved; D: SDK `private`). [Design 02](design-02.md) disposes every
+  check item and adds the corpus with provenance. No new full design check runs; the review checks design 02 against
+  check 01. Next: range A (the bridge and the switch, K14-1..3), then the first C and a Packet verify CI run
+  (`gh workflow run packet-verify.yml`).
+- Design history: [design 01](design-01.md) pushed `e06e6e71`; [owner choices 01](owner-choices-01.md) and the
+  decision-02 amendment note pushed `6831b112`.
 - Design 01 in brief: one legacy Driver privately owns the 0.8.x `Harness` as the native Runtime. Each Kernel
   Execution has one native lineage whose root shares the Kernel ID. Each exchange runs one native step: `continue`,
   `await` with input subscriptions at native quiescence, or `complete`/`fail`. A lineage scheduler gives each
