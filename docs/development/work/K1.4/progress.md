@@ -2,7 +2,7 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS (2026-11-06), build, range A. [Owner choices 02](owner-choices-02.md) and
+- **Phase:** IN_PROGRESS (2026-11-07), build, range A done (CI green), range B next. [Owner choices 02](owner-choices-02.md) and
   [design 02](design-02.md) are pushed (`13893791`). Range A (the bridge and the switch, K14-1..3) is built:
   - `packages/sdk/src/legacy-bridge/`: `driver.ts` (the only SDK file that constructs a `Harness`),
     `lineage-scheduler.ts`, `root-ids.ts`, `codec.ts`, `classify.ts` (the D01-CHK-02 predicate),
@@ -17,8 +17,10 @@ The resume point for any session continuing this packet. Newest facts first with
     restated `binding-surface.test.ts` assertions (D01-CHK-06);
   - the bridge corpus `packages/sdk/tests/bridge-*.test.ts` (design 02 §3, range-A items).
   **Range-A C:** `1fab55494ac299d12906edbfa827808f6817efb1` (pushed). Packet verify CI run
-  [`42347496157`](https://github.com/ArrokothI/arrokothi/actions/runs/42347496157) dispatched on it; its result is the
-  handoff evidence.
+  [`42347496157`](https://github.com/ArrokothI/arrokothi/actions/runs/42347496157) on it (2026-11-07, 06:33–08:34 UTC,
+  Linux x86_64, Node v26.10.0): `checks_passed`, exit 0, all 19 checks passed, including `repository-tests`
+  4,832/4,832, `example-tests` 18/18, `tool-tests` 777, `adoption` `mappings_complete`, `inventory`
+  `provenance_verified`, and all three mutation registries `selected_cases_passed`.
   - The first C, `1e0f04ff`, failed CI run [`42334517878`](https://github.com/ArrokothI/arrokothi/actions/runs/42334517878)
     on one check: `value-cost-mutants`, 238 `invalid_baseline` controls. The value-cost source policy compares the
     production tree with `tests/fixtures/packet-tools/value-cost-source-files.json`, which did not list `host.ts` and
@@ -31,7 +33,7 @@ The resume point for any session continuing this packet. Newest facts first with
     0 skipped (B: 4,766); example tests 18/18; `check:builder-docs` passed; tool tests 777 OK (working tree);
     `regenerate` `table_current`, `corpus` `mappings_complete`, `inventory` `provenance_verified`, `coverage`
     `coverage_reported`.
-  Next: read run 42347496157, then range B.
+  Next: range B (design 02 §5).
 - Range-A adoption-fixture maintenance (`tests/fixtures/packet-tools/adoption.json`, TOOLS-02 tools only):
   - the hold register: 188 `kernel-landing-zone.test.ts` keys rekeyed through the B→C line mapping (no
     classification changed), and one new `not_held` V-ENV entry with a per-entry reading for the new child-process
