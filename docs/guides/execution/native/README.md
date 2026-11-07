@@ -33,7 +33,7 @@ remain available for advanced composition.
 | Exploration whose next action depends on discoveries | Agent with a small operation catalog and explicit limits | Stock Agent can use capabilities and write memory; cannot call children or message peers |
 | Conversation across user turns | Root Agent + host transport and current-state gates | `respond_and_wait`; `maxModelCalls` is cumulative across the Execution |
 | Known process with an autonomous subtask | Workflow Agent Stage → Function Stage validates the child's answer | Child needs `complete_on_response`, a string terminal schema, spawn permission and credits |
-| Approval of an exact external action | EffectAuthorizer + ConfirmationPolicy + executor | User chat text does not resolve confirmation; host uses `resolveConfirmation` |
+| Approval of an exact external action | EffectAuthorizer + ConfirmationPolicy + executor | User chat text does not resolve confirmation; the host calls `app.resolveConfirmation` |
 | Shared records or crash-persistent state | Application database behind a capability | Execution Structured Memory is local and in memory; no current durable Execution backend |
 
 Before committing to a design, check the [authoring surface](current-authoring-surface.md).

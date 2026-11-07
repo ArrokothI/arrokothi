@@ -867,7 +867,7 @@ test("K14-4 closure: every export, member, Harness method and documentation item
 
 test("K14-4 closure: the extraction reads the declared scope and finds the members the documentation uses", () => {
   const scope = documentationScope();
-  assert.equal(scope.filter(file => file.startsWith("docs/guides/")).length, 17, "every guide page reachable from the guide map");
+  assert.equal(scope.filter(file => file.startsWith("docs/guides/")).length, 18, "every guide page reachable from the guide map");
   assert.ok(scope.includes("packages/sdk/README.md") && scope.includes(".agents/skills/arrokothi-agent-builder/SKILL.md"));
   const surface = enumerateSurface();
   const extracted = extractDocumentation(new Set(surface.exports), new Set(surface.members.filter(key => key.startsWith("Application.")).map(key => key.slice(12))));

@@ -1,7 +1,8 @@
 # Execution-kernel application examples
 
 Start from the [builder guide](../../docs/guides/execution/native/README.md).
-These examples run offline using `@arrokothi/sdk` over the current public Execution API. The Harness, controllers,
+These examples run offline using `@arrokothi/sdk`, which drives every Execution through the Kernel; the
+0.8.x Harness is the legacy Driver's native Runtime. The Harness, controllers,
 authorization, state commits, child creation and confirmation are real; the model and external
 publisher are deterministic fakes. They demonstrate implementation behavior, not language quality.
 
@@ -17,7 +18,7 @@ npm run typecheck
 |---|---|
 | [app.ts](app.ts) | Small SDK Agent composition; catalog, executor, operation ceiling, model resolution, policy |
 | [main.ts](main.ts) / [app.test.ts](app.test.ts) | Allowed/denied lookup with identical model prose; journal establishes what happened |
-| [settle.ts](settle.ts) | Shared finite offline pump; distinguish input/confirmation waits from unsettled model/capability work |
+| [settle.ts](settle.ts) | Shared finite offline pump over `runUntilBlocked`; distinguish input/confirmation waits from unsettled model/capability work |
 | [classification.ts](classification.ts) / [classification.test.ts](classification.test.ts) | One-phase labelled LLM Stage, authored feature requirements, exact branch routing |
 | [patterns.ts](patterns.ts) | Full memory chain, several-turn Agent, current-state action gate, exact confirmation, Workflow → Agent child → Function Effect barrier |
 | [patterns-main.ts](patterns-main.ts) / [patterns.test.ts](patterns.test.ts) | Fake UI driver, state/action assertions, stale title, decline, budget exhaustion, child return, application idempotency |
