@@ -16,8 +16,27 @@ The resume point for any session continuing this packet. Newest facts first with
   - migrated tests: `packages/sdk/tests/application.test.ts`, the examples and their `settle.ts`, and two
     restated `binding-surface.test.ts` assertions (D01-CHK-06);
   - the bridge corpus `packages/sdk/tests/bridge-*.test.ts` (design 02 §3, range-A items).
-  Next: commit C, regenerate the adoption table in a fresh clone, local fixture checks, then the Packet verify
-  CI dispatch. Range B follows.
+  **Range-A C:** `1e0f04ff3c0b99381fc639c683dc2e076ad28945` (pushed). Packet verify CI run
+  [`42334517878`](https://github.com/ArrokothI/arrokothi/actions/runs/42334517878) dispatched on it; its result is the
+  handoff evidence. Local checks at C in a fresh clone (Node v26.10.0): typecheck exit 0; `npm test` 4,832/4,832, 0 fail,
+  0 skipped (B: 4,766); example tests 18/18; `check:builder-docs` passed; tool tests 777 OK (working tree); packet
+  tools `regenerate` `table_current`, `corpus` `mappings_complete`, `inventory` `provenance_verified`, `coverage`
+  `coverage_reported`. Mutation registries, sweeps, race search and value-cost checks are left to the CI run.
+  Next: read the CI result, then range B.
+- Range-A adoption-fixture maintenance (`tests/fixtures/packet-tools/adoption.json`, TOOLS-02 tools only):
+  - the hold register: 188 `kernel-landing-zone.test.ts` keys rekeyed through the B→C line mapping (no
+    classification changed), and one new `not_held` V-ENV entry with a per-entry reading for the new child-process
+    control in `builder-docs-anchor.test.ts`, by the route TOOLS-02 range 4 used for that file;
+  - the 18 landing-zone suite-target declarations moved by the same mapping;
+  - the preserved table regenerated: six landing-zone tests whose bodies K1.4 changed (the SDK is no longer the
+    published-package example; the host-sdk row gained reaches) move `unread` → `refused` under both pins (12
+    members). Unread members carried no credit (L-17), so no credit is lost. Their 12 `unread_witness` records and
+    their links are removed;
+  - the six `deedd7950724` members sit in a limited origin (TOOLS-01 owner choices 04 and 11), so each gets an
+    `authorized_replacement` suite target on its current test, passing P1-T apart from the unread register entry at
+    its declaration, and is admitted as an `extras` entry, as earlier packets did for K1.2's row changes;
+  - `builder-docs-anchor.test.ts`'s new control uses its own variable names, so the existing target's anchors stay
+    unique.
 - Range-A notes for the review:
   - The legacy effect processor already abandons a spawn or capability dispatch once the native cancellation
     request is recorded (`abandonIfCancellationPending`, inside the commit). The Driver's post-step cascade
