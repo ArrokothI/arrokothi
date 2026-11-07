@@ -11,6 +11,10 @@
   ],
   "preserve": [
     {
+      "revision": "72e6f5ec51a83476967623b263365fb682a1ead6",
+      "path": "docs/development/work/K1.3/review-01/coverage-comparison.log"
+    },
+    {
       "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
       "path": "docs/development/work/BINDING-01"
     },

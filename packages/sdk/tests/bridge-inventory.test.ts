@@ -900,4 +900,3 @@ test("K14-4 closure: the extraction reads the declared scope and finds the membe
 });
 
 for (const row of ROWS) test(`${row.id} (${row.disposition}): ${row.feature}`, row.check);
-
