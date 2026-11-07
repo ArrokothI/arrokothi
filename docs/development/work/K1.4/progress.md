@@ -2,13 +2,23 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Payload C for review: `ad6ee1335fbf5c0ef7524fe56b16794f9263096a`** (pushed, 2026-11-07). Packet verify CI run
+- **Payload C for review: `0d05d32971dfeda89dc874450e38f440af2c4a1d`** (pushed, 2026-11-07). The owner chose a
+  new C for [owner choice 03](owner-choice-03.md) ("Approve": the six limited-origin extras are authorized by owner
+  choices 02 D, with no adoption credit). C equals `ad6ee133` plus two `administrative_files` entries in
+  `verification.json` (the record and its member list) and two candidate-check repairs found by a trial
+  `packet_tools.py candidate` run: the whitespace-exception file preserved at `72e6f5ec`, and a trailing blank
+  line removed from `bridge-inventory.test.ts`. It sits on `9a992bdc` (allowlist only) and H `81e625a5`, both
+  superseded before review. Packet verify CI run
+  [`42405868481`](https://github.com/ArrokothI/arrokothi/actions/runs/42405868481) on it: `checks_passed`, 19/19
+  (repository tests 4,897/4,897).
+  (`42405639257` at `9a992bdc` and `42405606091`, dispatched by mistake at `81e625a5`, were cancelled.) **WAITING_FOR_REVIEW:**
+  [implementation report 01](implementation-01.md), the 007 entry and owner choice 03 with its list are H. Next:
+  independent review by Codex GPT-6 of H over C and B; no self-acceptance.
+- **`ad6ee1335fbf5c0ef7524fe56b16794f9263096a`** (2026-11-07), the previous payload. Packet verify CI run
   [`42391948564`](https://github.com/ArrokothI/arrokothi/actions/runs/42391948564) on it: `checks_passed`, 19/19
   (repository tests 4,897/4,897). It differs from `8c513dfa` only by the self-review fixes: G-MEMORY's vacuous
   `memory.executions` check, S-RT-NATIVE now passing `activationBudget` and `securityProfile`, and one values-page
-  sentence. `regenerate` is `table_current` at it in a fresh clone. **WAITING_FOR_REVIEW:**
-  [implementation report 01](implementation-01.md) and the 007 entry are H. Next: independent review by Codex
-  GPT-6 of H over C and B; no self-acceptance.
+  sentence. `regenerate` is `table_current` at it in a fresh clone.
 - **Range B (K14-4, K14-5, K14-6, docs), 2026-11-07.** Built on top of range A. First range-B C:
   `8c513dfa1a51861edb6a0059d0bf777bf477976f` (pushed). Packet verify CI run
   [`42361468266`](https://github.com/ArrokothI/arrokothi/actions/runs/42361468266) on it: `checks_passed`, 19/19,
