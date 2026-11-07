@@ -2,13 +2,18 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Range B (K14-4, K14-5, K14-6, docs), 2026-11-07.** Built on top of range A. **C (ranges A and B):**
+- **Payload C for review: `ad6ee1335fbf5c0ef7524fe56b16794f9263096a`** (pushed, 2026-11-07). Packet verify CI run
+  [`42391948564`](https://github.com/ArrokothI/arrokothi/actions/runs/42391948564) dispatched on it. It differs from
+  `8c513dfa` only by the self-review fixes: G-MEMORY's vacuous `memory.executions` check, S-RT-NATIVE now passing
+  `activationBudget` and `securityProfile`, and one values-page sentence. `regenerate` is `table_current` at it in a
+  fresh clone. `implementation-01.md` is drafted in the worktree (uncommitted). Next: when the run is green, commit
+  the report with the 007 WAITING_FOR_REVIEW entry as H and push.
+- **Range B (K14-4, K14-5, K14-6, docs), 2026-11-07.** Built on top of range A. First range-B C:
   `8c513dfa1a51861edb6a0059d0bf777bf477976f` (pushed). Packet verify CI run
-  [`42361468266`](https://github.com/ArrokothI/arrokothi/actions/runs/42361468266) dispatched on it; its result is the
-  handoff evidence. Fresh-clone checks before dispatch (Node v26.10.0): `corpus` `mappings_complete`, `inventory`
+  [`42361468266`](https://github.com/ArrokothI/arrokothi/actions/runs/42361468266) on it: `checks_passed`, 20/20,
+  exit 0 (repository tests 4,897/4,897). Fresh-clone checks before dispatch (Node v26.10.0): `corpus` `mappings_complete`, `inventory`
   `provenance_verified`, `coverage` `coverage_reported`, value-cost `cases` `selected_cases_passed`, tool tests 777 OK,
   example tests 18/18. The C's only change after those runs is the repository-tests floor (4,832 → 4,897).
-  Next: read the run; if green, write `implementation-01.md` and mark review-ready in 007.
   - K14-5: `toCanonicalBytes`, `ValueIssue` and `WrapperEnvironmentError` exported through `packages/sdk/src/wrapper.ts`
     (the seam guard keeps `index.ts` from naming `value-capture`). The L-01 check (`checkSerializerEnvironment`, appended
     after the capture prefix) runs in `createApplication`, in `toCanonicalBytes` and inside the serializer window
