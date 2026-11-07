@@ -3,14 +3,15 @@
 The resume point for any session continuing this packet. Newest facts first within each list.
 
 - **Payload C for review: `ad6ee1335fbf5c0ef7524fe56b16794f9263096a`** (pushed, 2026-11-07). Packet verify CI run
-  [`42391948564`](https://github.com/ArrokothI/arrokothi/actions/runs/42391948564) dispatched on it. It differs from
-  `8c513dfa` only by the self-review fixes: G-MEMORY's vacuous `memory.executions` check, S-RT-NATIVE now passing
-  `activationBudget` and `securityProfile`, and one values-page sentence. `regenerate` is `table_current` at it in a
-  fresh clone. `implementation-01.md` is drafted in the worktree (uncommitted). Next: when the run is green, commit
-  the report with the 007 WAITING_FOR_REVIEW entry as H and push.
+  [`42391948564`](https://github.com/ArrokothI/arrokothi/actions/runs/42391948564) on it: `checks_passed`, 19/19
+  (repository tests 4,897/4,897). It differs from `8c513dfa` only by the self-review fixes: G-MEMORY's vacuous
+  `memory.executions` check, S-RT-NATIVE now passing `activationBudget` and `securityProfile`, and one values-page
+  sentence. `regenerate` is `table_current` at it in a fresh clone. **WAITING_FOR_REVIEW:**
+  [implementation report 01](implementation-01.md) and the 007 entry are H. Next: independent review by Codex
+  GPT-6 of H over C and B; no self-acceptance.
 - **Range B (K14-4, K14-5, K14-6, docs), 2026-11-07.** Built on top of range A. First range-B C:
   `8c513dfa1a51861edb6a0059d0bf777bf477976f` (pushed). Packet verify CI run
-  [`42361468266`](https://github.com/ArrokothI/arrokothi/actions/runs/42361468266) on it: `checks_passed`, 20/20,
+  [`42361468266`](https://github.com/ArrokothI/arrokothi/actions/runs/42361468266) on it: `checks_passed`, 19/19,
   exit 0 (repository tests 4,897/4,897). Fresh-clone checks before dispatch (Node v26.10.0): `corpus` `mappings_complete`, `inventory`
   `provenance_verified`, `coverage` `coverage_reported`, value-cost `cases` `selected_cases_passed`, tool tests 777 OK,
   example tests 18/18. The C's only change after those runs is the repository-tests floor (4,832 → 4,897).
