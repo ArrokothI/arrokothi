@@ -82,14 +82,6 @@
     },
     {
       "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
-      "path": "docs/guides"
-    },
-    {
-      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
-      "path": ".agents/skills"
-    },
-    {
-      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
       "path": ".github"
     },
     {
@@ -626,9 +618,9 @@
     }
   ],
   "limits": [
-    "K1.4 range A (owner release 01; owner choices 01 and 02; design 01 as changed by design 02): the legacy Driver over the 0.8.x Harness, its lineage scheduler, root identity scope, codec and lineage classifier, the SDK host that owns the in-process coordinator, the Kernel-routed SDK methods, the deprecated Harness view, the option dispositions, the private SDK manifest, the builder-docs admission and the legacy-bridge zone with its K14-3 rules. Range B (K14-4 inventory, K14-5 wrapper and L-01 check, K14-6 mapping, guides, Layer 3, BASELINE, 017) is not in this C.",
-    "The bridge corpus is the B-* tests in packages/sdk/tests/bridge-*.test.ts. B-QUIESCE-CELLS is a declared bounded search: lifecycle x wait kind x pending operation (effect kind, dispatch, confirmation) x resumption state for one member and for a parent waiting on a call child; nothing outside that product is claimed.",
-    "No Kernel source changes: packages/kernel/src is preserved at B. packages/kernel/tests/binding-surface.test.ts restates two BINDING-01 assertions with their kept properties (design 02 D01-CHK-06).",
+    "K1.4 ranges A and B (owner release 01; owner choices 01 and 02; design 01 as changed by design 02). Range A: the legacy Driver over the 0.8.x Harness, its lineage scheduler, root identity scope, codec and lineage classifier, the SDK host that owns the in-process coordinator, the Kernel-routed SDK methods, the deprecated Harness view, the option dispositions, the private SDK manifest, the builder-docs admission and the legacy-bridge zone with its K14-3 rules. Range B: the K14-4 inventory (packages/sdk/tests/bridge-inventory.test.ts), the K14-5 wrapper export with the L-01 check (wrapper.ts, value-capture.ts, wrapper-environment.test.ts), the K14-6 mapping (tests/conformance/legacy-mapping.json, architecture/legacy-mapping.test.ts, X-row header notes), the guides, the SDK README, the builder skill, Layer 3, BASELINE and 017.",
+    "The bridge corpus is the B-* tests in packages/sdk/tests/bridge-*.test.ts. B-QUIESCE-CELLS is a declared bounded search: lifecycle x wait kind x pending operation (effect kind, dispatch, confirmation) x resumption state for one member and for a parent waiting on a call child; nothing outside that product is claimed. K14-4's closure is a declared bounded search: the SDK's exports and the members of its SDK-declared exported types (one level into anonymous, mapped and utility-typed members), the 35 Harness methods, and the backticked SDK and Harness members, sdk imports and example files of the guide pages reachable from docs/guides/README.md, the SDK README, the builder skill and examples/execution-kernel-minimal.",
+    "No Kernel source changes: packages/kernel/src is preserved at B. packages/kernel/tests/binding-surface.test.ts restates three BINDING-01 assertions with their kept properties (design 02 D01-CHK-06): the capture graph imports no Kernel, the public runtime keys are the new exact list, and the capture prefix is byte-identical to B apart from the L-01 call.",
     "The adoption manifest's preserved table is regenerated mechanically by TOOLS-02's regenerate in a fresh clone; no new credit.",
     "Fresh-clone local checks run before the CI dispatch; the CI run is the handoff evidence. No prior results reused; acceptance is not evaluated."
   ]
