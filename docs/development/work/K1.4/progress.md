@@ -2,7 +2,38 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
-- **Phase:** IN_PROGRESS (2026-11-07), build, range A done (CI green), range B next. [Owner choices 02](owner-choices-02.md) and
+- **Range B (K14-4, K14-5, K14-6, docs), 2026-11-07.** Built on top of range A. **C (ranges A and B):**
+  `8c513dfa1a51861edb6a0059d0bf777bf477976f` (pushed). Packet verify CI run
+  [`42361468266`](https://github.com/ArrokothI/arrokothi/actions/runs/42361468266) dispatched on it; its result is the
+  handoff evidence. Fresh-clone checks before dispatch (Node v26.10.0): `corpus` `mappings_complete`, `inventory`
+  `provenance_verified`, `coverage` `coverage_reported`, value-cost `cases` `selected_cases_passed`, tool tests 777 OK,
+  example tests 18/18. The C's only change after those runs is the repository-tests floor (4,832 → 4,897).
+  Next: read the run; if green, write `implementation-01.md` and mark review-ready in 007.
+  - K14-5: `toCanonicalBytes`, `ValueIssue` and `WrapperEnvironmentError` exported through `packages/sdk/src/wrapper.ts`
+    (the seam guard keeps `index.ts` from naming `value-capture`). The L-01 check (`checkSerializerEnvironment`, appended
+    after the capture prefix) runs in `createApplication`, in `toCanonicalBytes` and inside the serializer window
+    before the dependency call. B-WRAPPER (`wrapper-environment.test.ts`, 7 tests, fresh processes); an ablation of
+    the in-window call fails the capture-time case. `binding-surface.test.ts` re-pins: importers of `internal/` are the
+    codec and `wrapper.ts`; the prefix hash is B's once the L-01 call and the widened own-array import are removed.
+    The DEC-8 inventory gains the eight free reads; the KC3 metering check gains an `environment` helper kind.
+  - K14-4: `bridge-inventory.test.ts`, 52 rows plus 2 closure tests (TypeScript enumeration of SDK-declared members,
+    documentation extraction E1–E4 over the 18 reachable guide pages, the SDK README, the builder skill and the
+    examples, with a synthetic-page control). It builds its own TypeScript program, so it stays outside the Kernel
+    quarantine list.
+  - K14-6: `tests/conformance/legacy-mapping.json` (164 files: 79 R, 38 U, 12 S, 11 X, 7 P, 7 N, 6 G, 4 M) and
+    `tests/conformance/architecture/legacy-mapping.test.ts`. The test sits under `architecture/` (design 01 §12 named
+    `tests/conformance/mapping.test.ts`), because `npm test` runs only `tests/conformance/*/*.test.ts`. B-MAP's cases are
+    B-QUIESCE-CELLS since design 02 D01-CHK-02, and B-CONV is B-WAKE. The 11 X files carry a two-line header note.
+  - Docs: quick start (Kernel-routed host actions, start options, migration table), new
+    `docs/guides/deployment/values-at-the-boundary.md`, capabilities/diagnosis/hosting/authoring/state guides, SDK
+    README, builder skill, example README; Layer 3 (integration status line and acknowledgment sentence,
+    execution-cycle host pumping, reference index row); BASELINE header and §16; 017 L-01 narrowed, L-20 amended,
+    L-29 to L-35.
+  - `verification.json`: `docs/guides` and `.agents/skills` leave the preserve list; limits rewritten for both ranges.
+  - Fixtures: `value-cost-source-files.json` adds `wrapper.ts` (194); the adoption preserved table regenerated in a
+    fresh clone (418 members' read data; status counts unchanged); `corpus` `mappings_complete` at `5715a32f`.
+  - Local: typecheck exit 0; `npm test` 4,897/4,897 (0 fail, 0 skipped) at `789e8c35`; `check:builder-docs` passed.
+- **Phase:** IN_PROGRESS (2026-11-07), build, range A done (CI green), range B built (above). [Owner choices 02](owner-choices-02.md) and
   [design 02](design-02.md) are pushed (`13893791`). Range A (the bridge and the switch, K14-1..3) is built:
   - `packages/sdk/src/legacy-bridge/`: `driver.ts` (the only SDK file that constructs a `Harness`),
     `lineage-scheduler.ts`, `root-ids.ts`, `codec.ts`, `classify.ts` (the D01-CHK-02 predicate),
