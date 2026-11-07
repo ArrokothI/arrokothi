@@ -1,0 +1,762 @@
+{
+  "$comment": "K14-6 (K1.4 design 01 §11; design 02 D01-CHK-09). Generated from design 01 §11 at build and maintained here. architecture/legacy-mapping.test.ts lists the declared set at runtime and fails on a missing or extra file or an owner that does not exist.",
+  "scope": [
+    "tests/conformance/**/*.ts",
+    "packages/sdk/tests/*.ts",
+    "examples/**/*.test.ts",
+    "packages/kernel/tests/binding-surface.test.ts"
+  ],
+  "dispositions": {
+    "R": "Retained unchanged as native Runtime conformance, attributed to the legacy Runtime.",
+    "P": "Retained, plus a bridge test through the SDK entry for its host-observable property (bridge).",
+    "X": "The file's claim was a Kernel claim; it moves to the named owner (kernel, bridge or inventory). The file stays as native regression with a header note.",
+    "M": "Migrated to the new entry in K1.4, keeping the stated property.",
+    "U": "Unaffected; not Harness conformance, or unchanged by K1.4.",
+    "G": "Guard added or extended under K14-3, K14-5 or K14-6.",
+    "N": "New in K1.4.",
+    "S": "Support file."
+  },
+  "files": {
+    "examples/execution-kernel-minimal/app.test.ts": {
+      "disposition": "U",
+      "property": "Reads app.harness readers, which pass through (S-HARNESS-R); unchanged."
+    },
+    "examples/execution-kernel-minimal/classification.test.ts": {
+      "disposition": "M",
+      "property": "Migrated in range A: settles through settleOffline (runUntilBlocked plus app.resolveConfirmation) instead of the refused drainEffects/drainResumptions/runUntilIdle mutators.",
+      "inventory": [
+        "E-EXAMPLES"
+      ]
+    },
+    "examples/execution-kernel-minimal/patterns.test.ts": {
+      "disposition": "M",
+      "property": "Migrated in range A: app.harness.deliverExternalInput/resolveConfirmation become app.input/app.resolveConfirmation; same assertions on the documented patterns.",
+      "inventory": [
+        "S-INPUT",
+        "S-CONFIRM"
+      ]
+    },
+    "examples/execution-kernel-minimal/provider-wiring.test.ts": {
+      "disposition": "U",
+      "property": "Reads RunResult.execution, the deprecated native view (S-RUN-RESULT); unchanged."
+    },
+    "packages/kernel/tests/binding-surface.test.ts": {
+      "disposition": "M",
+      "property": "Re-stated (B-SURFACE, D01-CHK-06): the capture graph imports no Kernel; the public runtime keys are the new exact list; only the codec and wrapper.ts import internal/; the capture prefix is byte-identical to B apart from the L-01 call."
+    },
+    "packages/sdk/tests/application.test.ts": {
+      "disposition": "M",
+      "property": "Migrated in range A: Harness mutators become app.input, app.resolveConfirmation and app.cancel, and a start receipt becomes StartedExecution.receipt plus the ingress_result Emission; every case maps onto a K14-4 inventory row.",
+      "inventory": [
+        "S-START",
+        "S-RUN",
+        "S-CANCEL"
+      ]
+    },
+    "packages/sdk/tests/bridge-classify.test.ts": {
+      "disposition": "N",
+      "property": "New K1.4 bridge corpus (design 01 §13, design 02 §3); runs through createApplication."
+    },
+    "packages/sdk/tests/bridge-deadline-cancel.test.ts": {
+      "disposition": "N",
+      "property": "New K1.4 bridge corpus (design 01 §13, design 02 §3); runs through createApplication."
+    },
+    "packages/sdk/tests/bridge-fixtures.ts": {
+      "disposition": "S",
+      "property": "Shared definitions and readers for the bridge corpus."
+    },
+    "packages/sdk/tests/bridge-flow.test.ts": {
+      "disposition": "N",
+      "property": "New K1.4 bridge corpus (design 01 §13, design 02 §3); runs through createApplication."
+    },
+    "packages/sdk/tests/bridge-inventory.test.ts": {
+      "disposition": "N",
+      "property": "K14-4: the closed feature inventory, one test per row."
+    },
+    "packages/sdk/tests/bridge-values.test.ts": {
+      "disposition": "N",
+      "property": "New K1.4 bridge corpus (design 01 §13, design 02 §3); runs through createApplication."
+    },
+    "packages/sdk/tests/capture-corpus.test.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/capture-corpus.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/capture-instruments.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/capture-metering.test.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/capture-metering.ts": {
+      "disposition": "G",
+      "property": "The KC3 static metering rules; the L-01 check is a declared environment helper, outside the window and the traversal."
+    },
+    "packages/sdk/tests/capture-refusals.test.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/capture-stop.test.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/capture-work.test.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/operation-identity.test.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/value-capture-inventory.ts": {
+      "disposition": "G",
+      "property": "The DEC-8 access inventory; gains the L-01 check's eight free-identifier reads, each reasoned."
+    },
+    "packages/sdk/tests/value-capture-static.test.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/value-capture.test.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/value-diagnostic-work.test.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/value-refusal-cost.test.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/wrapper-boundary-split.test.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/wrapper-environment.test.ts": {
+      "disposition": "N",
+      "property": "K14-5 B-WRAPPER: the wrapper export and the L-01 startup check in fresh processes."
+    },
+    "packages/sdk/tests/wrapper-roots.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "packages/sdk/tests/wrapper-snapshot.test.ts": {
+      "disposition": "U",
+      "property": "BINDING-01 wrapper evidence; unaffected by the bridge (the capture is unchanged apart from the L-01 call)."
+    },
+    "tests/conformance/agent/action-binding.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/active-view.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/agent-controller.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/agent-definition.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/agent-executor.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/agent-resumption.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/authority-ceiling.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/effective-authority.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/fixtures.ts": {
+      "disposition": "S",
+      "property": "Shared fixture for the retained Agent cases."
+    },
+    "tests/conformance/agent/harness-reauthorization.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/information-compiler.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/model-trace.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/observation-projection.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/operation-catalog.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/projection.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/agent/untrusted-content.test.ts": {
+      "disposition": "R",
+      "property": "Agent Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/architecture/agent-boundaries.test.ts": {
+      "disposition": "U",
+      "property": "Unaffected guard."
+    },
+    "tests/conformance/architecture/boundary-policy.ts": {
+      "disposition": "G",
+      "property": "Gains the legacy-bridge zone, zoneOf (longest prefix), SDK_KERNEL_IMPORTERS and the K14-3 bridge rules (K14-3; D01-CHK-12)."
+    },
+    "tests/conformance/architecture/builder-docs-anchor.test.ts": {
+      "disposition": "G",
+      "property": "Guard extended (D01-CHK-09, -12): a fixture control shows check:builder-docs refusing @arrokothi/kernel from an example, and the admission test checks the SDK Kernel importers and \"private\": true."
+    },
+    "tests/conformance/architecture/composition-boundaries.test.ts": {
+      "disposition": "U",
+      "property": "Unaffected guard."
+    },
+    "tests/conformance/architecture/import-scanner.test.ts": {
+      "disposition": "U",
+      "property": "Unaffected guard."
+    },
+    "tests/conformance/architecture/inventory-oracle.ts": {
+      "disposition": "U",
+      "property": "Parses the new legacy-bridge zone and dependency rows without change; the agreement test in kernel-landing-zone.test.ts compares them."
+    },
+    "tests/conformance/architecture/kernel-landing-zone.test.ts": {
+      "disposition": "G",
+      "property": "Quarantine admits exactly SDK_KERNEL_IMPORTERS; measured edges use zoneOf; one-zone-per-file control; the published-package controls moved to @arrokothi/integration-strands (K14-3; D01-CHK-12)."
+    },
+    "tests/conformance/architecture/kernel-state-ownership.test.ts": {
+      "disposition": "U",
+      "property": "Unaffected guard."
+    },
+    "tests/conformance/architecture/legacy-bridge-boundaries.test.ts": {
+      "disposition": "G",
+      "property": "New K14-3 guard: the real tree passes the bridge rules, and one rejected-edge fixture per rule (Kernel ↛ bridge, bridge reaches only the Kernel package root, legacy-core ↛ Kernel/bridge, wrapper ↛ Kernel/bridge, only driver.ts constructs a Harness) fails."
+    },
+    "tests/conformance/architecture/legacy-core-boundaries.test.ts": {
+      "disposition": "U",
+      "property": "Unchanged. K14-3's legacy-core rules (legacy-core ↛ Kernel, ↛ bridge) are bridgeBoundaryViolations rules in boundary-policy.ts, exercised by legacy-bridge-boundaries.test.ts."
+    },
+    "tests/conformance/architecture/legacy-mapping.test.ts": {
+      "disposition": "N",
+      "property": "K14-6: this mapping is complete over the declared set, and its named owners exist."
+    },
+    "tests/conformance/architecture/mcp-boundaries.test.ts": {
+      "disposition": "U",
+      "property": "Unaffected guard."
+    },
+    "tests/conformance/architecture/module-graph.ts": {
+      "disposition": "U",
+      "property": "Unaffected guard."
+    },
+    "tests/conformance/architecture/workflow-boundaries.test.ts": {
+      "disposition": "U",
+      "property": "Unaffected guard."
+    },
+    "tests/conformance/composition/authority-attenuation.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/child-call-deadline.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/child-cancellation.test.ts": {
+      "disposition": "P",
+      "property": "Native child cancellation stays Runtime behaviour. Bridge: `app.cancel` cancels the whole native lineage (Q3) and a late native result changes no Kernel state (B-CANCEL).",
+      "bridge": [
+        "B-CANCEL"
+      ]
+    },
+    "tests/conformance/composition/child-lineage.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/child-stage-cross-feature.test.ts": {
+      "disposition": "P",
+      "property": "Bridge: a confirmation inside a called native child surfaces as `confirmation_required` with the child's `waitingExecutionId` (B-CHILD), ported from the SDK test of the same name.",
+      "bridge": [
+        "B-CHILD"
+      ]
+    },
+    "tests/conformance/composition/failure-atomicity.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/fixtures.ts": {
+      "disposition": "S",
+      "property": "Shared fixture for the retained composition cases."
+    },
+    "tests/conformance/composition/no-child-cost.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/peer-liveness.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/recursive-composition.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/runtime-independence.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/spawn-authorization-ordering.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/spawn-budget-contention.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/spawn-vs-call.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/structural-budget.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/terminal-dependency-abandonment.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/composition/terminal-result-correlation.test.ts": {
+      "disposition": "R",
+      "property": "Native children (owner decision 2A): Runtime-internal, not Kernel composition."
+    },
+    "tests/conformance/contracts/capability-executor.test.ts": {
+      "disposition": "R",
+      "property": "Native port contract (DX-8, DX-9)."
+    },
+    "tests/conformance/contracts/definition-store.test.ts": {
+      "disposition": "R",
+      "property": "Native port contract (DX-8, DX-9)."
+    },
+    "tests/conformance/contracts/runtime-store.test.ts": {
+      "disposition": "R",
+      "property": "Native port contract (DX-8, DX-9)."
+    },
+    "tests/conformance/contracts/scheduler.test.ts": {
+      "disposition": "P",
+      "property": "The published Scheduler contract also runs against the Driver's lineage scheduler (B-SCHED).",
+      "bridge": [
+        "B-SCHED"
+      ]
+    },
+    "tests/conformance/effects/consequentiality.test.ts": {
+      "disposition": "R",
+      "property": "Native, unmediated Effect processing (DX-7; owner decision 2A)."
+    },
+    "tests/conformance/effects/duplicate-recognition.test.ts": {
+      "disposition": "R",
+      "property": "Native, unmediated Effect processing (DX-7; owner decision 2A)."
+    },
+    "tests/conformance/effects/effect-gateway.test.ts": {
+      "disposition": "R",
+      "property": "Native, unmediated Effect processing (DX-7; owner decision 2A)."
+    },
+    "tests/conformance/effects/failure-semantics.test.ts": {
+      "disposition": "R",
+      "property": "Native, unmediated Effect processing (DX-7; owner decision 2A)."
+    },
+    "tests/conformance/effects/fast-slow-equivalence.test.ts": {
+      "disposition": "R",
+      "property": "Native, unmediated Effect processing (DX-7; owner decision 2A)."
+    },
+    "tests/conformance/effects/pending-operations.test.ts": {
+      "disposition": "R",
+      "property": "Native, unmediated Effect processing (DX-7; owner decision 2A)."
+    },
+    "tests/conformance/effects/transaction-atomicity.test.ts": {
+      "disposition": "R",
+      "property": "Native, unmediated Effect processing (DX-7; owner decision 2A)."
+    },
+    "tests/conformance/execution/cancellation-linearization.test.ts": {
+      "disposition": "X",
+      "property": "Kernel claim now owned by K1.3's `packages/kernel/tests/cancellation.test.ts` and `losing-outcomes.test.ts`. Bridge: B-CANCEL. File kept as native regression.",
+      "bridge": [
+        "B-CANCEL"
+      ],
+      "kernel": [
+        "packages/kernel/tests/cancellation.test.ts"
+      ]
+    },
+    "tests/conformance/execution/controlled-interleaving.test.ts": {
+      "disposition": "X",
+      "property": "`interleave` is legacy wait vocabulary with no Kernel home; the Kernel never sees it. Kept property: the Driver declares no Kernel wait for native-only dependencies (B-QUIESCE-CELLS (design 02 D01-CHK-02 replaced design 01 §3's table by the predicate; B-MAP's cases are its cells)). File kept as native regression (DX-6).",
+      "bridge": [
+        "B-QUIESCE-CELLS"
+      ]
+    },
+    "tests/conformance/execution/controller-boundary.test.ts": {
+      "disposition": "X",
+      "property": "The controller port is refused at the Kernel (DX-12); the Driver boundary replaces it. Kept property: the Kernel observes no Promise and no controller type (B-DELIVER, K14-2 guards). File kept as native regression.",
+      "bridge": [
+        "B-DELIVER"
+      ]
+    },
+    "tests/conformance/execution/controller-resumption.test.ts": {
+      "disposition": "X",
+      "property": "Kept property: slow native work creates no Kernel-visible wait; the exchange stays RUNNING and resumes exactly once (B-RES). File kept as native regression (DX-6).",
+      "bridge": [
+        "B-RES"
+      ]
+    },
+    "tests/conformance/execution/definition-kinds.test.ts": {
+      "disposition": "X",
+      "property": "The closed `DefinitionKind` union is refused at the Kernel (DX-12); the Activation pins a definition revision instead. Kept property: the Driver resolves exactly the pinned revision (B-PIN). File kept as native regression.",
+      "bridge": [
+        "B-PIN"
+      ],
+      "kernel": [
+        "packages/kernel/tests/creation.test.ts"
+      ]
+    },
+    "tests/conformance/execution/harness-many-contexts.test.ts": {
+      "disposition": "P",
+      "property": "Bridge: one application, one Driver, many Kernel Executions with separate native lineages (B-MANY).",
+      "bridge": [
+        "B-MANY"
+      ]
+    },
+    "tests/conformance/execution/interleaving-cost.test.ts": {
+      "disposition": "R",
+      "property": "Native cost discipline; no Kernel claim."
+    },
+    "tests/conformance/execution/lifecycle.test.ts": {
+      "disposition": "X",
+      "property": "The Kernel lifecycle is owned by `packages/kernel/tests/outcome-acceptance.test.ts` and `terminal.test.ts`. Kept property: the bridge maps native terminal states to Outcomes and never reopens a terminal Execution (B-TERM). File kept as native regression.",
+      "bridge": [
+        "B-TERM"
+      ],
+      "kernel": [
+        "packages/kernel/tests/outcome-acceptance.test.ts"
+      ]
+    },
+    "tests/conformance/execution/multi-dependency-wait.test.ts": {
+      "disposition": "X",
+      "property": "`await_dependencies` is legacy wait vocabulary. Kept property: B-QUIESCE-CELLS (design 02 D01-CHK-02 replaced design 01 §3's table by the predicate; B-MAP's cases are its cells). File kept as native regression (DX-6).",
+      "bridge": [
+        "B-QUIESCE-CELLS"
+      ]
+    },
+    "tests/conformance/execution/ownership.test.ts": {
+      "disposition": "X",
+      "property": "Host-supplied `ownerExecutionId` is refused by name at the SDK (inventory S-OWNER); native ownership inside a lineage is unchanged. File kept as native regression.",
+      "inventory": [
+        "S-OWNER"
+      ]
+    },
+    "tests/conformance/execution/response-vs-completion.test.ts": {
+      "disposition": "P",
+      "property": "Bridge: a respond_and_wait reply is an Emission plus await, never complete (B-WAKE; inventory G-CHAT).",
+      "bridge": [
+        "B-WAKE"
+      ]
+    },
+    "tests/conformance/execution/scheduler-exclusion.test.ts": {
+      "disposition": "X",
+      "property": "One current Activation per Execution is owned by `packages/kernel/tests/dispatch.test.ts`, `submission-authority.test.ts` and `takeover.test.ts`. Kept property: a stalled native lineage does not block another Execution (B-STALL, K14-1). File kept as native regression.",
+      "bridge": [
+        "B-STALL"
+      ],
+      "kernel": [
+        "packages/kernel/tests/dispatch.test.ts"
+      ]
+    },
+    "tests/conformance/execution/serialization.test.ts": {
+      "disposition": "R",
+      "property": "Native record shapes."
+    },
+    "tests/conformance/execution/terminal-result.test.ts": {
+      "disposition": "P",
+      "property": "Bridge: `complete` carries the native terminal result as canonical bytes; an unrepresentable value fails by name (B-TERM, B-VALUE-RESULT-70K).",
+      "bridge": [
+        "B-TERM",
+        "B-VALUE-RESULT-70K"
+      ]
+    },
+    "tests/conformance/execution/wait-wake-resume.test.ts": {
+      "disposition": "X",
+      "property": "Kernel waits are owned by `packages/kernel/tests/waits-*.test.ts`. Kept property: an input reply wakes the declared Kernel wait and reaches native exactly once (B-WAKE). File kept as native regression.",
+      "bridge": [
+        "B-WAKE"
+      ],
+      "kernel": [
+        "packages/kernel/tests/waits-*.test.ts"
+      ]
+    },
+    "tests/conformance/interaction/confirmation-decline-controllers.test.ts": {
+      "disposition": "R",
+      "property": "Native interaction machinery (owner decision 2A)."
+    },
+    "tests/conformance/interaction/confirmation-settlement.test.ts": {
+      "disposition": "R",
+      "property": "Native interaction machinery (owner decision 2A)."
+    },
+    "tests/conformance/interaction/event-delivery.test.ts": {
+      "disposition": "X",
+      "property": "Receipts are the Kernel's, owned by `packages/kernel/tests/creation.test.ts`, `ingress.test.ts` and `receipts.test.ts`. Kept property: an exact input retry replays and native receives one Event (B-INPUT). File kept as native regression.",
+      "bridge": [
+        "B-INPUT"
+      ],
+      "kernel": [
+        "packages/kernel/tests/creation.test.ts"
+      ]
+    },
+    "tests/conformance/interaction/event-vocabulary.test.ts": {
+      "disposition": "R",
+      "property": "Native interaction machinery (owner decision 2A)."
+    },
+    "tests/conformance/interaction/mechanical-confirmation.test.ts": {
+      "disposition": "P",
+      "property": "Bridge: confirmation decisions travel as Kernel input and reach native exactly once; an exact retry replays (B-CONFIRM).",
+      "bridge": [
+        "B-CONFIRM"
+      ]
+    },
+    "tests/conformance/interaction/messaging-authority.test.ts": {
+      "disposition": "R",
+      "property": "Peer messaging needs a custom controller; native regression only."
+    },
+    "tests/conformance/interaction/send-message.test.ts": {
+      "disposition": "R",
+      "property": "Peer messaging needs a custom controller; native regression only."
+    },
+    "tests/conformance/interaction/user-input.test.ts": {
+      "disposition": "R",
+      "property": "Typed user input needs a custom controller, which the SDK does not host; native regression only. The deprecated `harness.submitUserInput` refuses by name (inventory S-HARNESS-W)."
+    },
+    "tests/conformance/k0/blind-spot-regression.test.ts": {
+      "disposition": "U",
+      "property": "K0 control fixture over the protocol vocabulary, not the Harness."
+    },
+    "tests/conformance/k0/candidate.ts": {
+      "disposition": "S",
+      "property": "Support file for this directory's cases."
+    },
+    "tests/conformance/k0/cited-decisions.test.ts": {
+      "disposition": "U",
+      "property": "K0 control fixture over the protocol vocabulary, not the Harness."
+    },
+    "tests/conformance/k0/cited-decisions.ts": {
+      "disposition": "S",
+      "property": "Support file for this directory's cases."
+    },
+    "tests/conformance/k0/clause-refinements.ts": {
+      "disposition": "S",
+      "property": "Support file for this directory's cases."
+    },
+    "tests/conformance/k0/controls.test.ts": {
+      "disposition": "U",
+      "property": "K0 control fixture over the protocol vocabulary, not the Harness."
+    },
+    "tests/conformance/k0/coverage.test.ts": {
+      "disposition": "U",
+      "property": "K0 control fixture over the protocol vocabulary, not the Harness."
+    },
+    "tests/conformance/k0/coverage.ts": {
+      "disposition": "S",
+      "property": "Support file for this directory's cases."
+    },
+    "tests/conformance/k0/delayed-runtime.test.ts": {
+      "disposition": "U",
+      "property": "K0 control fixture over the protocol vocabulary, not the Harness."
+    },
+    "tests/conformance/k0/fixture.ts": {
+      "disposition": "S",
+      "property": "Support file for this directory's cases."
+    },
+    "tests/conformance/k0/interactions.test.ts": {
+      "disposition": "U",
+      "property": "K0 control fixture over the protocol vocabulary, not the Harness."
+    },
+    "tests/conformance/k0/k0-trace.test.ts": {
+      "disposition": "U",
+      "property": "K0 control fixture over the protocol vocabulary, not the Harness."
+    },
+    "tests/conformance/k0/operation-sink.test.ts": {
+      "disposition": "U",
+      "property": "K0 control fixture over the protocol vocabulary, not the Harness."
+    },
+    "tests/conformance/k0/operation-sink.ts": {
+      "disposition": "S",
+      "property": "Support file for this directory's cases."
+    },
+    "tests/conformance/k0/oracle-discrimination.test.ts": {
+      "disposition": "U",
+      "property": "K0 control fixture over the protocol vocabulary, not the Harness."
+    },
+    "tests/conformance/k0/protocol-vocabulary.ts": {
+      "disposition": "S",
+      "property": "Support file for this directory's cases."
+    },
+    "tests/conformance/k0/refusal.test.ts": {
+      "disposition": "U",
+      "property": "K0 control fixture over the protocol vocabulary, not the Harness."
+    },
+    "tests/conformance/k0/rule-agreement.test.ts": {
+      "disposition": "U",
+      "property": "K0 control fixture over the protocol vocabulary, not the Harness."
+    },
+    "tests/conformance/k0/scenarios.ts": {
+      "disposition": "S",
+      "property": "Support file for this directory's cases."
+    },
+    "tests/conformance/k0/selector-isolation.test.ts": {
+      "disposition": "U",
+      "property": "K0 control fixture over the protocol vocabulary, not the Harness."
+    },
+    "tests/conformance/mcp/exported-operation.test.ts": {
+      "disposition": "R",
+      "property": "Native MCP adapter path."
+    },
+    "tests/conformance/mcp/fixtures.ts": {
+      "disposition": "S",
+      "property": "Shared fixture for the retained MCP cases."
+    },
+    "tests/conformance/mcp/imported-operation-agent-path.test.ts": {
+      "disposition": "R",
+      "property": "Native MCP adapter path."
+    },
+    "tests/conformance/mcp/imported-operation-authority.test.ts": {
+      "disposition": "R",
+      "property": "Native MCP adapter path."
+    },
+    "tests/conformance/mcp/imported-operation-outcome-certainty.test.ts": {
+      "disposition": "R",
+      "property": "Native MCP adapter path."
+    },
+    "tests/conformance/memory/derived-semantic-memory.test.ts": {
+      "disposition": "R",
+      "property": "Native memory (owner decision 2A)."
+    },
+    "tests/conformance/memory/structured-memory-model-write.test.ts": {
+      "disposition": "R",
+      "property": "Native memory (owner decision 2A)."
+    },
+    "tests/conformance/memory/structured-memory-optimistic-write.test.ts": {
+      "disposition": "R",
+      "property": "Native memory (owner decision 2A)."
+    },
+    "tests/conformance/memory/structured-memory-read.test.ts": {
+      "disposition": "R",
+      "property": "Native memory (owner decision 2A)."
+    },
+    "tests/conformance/memory/structured-memory-write.test.ts": {
+      "disposition": "R",
+      "property": "Native memory (owner decision 2A)."
+    },
+    "tests/conformance/memory/working-notes-handoff.test.ts": {
+      "disposition": "R",
+      "property": "Native memory (owner decision 2A)."
+    },
+    "tests/conformance/memory/working-notes.test.ts": {
+      "disposition": "R",
+      "property": "Native memory (owner decision 2A)."
+    },
+    "tests/conformance/models/model-portability.test.ts": {
+      "disposition": "R",
+      "property": "Native model ports."
+    },
+    "tests/conformance/models/model-provider.test.ts": {
+      "disposition": "R",
+      "property": "Native model ports."
+    },
+    "tests/conformance/models/model-resolution.test.ts": {
+      "disposition": "R",
+      "property": "Native model ports."
+    },
+    "tests/conformance/workflow/adapters.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/agent-stage.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/barrier-persistence.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/child-stage-decline.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/child-stage-integrity.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/llm-rag.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/model-resumption.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/parallel-branch-effects.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/parallel-branch-resumptions.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/parallel-branch-structured-memory.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/parallel-fork-join.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/provider-portability.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/retrieval.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/stage-barrier.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/stage-semantics.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/workflow-definition.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/workflow-stage.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    },
+    "tests/conformance/workflow/workflow-topology.test.ts": {
+      "disposition": "R",
+      "property": "Workflow Runtime behaviour inside the native Runtime."
+    }
+  }
+}

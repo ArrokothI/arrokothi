@@ -1,3 +1,5 @@
+// K1.4 conformance mapping: X. The Kernel claim is now owned by B-RES; this file stays as native
+// regression of the legacy Runtime behind the Driver (tests/conformance/legacy-mapping.json).
 /**
  * Controller-local asynchronous resumption, at the substrate level.
  *

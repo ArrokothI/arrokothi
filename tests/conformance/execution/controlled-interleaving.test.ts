@@ -1,3 +1,5 @@
+// K1.4 conformance mapping: X. The Kernel claim is now owned by B-QUIESCE-CELLS; this file stays as native
+// regression of the legacy Runtime behind the Driver (tests/conformance/legacy-mapping.json).
 /**
  * Controlled Event interleaving and the minimal stale-continuation rule.
  *

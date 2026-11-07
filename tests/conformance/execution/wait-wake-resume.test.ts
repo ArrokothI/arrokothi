@@ -1,3 +1,5 @@
+// K1.4 conformance mapping: X. The Kernel claim is now owned by `packages/kernel/tests/waits-*.test.ts`, B-WAKE; this file stays as native
+// regression of the legacy Runtime behind the Driver (tests/conformance/legacy-mapping.json).
 /**
  * WAIT / Event / wake / resume - the semantic spine.
  *
