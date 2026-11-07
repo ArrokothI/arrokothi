@@ -271,7 +271,9 @@ const ROWS: readonly Row[] = [
     async check() {
       const store = new InMemoryRuntimeStore();
       const definitions = new InMemoryDefinitionStore();
-      const app = createApplication({ functions: up(), runtime: { store, definitions, inlineWait: createNoInlineWaitBudget(), defaultEffectDeadlineMs: 5_000 } });
+      const app = createApplication({ functions: up(), runtime: {
+        store, definitions, inlineWait: createNoInlineWaitBudget(), activationBudget: { maxSteps: 100 }, defaultEffectDeadlineMs: 5_000, securityProfile: "trusted-local",
+      } });
       assert.equal(app.services.store, store);
       assert.equal(app.services.definitions, definitions);
       const { executionId } = await app.start({ definition: functionWorkflow("native", "up") });
@@ -744,8 +746,15 @@ const ROWS: readonly Row[] = [
       const { executionId } = await app.start({ definition: agent, structuredMemory: { fields: [{ key: "title", schema: { kind: "string" } }] }, input: { label: "user", payload: "Save" } });
       assert.equal((await app.runUntilBlocked(executionId)).reason, "completed");
       assert.equal((await app.harness.structuredMemoryOf(executionId))?.values.title?.value, "Draft");
-      const scoped = createApplication({ models: models(scripted([])), memory: { read: true, executions: ["exe_other"] } });
-      assert.ok((await scoped.preflight({ definition: agent })).diagnostics.length >= 0);
+      // Grants scoped to another Execution reach nothing here: the same proposal commits no write.
+      const scoped = createApplication({
+        models: models(scripted([{ output: { capabilityCalls: [{ id: "write", capability: "memory_write_title", input: { value: "Draft" } }] } }, { output: { text: "Saved" } }])),
+        memory: { read: true, writeExposure: { writableKeys: ["title"] }, executions: ["exe_other"] }, authorizer: createAllowListAuthorizer({ grants: [], memory: { writableKeys: ["title"] } }),
+      });
+      const other = await scoped.start({ definition: agent, structuredMemory: { fields: [{ key: "title", schema: { kind: "string" } }] }, input: { label: "user", payload: "Save" } });
+      assert.ok(other.preflight.diagnostics.some(item => item.code === "memory_execution_scope"));
+      await scoped.runUntilBlocked(other.executionId);
+      assert.equal((await scoped.harness.structuredMemoryOf(other.executionId))?.values.title, undefined);
     } },
   { id: "G-NOTES", disposition: "P", feature: "Working Notes stay native controller state",
     covers: [],

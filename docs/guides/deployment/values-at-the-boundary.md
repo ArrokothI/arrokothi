@@ -64,7 +64,8 @@ the global property for every later lookup, and no code can remove it. So `creat
 - At `createApplication` and `toCanonicalBytes`, a mismatch throws `WrapperEnvironmentError`, whose
   `identifier` names the first identifier that failed.
 - During a capture, for example a shadow installed by a side effect of reading the caller's value, the
-  check refuses that call with `unstable_representation`. Every later call then throws.
+  check refuses that call with `unstable_representation`. Later `createApplication` and `toCanonicalBytes`
+  calls throw, and every value the SDK encodes for the Kernel is refused the same way.
 
 A shadow bound to the genuine intrinsic (`let JSON = globalThis.JSON`) passes. The residual
 precondition is genuine intrinsics when the SDK module loads: a host that replaced both the property and
