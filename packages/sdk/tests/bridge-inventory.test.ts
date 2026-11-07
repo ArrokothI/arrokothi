@@ -48,7 +48,6 @@ import {
 import { GeminiModelProvider } from "@arrokothi/provider-gemini";
 import { createStrandsAgentExecutor } from "@arrokothi/integration-strands";
 import { ModelProviderRegistry, StaticModelResolver, createReferenceAgentExecutor, portableModelFeatures } from "@arrokothi/core/reference";
-import { buildZone } from "../../kernel/tests/zone-analysis.ts";
 import { LEGACY_HARNESS_MUTATORS, LEGACY_HARNESS_READERS } from "../src/legacy-bridge/harness-view.ts";
 import {
   DOCS, allowDocs, answerAgent, callingWorkflow, catalog, chatAgent, confirmDocs, deferred, functionWorkflow, ingressResults, kernelId,
@@ -69,7 +68,11 @@ const UTILITY = new Set(["Partial", "Pick", "Omit", "Readonly", "Required"]);
 function enumerateSurface(): { exports: string[]; members: string[] } {
   const index = fileURLToPath(new URL("../src/index.ts", import.meta.url));
   const sdkDir = fileURLToPath(new URL("../src/", import.meta.url));
-  const { checker, program } = buildZone([index]);
+  // The repository's compiler options, read directly: this test stays outside the Kernel quarantine list.
+  const config = ts.readConfigFile(join(REPO, "tsconfig.json"), ts.sys.readFile);
+  const options = { ...ts.parseJsonConfigFileContent(config.config, ts.sys, REPO).options, noEmit: true };
+  const program = ts.createProgram([index], options);
+  const checker = program.getTypeChecker();
   const moduleSymbol = checker.getSymbolAtLocation(program.getSourceFile(index)!)!;
   const exports: string[] = [];
   const members: string[] = [];
