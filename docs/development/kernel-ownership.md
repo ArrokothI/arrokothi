@@ -52,7 +52,7 @@ through its package root only, and `host-sdk` and `legacy-bridge` reach each oth
 | `legacy-core` | 143 | — | nothing |
 | `runtime-integrations` | 16 | `@arrokothi/core`, `@arrokothi/core/execution`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `@langchain/core/documents`, `@langchain/textsplitters`, `@modelcontextprotocol/client`, `@modelcontextprotocol/server`, `@strands-agents/sdk` |
 | `legacy-bridge` | 6 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/kernel`, `host-sdk` | nothing |
-| `host-sdk` | 7 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`, `@arrokothi/kernel`, `legacy-bridge` | `canonicalize` |
+| `host-sdk` | 8 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`, `@arrokothi/kernel`, `legacy-bridge` | `canonicalize` |
 
 Every zone reaches `node:` builtins; those are omitted above. `legacy-core` reaching no third-party
 package is the existing vendor-neutrality property, retained and re-attributed to the legacy zone by

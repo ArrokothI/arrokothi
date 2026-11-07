@@ -1552,7 +1552,7 @@ describe("K1.0 policy and inventory agree", () => {
       // The same defect class in the Current cross-boundary section: a fenced mention of its next
       // heading (`## Export ownership`) before a contradictory dependency table must not truncate.
       const real = await realInventory();
-      const anchor = "| `host-sdk` | 7 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`, `@arrokothi/kernel`, `legacy-bridge` | `canonicalize` |\n";
+      const anchor = "| `host-sdk` | 8 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`, `@arrokothi/kernel`, `legacy-bridge` | `canonicalize` |\n";
       const badDependencyTable =
         "| Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |\n|---|---|---|---|\n| `target-kernel` | 999 | `@arrokothi/core` | nothing |\n";
       const mutated = mutate(real, [[
@@ -3004,7 +3004,7 @@ describe("K1.0 policy and inventory agree", () => {
     // fail the first half, and one that is stricter about everything would fail the second.
     const REAL_DEPENDENCY_ROW = targetKernelDependencyRow();
     const REAL_HOST_SDK_ROW =
-      "| `host-sdk` | 7 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`, `@arrokothi/kernel`, `legacy-bridge` | `canonicalize` |";
+      "| `host-sdk` | 8 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`, `@arrokothi/kernel`, `legacy-bridge` | `canonicalize` |";
     const REAL_ZONE_ROW =
       "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; K1.2 Outcome acceptance, takeover and the recovery holds; every later boundary refuses by name.** |";
     const REAL_PRIVATE_PACKAGE_ROW = "| `@arrokothi/kernel` | `.` | No (private) |";

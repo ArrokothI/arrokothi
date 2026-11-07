@@ -17,6 +17,7 @@ import {
 } from "@arrokothi/core/reference";
 import type { AuthenticatedCaller, ExecutionCoordinator, ExecutionView, InputAccepted, Receipt } from "@arrokothi/kernel";
 import { ApplicationHost } from "./host.ts";
+import { checkSerializerEnvironment } from "./wrapper.ts";
 import {
   INPUT_KINDS, PROGRESS_CODEC, RUNTIME_CONTRACT_REVISION, START_CODES, UnrepresentableValueError, encode,
 } from "./legacy-bridge/codec.ts";
@@ -118,6 +119,8 @@ const definitionRevision = (ref: ExecutionDefinitionRef): string =>
  * implicit.
  */
 export function createApplication(options: ApplicationOptions = {}): Application {
+  // L-01 startup check (K14-5): refuse an environment whose serializer intrinsics were replaced or shadowed.
+  checkSerializerEnvironment();
   if (options.runtime?.scheduler !== undefined) {
     throw configurationError("scheduler_owned_by_bridge", "runtime.scheduler", "Kernel dispatch and the legacy bridge's lineage scheduler own native scheduling; remove runtime.scheduler.");
   }

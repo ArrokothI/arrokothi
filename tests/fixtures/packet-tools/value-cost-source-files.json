@@ -191,5 +191,6 @@
   "packages/sdk/src/legacy-bridge/lineage-scheduler.ts",
   "packages/sdk/src/legacy-bridge/root-ids.ts",
   "packages/sdk/src/preflight.ts",
-  "packages/sdk/src/types.ts"
+  "packages/sdk/src/types.ts",
+  "packages/sdk/src/wrapper.ts"
 ]

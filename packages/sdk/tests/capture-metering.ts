@@ -91,12 +91,17 @@ export const HELPERS = {
   internal: ["arrayIndexValue", "scanBoundaryString"],
   /** The serializer window: it runs only on an accepted snapshot, never on caller values. */
   serializer: ["toSerializationSafe", "serializerSlots", "chainShape", "inheritedIndexShadows", "prototypeNamedShadows", "withSerializerEnvironment", "encode"],
+  /**
+   * K1.4's L-01 check (design 01 §9): it never receives a caller value and reads only its own descriptor
+   * observation of `globalThis`. It is not the window, so the window and the public wrapper may both call it.
+   */
+  environment: ["checkSerializerEnvironment"],
 } as const;
 
 /** The traversal: every function that receives a caller value outside the helpers. */
 export const TRAVERSAL: readonly string[] = ["capture", "captureArray", "captureObject", "checkMember"];
 
-const ALLOWED: ReadonlySet<string> = new Set([...HELPERS.visit, ...HELPERS.charged, ...HELPERS.internal, ...HELPERS.serializer]);
+const ALLOWED: ReadonlySet<string> = new Set([...HELPERS.visit, ...HELPERS.charged, ...HELPERS.internal, ...HELPERS.serializer, ...HELPERS.environment]);
 
 /** Top-level functions of a source file by name: declarations and `const name = <function>`. */
 const topLevelFunctions = (source: ts.SourceFile): Map<string, Fn> => {

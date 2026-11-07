@@ -31,6 +31,12 @@ export const ACCESS_INVENTORY: readonly InventoryEntry[] = [
   { file: "value-capture.ts", kind: "optional", mode: "read", text: "innerDescriptor.value", count: 1, guard: "innerDescriptor", reason: DESCRIPTOR },
   { file: "value-capture.ts", kind: "optional", mode: "read", text: "lengthDescriptor.value", count: 3, guard: "lengthDescriptor", reason: DESCRIPTOR },
   { file: "value-capture.ts", kind: "optional", mode: "read", text: "lengthDescriptorInner.value", count: 2, guard: "lengthDescriptorInner", reason: DESCRIPTOR },
+  // K1.4 L-01 check: each free reference is the dependency's own resolution path, evaluated only after the
+  // own `globalThis` property proved to be the load-time data value, so it reads a lexical binding or data.
+  ...(["isNaN", "isFinite", "Object", "Array", "JSON", "Set", "Error", "Symbol"] as const).map((name): InventoryEntry => ({
+    file: "value-capture.ts", kind: "global", mode: "read", text: name, count: 1,
+    reason: "the L-01 check resolving a serializer free identifier the way the dependency does (K1.4 design 01 §9)",
+  })),
 ];
 export const EXTRA_ENVELOPE_PARAMETERS: readonly string[] = [];
 export const FOREIGN_CALLS = new Map([["encode canonicalizeJcs(toSerializationSafe(value))", "SDK JCS dependency on the frozen serialization clone inside restored serializer environment"]]);

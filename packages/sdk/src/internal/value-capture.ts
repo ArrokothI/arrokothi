@@ -105,7 +105,7 @@ import { Buffer } from "node:buffer";
 
 import { types as UtilTypes } from "node:util";
 
-import { appendOwn, defineAt, defineData, readAt, restoreDescriptor, sizedList } from "./own-array.ts";
+import { appendOwn, defineAt, defineData, descriptorValue, isDataDescriptor, readAt, restoreDescriptor, sizedList } from "./own-array.ts";
 
 /**
  * Primordials captured before any caller code runs.
@@ -1739,6 +1739,8 @@ function withSerializerEnvironment<T>(work: () => T): T {
       const entry = readAt(chains, index) as SavedChain;
       if (entry.proto !== entry.primordial) PrimordialSetPrototypeOf(entry.holder, entry.primordial);
     }
+    // L-01 (K1.4): a lexical shadow of a free identifier, which the swap above cannot reach, refuses the call.
+    checkSerializerEnvironment();
     return work();
   } finally {
     // Chain shape first: later restores run in the original shape, not the sanitized one.
@@ -1987,4 +1989,75 @@ export function captureCanonicalBytes(value: unknown):
   return captured.ok
     ? { ok: true, value: PrimordialReflectApply(PrimordialTextEncode, byteEncoder, [captured.value.canonical]) as Uint8Array }
     : captured;
+}
+
+/**
+ * The L-01 startup check (K1.4 design 01 §9, design 02 D01-CHK-06).
+ *
+ * The dependency reads its eight free identifiers through the global environment, whose declarative
+ * record (a script-level `let JSON`, for example through `vm.runInThisContext`) answers before
+ * `globalThis` does. The serializer window above reinstalls the `globalThis` slots, but no code can
+ * reach or remove a lexical binding. So each identifier is resolved here the way the dependency
+ * resolves it, by a free reference in module code, and compared with the own `globalThis` property and
+ * with the load-time capture. The three must be the same object. A host that replaced both the
+ * property and the binding before this module loaded is not detectable here (L-01's residual: genuine
+ * intrinsics at SDK module load).
+ */
+export class WrapperEnvironmentError extends PrimordialError {
+  readonly identifier: string;
+  constructor(identifier: string) {
+    super(`the serializer's free identifier ${identifier} does not resolve to the intrinsic captured when the SDK loaded (L-01)`);
+    // An own data property, never `[[Set]]`: a host may have replaced `Error.prototype.name` with an accessor.
+    defineData(this, "name", "WrapperEnvironmentError", true, false, true);
+    this.identifier = identifier;
+  }
+}
+
+type FreeIdentifier = {
+  readonly name: string;
+  /** A free reference in module code: it resolves through the global declarative record first. */
+  readonly resolve: () => unknown;
+  readonly primordial: unknown;
+};
+
+const freeIdentifiers = (): FreeIdentifier[] => {
+  const list: FreeIdentifier[] = [];
+  appendOwn(list, { name: "isNaN", resolve: () => isNaN, primordial: PrimordialIsNaN });
+  appendOwn(list, { name: "isFinite", resolve: () => isFinite, primordial: PrimordialIsFinite });
+  appendOwn(list, { name: "Object", resolve: () => Object, primordial: PrimordialObject });
+  appendOwn(list, { name: "Array", resolve: () => Array, primordial: PrimordialArray });
+  appendOwn(list, { name: "JSON", resolve: () => JSON, primordial: PrimordialJSON });
+  appendOwn(list, { name: "Set", resolve: () => Set, primordial: PrimordialSet });
+  appendOwn(list, { name: "Error", resolve: () => Error, primordial: PrimordialError });
+  appendOwn(list, { name: "Symbol", resolve: () => Symbol, primordial: PrimordialSymbol });
+  return list;
+};
+const FREE_IDENTIFIERS = freeIdentifiers();
+
+/**
+ * Throws `WrapperEnvironmentError` naming the first identifier whose resolution, own `globalThis`
+ * value or load-time capture differ. The property is read through its own descriptor, so an
+ * installed getter never runs; the free reference is evaluated only after the property proved to be
+ * that data value, so without a lexical binding it reads data and runs no host code either.
+ */
+export function checkSerializerEnvironment(): void {
+  for (let index = 0; index < FREE_IDENTIFIERS.length && index < 8; index += 1) {
+    const entry = readAt(FREE_IDENTIFIERS, index) as FreeIdentifier;
+    const descriptor = PrimordialGetOwnPropertyDescriptor(PrimordialGlobalThis, entry.name);
+    if (descriptor === undefined || !isDataDescriptor(descriptor) || descriptorValue(descriptor) !== entry.primordial) {
+      throw new WrapperEnvironmentError(entry.name);
+    }
+    if (entry.resolve() !== entry.primordial) throw new WrapperEnvironmentError(entry.name);
+  }
+}
+
+/**
+ * The public value wrapper (K14-5): the check above, then the same capture the bridge uses. Its
+ * contract is cooperative (L-02): it reads the caller's value once, through own descriptors, and the
+ * bytes it returns are the only thing a consumer should hand on.
+ */
+export function toCanonicalBytes(value: unknown):
+  { readonly ok: true; readonly value: Uint8Array } | { readonly ok: false; readonly issues: ValueIssue[] } {
+  checkSerializerEnvironment();
+  return captureCanonicalBytes(value);
 }
