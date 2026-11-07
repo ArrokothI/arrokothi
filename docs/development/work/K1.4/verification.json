@@ -5,6 +5,8 @@
   "administrative_files": [
     "docs/development/007-work-packets.md",
     "docs/development/work/K1.4/implementation-01.md",
+    "docs/development/work/K1.4/owner-choice-03.md",
+    "docs/development/work/K1.4/owner-choice-03/limited-members.json",
     "docs/development/work/K1.4/progress.md"
   ],
   "preserve": [
