@@ -16,13 +16,22 @@ The resume point for any session continuing this packet. Newest facts first with
   - migrated tests: `packages/sdk/tests/application.test.ts`, the examples and their `settle.ts`, and two
     restated `binding-surface.test.ts` assertions (D01-CHK-06);
   - the bridge corpus `packages/sdk/tests/bridge-*.test.ts` (design 02 §3, range-A items).
-  **Range-A C:** `1e0f04ff3c0b99381fc639c683dc2e076ad28945` (pushed). Packet verify CI run
-  [`42334517878`](https://github.com/ArrokothI/arrokothi/actions/runs/42334517878) dispatched on it; its result is the
-  handoff evidence. Local checks at C in a fresh clone (Node v26.10.0): typecheck exit 0; `npm test` 4,832/4,832, 0 fail,
-  0 skipped (B: 4,766); example tests 18/18; `check:builder-docs` passed; tool tests 777 OK (working tree); packet
-  tools `regenerate` `table_current`, `corpus` `mappings_complete`, `inventory` `provenance_verified`, `coverage`
-  `coverage_reported`. Mutation registries, sweeps, race search and value-cost checks are left to the CI run.
-  Next: read the CI result, then range B.
+  **Range-A C:** `1fab55494ac299d12906edbfa827808f6817efb1` (pushed). Packet verify CI run
+  [`42347496157`](https://github.com/ArrokothI/arrokothi/actions/runs/42347496157) dispatched on it; its result is the
+  handoff evidence.
+  - The first C, `1e0f04ff`, failed CI run [`42334517878`](https://github.com/ArrokothI/arrokothi/actions/runs/42334517878)
+    on one check: `value-cost-mutants`, 238 `invalid_baseline` controls. The value-cost source policy compares the
+    production tree with `tests/fixtures/packet-tools/value-cost-source-files.json`, which did not list `host.ts` and
+    the six `legacy-bridge` modules (the fix K1.3 made for its two Kernel modules in `7d9be1bc`). The other 18 checks
+    passed there, including `repository-tests` 4,832/4,832, `adoption` `mappings_complete`, both other mutation
+    registries, the sweeps and the race search.
+  - `1fab5549` adds the seven files to that inventory and changes nothing else. At it, the source policy passes over
+    193 files, and the value-cost controls (`cases`) return `selected_cases_passed` in a fresh clone.
+  - Local checks at `1e0f04ff` in a fresh clone (Node v26.10.0): typecheck exit 0; `npm test` 4,832/4,832, 0 fail,
+    0 skipped (B: 4,766); example tests 18/18; `check:builder-docs` passed; tool tests 777 OK (working tree);
+    `regenerate` `table_current`, `corpus` `mappings_complete`, `inventory` `provenance_verified`, `coverage`
+    `coverage_reported`.
+  Next: read run 42347496157, then range B.
 - Range-A adoption-fixture maintenance (`tests/fixtures/packet-tools/adoption.json`, TOOLS-02 tools only):
   - the hold register: 188 `kernel-landing-zone.test.ts` keys rekeyed through the B→C line mapping (no
     classification changed), and one new `not_held` V-ENV entry with a per-entry reading for the new child-process
