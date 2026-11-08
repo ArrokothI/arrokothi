@@ -12,7 +12,9 @@ The resume point for any session continuing this packet. Newest facts first with
   - *Design:* [design 04](design-04.md) answers brief 03: the Driver schedules unqueued READY members from its own
     root, with no read (R2-01); one label per cleanup call site, a static census and a label-by-row ablation
     oracle, plus live-lineage T13 (R2-02).
-  - *Next:* design check 04 on design 04. No code before it.
+  - *Design check:* [design check 04](https://github.com/ArrokothI/arrokothi/blob/dc21f8e989b0828a236d65d3988eb9ade5391af3/docs/development/work/K1.4/design-check-04.md)
+    (`dc21f8e9`) is APPROVED WITH REQUIRED CHANGES D04-CHK-01..03; design 04 §6 disposes them.
+  - *Next:* build the correction in this packet (no new design check), then new C, Packet verify, implementation 03 and H.
 - **Round 2 payload C: `3e4c59faa7b6138693bb9094144cafff7a33158e`** (pushed, 2026-11-08).
   - *Design:* [design check 03](https://github.com/ArrokothI/arrokothi/blob/3e55960e0493854490ac83a420ee12295c003e82/docs/development/work/K1.4/design-check-03.md)
     (`3e55960e`) is APPROVED WITH REQUIRED CHANGES D03-CHK-01..03. The design 03 §8 addendum (`c306fe38`)

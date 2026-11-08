@@ -249,3 +249,115 @@ The check is bounded to R2-01 and R2-02. These are the questions it should settl
 4. Do the §3.2 census and the §3.3 matrix force every present and future cleanup call site into the table?
 
 Everything else in the cumulative packet is for review 03.
+
+## 6. Addendum after design check 04
+
+[Design check 04](https://github.com/ArrokothI/arrokothi/blob/dc21f8e989b0828a236d65d3988eb9ade5391af3/docs/development/work/K1.4/design-check-04.md)
+(Codex GPT-6, `codex/k1.4-design-check-04` at `dc21f8e9`, subject `9cf57c61`) is APPROVED WITH REQUIRED CHANGES
+D04-CHK-01..03. Its appendix probes (`install-design.mjs`, `attacks.mjs`) were read at that commit. This section
+disposes the three changes; where it differs from §§2–4, it wins. Owner choice 05 still governs, and the build
+follows without a new design check (006 routine corrections).
+
+### D04-CHK-01 — reconcile on every `continue`
+
+**Adopted.** The §2.1 precondition was wrong. A sibling that keeps returning `continue` takes the
+`if (record) return decision` branch on every pass, so a READY member whose enqueue was lost never gets one.
+
+- **Rule.** Whenever the decision is `continue`, the Driver schedules every READY member of that collect, then
+  either returns the decision (a step ran) or loops (none ran). This applies whether or not a step ran and whether
+  or not an entry is queued. Scheduling is idempotent (§2.2), so a member that is already queued keeps its place.
+- **Finite opportunity.** The lineage queue is FIFO with one entry per Execution. A scheduled member is claimed
+  after at most the entries ahead of it, whatever its siblings do. One native step per lineage and one step per
+  `continue` are unchanged.
+- **The §2.8 detector is bound to an actual attempt.** The scheduler counts the claims of each Execution. When the
+  Driver schedules member X, it records X's context revision r and X's claim count. It throws
+  `UnschedulableReadyError` only if a later collect shows X READY at revision r **and** X was claimed since then.
+  - An activating claim moves READY to RUNNING and bumps the revision, so it cannot match.
+  - A dropped claim means the transaction saw X not READY after the collect that saw READY at r; seeing READY at
+    r again breaks P1/P2.
+  - A sibling's steps are not claims of X, so they neither mask X nor count as its attempt.
+- **Tests.** These add to §2.9:
+  - **B-RECONCILE-STARVE:** the check's continuing-parent/settled-child witness, promoted. The child runs, and
+    capability calls stay at 1.
+  - **B-RECONCILE-MANY:** two READY members whose enqueues were both lost. Each runs once.
+  - **B-RECONCILE-REVISION:** a member is scheduled by the Driver, its late duplicate claim is dropped, and it
+    later becomes READY at a new revision. The detector does not fire, and the member runs.
+  - **The ablation:** removing reconciliation fails B-RECONCILE-STARVE and both B-ENQUEUE-LOST tests.
+
+### D04-CHK-02 — a reporting path that needs nothing native
+
+**Adopted.** `terminate` awaited the cascade before reporting, and the exchange's catch swallowed whatever
+`terminate` threw. So a failed cleanup lost the report.
+
+- **`terminate`.** It sets `ended` first, as before. If `endLineage` rejects, it reports a protocol hold through
+  `reportProtocolFailure`, with a bounded diagnostic naming the site and the cause. It neither offers a terminal
+  Outcome nor acknowledges the batch. The diagnostic says that the lineage is stopped and its cleanup unconfirmed;
+  it never claims the cleanup succeeded.
+- **The exchange's final catch.** If `terminate` itself rejects, a guarded `hold` reports what happened. That
+  path is Kernel-only: no native read, no scheduling and no cascade.
+- **Unchanged.** A cancellation accepted first still wins. `offer`'s cancellation-loss check is untouched, and the
+  Kernel refuses a hold on a cancelled exchange, which the Driver ignores. `requestCancellation`'s own cascade keeps
+  its existing handling.
+- **Tests:**
+  - **B-FAULT-COLLECT** and **B-FAULT-ACTIVATE:** a one-shot fault in a collect inspector and in activation setup.
+    E fails `native_error` and the cascade runs.
+  - **B-FAULT-CLEANUP:** the check's two-fault witness (a collect read, then the exception cascade's read).
+  - **B-UNSCHEDULABLE-CLEANUP:** the §2.8 detector, then a cascade read fault.
+  - Each case asserts its Kernel disposition, no later native steps, no second provider or executor call, and no
+    unhandled rejection.
+
+### D04-CHK-03 — executed equivalences and a census that fails closed
+
+**Adopted.** The oracle becomes a table of (row, label) pairs. Each label a row reaches in its baseline run has one
+of three dispositions, and the test runs each one:
+
+| Disposition | Executed check, with only that label's cascade removed |
+|---|---|
+| **kill** | The row's **behavioural** assertions fail. The reach log is checked only in the baseline run, so a missed label never counts as a kill. |
+| **equivalent: empty obligation** | At the label's entry the root is terminal and E has no descendant. The row's full assertions pass with and without the label. This is T6. |
+| **equivalent: redundant** | Names the other label that ran earlier. At this label's entry, a BFS over child links (which are never deleted, P3) shows every member terminal. The row's full assertions, including no later native work, pass under removal. |
+
+- **Label rules.**
+  - A label with no **kill** pair must have only equivalent pairs and a recorded reason.
+  - An unreached label, an unmapped pair, a pair that survives without its equivalence check, or a malformed
+    entry fails the test.
+  - A label can be redundant on one row and necessary on another.
+- **Cancellation rows.** Before any `cancel.*` label is given an equivalence, the corpus includes:
+  - a delayed root creation, with cancellation during `createRoot`;
+  - a late spawn, where a step creates a child while the request's cascade runs.
+- **Census rules.** The census resolves syntactically over `packages/sdk/src`:
+  - `endLineage(` and `terminate(` calls need a literal label, or a conditional of literals. The one exception is
+    the forward inside `terminate`.
+  - Each label belongs to exactly one call site.
+  - `cascade(` is called only from `endLineage`.
+  - A native cancellation is `….harness.cancelExecution(`, only inside `cascade`. The Kernel's
+    `coordinator.cancelExecution(` is recognised and excluded. Any other `cancelExecution` receiver fails.
+- **Fails closed.** These forms fail the census rather than escape it:
+  - a reference to `endLineage`, `cascade` or `cancelExecution` outside a call;
+  - an element access by those names;
+  - a `.call`, `.apply` or `.bind` of them.
+
+  Computed property names built at run time are a declared gap, outside this bounded search.
+- **Negative controls.** The census and the oracle check run on mutated inputs and must fail for:
+  - an added unlabelled call;
+  - an added call with a new label but no table entry;
+  - an aliased call;
+  - the table with its `hold` row deleted.
+- **Producer census.** The §2.3 count of 13 is withdrawn. A test derives the native producer list from
+  `packages/core/src/runtime`: every `scheduler.enqueue(` and `deps.wake(` call. It separates delegate edges (the
+  Harness's `wake:` callbacks) from producers. For each producer it records the enclosing method and whether a
+  tracker that swallows errors reaches it. The test compares the derived list with a table that gives each
+  producer's error owner. A tracker-reached producer must name its lost-enqueue test. A new producer fails until
+  it is classified.
+- **Reporting.** The report gives baseline rows, distinct labels, removals, behavioural kills and executed
+  equivalences separately.
+
+### §4's corrections
+
+They are made as dated corrections in implementation 02:
+- the retracted L-31 attribution;
+- the G-SLOWCAP and G-SLOWMODEL qualification;
+- the 11-removal count.
+
+Implementation 03 commits every log it links. It also records design 03 §8's unbuilt enqueue-failure promise as
+a design-to-build gap.
