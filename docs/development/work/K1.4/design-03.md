@@ -478,3 +478,135 @@ growth probe and records the result.
    no processing where the native delivery may have committed.
 4. Is the B-NATIVE-WRITERS and B-RECORD-ONEWAY pair the right closure for the census, or does the check want
    the census in a different form?
+
+## 8. Addendum after design check 03
+
+[Design check 03](https://github.com/ArrokothI/arrokothi/blob/3e55960e0493854490ac83a420ee12295c003e82/docs/development/work/K1.4/design-check-03.md)
+(Codex GPT-6, `codex/k1.4-design-check-03` at `3e55960e`, subject `270463b2`, read by commit and not merged) is
+APPROVED WITH REQUIRED CHANGES D03-CHK-01..03. This section disposes each required change, the T12 clarification
+and one deviation from §6. The owner directed that the build proceed with no further design check (006 routine
+corrections). Where this section differs from §§2–7, it wins.
+
+### D03-CHK-01 — notification
+
+**Adopted.** Notification cannot change a transaction's result, and a committed wake cannot be lost.
+
+**Facade.** `CommitSignallingStore.transact(scope, work)` returns the underlying store's own promise object. The
+result and any exception reach the caller untouched, and the facade adds no read and no `await` to the
+transaction. When that promise settles either way, the facade calls `signal(scope)` synchronously.
+
+**Signal.** `signal` cannot fail:
+- It resolves scope's lineage from the lineage scheduler's map of root assignments. Roots never change. The map is
+  filled:
+  - at `createRoot`, before native creation;
+  - at every collect;
+  - from each successful `enqueue` lookup.
+- A scope not in the map wakes every registered waiter. That broadcast costs extra passes only.
+- No fallible read sits on the notification path. So a committed change always wakes its lineage, and a
+  notification failure can never pass for a rollback.
+
+**§2.4's "stays idle"** means that no remaining writer can advance the projection. Inert tails may still run
+without changing it: an invalidated resumption's late callback, or a delayed post-commit `enqueue`.
+
+**B-COMMIT-SIGNAL tests:**
+- a committed and a rolled-back transaction: the caller receives the same promise with its result or error, the
+  store state matches, and the lineage is woken;
+- an unknown scope across registration: the broadcast reaches the registered waiter;
+- a one-shot `readExecution` failure inside `enqueue`: the facade's wake still arrives, and the open exchange
+  progresses;
+- lineage isolation: a known scope wakes only its own lineage;
+- no unhandled rejection.
+
+### D03-CHK-02 — the accounting oracle
+
+**Adopted, with [owner choice 04](owner-choice-04.md).**
+
+**Status.** `unknown` (reason `forward_failed`) remains the status of a forward that threw before its receipt.
+The owner chose to amend L-29 and the managed-native-job paragraph of integration with this third case.
+
+**Per-Event oracle**, replacing §4's aggregate assertion:
+
+| Ledger entry | Native deliveries of that Event allowed |
+|---|---|
+| Forwarded | Exactly one |
+| `unknown` | Zero or one |
+| `discarded`, `rejected` or `ignored` | None |
+
+Original Event IDs and Kernel receipts are kept.
+
+**Never a second forward.**
+- An `unknown` ends the exchange through `terminate` (`native_error`): no later Event in the batch is forwarded.
+- The Driver keeps, per Execution, the IDs of attempted Events whose acknowledging Outcome was not accepted. If one
+  arrives in a later batch, it is reported `unknown` (`already_attempted`) without forwarding.
+- The set is cleared when an Outcome is accepted.
+
+**Cases added to B-ACK-EXITS:**
+- **Before commit:** a store fault aborts the delivery transaction. Zero native deliveries; `unknown`.
+- **After commit:** design check 03's scheduler-read fault. One native delivery; entries `unknown, discarded`. The
+  check's `chatAgent` recipe is kept as given.
+- **Ledger encoding failure:** the test makes the ledger's encoder throw. The Driver submits no Outcome, the
+  exchange becomes an inspectable protocol hold, the batch Events stay reserved and unacknowledged, and the lineage
+  is ended.
+
+### D03-CHK-03 — the schedule search
+
+**Adopted.**
+
+**Named gates.** `LegacyDriver.gate(point, executionId, detail)` returns `undefined` in production, so it adds no
+`await`. Tests replace it on the prototype. The points are:
+- `register`, before and after;
+- `read`, before and after, with the collect (1 or 2), ordinal and record;
+- `validated`;
+- `submit`, before and after;
+- `park`, before;
+- `signal`, before the wake.
+
+Registration and the signal are gated directly, not through a store read.
+
+**Record.** Each requested schedule records fixture, point, phase, occurrence, and either `reached` or
+`unreachable`, with its ordering reason.
+- A bounded watchdog, counted in host runs and event-loop turns, limits the wait to reach a gate.
+- An unreached schedule releases its settlement as a fallback and is never counted as covered.
+- The test pins the expected `reached`/`unreachable` table, and reports exercised counts separately.
+
+**Real native schedules** run through the SDK with real executor or provider settlements:
+- **F1:** one member with mixed work (the probe's shape).
+- **F2:** a fork whose capability branch is in flight while its called `chat` child waits for input.
+- **F3:** a fork whose called child Agent has an independently settling resumption (a deferred model), beside a
+  confirmation branch.
+- **F4:** a fork with its own LLM-stage resumption, beside a confirmation branch.
+
+A normal child completion settles its parent inside the same `runOnce` (`harness.ts:1150`, `:687`). That window is
+recorded as structurally unreachable for a concurrent collect. B-QUIESCE-CELLS is labelled a record-model test,
+apart from these.
+
+**Post-validation windows.** At the `validated` and `submit` gates, the schedules exercise legal inert tails and
+Kernel input or cancellation. An autonomous settlement there is closed by §2.4's argument, not by a release.
+
+### T12
+
+T12 asserts:
+- a nonterminal protocol hold;
+- the refused Outcome;
+- no acknowledgment of the batch;
+- an ended lineage.
+
+It does not assert a Kernel terminal code. T4 and T11 stay labelled as Driver-level injected cases.
+
+### Deviation from §6: R1-05's mutants are in-test ablations
+
+The mutation registry's runner materializes only a case's declared repository files, with no workspace
+`node_modules` (`scripts/packet_tools.py`, `run_targets`). Every target test it runs today uses relative imports
+only. The bridge tests import `@arrokothi/sdk` and `@arrokothi/core`, so the registry cannot run them.
+
+The removed-cascade mutants are therefore maintained in the test itself, as **B-TERM-ABLATION**:
+- `terminate` passes its call-site label to `endLineage`.
+- For each call site, the test makes `endLineage` skip only that site, then runs every T row that shares the site.
+  Each row must fail.
+- The table lists the rows that share each site, so no source site is invented to match a test name.
+
+The other fixes are shown the same way where the fix is a single method: removing validation, the signal, the
+retained-destination lookup, the ledger's close, or the construction order each fails a named test. Each of these
+is kept in-test or listed in a retained ablation log.
+
+`mutations.json`, `refusal-guards.json` and `value-cost.json` stay byte-identical to B.
