@@ -1,0 +1,89 @@
+✔ control: an ordinary initial input is accounted for and a Function completes (23.283084ms)
+✖ K14-R1-01: settling native work between lineage reads must not commit a human wait (7.736708ms)
+ℹ {"observed":true,"handled":1,"reason":"confirmation_required","kernel":"WAITING","native":"READY","secondKernel":"WAITING","secondNative":"READY","operations":[{"status":"settled","dispatch":"dispatched"},{"status":"pending","dispatch":"not_dispatched"}]}
+✖ K14-R1-02: exact input retry keeps its originally selected child destination (10.845083ms)
+ℹ {"firstReason":"input_required","finalReason":"failed","explicitReplay":{"eventId":"event-13:arrokothi.sdk79:execution-13:arrokothi.sdk11:application36:2e235401-5373-487c-9281-5c4f5c95d8f25:reply","receipt":{"boundary":"input_ingress","token":"inp:execution-13:arrokothi.sdk11:application36:2e235401-5373-487c-9281-5c4f5c95d8f2:6","position":6},"replayed":true,"acceptancePosition":6,"disposition":{"kind":"acknowledged","activationId":"execution-13:arrokothi.sdk11:application36:2e235401-5373-487c-9281-5c4f5c95d8f2/activation-3"}}}
+✖ K14-R1-03: failure before forwarding accounts for every acknowledged input (4.146917ms)
+ℹ {"reason":"failed","calls":0,"mailbox":[{"eventId":"event-creation-13:arrokothi.sdk11:application36:4da75435-bd03-4bf7-bfb1-c223721da228","inputId":{"producerNamespace":"arrokothi.sdk","destination":"execution-13:arrokothi.sdk11:application36:4da75435-bd03-4bf7-bfb1-c223721da228","requestKey":"4da75435-bd03-4bf7-bfb1-c223721da228"},"kind":"arrokothi.legacy.start","payload":{"input":{"label":"user","payload":"initial"}},"subscriptionClass":null,"sourceCategory":"application_input","acceptancePosition":1,"disposition":{"kind":"acknowledged","activationId":"execution-13:arrokothi.sdk11:application36:4da75435-bd03-4bf7-bfb1-c223721da228/activation-1"},"reserved":false,"receipt":{"boundary":"creation","token":"crt:execution-13:arrokothi.sdk11:application36:4da75435-bd03-4bf7-bfb1-c223721da228:1","position":1}},{"eventId":"event-13:arrokothi.sdk79:execution-13:arrokothi.sdk11:application36:4da75435-bd03-4bf7-bfb1-c223721da2285:later","inputId":{"producerNamespace":"arrokothi.sdk","destination":"execution-13:arrokothi.sdk11:application36:4da75435-bd03-4bf7-bfb1-c223721da228","requestKey":"later"},"kind":"arrokothi.legacy.input","payload":{"destination":"execution-13:arrokothi.sdk11:application36:4da75435-bd03-4bf7-bfb1-c223721da228","label":"user","payload":"next"},"subscriptionClass":"arrokothi.legacy.input","sourceCategory":"application_input","acceptancePosition":2,"disposition":{"kind":"acknowledged","activationId":"execution-13:arrokothi.sdk11:application36:4da75435-bd03-4bf7-bfb1-c223721da228/activation-1"},"reserved":false,"receipt":{"boundary":"input_ingress","token":"inp:execution-13:arrokothi.sdk11:application36:4da75435-bd03-4bf7-bfb1-c223721da228:2","position":2}}],"results":[]}
+✖ K14-R1-04: the controller hook receives initialized readable services (0.55025ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 1
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 310.417875
+
+✖ failing tests:
+
+test at docs/development/work/K1.4/review-01/probes.mjs:24:1
+✖ K14-R1-01: settling native work between lineage reads must not commit a human wait (7.736708ms)
+  AssertionError [ERR_ASSERTION]: Kernel WAITING strands READY native work, even across a second host run
+      at TestContext.<anonymous> (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.4/review-01/probes.mjs:82:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.4/review-01/probes.mjs:90:1
+✖ K14-R1-02: exact input retry keeps its originally selected child destination (10.845083ms)
+  Error [ApplicationInputError]: input key "reply" from this producer already names Event event-13:arrokothi.sdk79:execution-13:arrokothi.sdk11:application36:2e235401-5373-487c-9281-5c4f5c95d8f25:reply with different content; input identity is immutable
+      at submit (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/packages/sdk/src/application.ts:221:27)
+      at Object.input (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/packages/sdk/src/application.ts:335:14)
+      at TestContext.<anonymous> (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.4/review-01/probes.mjs:108:28)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    code: 'duplicate_conflict',
+    issues: undefined,
+    refusal: { classification: 'duplicate_conflict', reason: 'input key "reply" from this producer already names Event event-13:arrokothi.sdk79:execution-13:arrokothi.sdk11:application36:2e235401-5373-487c-9281-5c4f5c95d8f25:reply with different content; input identity is immutable', position: 1, executionId: 'execution-13:arrokothi.sdk11:application36:2e235401-5373-487c-9281-5c4f5c95d8f2' }
+  }
+
+test at docs/development/work/K1.4/review-01/probes.mjs:112:1
+✖ K14-R1-03: failure before forwarding accounts for every acknowledged input (4.146917ms)
+  AssertionError [ERR_ASSERTION]: unforwarded acknowledged Event event-creation-13:arrokothi.sdk11:application36:4da75435-bd03-4bf7-bfb1-c223721da228 needs its discarded result
+  + actual - expected
+
+  + undefined
+  - 'discarded'
+
+      at TestContext.<anonymous> (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.4/review-01/probes.mjs:137:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'discarded',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.4/review-01/probes.mjs:142:1
+✖ K14-R1-04: the controller hook receives initialized readable services (0.55025ms)
+  AssertionError [ERR_ASSERTION]: scheduler must exist during the hook
+  + actual - expected
+
+  + 'undefined'
+  - 'function'
+
+      at Object.controllers (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.4/review-01/probes.mjs:147:12)
+      at createApplication (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/packages/sdk/src/application.ts:148:42)
+      at TestContext.<anonymous> (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.4/review-01/probes.mjs:145:15)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
