@@ -2,6 +2,13 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **Round 2 payload C: `3e4c59faa7b6138693bb9094144cafff7a33158e`** (pushed, 2026-11-08).
+  - *Design:* [design check 03](https://github.com/ArrokothI/arrokothi/blob/3e55960e0493854490ac83a420ee12295c003e82/docs/development/work/K1.4/design-check-03.md)
+    (`3e55960e`) is APPROVED WITH REQUIRED CHANGES D03-CHK-01..03. The design 03 §8 addendum (`c306fe38`)
+    disposes them; [owner choice 04](owner-choice-04.md) is "Amend L-29".
+  - *C:* builds R1-01..05 with those changes. Packet verify CI run [`42451451228`](https://github.com/ArrokothI/arrokothi/actions/runs/42451451228) on it: `checks_passed`, 19/19 (repository tests 4,957/4,957).
+  - *H:* [implementation report 02](implementation-02.md), the 007 entry and this file. **WAITING_FOR_REVIEW.**
+  - *Next:* independent cumulative re-review of H over C and B; no self-acceptance.
 - **Correction round after review 01** (2026-11-07). Review 01 (Codex GPT-6, `codex/k1.4-review-01` at
   `0f415d6e016824ea9bddac0ca7aca3fd2d3accb5`, read by commit, not merged) is CHANGES REQUIRED of H `072f9627`:
   K14-R1-01..05; its brief 02 governs this round. [Design 03](design-03.md) answers brief 02's five questions
