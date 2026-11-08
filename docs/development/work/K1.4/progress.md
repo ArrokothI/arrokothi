@@ -2,6 +2,17 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **Narrow redesign after review 02** (2026-11-08).
+  - *Review:* [review 02](https://github.com/ArrokothI/arrokothi/blob/b655733b9b90810eca747c61b8f2095f5f201341/docs/development/work/K1.4/review-02.md)
+    (Codex GPT-6, `codex/k1.4-review-02` at `b655733b`) is CHANGES REQUIRED of H `96214874`: K14-R2-01 (a lost
+    post-commit enqueue strands settled READY work) and K14-R2-02 (no maintained discriminator for the `hold`
+    cascade). Stop-and-redesign fired.
+  - *Owner:* [owner choice 05](owner-choice-05.md) is "(a) Narrow redesign": only R2-01 and R2-02, with a new bounded
+    design check; route (d), a recorded limit, if review 03 finds a third CHANGES REQUIRED in this subsystem.
+  - *Design:* [design 04](design-04.md) answers brief 03: the Driver schedules unqueued READY members from its own
+    root, with no read (R2-01); one label per cleanup call site, a static census and a label-by-row ablation
+    oracle, plus live-lineage T13 (R2-02).
+  - *Next:* design check 04 on design 04. No code before it.
 - **Round 2 payload C: `3e4c59faa7b6138693bb9094144cafff7a33158e`** (pushed, 2026-11-08).
   - *Design:* [design check 03](https://github.com/ArrokothI/arrokothi/blob/3e55960e0493854490ac83a420ee12295c003e82/docs/development/work/K1.4/design-check-03.md)
     (`3e55960e`) is APPROVED WITH REQUIRED CHANGES D03-CHK-01..03. The design 03 §8 addendum (`c306fe38`)
