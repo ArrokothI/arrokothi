@@ -11,6 +11,12 @@
  * exchange learns of a commit that made nothing runnable. `signal` never reads: it resolves the
  * lineage from the roots this scheduler has already learned (a root never changes), and wakes every
  * waiter when the scope is unknown.
+ *
+ * `schedule` is the Driver's own route to runnable work (K1.4 design 04 §2, §6 D04-CHK-01): it adds an
+ * Execution the Driver saw READY to the lineage the Driver already knows, with no read and no `await`,
+ * so a native `enqueue` that failed after its commit cannot strand that work. Both routes share one
+ * insertion rule, so either may arrive first or twice. `claimsOf` counts claims per Execution, which
+ * binds the Driver's unschedulable-READY detector to an actual attempt.
  */
 
 import type { ExecutionId } from "@arrokothi/core";
@@ -36,6 +42,8 @@ export class LineageScheduler implements Scheduler {
   /** Native Execution -> its native root, as learned; roots are immutable. */
   private readonly roots = new Map<string, string>();
   private nextClaim = 1;
+  /** Execution -> how many times it was claimed. */
+  private readonly claims = new Map<string, number>();
   private readonly store: Pick<RuntimeStore, "readExecution"> | undefined;
 
   /** `store` resolves an Execution's native root; without one, every Execution is its own lineage. */
@@ -47,6 +55,24 @@ export class LineageScheduler implements Scheduler {
     const context = await this.store?.readExecution(executionId);
     const lineage = context?.rootExecutionId ?? executionId;
     if (context) this.roots.set(executionId, lineage);
+    this.add(executionId, lineage);
+  }
+
+  /**
+   * Adds `executionId` to `lineage`'s queue without reading anything: synchronous and infallible. An
+   * Execution already queued keeps its place; one that is claimed is requeued when its claim ends.
+   */
+  schedule(executionId: string, lineage: string): void {
+    this.roots.set(executionId, lineage);
+    this.add(executionId as ExecutionId, lineage);
+  }
+
+  /** How many times `executionId` has been claimed. */
+  claimsOf(executionId: string): number {
+    return this.claims.get(executionId) ?? 0;
+  }
+
+  private add(executionId: ExecutionId, lineage: string): void {
     if (this.claimedExecutions.has(executionId)) {
       this.pendingRequeue.set(executionId, lineage);
     } else if (!this.queue.some(entry => entry.executionId === executionId)) {
@@ -64,6 +90,7 @@ export class LineageScheduler implements Scheduler {
     const claim = { claimId: `clm_${this.nextClaim++}`, executionId: entry.executionId, workerId, lineage: entry.lineage };
     this.claimed.set(claim.claimId, claim);
     this.claimedExecutions.add(entry.executionId);
+    this.claims.set(entry.executionId, this.claimsOf(entry.executionId) + 1);
     return { claimId: claim.claimId, executionId: claim.executionId, workerId };
   }
 

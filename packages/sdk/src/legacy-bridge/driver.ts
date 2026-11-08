@@ -20,6 +20,11 @@
  * arrived, the Driver starts no native work for E and ends the lineage. Every exit that ends E goes
  * through `terminate`, which sets the sticky `ended` flag, ends the lineage, closes the ledger and
  * offers the Outcome. `requestCancellation` sets the flag synchronously and ends the lineage too.
+ * If ending the lineage fails, `terminate` reports a protocol hold through the Kernel alone: no native
+ * read, scheduling or cascade sits on that path (design 04 §6, D04-CHK-02).
+ *
+ * Scheduling (design 04 §2, §6 D04-CHK-01): committed READY is the fact and a queue entry only a hint.
+ * Whenever the lineage's decision is `continue`, the Driver schedules every READY member itself.
  */
 
 import { Harness } from "@arrokothi/core";
@@ -89,10 +94,35 @@ export interface GateDetail {
   readonly member?: string;
 }
 
-/** The call site that ends a lineage; each is ablated separately by B-TERM-ABLATION. */
-export type TerminateSite =
-  | "cancellation" | "progress" | "root-missing" | "timeout" | "initial-input" | "forward" | "exception"
-  | "complete" | "fail" | "native-cancelled" | "hold";
+/**
+ * One label per call site that ends a lineage (design 04 §3.1). B-TERM-CENSUS derives the call sites from
+ * the source and requires this tuple, the labels used and B-TERM-ORACLE's table to agree.
+ */
+export const TERMINATE_SITES = Object.freeze([
+  "cancel.request", "cancel.root-created", "cancel.exchange-start", "cancel.forward-loop", "cancel.step-ended", "cancel.application",
+  "progress", "root-missing", "timeout", "forward", "initial-input", "exception",
+  "complete", "fail", "native-cancelled", "hold",
+] as const);
+
+export type TerminateSite = (typeof TERMINATE_SITES)[number];
+
+/**
+ * A member the store reports READY at a revision where the Driver already scheduled it and saw it
+ * claimed without an Activation: the store broke atomic visibility (design 04 §2.8, D04-CHK-01).
+ * Revision -1 names the lineage instead: a `continue` with nothing queued after reconciliation.
+ */
+export class UnschedulableReadyError extends Error {
+  readonly member: string;
+  readonly revision: number;
+  constructor(member: string, revision: number) {
+    super(revision < 0
+      ? `lineage ${member} reported a READY member but has nothing queued after reconciliation`
+      : `native member ${member} stays READY at revision ${revision} after a claim that ran no Activation`);
+    this.name = "UnschedulableReadyError";
+    this.member = member;
+    this.revision = revision;
+  }
+}
 
 export class RootExistsError extends Error {
   constructor(executionId: string) {
@@ -130,6 +160,8 @@ export class LegacyDriver implements ExecutionDriver {
   /** Per Execution, Events attempted in an exchange whose acknowledging Outcome was not accepted. */
   private readonly attempted = new Map<string, Set<string>>();
   private readonly stepListeners = new Set<(record: ActivationRecord) => void>();
+  /** Member -> the revision at which the Driver scheduled it and its claim count then (D04-CHK-01). */
+  private readonly scheduled = new Map<string, { readonly revision: number; readonly claims: number }>();
   private busyCount = 0;
 
   constructor(options: LegacyDriverOptions) {
@@ -195,7 +227,7 @@ export class LegacyDriver implements ExecutionDriver {
     try {
       const handle = await creation;
       if (handle.executionId !== executionId) throw new Error(`native root ${handle.executionId} does not carry the Kernel ID ${executionId}`);
-      if (this.ended.has(executionId)) await this.endLineage(executionId, "cancellation");
+      if (this.ended.has(executionId)) await this.endLineage(executionId, "cancel.root-created");
       return handle;
     } finally {
       this.creating.delete(executionId);
@@ -225,7 +257,7 @@ export class LegacyDriver implements ExecutionDriver {
   requestCancellation(request: CancellationRequest): undefined {
     this.ended.add(request.executionId);
     this.scheduler.wake(request.executionId);
-    this.cancelling.set(request.executionId, this.endLineage(request.executionId, "cancellation").catch(() => undefined));
+    this.cancelling.set(request.executionId, this.endLineage(request.executionId, "cancel.request").catch(() => undefined));
     return undefined;
   }
 
@@ -276,7 +308,7 @@ export class LegacyDriver implements ExecutionDriver {
     let progress: BridgeProgress | null = null;
     try {
       await this.rootSettled(executionId);
-      if (this.ended.has(executionId)) return void await this.endLineage(executionId, "cancellation");
+      if (this.ended.has(executionId)) return void await this.endLineage(executionId, "cancel.exchange-start");
       try {
         progress = this.progressOf(activation);
       } catch (cause) {
@@ -297,7 +329,7 @@ export class LegacyDriver implements ExecutionDriver {
       }
       const attempted = this.attemptedOf(executionId);
       for (const [index, event] of activation.events.entries()) {
-        if (this.ended.has(executionId)) return void await this.endLineage(executionId, "cancellation");
+        if (this.ended.has(executionId)) return void await this.endLineage(executionId, "cancel.forward-loop");
         if (ledger.isEmpty(index)) continue;
         // An Event a refused Outcome left attempted is never forwarded a second time (D03-CHK-02).
         if (attempted.has(event.eventId)) {
@@ -328,13 +360,19 @@ export class LegacyDriver implements ExecutionDriver {
         decision = await this.observe(executionId);
       } else {
         const stepped = await this.step(executionId);
-        if (stepped === null) return void await this.endLineage(executionId, "cancellation");
+        if (stepped === null) return void await this.endLineage(executionId, "cancel.step-ended");
         decision = stepped;
       }
       await this.submit(activation, grant, progress, ledger, decision);
     } catch (cause) {
       const code = cause instanceof UnrepresentableValueError ? FAILURE_CODES.valueUnrepresentable : FAILURE_CODES.nativeError;
-      await this.terminate(activation, grant, ledger, progress, failure(code, bounded(cause)), "exception").catch(() => undefined);
+      try {
+        await this.terminate(activation, grant, ledger, progress, failure(code, bounded(cause)), "exception");
+      } catch (last) {
+        // The last report needs only the Kernel (D04-CHK-02).
+        this.ended.add(executionId);
+        this.report(activation, `the legacy Driver could not end ${executionId}'s exchange after ${bounded(cause)}: ${bounded(last)}`);
+      }
     } finally {
       this.setBusy(-1);
     }
@@ -342,7 +380,8 @@ export class LegacyDriver implements ExecutionDriver {
 
   /**
    * Runs native steps until the lineage reaches a decision the Kernel can record. Returns `null`
-   * when E ended meanwhile. An `open` lineage parks the task until its lineage signals a change.
+   * when E ended meanwhile. Only an `open` lineage parks the task, until its lineage signals a change;
+   * a `continue` never does.
    */
   private async step(executionId: string): Promise<LineageDecision | null> {
     for (;;) {
@@ -361,11 +400,13 @@ export class LegacyDriver implements ExecutionDriver {
       const decision = await this.observe(executionId);
       if (decision.kind !== "open" && decision.kind !== "continue") return decision;
       if (decision.kind === "continue") {
-        // A step just ran: give the Kernel its turn (one step per continue, B-CONTINUE).
+        // `observe` scheduled every READY member (design 04 §6, D04-CHK-01). A step just ran: give the
+        // Kernel its turn (one step per continue, B-CONTINUE). Otherwise step what was scheduled.
         if (record) return decision;
-        if (this.scheduler.hasQueued(executionId)) continue;
-        // READY in the store but not queued yet: the post-commit enqueue is still in flight, so
-        // wait for it rather than split the work across exchanges.
+        // A `continue` names a READY member, which `reconcile` just queued: an empty lineage queue here
+        // is a Driver defect, failed explicitly rather than spun or parked.
+        if (!this.scheduler.hasQueued(executionId)) throw new UnschedulableReadyError(executionId, -1);
+        continue;
       }
       const park = this.gate("park", executionId);
       if (park) await park;
@@ -384,6 +425,7 @@ export class LegacyDriver implements ExecutionDriver {
     let first = await this.collect(executionId, collects);
     for (;;) {
       const decision = classifyLineage(first);
+      if (decision.kind === "continue") this.reconcile(executionId, first);
       if (decision.kind !== "await") return decision;
       collects += 1;
       const second = await this.collect(executionId, collects);
@@ -393,6 +435,26 @@ export class LegacyDriver implements ExecutionDriver {
         return decision;
       }
       first = second;
+    }
+  }
+
+  /**
+   * Schedules every READY member of a `continue` collect into E's lineage, with no read (design 04
+   * §2.1, §6 D04-CHK-01). Throws `UnschedulableReadyError` when a member is READY again at the revision
+   * at which it was scheduled although it was claimed since: that claim ran no Activation.
+   */
+  reconcile(executionId: string, records: LineageRecords): void {
+    for (const [member, record] of records.members) {
+      if (record.context.lifecycle !== "READY") continue;
+      const revision = record.context.revision;
+      const claims = this.scheduler.claimsOf(member);
+      const prior = this.scheduled.get(member);
+      if (prior && prior.revision === revision) {
+        if (claims > prior.claims) throw new UnschedulableReadyError(member, revision);
+      } else {
+        this.scheduled.set(member, { revision, claims });
+      }
+      this.scheduler.schedule(member, executionId);
     }
   }
 
@@ -581,11 +643,27 @@ export class LegacyDriver implements ExecutionDriver {
   ): Promise<void> {
     const executionId = activation.executionId;
     this.ended.add(executionId);
-    await this.endLineage(executionId, site);
+    try {
+      await this.endLineage(executionId, site);
+    } catch (cause) {
+      // The lineage is stopped (`ended`) but its cleanup is unconfirmed: report that, through the
+      // Kernel alone, and acknowledge nothing (D04-CHK-02).
+      const ending = next.step === "fail" ? `; it was ending with ${new TextDecoder().decode(next.error)}` : "";
+      return this.report(activation, `native cleanup at ${site} failed, so ${executionId}'s lineage is stopped but not confirmed ended: ${bounded(cause)}${ending}`);
+    }
     const emissions = this.ingressEmissions(activation, ledger, ledger.close(true));
     if (emissions === null) return this.hold(activation, `the ingress accounting of ${activation.activationId} cannot be encoded`);
     const state = progress ?? { v: 1 as const, root: executionId, emissionCursor: 0, pauses: [] };
     this.offer(activation, grant, state, emissions, next);
+  }
+
+  /** `hold` that cannot throw: the last report of an exchange, needing nothing native (D04-CHK-02). */
+  private report(activation: Activation, diagnostic: string): void {
+    try {
+      this.hold(activation, diagnostic.length > MAX_DIAGNOSTIC ? diagnostic.slice(0, MAX_DIAGNOSTIC) : diagnostic);
+    } catch {
+      // The Kernel itself failed; nothing else is left to report to.
+    }
   }
 
   /** Reports a protocol failure: the Kernel holds the exchange, and its batch stays unacknowledged. */

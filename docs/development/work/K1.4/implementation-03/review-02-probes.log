@@ -1,0 +1,18 @@
+review 02 probes.mjs at b655733b, relative imports rebound to this tree; node v26.10.0 (trailing spaces stripped)
+✔ facade preserves real commit and rollback state and original result/error (7.833333ms)
+✔ a hold-cascade removal is non-equivalent for an accounting failure with a live child (143.702083ms)
+ℹ {"ablate":false,"holdCalls":1,"root":"CANCELLED","child":"CANCELLED","hold":"protocol_failure"}
+ℹ {"ablate":true,"holdCalls":1,"root":"WAITING","child":"WAITING","hold":"protocol_failure"}
+✔ a delayed commit signal wakes an already parked no-wake lineage (78.222959ms)
+✔ a one-shot post-commit enqueue lookup failure cannot silently strand settled native work (37.834875ms)
+ℹ {"faults":1,"handled":1,"reason":"confirmation_required","secondReason":"confirmation_required","kernel":"WAITING","native":"WAITING","queued":0,"holds":[],"operations":[{"status":"settled","dispatch":"dispatched"},{"status":"pending","dispatch":"not_dispatched"}]}
+✔ the same lost-enqueue mechanism strands a settled model resumption (40.428458ms)
+ℹ {"faults":1,"reason":"completed","secondReason":"completed","kernel":"COMPLETED","native":"COMPLETED","queued":0,"holds":[],"resumptions":[{"state":"settled"}]}
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 474.809458

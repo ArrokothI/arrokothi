@@ -1012,7 +1012,7 @@ managed native job. Definition registration stays idempotent; no authority is in
 requirements or catalogs. A direct `@arrokothi/core` Harness remains available and is not routed through
 the Kernel.
 
-**The bridge API (K1.4, design [01](work/K1.4/design-01.md), [02](work/K1.4/design-02.md) and [03](work/K1.4/design-03.md)).**
+**The bridge API (K1.4, design [01](work/K1.4/design-01.md), [02](work/K1.4/design-02.md), [03](work/K1.4/design-03.md) and [04](work/K1.4/design-04.md)).**
 - `start` validates and preflights, creates the Kernel Execution atomically with its initial input
   (`creationKey`, at most 64 characters, exact replay; absolute `executionDeadline`), then creates the
   native root synchronously under the same ID inside a one-shot root-identity scope. A native creation
@@ -1022,7 +1022,10 @@ the Kernel.
   `await` (only when every member is in a human pause), or open (no Outcome yet; slow native work stays
   `RUNNING` with no Kernel wait). An `await` is committed only when a second read of the lineage equals the
   one it was classified from, so it describes one instant of the native store. The native Runtime writes
-  through a store facade that wakes a parked exchange after every transaction in its lineage. An `await`
+  through a store facade that wakes a parked exchange after every transaction in its lineage. Whenever the
+  decision is `continue`, the Driver queues every READY member itself, with no store read, so a native
+  enqueue that failed after its commit strands nothing. A member the store still shows READY at a revision
+  where its claim ran no Activation fails the Execution `native_error`. An `await`
   declares input subscriptions `arrokothi.legacy.input` and `arrokothi.legacy.confirmation`, with an
   optional `humanWaitDeadlineMs` deadline anchored per pause.
 - Emissions per Outcome: the batch's `arrokothi.bridge.ingress_result`, then the `arrokothi.bridge.pause`
@@ -1034,7 +1037,8 @@ the Kernel.
   Values over the core limits fail the Execution as `arrokothi.bridge.value_unrepresentable`.
 - `input`, `resolveConfirmation` and `cancel` are Kernel calls. A keyed `input` retry with the destination
   omitted reuses the destination the Kernel recorded for that key. Cancellation, every Driver-originated
-  `fail` and every native terminal root end the whole native lineage. The `controllers(services)` hook
+  `fail` and every native terminal root end the whole native lineage. If ending it fails, the Driver stops
+  the lineage and reports a protocol-failure hold, through the Kernel alone. The `controllers(services)` hook
   receives the complete services object, with the lineage scheduler the native Runtime uses. A refused Driver `fail` becomes a protocol-failure hold through a
   separate control-scoped caller.
 - The host dispatches READY Executions from a candidate set and fires due Kernel timers at every host entry;

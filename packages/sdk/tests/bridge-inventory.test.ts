@@ -221,6 +221,20 @@ const confirming = () => {
 // -- the rows --------------------------------------------------------------------------------------
 
 type Disposition = "P" | "PD" | "M" | "F" | "N" | "note" | "P (new)" | "PD / M";
+/** A store whose next lookup inside `LineageScheduler.enqueue` fails once while armed (review 02 K14-R2-01). */
+class LostEnqueueStore extends InMemoryRuntimeStore {
+  armed = false;
+  lost = 0;
+  override async readExecution(id: Parameters<InMemoryRuntimeStore["readExecution"]>[0]) {
+    if (this.armed && new Error().stack!.includes("LineageScheduler.enqueue")) {
+      this.armed = false;
+      this.lost += 1;
+      throw new Error("injected: one post-commit lineage lookup failed");
+    }
+    return super.readExecution(id);
+  }
+}
+
 interface Row { readonly id: string; readonly disposition: Disposition; readonly feature: string; readonly covers: readonly string[]; readonly check: () => Promise<void> }
 
 const runtimeKey = (name: string) => `ApplicationOptions.runtime.${name}`;
@@ -803,28 +817,40 @@ const ROWS: readonly Row[] = [
       assert.equal((await app.runUntilBlocked(executionId)).reason, "completed");
       assert.equal(resolves, 1);
     } },
-  { id: "G-SLOWMODEL", disposition: "P", feature: "a slow model call yields and resumes exactly once; the exchange stays RUNNING with no Kernel wait",
+  { id: "G-SLOWMODEL", disposition: "P", feature: "a slow model call yields and resumes exactly once; the exchange stays RUNNING with no Kernel wait, also when one post-commit scheduling lookup fails (design 04, B-ENQUEUE-LOST-MODEL); a settlement whose own transaction fails stays L-31's",
     covers: [],
     async check() {
-      const provider = createDeferredModelProvider("slow");
-      const app = createApplication({ models: models(provider), runtime: { inlineWait: createNoInlineWaitBudget() } });
-      const { executionId } = await app.start({ definition: answerAgent(), input: { label: "user", payload: "q" } });
-      assert.equal((await app.runUntilBlocked(executionId, { timeoutMs: 20, pollIntervalMs: 1 })).reason, "timeout");
-      assert.deepEqual([app.inspect(executionId).state, app.inspect(executionId).wait], ["RUNNING", null]);
-      provider.settle({ text: "Ready" });
-      assert.equal((await app.runUntilBlocked(executionId)).reason, "completed");
-      assert.equal(provider.invocationCount, 1);
+      for (const lose of [false, true]) {
+        const store = new LostEnqueueStore();
+        const provider = createDeferredModelProvider("slow");
+        const app = createApplication({ models: models(provider), runtime: { store, inlineWait: createNoInlineWaitBudget() } });
+        const { executionId } = await app.start({ definition: answerAgent(), input: { label: "user", payload: "q" } });
+        assert.equal((await app.runUntilBlocked(executionId, { timeoutMs: 20, pollIntervalMs: 1 })).reason, "timeout");
+        assert.deepEqual([app.inspect(executionId).state, app.inspect(executionId).wait], ["RUNNING", null]);
+        store.armed = lose;
+        provider.settle({ text: "Ready" });
+        assert.equal((await app.runUntilBlocked(executionId)).reason, "completed");
+        assert.equal(provider.invocationCount, 1);
+        assert.equal(store.lost, lose ? 1 : 0);
+      }
     } },
-  { id: "G-SLOWCAP", disposition: "P", feature: "a slow capability settles later inside the open exchange",
+  { id: "G-SLOWCAP", disposition: "P", feature: "a slow capability settles later inside the open exchange, also when one post-commit scheduling lookup fails (design 04, B-ENQUEUE-LOST-CAP); a settlement whose own transaction fails stays L-31's",
     covers: [],
     async check() {
-      const gate = deferred();
-      const app = createApplication({ models: models(scripted(readThenAnswer())), authorizer: allowDocs(), capabilities: { catalog, executor: { execute: async () => { await gate.promise; return { status: "success", observation: "done" }; } } } });
-      const { executionId } = await app.start({ definition: toolAgent(), operationAuthority: { operations: [DOCS] }, input: { label: "user", payload: "read" } });
-      assert.equal((await app.runUntilBlocked(executionId, { timeoutMs: 20, pollIntervalMs: 1 })).reason, "timeout");
-      assert.equal(app.inspect(executionId).wait, null);
-      gate.resolve();
-      assert.equal((await app.runUntilBlocked(executionId)).reason, "completed");
+      for (const lose of [false, true]) {
+        const gate = deferred();
+        let calls = 0;
+        const store = new LostEnqueueStore();
+        const app = createApplication({ models: models(scripted(readThenAnswer())), authorizer: allowDocs(), runtime: { store, inlineWait: createNoInlineWaitBudget() }, capabilities: { catalog, executor: { execute: async () => { calls++; await gate.promise; return { status: "success", observation: "done" }; } } } });
+        const { executionId } = await app.start({ definition: toolAgent(), operationAuthority: { operations: [DOCS] }, input: { label: "user", payload: "read" } });
+        assert.equal((await app.runUntilBlocked(executionId, { timeoutMs: 20, pollIntervalMs: 1 })).reason, "timeout");
+        assert.equal(app.inspect(executionId).wait, null);
+        store.armed = lose;
+        gate.resolve();
+        assert.equal((await app.runUntilBlocked(executionId)).reason, "completed");
+        assert.equal(calls, 1);
+        assert.equal(store.lost, lose ? 1 : 0);
+      }
     } },
   { id: "G-PROVIDERS", disposition: "P", feature: "the Gemini provider and the Strands executor through the controllers hook",
     covers: [],

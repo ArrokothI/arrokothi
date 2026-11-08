@@ -72,6 +72,11 @@
   - `bridge-ingress.test.ts`: B-INPUT-RETRY, B-ACK-EXITS, B-ACK-ABLATION, B-ACK-BOUND and B-ACK-ONCE.
   - `bridge-terminate.test.ts`: B-TERM-TRIGGERS (T1–T11, with T6 recorded) and B-TERM-ABLATION (12 site
     ablations).
+
+    > **Correction, 2026-11-08 (round 3, after [review 02](https://github.com/ArrokothI/arrokothi/blob/b655733b9b90810eca747c61b8f2095f5f201341/docs/development/work/K1.4/review-02.md) K14-R2-02).** B-TERM-ABLATION had 12 tests:
+    > 11 removals over nine labels, plus one inventory assertion. It derived its sites from the trigger rows,
+    > so `hold` and `initial-input` had no removal, and removing the `hold` cascade survived the whole focused
+    > corpus. Coverage was not complete. Round 3 derives the sites from the source instead (design 04 §3, §6).
   - `bridge-rig.ts`: a Driver-level rig with the scripted native controllers from `@arrokothi/core/testing`.
 - Extended:
   - `bridge-classify.test.ts`: B-QUIESCE-CELLS in the record model, with operation status and outcome,
@@ -98,6 +103,9 @@
 - `mutations.json`, `refusal-guards.json` and `value-cost.json` are byte-identical to B.
 - [`implementation-02/ablate.py`](implementation-02/ablate.py) and its log
   [`ablations.log`](implementation-02/ablations.log), run at C's tree.
+
+  > **Correction, 2026-11-08 (round 3).** The repository ignores `*.log`, so `ablations.log` was not committed
+  > at H `96214874`. Round 3 commits that same file, unchanged, with `git add -f`.
 
 **Documents:**
 - [017](../../017-known-limitations.md) L-29: the third accounting case, per owner choice 04.
@@ -189,6 +197,13 @@
   `executionDeadline`.
   - This is a native Runtime failure path, the same at the reviewed H. With a forward it surfaces as
     `unknown` (B-ACK-EXITS); elsewhere it surfaces as L-31's open exchange.
+
+  > **Correction, 2026-11-08 (round 3, after [review 02](https://github.com/ArrokothI/arrokothi/blob/b655733b9b90810eca747c61b8f2095f5f201341/docs/development/work/K1.4/review-02.md) K14-R2-01).** The attribution to L-31 is
+  > retracted. L-31 covers sibling work still in flight, or work that never settles. Here the work had settled
+  > and committed READY; only its queue entry was lost. Design 03 §8 required this case to progress, and this
+  > round did not build that. So the G-SLOWCAP and G-SLOWMODEL rows overclaimed native progress at C: neither
+  > held under one failed post-commit lookup. Round 3 closes the case (design 04 §2, §6): the Driver schedules
+  > every READY member on each `continue`, and both rows now run the one-fault variant. L-31 is unchanged.
 - **Store properties the observation relies on.** The double collect relies on four properties of the native
   store port: atomic visibility, context revisions, no deletes, and one-way record states.
   - The in-memory store and the published store contract test provide the first three. B-RECORD-ONEWAY guards

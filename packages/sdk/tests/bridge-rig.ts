@@ -22,9 +22,18 @@ export type Program = Parameters<typeof scriptedAgentDefinition>[0]["program"];
 
 export const rigAuthority = { operations: ["slow", "human"].map(operation => ({ capability: "test", operation })) };
 
+export interface RigOptions {
+  /** The native store; a subclass injects faults or holds a write. */
+  readonly store?: InMemoryRuntimeStore;
+  /** The start Event's legacy input; `null`, the default, is the no-input start. */
+  readonly startInput?: { readonly label: string; readonly payload?: unknown } | null;
+  /** Leave native root creation to the caller, through the returned `createRoot`. */
+  readonly deferRoot?: boolean;
+}
+
 /** A rig whose root runs `programs.root`; every other entry is a definition a step may spawn. */
-export async function scriptedRig(programs: Record<string, Program>, executor?: CapabilityExecutor) {
-  const store = new InMemoryRuntimeStore();
+export async function scriptedRig(programs: Record<string, Program>, executor?: CapabilityExecutor, options: RigOptions = {}) {
+  const store = options.store ?? new InMemoryRuntimeStore();
   const definitions = new InMemoryDefinitionStore();
   const scheduler = new LineageScheduler(store);
   let host: ApplicationHost | undefined;
@@ -51,12 +60,13 @@ export async function scriptedRig(programs: Record<string, Program>, executor?: 
     creationKey: "scripted", scope: "application", definitionRevision: "scripted-root",
     runtimeContractRevision: RUNTIME_CONTRACT_REVISION, progressCodec: PROGRESS_CODEC,
     authorityContext: encode({ operationAuthority: rigAuthority }, "creation parameters"),
-    initialInput: { kind: INPUT_KINDS.start, payload: encode({ input: null }, "initial input") },
+    initialInput: { kind: INPUT_KINDS.start, payload: encode({ input: options.startInput ?? null }, "initial input") },
   });
   assert.ok(created.ok);
   const executionId = created.value.executionId;
   host.setKnown(executionId, "READY");
-  await driver.createRoot(executionId, { definition: definitionRef(stored), operationAuthority: rigAuthority, structuralSpawnBudget: 4 } as never);
+  const createRoot = () => driver.createRoot(executionId, { definition: definitionRef(stored), operationAuthority: rigAuthority, structuralSpawnBudget: 4 } as never);
+  if (!options.deferRoot) await createRoot();
   const h = host;
   /** Drives until E's Kernel state is not RUNNING or READY, or the budget ends; returns the state. */
   const drive = async (budgetMs: number) => {
@@ -92,5 +102,5 @@ export async function scriptedRig(programs: Record<string, Program>, executor?: 
     await drive(20);
     return h.runUntilIdle();
   };
-  return { driver, host: h, executionId, drive, input, members, laterSteps, store };
+  return { driver, host: h, executionId, drive, input, members, laterSteps, store, createRoot };
 }

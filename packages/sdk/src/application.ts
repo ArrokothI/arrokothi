@@ -377,7 +377,7 @@ export function createApplication(options: ApplicationOptions = {}): Application
       kernelHost.setKnown(executionId, answer.value.state);
       await driver.cancellationSettled(executionId);
       // Again after any step that was running: a child it spawned is ended too (D01-CHK-01).
-      await driver.endLineage(executionId, "cancellation");
+      await driver.endLineage(executionId, "cancel.application");
       return answer.value;
     },
     inspect: executionId => kernelHost.inspect(executionId),

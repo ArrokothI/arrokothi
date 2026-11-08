@@ -1,0 +1,64 @@
+design check 04 appendix attacks.mjs at dc21f8e9 (@ROOT@ = this tree), without install-design.mjs; each test asserts its defect exists, so a failure means the defect no longer reproduces; node v26.10.0 (trailing spaces stripped)
+✖ D04 idle-only reconciliation starves a settled READY child while another member continues (36.172584ms)
+ℹ {"faults":1,"calls":1,"rootSteps":19,"childSteps":1,"child":"COMPLETED","queued":["root"],"holds":[]}
+✖ postcommit failure plus a cleanup read failure silently loses the exception report (87.762334ms)
+ℹ {"faults":2,"kernel":"RUNNING","native":"READY","holds":[{"cause":"protocol_failure","reason":"the response of the attempt at writer epoch 1 could not be classified as an Outcome: native cleanup at exception failed, so execution-13:arrokothi.sdk11:application36:707c48c1-1a75-46c0-8d9c-689c776eb937's lineage is stopped but not confirmed ended: Error: native reads unavailable; it was ending with {\"code\":\"arrokothi.bridge.native_error\",\"message\":\"Error: native reads unavailable\"}","activationId":"execution-13:arrokothi.sdk11:application36:707c48c1-1a75-46c0-8d9c-689c776eb937/activation-1","writerEpoch":1,"permittedNextActions":["request_takeover","submit_outcome"]}]}
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 286.0865
+
+✖ failing tests:
+
+test at ../../../../..<probes>/attacks.mjs:9:1
+✖ D04 idle-only reconciliation starves a settled READY child while another member continues (36.172584ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'COMPLETED'
+  - 'READY'
+
+      at TestContext.<anonymous> (file://<probes>/attacks.mjs:33:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'COMPLETED',
+    expected: 'READY',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../..<probes>/attacks.mjs:41:1
+✖ postcommit failure plus a cleanup read failure silently loses the exception report (87.762334ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   {
+  +     activationId: 'execution-13:arrokothi.sdk11:application36:707c48c1-1a75-46c0-8d9c-689c776eb937/activation-1',
+  +     cause: 'protocol_failure',
+  +     permittedNextActions: [
+  +       'request_takeover',
+  +       'submit_outcome'
+  +     ],
+  +     reason: `the response of the attempt at writer epoch 1 could not be classified as an Outcome: native cleanup at exception failed, so execution-13:arrokothi.sdk11:application36:707c48c1-1a75-46c0-8d9c-689c776eb937's lineage is stopped but not confirmed ended: Error: native reads unavailable; it was ending with {"code":"arrokothi.bridge.native_error","message":"Error: native reads unavailable"}`,
+  +     writerEpoch: 1
+  +   }
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file://<probes>/attacks.mjs:59:125)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { cause: 'protocol_failure', reason: `the response of the attempt at writer epoch 1 could not be classified as an Outcome: native cleanup at exception failed, so execution-13:arrokothi.sdk11:application36:707c48c1-1a75-46c0-8d9c-689c776eb937's lineage is stopped but not confirmed ended: Error: native reads unavailable; it was ending with {"code":"arrokothi.bridge.native_error","message":"Error: native reads unavailable"}`, activationId: 'execution-13:arrokothi.sdk11:application36:707c48c1-1a75-46c0-8d9c-689c776eb937/activation-1', writerEpoch: 1, permittedNextActions: [Array] } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

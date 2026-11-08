@@ -81,13 +81,17 @@
       "disposition": "N",
       "property": "K1.4 correction (design 03 R1-01, R1-04): the validated observation under real native settlements at named gates, the commit signal, and the controller hook's initialized services."
     },
+    "packages/sdk/tests/bridge-progress.test.ts": {
+      "disposition": "N",
+      "property": "K1.4 correction (design 04 R2-01, design check 04 D04-CHK-01/02): a failed post-commit enqueue cannot strand settled work; the Driver reconciles READY members on every continue; an unschedulable member fails explicitly; a failed cleanup is still reported as a Kernel hold; the native producer census."
+    },
     "packages/sdk/tests/bridge-rig.ts": {
       "disposition": "S",
       "property": "A Driver-level rig with scripted native controllers for the bridge corpus."
     },
     "packages/sdk/tests/bridge-terminate.test.ts": {
       "disposition": "N",
-      "property": "K1.4 correction (design 03 R1-05): each terminal trigger with a live descendant ends the native lineage; per-site ablations."
+      "property": "K1.4 corrections (design 03 R1-05, design 04 R2-02): each terminal trigger ends the native lineage; a source-derived census of cleanup call sites and a (row, label) oracle with executed kills and equivalences."
     },
     "packages/sdk/tests/bridge-values.test.ts": {
       "disposition": "N",
