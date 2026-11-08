@@ -80,7 +80,18 @@ third-party dependency changed. `packages/kernel/src` is byte-identical to B.
 - D: `"private": true`, guarded by `check:builder-docs`.
 
 **Corpus.** Every item of design 02 §3 is a maintained test, and all but four are named by their IDs in
-`packages/sdk/tests` (checked mechanically against `test`/`describe` names). The four:
+`packages/sdk/tests` (checked mechanically against `test`/`describe` names).
+
+> **Correction, 2026-11-08 (round 2, after [review 01](https://github.com/ArrokothI/arrokothi/blob/0f415d6e016824ea9bddac0ca7aca3fd2d3accb5/docs/development/work/K1.4/review-01.md)
+> K14-R1-05).** This claim was false for B-FAIL-CASCADE. The mechanical check matched test names only, and
+> the closure rested on every Driver-originated exit routing through the shared `finish`/`cascadeDescendants`
+> helpers. B-FAIL-CASCADE's named tests ran two exits only: a native-store failure on a root with no
+> descendant, and a wait-deadline expiry with one called child. They did not run each Driver-originated
+> `fail`, or a root `COMPLETED` with a live descendant, as design 02 §3 required. Round 2 adds the trigger
+> table B-TERM-TRIGGERS (T1–T12) and the per-site ablation B-TERM-ABLATION; see
+> [implementation report 02](implementation-02.md). The remainder of this report is unchanged.
+
+The four:
 - B-START-CANCEL-RUN is a named case inside the B-CANCEL-PREROOT test;
 - B-SURFACE is the two restated tests of `packages/kernel/tests/binding-surface.test.ts` (its M row in the mapping);
 - the builder-docs and zone controls are in `tests/conformance/architecture`;

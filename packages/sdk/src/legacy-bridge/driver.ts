@@ -1,5 +1,5 @@
 /**
- * The legacy Driver (K1.4 design 01, as changed by design 02).
+ * The legacy Driver (K1.4 design 01, as changed by designs 02 and 03).
  *
  * The 0.8.x `Harness` is this Driver's native Runtime: a managed native job. Each Kernel Execution
  * E owns one native lineage whose root has the ID E. The Kernel sees only this Driver's public
@@ -8,10 +8,18 @@
  *
  * This is the only module in `packages/sdk/src` that constructs a `Harness` (K14-3).
  *
- * Termination rule (D01-CHK-01): once E is terminal, or a cancellation request for E arrived, the
- * Driver starts no native work for E and ends the lineage. The `ended` flag is set synchronously
- * by `requestCancellation` and by the Driver before any Outcome that ends E, and every task checks
- * it before each forward and around each native step.
+ * Observation (design 03 §2): the lineage is read as a projection, and an `await` is committed only
+ * when two consecutive collects are structurally equal, so it describes one instant of the store.
+ * The native Runtime writes through a facade that signals the lineage after every transaction, and an
+ * exchange registers for that signal before it reads, so no committed change is missed.
+ *
+ * Accounting (design 03 §4, owner choice 04): each exchange's `BatchLedger` gives every Event of
+ * its batch exactly one `ingress_result` entry, on every exit, and is the only source of them.
+ *
+ * Termination (D01-CHK-01, design 03 §5): once E is terminal, or a cancellation request for E
+ * arrived, the Driver starts no native work for E and ends the lineage. Every exit that ends E goes
+ * through `terminate`, which sets the sticky `ended` flag, ends the lineage, closes the ledger and
+ * offers the Outcome. `requestCancellation` sets the flag synchronously and ends the lineage too.
  */
 
 import { Harness } from "@arrokothi/core";
@@ -23,14 +31,17 @@ import type {
   Activation, ActivationEvent, AuthenticatedCaller, DeliverySettlement, EmissionProposal, ExecutionCoordinator,
   ExecutionDriver, OutcomeEnvelope, OutcomeNext, SubmissionGrant, WaitDeclaration,
 } from "@arrokothi/kernel";
-import { classifyLineage, isTerminalLifecycle } from "./classify.ts";
+import { classifyLineage, isTerminalLifecycle, projectMember, sameObservation } from "./classify.ts";
 import type { LineageDecision, LineageRecords, MemberRecords } from "./classify.ts";
 import {
-  EMISSION_KINDS, FAILURE_CODES, INPUT_KINDS, ProtocolShapeError, TIMEOUT_KIND, UnrepresentableValueError,
+  EMISSION_KINDS, FAILURE_CODES, INPUT_KINDS, ProtocolShapeError, UnrepresentableValueError,
   encode, failureValue, readConfirmationPayload, readInputPayload, readProgress, readStartPayload,
 } from "./codec.ts";
 import type { BridgeProgress, IngressResult, Pause, PauseDeadline } from "./codec.ts";
-import { LineageScheduler, lineageWorker } from "./lineage-scheduler.ts";
+import { CommitSignallingStore } from "./commit-signal-store.ts";
+import { BatchLedger, INGRESS_REASONS, INGRESS_STATUS } from "./ledger.ts";
+import { lineageWorker } from "./lineage-scheduler.ts";
+import type { LineageScheduler } from "./lineage-scheduler.ts";
 import { RootIdentityScope } from "./root-ids.ts";
 
 type CancellationRequest = Parameters<NonNullable<ExecutionDriver["requestCancellation"]>>[0];
@@ -51,6 +62,8 @@ export interface ExchangeReport {
 export interface LegacyDriverOptions {
   /** The native Runtime's options, without the scheduler and ID generator the Driver supplies. */
   readonly native: Omit<HarnessOptions, "scheduler" | "ids">;
+  /** The lineage scheduler, built before the controller hook runs (design 03 R1-04). */
+  readonly scheduler: LineageScheduler;
   readonly ids: IdGenerator;
   /** The Kernel clock reading, for wait deadlines. */
   readonly now: () => number;
@@ -58,6 +71,28 @@ export interface LegacyDriverOptions {
   /** Called after each exchange's Outcome is submitted, and when a task's busy state changes. */
   readonly onChange: (report: ExchangeReport | null) => void;
 }
+
+/**
+ * Named observation points (design 03 addendum, D03-CHK-03). `gate` returns `undefined` in
+ * production, so no point adds an `await`; tests replace it on the prototype to hold a point.
+ */
+export type GatePoint =
+  | "register.before" | "register.after" | "read.before" | "read.after" | "validated"
+  | "submit.before" | "submit.after" | "park" | "signal";
+
+export interface GateDetail {
+  /** Which collect of this observation (1, 2, ...). */
+  readonly collect?: number;
+  /** The read's position within its collect, from 1. */
+  readonly ordinal?: number;
+  readonly record?: "context" | "operations" | "confirmations" | "resumptions" | "children";
+  readonly member?: string;
+}
+
+/** The call site that ends a lineage; each is ablated separately by B-TERM-ABLATION. */
+export type TerminateSite =
+  | "cancellation" | "progress" | "root-missing" | "timeout" | "initial-input" | "forward" | "exception"
+  | "complete" | "fail" | "native-cancelled" | "hold";
 
 export class RootExistsError extends Error {
   constructor(executionId: string) {
@@ -71,8 +106,12 @@ const bounded = (cause: unknown): string => {
   return text.length > MAX_DIAGNOSTIC ? text.slice(0, MAX_DIAGNOSTIC) : text;
 };
 
+const failure = (code: string, message: string): OutcomeNext => ({ step: "fail", error: encode({ code, message }, "failure") });
+
 const pauseId = (pause: Pause, transitions: number): string =>
   pause.kind === "confirmation" ? `confirmation:${pause.confirmationId}` : `input:${pause.executionId}:${transitions}`;
+
+type Disposition = Omit<IngressResult, "eventId" | "kind">;
 
 export class LegacyDriver implements ExecutionDriver {
   readonly driverId = "arrokothi.legacy-bridge";
@@ -88,14 +127,17 @@ export class LegacyDriver implements ExecutionDriver {
   private readonly cancelling = new Map<string, Promise<void>>();
   private readonly tasks = new Set<string>();
   private readonly lastPauses = new Map<string, readonly Pause[]>();
+  /** Per Execution, Events attempted in an exchange whose acknowledging Outcome was not accepted. */
+  private readonly attempted = new Map<string, Set<string>>();
   private readonly stepListeners = new Set<(record: ActivationRecord) => void>();
   private busyCount = 0;
 
   constructor(options: LegacyDriverOptions) {
     this.options = options;
-    this.scheduler = new LineageScheduler(options.native.store);
+    this.scheduler = options.scheduler;
     this.roots = new RootIdentityScope(options.ids);
-    this.harness = new Harness({ ...options.native, scheduler: this.scheduler, ids: this.roots });
+    const store = new CommitSignallingStore(options.native.store, scope => this.signalled(scope));
+    this.harness = new Harness({ ...options.native, store, scheduler: this.scheduler, ids: this.roots });
   }
 
   /** Binds the coordinator this Driver serves (the Kernel takes the Driver at construction). */
@@ -122,6 +164,21 @@ export class LegacyDriver implements ExecutionDriver {
     return () => this.stepListeners.delete(listener);
   }
 
+  /** A named observation point; production holds nothing (D03-CHK-03). */
+  gate(_point: GatePoint, _executionId: string, _detail?: GateDetail): Promise<void> | undefined {
+    return undefined;
+  }
+
+  /** Reads the accepted progress (a malformed value is a Kernel or Driver defect). */
+  progressOf(activation: Activation): BridgeProgress {
+    return readProgress(activation.acceptedProgress, activation.executionId);
+  }
+
+  /** Ends E's native lineage from `site`; B-TERM-ABLATION removes one site at a time. */
+  endLineage(executionId: string, _site: TerminateSite): Promise<void> {
+    return this.cascade(executionId);
+  }
+
   // -- Native root creation (owner choice A) ----------------------------------
 
   /**
@@ -129,6 +186,7 @@ export class LegacyDriver implements ExecutionDriver {
    * to answer (`start` cancels E). A cancellation that arrived meanwhile ends the new root at once.
    */
   async createRoot(executionId: string, input: CreateExecutionInput): Promise<ExecutionHandle> {
+    this.scheduler.learn(executionId, executionId);
     const creation = (async () => {
       if (await this.options.native.store.readExecution(executionId as ExecutionId)) throw new RootExistsError(executionId);
       return this.roots.withRoot(executionId, () => this.harness.createExecution(input));
@@ -137,7 +195,7 @@ export class LegacyDriver implements ExecutionDriver {
     try {
       const handle = await creation;
       if (handle.executionId !== executionId) throw new Error(`native root ${handle.executionId} does not carry the Kernel ID ${executionId}`);
-      if (this.ended.has(executionId)) await this.cascade(executionId);
+      if (this.ended.has(executionId)) await this.endLineage(executionId, "cancellation");
       return handle;
     } finally {
       this.creating.delete(executionId);
@@ -167,7 +225,7 @@ export class LegacyDriver implements ExecutionDriver {
   requestCancellation(request: CancellationRequest): undefined {
     this.ended.add(request.executionId);
     this.scheduler.wake(request.executionId);
-    this.cancelling.set(request.executionId, this.cascade(request.executionId).catch(() => undefined));
+    this.cancelling.set(request.executionId, this.endLineage(request.executionId, "cancellation").catch(() => undefined));
     return undefined;
   }
 
@@ -199,52 +257,84 @@ export class LegacyDriver implements ExecutionDriver {
     this.options.onChange(null);
   }
 
+  /** A native transaction scoped to `scope` settled: wake its lineage (D03-CHK-01). Never throws. */
+  private signalled(scope: string): void {
+    const held = this.gate("signal", scope);
+    if (held) void held.then(() => this.scheduler.signal(scope), () => this.scheduler.signal(scope));
+    else this.scheduler.signal(scope);
+  }
+
+  private attemptedOf(executionId: string): Set<string> {
+    let ids = this.attempted.get(executionId);
+    if (!ids) this.attempted.set(executionId, ids = new Set());
+    return ids;
+  }
+
   private async exchange(activation: Activation, grant: SubmissionGrant): Promise<void> {
     const executionId = activation.executionId;
+    const ledger = new BatchLedger(activation.events);
+    let progress: BridgeProgress | null = null;
     try {
       await this.rootSettled(executionId);
-      if (this.ended.has(executionId)) return void await this.cascade(executionId);
-      let progress: BridgeProgress;
+      if (this.ended.has(executionId)) return void await this.endLineage(executionId, "cancellation");
       try {
-        progress = readProgress(activation.acceptedProgress, executionId);
+        progress = this.progressOf(activation);
       } catch (cause) {
-        return this.endWith(activation, grant, null, [], FAILURE_CODES.nativeError, bounded(cause));
+        return await this.terminate(activation, grant, ledger, null, failure(FAILURE_CODES.nativeError, bounded(cause)), "progress");
       }
       if (!(await this.harness.inspect(executionId as ExecutionId))) {
-        return this.endWith(activation, grant, progress, [], FAILURE_CODES.nativeSessionMissing, `native root ${executionId} is missing`);
+        return await this.terminate(activation, grant, ledger, progress,
+          failure(FAILURE_CODES.nativeSessionMissing, `native root ${executionId} is missing`), "root-missing");
       }
 
-      const results: IngressResult[] = [];
       const timeout = activation.events.find(event => event.sourceCategory === "kernel_timeout");
       if (timeout) {
-        for (const event of activation.events) {
-          if (event.sourceCategory !== "kernel_timeout") results.push({ eventId: event.eventId, kind: event.kind, status: "discarded" });
-        }
-        return this.endWith(activation, grant, progress, results, FAILURE_CODES.waitDeadlineExpired, `wait deadline ${timeout.deadline} expired`);
+        activation.events.forEach((event, index) => {
+          if (event.sourceCategory === "kernel_timeout") ledger.record(index, { status: INGRESS_STATUS.ignored, reason: INGRESS_REASONS.kernelTimeout });
+        });
+        return await this.terminate(activation, grant, ledger, progress,
+          failure(FAILURE_CODES.waitDeadlineExpired, `wait deadline ${timeout.deadline} expired`), "timeout");
       }
-      for (const event of activation.events) {
-        if (this.ended.has(executionId)) return void await this.cascade(executionId);
-        const result = await this.forward(executionId, event);
-        if (result === null) continue;
-        results.push(result);
-        if (event.kind === INPUT_KINDS.start && result.status === "rejected") {
-          return this.endWith(activation, grant, progress, results, FAILURE_CODES.initialInputRejected, result.detail ?? "initial input rejected");
+      const attempted = this.attemptedOf(executionId);
+      for (const [index, event] of activation.events.entries()) {
+        if (this.ended.has(executionId)) return void await this.endLineage(executionId, "cancellation");
+        if (ledger.isEmpty(index)) continue;
+        // An Event a refused Outcome left attempted is never forwarded a second time (D03-CHK-02).
+        if (attempted.has(event.eventId)) {
+          ledger.unknown(index, INGRESS_REASONS.alreadyAttempted);
+          continue;
+        }
+        ledger.attempting(index);
+        attempted.add(event.eventId);
+        let disposition: Disposition;
+        try {
+          disposition = await this.forward(executionId, event);
+        } catch (cause) {
+          // The native delivery may or may not have committed (owner choice 04).
+          const detail = bounded(cause);
+          ledger.unknown(index, INGRESS_REASONS.forwardFailed, detail);
+          return await this.terminate(activation, grant, ledger, progress, failure(FAILURE_CODES.nativeError, detail), "forward");
+        }
+        ledger.record(index, disposition);
+        if (event.kind === INPUT_KINDS.start && disposition.status === "rejected") {
+          return await this.terminate(activation, grant, ledger, progress,
+            failure(FAILURE_CODES.initialInputRejected, disposition.detail ?? "initial input rejected"), "initial-input");
         }
       }
 
       const carry = (await this.harness.emissionsOf(executionId as ExecutionId)).length > progress.emissionCursor;
       let decision: LineageDecision;
       if (carry) {
-        decision = await this.classify(executionId);
+        decision = await this.observe(executionId);
       } else {
         const stepped = await this.step(executionId);
-        if (stepped === null) return void await this.cascade(executionId);
+        if (stepped === null) return void await this.endLineage(executionId, "cancellation");
         decision = stepped;
       }
-      await this.submit(activation, grant, progress, results, decision);
+      await this.submit(activation, grant, progress, ledger, decision);
     } catch (cause) {
       const code = cause instanceof UnrepresentableValueError ? FAILURE_CODES.valueUnrepresentable : FAILURE_CODES.nativeError;
-      await this.endWith(activation, grant, null, [], code, bounded(cause)).catch(() => undefined);
+      await this.terminate(activation, grant, ledger, progress, failure(code, bounded(cause)), "exception").catch(() => undefined);
     } finally {
       this.setBusy(-1);
     }
@@ -252,64 +342,125 @@ export class LegacyDriver implements ExecutionDriver {
 
   /**
    * Runs native steps until the lineage reaches a decision the Kernel can record. Returns `null`
-   * when E ended meanwhile. An `open` lineage parks the task until its lineage gets work.
+   * when E ended meanwhile. An `open` lineage parks the task until its lineage signals a change.
    */
   private async step(executionId: string): Promise<LineageDecision | null> {
-    let stepped = false;
     for (;;) {
       if (this.ended.has(executionId)) return null;
       const record = await this.harness.runOnce(lineageWorker(executionId));
       if (record) {
-        stepped = true;
         for (const listener of this.stepListeners) listener(record);
       }
       if (this.ended.has(executionId)) return null;
+      const before = this.gate("register.before", executionId);
+      if (before) await before;
+      // Registered before the first read: a commit visible later resolves `work` (design 03 §2.3).
       const work = this.scheduler.nextWork(executionId);
-      const decision = await this.classify(executionId);
-      if (decision.kind !== "open" && (stepped || decision.kind !== "continue")) return decision;
-      if (decision.kind === "continue" && this.scheduler.hasQueued(executionId)) continue;
+      const after = this.gate("register.after", executionId);
+      if (after) await after;
+      const decision = await this.observe(executionId);
+      if (decision.kind !== "open" && decision.kind !== "continue") return decision;
+      if (decision.kind === "continue") {
+        // A step just ran: give the Kernel its turn (one step per continue, B-CONTINUE).
+        if (record) return decision;
+        if (this.scheduler.hasQueued(executionId)) continue;
+        // READY in the store but not queued yet: the post-commit enqueue is still in flight, so
+        // wait for it rather than split the work across exchanges.
+      }
+      const park = this.gate("park", executionId);
+      if (park) await park;
       this.setBusy(-1);
       await work;
       this.setBusy(1);
     }
   }
 
-  /** Forwards one Event natively; `null` when there was nothing to forward (a start with no input). */
-  private async forward(executionId: string, event: ActivationEvent): Promise<IngressResult | null> {
-    const base = { eventId: event.eventId, kind: event.kind };
-    if (event.sourceCategory !== "application_input") return { ...base, status: "ignored" };
+  /**
+   * The lineage's decision. An `await` is returned only when a second collect equals the one it was
+   * classified from; otherwise the newer collect is classified again (design 03 §2.3).
+   */
+  private async observe(executionId: string): Promise<LineageDecision> {
+    let collects = 1;
+    let first = await this.collect(executionId, collects);
+    for (;;) {
+      const decision = classifyLineage(first);
+      if (decision.kind !== "await") return decision;
+      collects += 1;
+      const second = await this.collect(executionId, collects);
+      if (sameObservation(first, second)) {
+        const validated = this.gate("validated", executionId);
+        if (validated) await validated;
+        return decision;
+      }
+      first = second;
+    }
+  }
+
+  /** One BFS collect of E's lineage as the classifier's projection. */
+  private async collect(rootExecutionId: string, collect: number): Promise<LineageRecords> {
+    const members = new Map<string, MemberRecords>();
+    let ordinal = 0;
+    const read = async <T>(record: NonNullable<GateDetail["record"]>, member: string, work: () => Promise<T>): Promise<T> => {
+      ordinal += 1;
+      const detail: GateDetail = { collect, ordinal, record, member };
+      const before = this.gate("read.before", rootExecutionId, detail);
+      if (before) await before;
+      const value = await work();
+      const after = this.gate("read.after", rootExecutionId, detail);
+      if (after) await after;
+      return value;
+    };
+    const queue = [rootExecutionId];
+    const seen = new Set<string>();
+    while (queue.length > 0) {
+      const id = queue.shift()!;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const executionId = id as ExecutionId;
+      const context = await read("context", id, () => this.harness.inspect(executionId));
+      if (!context) continue;
+      this.scheduler.learn(id, context.rootExecutionId);
+      const pendingOperations = await read("operations", id, () => this.harness.pendingOperationsOf(executionId));
+      const confirmations = await read("confirmations", id, () => this.harness.confirmationRequestsOf(executionId));
+      const resumptions = await read("resumptions", id, () => this.harness.controllerResumptionsOf(executionId));
+      const children = await read("children", id, () => this.harness.childExecutionLinksOf(executionId));
+      members.set(id, projectMember({ context, pendingOperations, confirmations, resumptions, children }));
+      for (const link of children) queue.push(link.childExecutionId);
+    }
+    return { rootExecutionId, members };
+  }
+
+  /** Forwards one Event natively and returns its disposition. */
+  private async forward(executionId: string, event: ActivationEvent): Promise<Disposition> {
+    if (event.sourceCategory !== "application_input") return { status: INGRESS_STATUS.ignored };
     try {
       if (event.kind === INPUT_KINDS.start) {
         const input = readStartPayload(event.payload);
-        if (input === null) return null;
-        return { ...base, ...receiptFields(await this.harness.deliverExternalInput({ ...nativeInput(input), destination: executionId as ExecutionId })) };
+        if (input === null) return { status: INGRESS_STATUS.ignored };
+        return receiptFields(await this.harness.deliverExternalInput({ ...nativeInput(input), destination: executionId as ExecutionId }));
       }
       if (event.kind === INPUT_KINDS.input) {
         const input = readInputPayload(event.payload);
         const destination = input.destination ?? executionId;
         if (!(await this.inLineage(executionId, destination))) {
-          return { ...base, status: "rejected", reason: "destination_outside_lineage", detail: `${destination} is not in ${executionId}'s native lineage` };
+          return { status: "rejected", reason: "destination_outside_lineage", detail: `${destination} is not in ${executionId}'s native lineage` };
         }
-        return { ...base, ...receiptFields(await this.harness.deliverExternalInput({ ...nativeInput(input), destination: destination as ExecutionId })) };
+        return receiptFields(await this.harness.deliverExternalInput({ ...nativeInput(input), destination: destination as ExecutionId }));
       }
       if (event.kind === INPUT_KINDS.confirmation) {
         const decision = readConfirmationPayload(event.payload);
         const request = await this.harness.confirmationRequest(decision.confirmationId);
         if (!request || !(await this.inLineage(executionId, request.executionId))) {
-          return { ...base, status: "rejected", reason: "confirmation_outside_lineage", detail: `${decision.confirmationId} is not a confirmation of ${executionId}'s native lineage` };
+          return { status: "rejected", reason: "confirmation_outside_lineage", detail: `${decision.confirmationId} is not a confirmation of ${executionId}'s native lineage` };
         }
         const receipt = await this.harness.resolveConfirmation(decision);
-        return { ...base, status: receipt.status, ...("reason" in receipt && typeof receipt.reason === "string" ? { reason: receipt.reason } : {}) };
+        return { status: receipt.status, ...("reason" in receipt && typeof receipt.reason === "string" ? { reason: receipt.reason } : {}) };
       }
-      return { ...base, status: "rejected", reason: "unknown_kind" };
+      return { status: "rejected", reason: "unknown_kind" };
     } catch (cause) {
-      if (cause instanceof ProtocolShapeError) return { ...base, status: "rejected", reason: "malformed_payload", detail: cause.message };
+      if (cause instanceof ProtocolShapeError) return { status: "rejected", reason: "malformed_payload", detail: cause.message };
       throw cause;
     }
-  }
-
-  private async classify(executionId: string): Promise<LineageDecision> {
-    return classifyLineage(await this.lineage(executionId));
   }
 
   private async lineageIds(rootExecutionId: string): Promise<string[]> {
@@ -331,65 +482,61 @@ export class LegacyDriver implements ExecutionDriver {
     return context !== undefined && context.rootExecutionId === rootExecutionId;
   }
 
-  private async lineage(rootExecutionId: string): Promise<LineageRecords> {
-    const members = new Map<string, MemberRecords>();
-    for (const id of await this.lineageIds(rootExecutionId)) {
-      const executionId = id as ExecutionId;
-      const context = await this.harness.inspect(executionId);
-      if (!context) continue;
-      members.set(id, {
-        context,
-        pendingOperations: await this.harness.pendingOperationsOf(executionId),
-        confirmations: await this.harness.confirmationRequestsOf(executionId),
-        resumptions: await this.harness.controllerResumptionsOf(executionId),
-        children: await this.harness.childExecutionLinksOf(executionId),
-      });
-    }
-    return { rootExecutionId, members };
-  }
-
   // -- Outcomes ------------------------------------------------------------------
 
   private async submit(
-    activation: Activation, grant: SubmissionGrant, progress: BridgeProgress, results: readonly IngressResult[], decision: LineageDecision,
+    activation: Activation, grant: SubmissionGrant, progress: BridgeProgress, ledger: BatchLedger, decision: LineageDecision,
   ): Promise<void> {
     const executionId = activation.executionId;
     const root = (await this.harness.inspect(executionId as ExecutionId)) as ExecutionContext;
-    const fixed: EmissionProposal[] = [];
-    if (results.length > 0) fixed.push(this.ingressEmission(activation, results));
+    const fixed = ledger.hasEntries() ? 1 : 0;
     const native = (await this.harness.emissionsOf(executionId as ExecutionId)).slice(progress.emissionCursor);
-    const room = EMISSIONS_PER_OUTCOME - fixed.length - (decision.kind === "await" ? 1 : 0);
+    const room = EMISSIONS_PER_OUTCOME - fixed - (decision.kind === "await" ? 1 : 0);
     const fits = native.length <= room;
-    const chunk = fits ? native : native.slice(0, EMISSIONS_PER_OUTCOME - fixed.length);
-    const emissions = [...fixed];
+    const chunk = fits ? native : native.slice(0, EMISSIONS_PER_OUTCOME - fixed);
     let next: OutcomeNext = { step: "continue" };
     let pauses: readonly PauseDeadline[] = progress.pauses;
+    let pauseEmission: EmissionProposal | null = null;
     // A terminal or await decision is submitted only when the whole carry fits (EMIT-01); until
     // then the Outcome is `continue`, and the next exchange carries the rest before any step.
-    if (fits && decision.kind === "complete") {
+    const terminal = fits && (decision.kind === "complete" || decision.kind === "fail" || decision.kind === "native_cancelled");
+    if (terminal && decision.kind === "complete") {
       next = { step: "complete", result: encode(root.terminalResult, "terminal result") };
-      await this.cascadeDescendants(executionId);
-    } else if (fits && (decision.kind === "fail" || decision.kind === "native_cancelled")) {
-      const failure = decision.kind === "fail" && root.failure
+    } else if (terminal) {
+      const failed = decision.kind === "fail" && root.failure
         ? failureValue(root.failure)
         : { code: FAILURE_CODES.nativeCancelled, message: "the native root was cancelled without a Kernel cancellation" };
-      next = { step: "fail", error: encode(failure, "failure") };
-      await this.cascadeDescendants(executionId);
+      next = { step: "fail", error: encode(failed, "failure") };
     } else if (fits && decision.kind === "await") {
       const declared = await this.declareWait(decision.pauses, progress);
       pauses = declared.pauses;
       next = { step: "await", wait: declared.wait };
-      emissions.push({ emissionKey: `bridge.pause.${activation.activationId}`, value: encode({ kind: EMISSION_KINDS.pause, pauses: decision.pauses as unknown[] }, "pause Emission") });
+      pauseEmission = { emissionKey: `bridge.pause.${activation.activationId}`, value: encode({ kind: EMISSION_KINDS.pause, pauses: decision.pauses as unknown[] }, "pause Emission") };
     }
+    if (terminal) {
+      this.ended.add(executionId);
+      await this.endLineage(executionId, decision.kind === "complete" ? "complete" : decision.kind === "fail" ? "fail" : "native-cancelled");
+    }
+    const ingress = this.ingressEmissions(activation, ledger, ledger.close(terminal));
+    if (ingress === null) {
+      this.ended.add(executionId);
+      await this.endLineage(executionId, "hold");
+      return this.hold(activation, `the ingress accounting of ${activation.activationId} cannot be encoded`);
+    }
+    const emissions = [...ingress, ...(pauseEmission ? [pauseEmission] : [])];
     for (const emission of chunk) {
       emissions.push({ emissionKey: `native.${emission.emissionId}`, value: encode({ kind: EMISSION_KINDS.native, emission }, `native Emission ${emission.emissionId}`) });
     }
     const advanced = { ...progress, emissionCursor: progress.emissionCursor + chunk.length, pauses };
+    const before = this.gate("submit.before", executionId);
+    if (before) await before;
     const accepted = this.offer(activation, grant, advanced, emissions, next);
     // The latest accepted pause Emission is the host's only source for reasons and the default
     // input destination (D01-CHK-10); any other accepted Outcome supersedes it.
     if (accepted && decision.kind === "await" && next.step === "await") this.lastPauses.set(executionId, decision.pauses);
     else if (accepted) this.lastPauses.delete(executionId);
+    const after = this.gate("submit.after", executionId);
+    if (after) await after;
   }
 
   private async declareWait(pauses: readonly Pause[], progress: BridgeProgress): Promise<{ wait: WaitDeclaration; pauses: PauseDeadline[] }> {
@@ -414,42 +561,41 @@ export class LegacyDriver implements ExecutionDriver {
     return { wait, pauses: out };
   }
 
-  private ingressEmission(activation: Activation, results: readonly IngressResult[]): EmissionProposal {
-    return {
-      emissionKey: `bridge.ingress.${activation.activationId}`,
-      value: encode({ kind: EMISSION_KINDS.ingress, results: results as unknown[] }, "ingress result"),
-    };
-  }
-
-  /** Ends E with a Driver-originated failure: the lineage is cancelled first (D01-CHK-01). */
-  private async endWith(
-    activation: Activation, grant: SubmissionGrant, progress: BridgeProgress | null, results: readonly IngressResult[], code: string, message: string,
-  ): Promise<void> {
-    const state = progress ?? { v: 1 as const, root: activation.executionId, emissionCursor: 0, pauses: [] };
-    return this.finish(activation, grant, state, results, { step: "fail", error: encode({ code, message }, "failure") });
-  }
-
-  private async finish(
-    activation: Activation, grant: SubmissionGrant, progress: BridgeProgress, results: readonly IngressResult[], next: OutcomeNext,
-  ): Promise<void> {
-    this.ended.add(activation.executionId);
-    await this.cascade(activation.executionId);
-    let emissions: EmissionProposal[] = [];
+  /** The batch's `ingress_result` Emission (none for an empty batch), or `null` when it cannot be encoded. */
+  private ingressEmissions(activation: Activation, ledger: BatchLedger, results: readonly IngressResult[]): EmissionProposal[] | null {
+    if (results.length === 0) return [];
     try {
-      if (results.length > 0) emissions = [this.ingressEmission(activation, results)];
+      return [{ emissionKey: `bridge.ingress.${activation.activationId}`, value: ledger.encode(results) }];
     } catch {
-      emissions = [];
+      return null;
     }
-    this.offer(activation, grant, progress, emissions, next);
   }
 
-  private async cascadeDescendants(executionId: string): Promise<void> {
+  /**
+   * Ends E from `site`: the flag first, then the lineage, then the ledger, then the Outcome. If the
+   * batch's accounting cannot be encoded, nothing is acknowledged: the exchange becomes a protocol
+   * hold (design 03 addendum, D03-CHK-02).
+   */
+  private async terminate(
+    activation: Activation, grant: SubmissionGrant, ledger: BatchLedger, progress: BridgeProgress | null, next: OutcomeNext, site: TerminateSite,
+  ): Promise<void> {
+    const executionId = activation.executionId;
     this.ended.add(executionId);
-    const members = await this.lineageIds(executionId);
-    for (const id of members.slice(1).reverse()) {
-      const context = await this.harness.inspect(id as ExecutionId);
-      if (context && !isTerminalLifecycle(context.lifecycle)) await this.harness.cancelExecution({ executionId: id as ExecutionId, reason: CANCEL_REASON });
-    }
+    await this.endLineage(executionId, site);
+    const emissions = this.ingressEmissions(activation, ledger, ledger.close(true));
+    if (emissions === null) return this.hold(activation, `the ingress accounting of ${activation.activationId} cannot be encoded`);
+    const state = progress ?? { v: 1 as const, root: executionId, emissionCursor: 0, pauses: [] };
+    this.offer(activation, grant, state, emissions, next);
+  }
+
+  /** Reports a protocol failure: the Kernel holds the exchange, and its batch stays unacknowledged. */
+  private hold(activation: Activation, diagnostic: string): void {
+    this.coordinator!.reportProtocolFailure(this.controlCaller!, activation.executionId, {
+      activationId: activation.activationId,
+      writerEpoch: activation.writerEpoch,
+      diagnostic,
+    });
+    this.options.onChange({ executionId: activation.executionId, activationId: activation.activationId, accepted: false, nextState: null });
   }
 
   /** Submits one Outcome. A refusal that is not a lost race becomes a protocol-failure hold (D01-CHK-03). */
@@ -466,6 +612,8 @@ export class LegacyDriver implements ExecutionDriver {
     };
     const answer = coordinator.submitOutcome(this.hostCaller!, envelope, grant);
     if (answer.ok) {
+      // The batch is acknowledged: none of its Events can be redelivered.
+      this.attempted.delete(activation.executionId);
       this.options.onChange({ executionId: activation.executionId, activationId: activation.activationId, accepted: true, nextState: answer.value.nextState });
       return true;
     }
@@ -495,7 +643,7 @@ const nativeInput = (input: { readonly label: string; readonly payload?: unknown
   ...(input.causationId !== undefined ? { causationId: input.causationId } : {}),
 });
 
-const receiptFields = (receipt: { readonly status: string; readonly reason?: string; readonly detail?: string }): Omit<IngressResult, "eventId" | "kind"> => ({
+const receiptFields = (receipt: { readonly status: string; readonly reason?: string; readonly detail?: string }): Disposition => ({
   status: receipt.status,
   ...(receipt.reason !== undefined ? { reason: receipt.reason } : {}),
   ...(receipt.detail !== undefined ? { detail: receipt.detail } : {}),

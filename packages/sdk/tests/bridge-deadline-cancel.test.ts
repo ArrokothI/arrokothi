@@ -238,6 +238,12 @@ test("B-PROTOCOL-HOLD: a refused Driver fail becomes a protocol-failure hold, no
     assert.equal(run.reason, "timeout", "the held exchange stays open; nothing is silently completed");
     assert.equal(run.kernel.recoveryHolds[0]?.cause, "protocol_failure");
     assert.match(run.kernel.recoveryHolds[0]?.reason ?? "", /forced refusal/);
+    // T12 (design 03 §5, design check 03): a nonterminal hold, the refused Outcome acknowledged nothing,
+    // and the Driver ended the native lineage before it offered the Outcome.
+    assert.ok(!["COMPLETED", "FAILED", "CANCELLED"].includes(run.kernel.state), `held, not terminal (${run.kernel.state})`);
+    assert.equal(run.kernel.result, null);
+    assert.deepEqual(run.kernel.acknowledged, [], "no Event of the refused batch was acknowledged");
+    assert.ok(["COMPLETED", "FAILED", "CANCELLED"].includes(run.execution.lifecycle), "the native lineage ended");
   } finally {
     ExecutionCoordinator.prototype.submitOutcome = original;
   }

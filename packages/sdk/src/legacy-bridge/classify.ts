@@ -5,6 +5,10 @@
  * private in-flight sets, and "runnable" reads the store's `READY`, never the scheduler FIFO, so
  * the window between a settlement's commit and its enqueue classifies as `continue`.
  *
+ * Its input is a projection: only the fields below, so it cannot read a field that the Driver's
+ * double-collect validation does not compare (design 03 §2.3). Each context carries its revision;
+ * every other projected field moves one way only (design 03 §2.2, P4).
+ *
  * `await` is declared only when every non-terminal lineage member is in an awaitable human pause:
  * nothing else can then wake the lineage, because the stock controllers have no native timer
  * (B-NATIVE-TIMERS), so only Kernel input can advance it. Every other non-terminal case is `open`:
@@ -16,13 +20,58 @@ import type {
 } from "@arrokothi/core";
 import type { Pause } from "./codec.ts";
 
+export type ContextProjection = Pick<ExecutionContext, "executionId" | "rootExecutionId" | "lifecycle" | "waitingFor" | "revision">;
+export type OperationProjection = Pick<PendingOperation, "pendingOperationId" | "effectKind" | "status" | "dispatch">;
+export type ConfirmationProjection = Pick<ConfirmationRequest, "confirmationId" | "pendingOperationId" | "state">;
+export type ResumptionProjection = Pick<ControllerResumption, "resumptionId" | "state">;
+export type LinkProjection = Pick<ChildExecutionLink, "childExecutionId" | "pendingOperationId" | "state">;
+
 export interface MemberRecords {
+  readonly context: ContextProjection;
+  readonly pendingOperations: readonly OperationProjection[];
+  readonly confirmations: readonly ConfirmationProjection[];
+  readonly resumptions: readonly ResumptionProjection[];
+  /** Links where this member is the parent, in creation order. */
+  readonly children: readonly LinkProjection[];
+}
+
+/** The native records of one member, as the store returns them. */
+export interface NativeMemberRecords {
   readonly context: ExecutionContext;
   readonly pendingOperations: readonly PendingOperation[];
   readonly confirmations: readonly ConfirmationRequest[];
   readonly resumptions: readonly ControllerResumption[];
-  /** Links where this member is the parent, in creation order. */
   readonly children: readonly ChildExecutionLink[];
+}
+
+/** The classifier's projection of one member's records, with a fixed key order. */
+export function projectMember(records: NativeMemberRecords): MemberRecords {
+  const { context } = records;
+  return {
+    context: {
+      executionId: context.executionId, rootExecutionId: context.rootExecutionId, lifecycle: context.lifecycle,
+      waitingFor: context.waitingFor, revision: context.revision,
+    },
+    pendingOperations: records.pendingOperations.map(operation => ({
+      pendingOperationId: operation.pendingOperationId, effectKind: operation.effectKind, status: operation.status, dispatch: operation.dispatch,
+    })),
+    confirmations: records.confirmations.map(request => ({
+      confirmationId: request.confirmationId, pendingOperationId: request.pendingOperationId, state: request.state,
+    })),
+    resumptions: records.resumptions.map(resumption => ({ resumptionId: resumption.resumptionId, state: resumption.state })),
+    children: records.children.map(link => ({ childExecutionId: link.childExecutionId, pendingOperationId: link.pendingOperationId, state: link.state })),
+  };
+}
+
+/**
+ * Whether two collects of one lineage are structurally equal: the same members in the same BFS
+ * order, with equal projections. Equal collects share an instant (design 03 §2.3).
+ */
+export function sameObservation(first: LineageRecords, second: LineageRecords): boolean {
+  if (first.rootExecutionId !== second.rootExecutionId || first.members.size !== second.members.size) return false;
+  const left = [...first.members];
+  const right = [...second.members];
+  return left.every(([id, member], index) => right[index]![0] === id && JSON.stringify(member) === JSON.stringify(right[index]![1]));
 }
 
 export interface LineageRecords {
@@ -50,7 +99,7 @@ export function waitsForInput(wait: ExecutionWait | null): boolean {
   return false;
 }
 
-const pendingConfirmationFor = (member: MemberRecords, operation: PendingOperation): ConfirmationRequest | undefined =>
+const pendingConfirmationFor = (member: MemberRecords, operation: OperationProjection): ConfirmationProjection | undefined =>
   member.confirmations.find(request => request.state === "pending" && request.pendingOperationId === operation.pendingOperationId);
 
 /**

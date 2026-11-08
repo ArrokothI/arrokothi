@@ -252,13 +252,23 @@ const ROWS: readonly Row[] = [
     async check() {
       const executor = counting();
       let hookServices: unknown;
+      let hookScheduler: unknown;
+      let hookQueued: Promise<number> | undefined;
       const provider = scripted(readThenAnswer());
       const resolver = new StaticModelResolver({ primary: { provider: provider.id, model: "test", portableFeatures: portableModelFeatures({ capabilityCalls: true, structuredOutput: true }) } });
       const app = createApplication({
         models: { providers: [provider], resolver }, capabilities: { catalog, executor }, authorizer: allowDocs(), functions: up(),
-        controllers: services => { hookServices = services; return {}; },
+        controllers: services => {
+          hookServices = services;
+          // Read inside the hook (design 03 R1-04): the scheduler exists and is usable during the call.
+          hookScheduler = services.scheduler;
+          hookQueued = services.scheduler.queuedCount();
+          return {};
+        },
       });
       assert.equal(hookServices, app.services, "the controllers hook receives the actual services");
+      assert.equal(hookScheduler, app.services.scheduler, "the scheduler read inside the hook is the application's");
+      assert.equal(await hookQueued, 0);
       const { executionId } = await app.start({ definition: toolAgent(), operationAuthority: { operations: [DOCS] }, input: { label: "user", payload: "read" } });
       assert.equal((await app.runUntilBlocked(executionId)).reason, "completed");
       assert.equal(executor.calls, 1);
@@ -318,12 +328,18 @@ const ROWS: readonly Row[] = [
   { id: "S-SERVICES", disposition: "P", feature: "Application.services are the native services; the scheduler is the lineage scheduler",
     covers: ["Application.services", "ApplicationServices", ...members("ApplicationServices", ["store", "definitions", "scheduler", "catalog", "models", "models.resolver", "models.providers"])],
     async check() {
+      let retained: { queuedCount(): Promise<number> } | undefined;
       const app = createApplication({ models: models(scripted([])), capabilities: { catalog, executor: counting() } });
       assert.equal(app.services.catalog, catalog);
       assert.ok(app.services.models?.resolver && app.services.models.providers);
       assert.equal(typeof app.services.scheduler.claim, "function");
       assert.equal(app.services.scheduler.constructor.name, "LineageScheduler");
       assert.equal(await nativeCount(app), 0);
+      // The services scheduler is the native Runtime's: root creation queues the root in it (design 03 R1-04).
+      const started = await createApplication({ functions: up(), controllers: services => { retained = services.scheduler; return {}; } })
+        .start({ definition: functionWorkflow("services", "up") });
+      assert.ok(started.executionId);
+      assert.equal(await retained!.queuedCount(), 1);
     } },
   { id: "S-REGISTER", disposition: "P", feature: "register writes the native DefinitionStore",
     covers: ["Application.register"],
@@ -531,7 +547,7 @@ const ROWS: readonly Row[] = [
       }
       assert.equal(await nativeCount(app), 0);
     } },
-  { id: "S-INPUT", disposition: "M", feature: "app.input replaces harness.deliverExternalInput and goes through Kernel submitInput",
+  { id: "S-INPUT", disposition: "M", feature: "app.input replaces harness.deliverExternalInput and goes through Kernel submitInput; a keyed retry keeps the destination the Kernel recorded (B-INPUT-RETRY)",
     covers: ["Application.input", "ApplicationInput", ...members("ApplicationInput", ["requestKey", "label", "payload", "destination", "correlationId", "causationId"]),
       "ApplicationInputError", ...members("ApplicationInputError", ["code", "issues", "refusal"])],
     async check() {
@@ -544,6 +560,8 @@ const ROWS: readonly Row[] = [
       assert.equal((await app.input(executionId, request)).eventId, first.eventId);
       assert.equal((await app.runUntilBlocked(executionId)).reason, "input_required");
       assert.equal(provider.requests.length, 2);
+      // After the turn: the same key with the destination omitted replays the recorded Event.
+      assert.equal((await app.input(executionId, { requestKey: "turn-2", label: "user", payload: "more", correlationId: null, causationId: null })).eventId, first.eventId);
       await assert.rejects(app.input(executionId, { label: "" }), (error: unknown) => error instanceof ApplicationInputError && error.code === "invalid_input_label");
       await app.cancel(executionId);
       await assert.rejects(app.input(executionId, { label: "user", payload: "late" }), (error: unknown) => error instanceof ApplicationInputError && error.refusal !== undefined);

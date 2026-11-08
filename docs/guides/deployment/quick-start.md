@@ -160,14 +160,15 @@ Host actions are Kernel calls, each with a Kernel receipt; give a `requestKey` t
 
 | Action | Call |
 |---|---|
-| Next conversation input | `app.input(id, { requestKey?, label, payload?, destination?, correlationId?, causationId? })`. Without `destination`, the one input-waiting member the latest pause names receives it; when several wait, `destination` is required |
+| Next conversation input | `app.input(id, { requestKey?, label, payload?, destination?, correlationId?, causationId? })`. Without `destination`, the one input-waiting member the latest pause names receives it; when several wait, `destination` is required. A retry with the same `requestKey` keeps the destination the Kernel recorded for it, so it replays even after the pause changed or the Execution ended |
 | Confirmation decision | `app.resolveConfirmation(id, { requestKey?, confirmationId, decision })` |
 | Cancellation | `app.cancel(id)`: cancels the Kernel Execution and the whole native lineage, root and descendants. It does not undo completed external work |
 | Kernel view | `app.inspect(id)`: state, accepted Emissions, the result, the wait and the mailbox |
 
 Structural input errors (an empty label, a malformed destination or key, an unrepresentable payload) are
 refused synchronously with `ApplicationInputError` and write nothing. Whether the native side delivered,
-rejected or discarded an accepted input is reported in an `arrokothi.bridge.ingress_result` Emission.
+rejected or discarded an accepted input is reported in an `arrokothi.bridge.ingress_result` Emission; `unknown`
+means forwarding failed before the native side answered, so the input may or may not have reached it.
 Input queued while an exchange runs counts against the Kernel mailbox capacity of 1,024 unacknowledged
 Events; beyond it `app.input` is refused as `capacity_exhausted`. Natural-language approval does not
 resolve confirmation. Your transport authenticates callers, maps jobs and conversations to Execution IDs,

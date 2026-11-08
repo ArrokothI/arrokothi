@@ -20,7 +20,7 @@ examples, scripts, docs) is unzoned and carries no new rule from this packet.
 | `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; K1.2 Outcome acceptance, takeover and the recovery holds; every later boundary refuses by name.** |
 | `legacy-core` | `packages/core/src` | The current 0.8.x `Harness`/controller implementation. Explicitly legacy, fully supported, unchanged by this packet. |
 | `runtime-integrations` | `packages/agents/strands/src`, `packages/models/gemini/src`, `packages/retrieval/local/src`, `packages/interoperability/mcp/src` | Provider and Runtime adapters. Depend inward on `legacy-core` today. |
-| `legacy-bridge` | `packages/sdk/src/legacy-bridge` | K1.4's legacy Driver: the 0.8.x `Harness` as a managed native job behind the Kernel's Driver protocol, with its lineage scheduler, root identity scope, codec, lineage classifier and the deprecated Harness view. Execution-side code, not Kernel code (DX-5, DX-6). |
+| `legacy-bridge` | `packages/sdk/src/legacy-bridge` | K1.4's legacy Driver: the 0.8.x `Harness` as a managed native job behind the Kernel's Driver protocol, with its lineage scheduler, root identity scope, codec, lineage classifier, commit-signalling store facade, batch ledger and the deprecated Harness view. Execution-side code, not Kernel code (DX-5, DX-6). |
 | `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |
 
 `packages/kernel` is a new directory rather than a rename of `packages/core`. A rename would carry
@@ -51,7 +51,7 @@ through its package root only, and `host-sdk` and `legacy-bridge` reach each oth
 | `target-kernel` | 21 | nothing | nothing |
 | `legacy-core` | 143 | — | nothing |
 | `runtime-integrations` | 16 | `@arrokothi/core`, `@arrokothi/core/execution`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `@langchain/core/documents`, `@langchain/textsplitters`, `@modelcontextprotocol/client`, `@modelcontextprotocol/server`, `@strands-agents/sdk` |
-| `legacy-bridge` | 6 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/kernel`, `host-sdk` | nothing |
+| `legacy-bridge` | 8 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/kernel`, `host-sdk` | nothing |
 | `host-sdk` | 8 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`, `@arrokothi/kernel`, `legacy-bridge` | `canonicalize` |
 
 Every zone reaches `node:` builtins; those are omitted above. `legacy-core` reaching no third-party

@@ -6,8 +6,11 @@
  * lineage. Any other worker claims the oldest entry overall, which keeps the published contract
  * suite passing unchanged; the bridge itself never uses such a worker.
  *
- * Each enqueue also wakes whoever waits for work in that lineage. That is how an exchange whose
- * lineage has work in flight learns that a settlement made it runnable again, without timers.
+ * Each enqueue also wakes whoever waits for work in that lineage. `signal` wakes them too, after any
+ * native transaction in that lineage settles (K1.4 design 03 §2.3, addendum D03-CHK-01), so a parked
+ * exchange learns of a commit that made nothing runnable. `signal` never reads: it resolves the
+ * lineage from the roots this scheduler has already learned (a root never changes), and wakes every
+ * waiter when the scope is unknown.
  */
 
 import type { ExecutionId } from "@arrokothi/core";
@@ -30,6 +33,8 @@ export class LineageScheduler implements Scheduler {
   /** Executions enqueued while claimed; requeued when the claim ends. */
   private readonly pendingRequeue = new Map<string, string>();
   private readonly waiters = new Map<string, Array<() => void>>();
+  /** Native Execution -> its native root, as learned; roots are immutable. */
+  private readonly roots = new Map<string, string>();
   private nextClaim = 1;
   private readonly store: Pick<RuntimeStore, "readExecution"> | undefined;
 
@@ -39,7 +44,9 @@ export class LineageScheduler implements Scheduler {
   }
 
   async enqueue(executionId: ExecutionId): Promise<void> {
-    const lineage = (await this.store?.readExecution(executionId))?.rootExecutionId ?? executionId;
+    const context = await this.store?.readExecution(executionId);
+    const lineage = context?.rootExecutionId ?? executionId;
+    if (context) this.roots.set(executionId, lineage);
     if (this.claimedExecutions.has(executionId)) {
       this.pendingRequeue.set(executionId, lineage);
     } else if (!this.queue.some(entry => entry.executionId === executionId)) {
@@ -84,6 +91,21 @@ export class LineageScheduler implements Scheduler {
       list.push(resolve);
       this.waiters.set(lineage, list);
     });
+  }
+
+  /** Records that `executionId` belongs to the lineage rooted at `rootExecutionId`. */
+  learn(executionId: string, rootExecutionId: string): void {
+    this.roots.set(executionId, rootExecutionId);
+  }
+
+  /**
+   * A native transaction scoped to `scope` settled. Wakes the scope's lineage, or every waiter when
+   * the scope's root is not yet known. Synchronous and infallible.
+   */
+  signal(scope: string): void {
+    const lineage = this.roots.get(scope);
+    if (lineage !== undefined) return this.wake(lineage);
+    for (const known of [...this.waiters.keys()]) this.wake(known);
   }
 
   /** Wakes every waiter of `lineage`, for example when its Execution is cancelled. */

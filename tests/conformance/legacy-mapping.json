@@ -69,9 +69,25 @@
       "disposition": "N",
       "property": "New K1.4 bridge corpus (design 01 §13, design 02 §3); runs through createApplication."
     },
+    "packages/sdk/tests/bridge-ingress.test.ts": {
+      "disposition": "N",
+      "property": "K1.4 correction (design 03 R1-02, R1-03): a keyed input retry keeps the Kernel-recorded destination; every acknowledged input Event has one ingress_result entry on every exit (owner choice 04)."
+    },
     "packages/sdk/tests/bridge-inventory.test.ts": {
       "disposition": "N",
       "property": "K14-4: the closed feature inventory, one test per row."
+    },
+    "packages/sdk/tests/bridge-observe.test.ts": {
+      "disposition": "N",
+      "property": "K1.4 correction (design 03 R1-01, R1-04): the validated observation under real native settlements at named gates, the commit signal, and the controller hook's initialized services."
+    },
+    "packages/sdk/tests/bridge-rig.ts": {
+      "disposition": "S",
+      "property": "A Driver-level rig with scripted native controllers for the bridge corpus."
+    },
+    "packages/sdk/tests/bridge-terminate.test.ts": {
+      "disposition": "N",
+      "property": "K1.4 correction (design 03 R1-05): each terminal trigger with a live descendant ends the native lineage; per-site ablations."
     },
     "packages/sdk/tests/bridge-values.test.ts": {
       "disposition": "N",
@@ -402,9 +418,10 @@
     },
     "tests/conformance/execution/controlled-interleaving.test.ts": {
       "disposition": "X",
-      "property": "`interleave` is legacy wait vocabulary with no Kernel home; the Kernel never sees it. Kept property: the Driver declares no Kernel wait for native-only dependencies (B-QUIESCE-CELLS (design 02 D01-CHK-02 replaced design 01 §3's table by the predicate; B-MAP's cases are its cells)). File kept as native regression (DX-6).",
+      "property": "`interleave` is legacy wait vocabulary with no Kernel home; the Kernel never sees it. Kept property: the Driver declares no Kernel wait for native-only dependencies (B-QUIESCE-CELLS (design 02 D01-CHK-02 replaced design 01 §3's table by the predicate; B-MAP's cases are its cells)). The Driver commits a Kernel wait only on a validated observation, under real native settlements (B-OBSERVE-SCHEDULES, design 03 R1-01). File kept as native regression (DX-6).",
       "bridge": [
-        "B-QUIESCE-CELLS"
+        "B-QUIESCE-CELLS",
+        "B-OBSERVE-SCHEDULES"
       ]
     },
     "tests/conformance/execution/controller-boundary.test.ts": {
@@ -454,9 +471,10 @@
     },
     "tests/conformance/execution/multi-dependency-wait.test.ts": {
       "disposition": "X",
-      "property": "`await_dependencies` is legacy wait vocabulary. Kept property: B-QUIESCE-CELLS (design 02 D01-CHK-02 replaced design 01 §3's table by the predicate; B-MAP's cases are its cells). File kept as native regression (DX-6).",
+      "property": "`await_dependencies` is legacy wait vocabulary. Kept property: B-QUIESCE-CELLS (design 02 D01-CHK-02 replaced design 01 §3's table by the predicate; B-MAP's cases are its cells). The Driver commits a Kernel wait only on a validated observation, under real native settlements (B-OBSERVE-SCHEDULES, design 03 R1-01). File kept as native regression (DX-6).",
       "bridge": [
-        "B-QUIESCE-CELLS"
+        "B-QUIESCE-CELLS",
+        "B-OBSERVE-SCHEDULES"
       ]
     },
     "tests/conformance/execution/ownership.test.ts": {
@@ -515,9 +533,10 @@
     },
     "tests/conformance/interaction/event-delivery.test.ts": {
       "disposition": "X",
-      "property": "Receipts are the Kernel's, owned by `packages/kernel/tests/creation.test.ts`, `ingress.test.ts` and `receipts.test.ts`. Kept property: an exact input retry replays and native receives one Event (B-INPUT). File kept as native regression.",
+      "property": "Receipts are the Kernel's, owned by `packages/kernel/tests/creation.test.ts`, `ingress.test.ts` and `receipts.test.ts`. Kept property: an exact input retry replays and native receives one Event (B-INPUT), including a keyed retry whose omitted destination the Kernel already resolved, after the pause changed or E ended (B-INPUT-RETRY, design 03 R1-02). File kept as native regression.",
       "bridge": [
-        "B-INPUT"
+        "B-INPUT",
+        "B-INPUT-RETRY"
       ],
       "kernel": [
         "packages/kernel/tests/creation.test.ts"

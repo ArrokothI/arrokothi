@@ -22,6 +22,7 @@ import {
   INPUT_KINDS, PROGRESS_CODEC, RUNTIME_CONTRACT_REVISION, START_CODES, UnrepresentableValueError, encode,
 } from "./legacy-bridge/codec.ts";
 import { LegacyDriver, RootExistsError } from "./legacy-bridge/driver.ts";
+import { LineageScheduler } from "./legacy-bridge/lineage-scheduler.ts";
 import { legacyHarnessView } from "./legacy-bridge/harness-view.ts";
 import type { LegacyHarnessView } from "./legacy-bridge/harness-view.ts";
 import { preflight } from "./preflight.ts";
@@ -140,12 +141,12 @@ export function createApplication(options: ApplicationOptions = {}): Application
   const models = resolver && providers ? { resolver, providers } : undefined;
   const now = () => clock.now().getTime();
 
-  // The services object is built before the Driver so the controller hook sees the same object
-  // the application exposes; its scheduler is the Driver's lineage scheduler.
-  const partial: { -readonly [K in keyof ApplicationServices]: ApplicationServices[K] } = {
-    store, definitions, scheduler: undefined as never, catalog, models,
-  };
-  const overrides = options.controllers?.(partial);
+  // Built in dependency order (design 03 R1-04): the lineage scheduler exists before the services
+  // object, and the controller hook receives the complete object the application exposes, whose
+  // scheduler is the one the Driver hands its native Runtime.
+  const scheduler = new LineageScheduler(store);
+  const services: ApplicationServices = { store, definitions, scheduler, catalog, models };
+  const overrides = options.controllers?.(services);
   const agent: AgentControllerOptions = {
     ...(models ? { models: { resolver: models.resolver }, executor: createReferenceAgentExecutor({ providers: models.providers }) } : {}),
     views: createActiveOperationViewResolver({ catalog, authority: createRuntimeOperationAuthoritySource(store) }),
@@ -169,13 +170,12 @@ export function createApplication(options: ApplicationOptions = {}): Application
       capabilityCatalog: catalog, capabilities: options.capabilities?.executor,
       authorizer: options.authorizer, confirmationPolicy: options.confirmationPolicy,
     },
+    scheduler,
     ids: options.runtime?.ids ?? { next: prefix => `${prefix}_${randomUUID()}` },
     now,
     ...(humanWaitDeadlineMs !== undefined ? { humanWaitDeadlineMs } : {}),
     onChange: report => host?.noteExchange(report),
   });
-  partial.scheduler = driver.scheduler;
-  const services: ApplicationServices = partial;
   const kernelHost = new ApplicationHost(driver, now, HOST_CALLER, CONTROL_CALLER);
   host = kernelHost;
   const harness = legacyHarnessView(driver.harness);
@@ -214,6 +214,29 @@ export function createApplication(options: ApplicationOptions = {}): Application
       throw new ApplicationInputError("invalid_request_key", "requestKey must have 1 to 64 characters from [A-Za-z0-9._:-]");
     }
     return key;
+  }
+
+  /**
+   * The destination the Kernel already recorded for this caller key's input, if any (design 03
+   * R1-02). Only the destination is reused; the new content is still compared by the Kernel.
+   */
+  function acceptedDestination(executionId: string, requestKey: string): string | undefined {
+    let view: ExecutionView;
+    try {
+      view = kernelHost.inspect(executionId);
+    } catch {
+      return undefined;
+    }
+    for (const entry of view.mailbox) {
+      if (entry.inputId === null || entry.kind !== INPUT_KINDS.input) continue;
+      if (entry.inputId.producerNamespace !== HOST_CALLER.namespace || entry.inputId.requestKey !== requestKey) continue;
+      const payload = entry.payload;
+      if (typeof payload === "object" && payload !== null && !Array.isArray(payload)) {
+        const destination = (payload as { readonly destination?: unknown }).destination;
+        if (typeof destination === "string") return destination;
+      }
+    }
+    return undefined;
   }
 
   function submit(executionId: string, kind: string, payload: Uint8Array, requestKey: string): InputAccepted {
@@ -319,7 +342,11 @@ export function createApplication(options: ApplicationOptions = {}): Application
         throw new ApplicationInputError("invalid_destination", "destination must be a native Execution ID.");
       }
       const requestKey = requireKey(request.requestKey);
+      // From here to submitInput nothing awaits: the lookup, the default and the submission see one
+      // Kernel state.
+      kernelHost.pump();
       let destination = request.destination;
+      if (destination === undefined && request.requestKey !== undefined) destination = acceptedDestination(executionId, requestKey);
       if (destination === undefined) {
         const waiting = driver.latestPauses(executionId).filter(pause => pause.kind === "input");
         if (waiting.length > 1) throw new ApplicationInputError("destination_required", `Several members of ${executionId} wait for input; name one as destination.`);
@@ -331,7 +358,6 @@ export function createApplication(options: ApplicationOptions = {}): Application
         ...(request.correlationId !== undefined ? { correlationId: request.correlationId } : {}),
         ...(request.causationId !== undefined ? { causationId: request.causationId } : {}),
       }, "input");
-      kernelHost.pump();
       return submit(executionId, INPUT_KINDS.input, payload, requestKey);
     },
     async resolveConfirmation(executionId, request) {
@@ -350,7 +376,8 @@ export function createApplication(options: ApplicationOptions = {}): Application
       if (!answer.ok) throw new ApplicationInputError(answer.error.classification, answer.error.reason, { refusal: answer.error });
       kernelHost.setKnown(executionId, answer.value.state);
       await driver.cancellationSettled(executionId);
-      await driver.cascade(executionId);
+      // Again after any step that was running: a child it spawned is ended too (D01-CHK-01).
+      await driver.endLineage(executionId, "cancellation");
       return answer.value;
     },
     inspect: executionId => kernelHost.inspect(executionId),
