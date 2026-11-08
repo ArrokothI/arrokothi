@@ -2,6 +2,12 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **Correction round after review 01** (2026-11-07). Review 01 (Codex GPT-6, `codex/k1.4-review-01` at
+  `0f415d6e016824ea9bddac0ca7aca3fd2d3accb5`, read by commit, not merged) is CHANGES REQUIRED of H `072f9627`:
+  K14-R1-01..05; its brief 02 governs this round. [Design 03](design-03.md) answers brief 02's five questions
+  (validated double-collect observation and commit signal; Kernel-recorded destination on keyed retries; one batch
+  ledger; scheduler-first construction; one `terminate` with a trigger table and per-exit mutants). No owner
+  question. **Next:** the design check of design 03; no code before it.
 - **Payload C for review: `0d05d32971dfeda89dc874450e38f440af2c4a1d`** (pushed, 2026-11-07). The owner chose a
   new C for [owner choice 03](owner-choice-03.md) ("Approve": the six limited-origin extras are authorized by owner
   choices 02 D, with no adoption credit). C equals `ad6ee133` plus two `administrative_files` entries in
