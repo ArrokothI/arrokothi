@@ -1,0 +1,47 @@
+✔ facade preserves real commit and rollback state and original result/error (17.962583ms)
+✔ a hold-cascade removal is non-equivalent for an accounting failure with a live child (156.48525ms)
+ℹ {"ablate":false,"holdCalls":1,"root":"CANCELLED","child":"CANCELLED","hold":"protocol_failure"}
+ℹ {"ablate":true,"holdCalls":1,"root":"WAITING","child":"WAITING","hold":"protocol_failure"}
+✔ a delayed commit signal wakes an already parked no-wake lineage (85.354958ms)
+✖ a one-shot post-commit enqueue lookup failure cannot silently strand settled native work (155.814458ms)
+ℹ {"faults":1,"handled":1,"reason":"timeout","secondReason":"timeout","kernel":"RUNNING","native":"READY","queued":0,"holds":[],"operations":[{"status":"settled","dispatch":"dispatched"},{"status":"pending","dispatch":"not_dispatched"}]}
+✖ the same lost-enqueue mechanism strands a settled model resumption (160.702125ms)
+ℹ {"faults":1,"reason":"timeout","secondReason":"timeout","kernel":"RUNNING","native":"READY","queued":0,"holds":[],"resumptions":[{"state":"settled"}]}
+ℹ tests 5
+ℹ suites 0
+ℹ pass 3
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 851.5725
+
+✖ failing tests:
+
+test at docs/development/work/K1.4/review-02/probes.mjs:111:1
+✖ a one-shot post-commit enqueue lookup failure cannot silently strand settled native work (155.814458ms)
+  AssertionError [ERR_ASSERTION]: settled native work must progress or expose an explicit failure/hold; an unqueued READY member is not an in-flight operation
+      at TestContext.<anonymous> (file:///private/tmp/arrokothi-k14-review02-c/docs/development/work/K1.4/review-02/probes.mjs:155:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.4/review-02/probes.mjs:162:1
+✖ the same lost-enqueue mechanism strands a settled model resumption (160.702125ms)
+  AssertionError [ERR_ASSERTION]: a settled model resumption must progress or expose an explicit failure/hold
+      at TestContext.<anonymous> (file:///private/tmp/arrokothi-k14-review02-c/docs/development/work/K1.4/review-02/probes.mjs:186:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
