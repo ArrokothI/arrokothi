@@ -1,0 +1,37 @@
+node v26.10.0
+R2-01 reconcile READY members on a continue: CAUGHT
+  control (fix present): exit 0; tests 3; pass 3; fail 0
+  ablated (fix removed): exit 1; tests 3; pass 0; fail 3
+    ✖ B-ENQUEUE-LOST-CAP: capability settlement, then the human confirmation, then completion (41.767625ms)
+    ✖ B-ENQUEUE-LOST-MODEL: model resumption settlement, then completion (35.574ms)
+    ✖ B-ENQUEUE-LOST (review 02 K14-R2-01): a failed post-commit enqueue cannot strand settled work (78.111583ms)
+    ✖ B-RECONCILE-STARVE: a settled child runs while its parent keeps continuing (check 04 witness) (26.830791ms)
+    ✖ B-RECONCILE (design check 04 D04-CHK-01): reconciliation on every continue (27.102458ms)
+D04-CHK-01 reconcile even when the lineage has queued work (design 04 2.1's idle-only rule): CAUGHT
+  control (fix present): exit 0; tests 2; pass 2; fail 0
+  ablated (fix removed): exit 1; tests 2; pass 0; fail 2
+    ✖ B-RECONCILE-STARVE: a settled child runs while its parent keeps continuing (check 04 witness) (36.430625ms)
+    ✖ B-RECONCILE-MANY: two settled children, both enqueues lost, both run once (23.698125ms)
+    ✖ B-RECONCILE (design check 04 D04-CHK-01): reconciliation on every continue (61.0055ms)
+D04-CHK-01 the detector needs an actual claim of the member: CAUGHT
+  control (fix present): exit 0; tests 4; pass 4; fail 0
+  ablated (fix removed): exit 1; tests 4; pass 2; fail 2
+    ✖ B-RECONCILE-STARVE: a settled child runs while its parent keeps continuing (check 04 witness) (22.54125ms)
+    ✖ B-RECONCILE-MANY: two settled children, both enqueues lost, both run once (93.912333ms)
+    ✖ B-RECONCILE (design check 04 D04-CHK-01): reconciliation on every continue (125.861375ms)
+D04-CHK-02 a failed cleanup is still reported: CAUGHT
+  control (fix present): exit 0; tests 2; pass 2; fail 0
+  ablated (fix removed): exit 1; tests 2; pass 0; fail 2
+    ✖ B-FAULT-CLEANUP: a collect failure and then a cleanup failure end in an explicit hold (check 04 two-fault witness) (522.729458ms)
+    ✖ B-UNSCHEDULABLE-CLEANUP: the detector, then a cleanup failure: an explicit hold (517.556792ms)
+    ✖ B-FAULT and B-UNSCHEDULABLE (design check 04 D04-CHK-02, design 04 §2.8) (1041.652959ms)
+R2-02 the accounting hold's cascade (review 02's mutant): CAUGHT
+  control (fix present): exit 0; tests 3; pass 3; fail 0
+  ablated (fix removed): exit 1; tests 3; pass 0; fail 3
+    ✖ T13 accounting cannot be encoded while the lineage lives (review 02 K14-R2-02) (39.678417ms)
+    ✖ B-TERM-TRIGGERS: each terminal trigger ends the whole native lineage (review 01 K14-R1-05) (40.768708ms)
+    ✖ baseline T13: passes, and reaches exactly its mapped labels (25.900208ms)
+    ✖ B-TERM-ORACLE: each row reaches exactly the labels the table maps (design 04 §6, D04-CHK-03) (26.23425ms)
+    ✖ T13 without hold: kill (26.53325ms)
+    ✖ B-TERM-ABLATION: each pair's disposition, executed with only that label's cascade removed (26.835958ms)
+all caught
