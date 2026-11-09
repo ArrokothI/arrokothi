@@ -2,6 +2,13 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **Round 3 payload C: `3e8b4bac60266fda3e277ae0dd381c4936e15ff3`** (pushed, 2026-11-08).
+  - *C:* builds R2-01 and R2-02 per design 04 and its §6 addendum (D04-CHK-01..03). The Driver schedules every
+    READY member on each `continue`; a failed cleanup is reported as a Kernel hold; the cleanup oracle comes from
+    the source. Packet verify CI run [`42528215484`](https://github.com/ArrokothI/arrokothi/actions/runs/42528215484) on it: `checks_passed`, 19/19 (repository tests 5,034/5,034).
+  - *H:* [implementation report 03](implementation-03.md), the 007 entry and this file. **WAITING_FOR_REVIEW.**
+  - *Next:* independent cumulative re-review of H over C and B; no self-acceptance. Owner choice 05's fallback
+    applies: a third CHANGES REQUIRED in this subsystem routes to (d), a recorded limit.
 - **Narrow redesign after review 02** (2026-11-08).
   - *Review:* [review 02](https://github.com/ArrokothI/arrokothi/blob/b655733b9b90810eca747c61b8f2095f5f201341/docs/development/work/K1.4/review-02.md)
     (Codex GPT-6, `codex/k1.4-review-02` at `b655733b`) is CHANGES REQUIRED of H `96214874`: K14-R2-01 (a lost
@@ -14,7 +21,6 @@ The resume point for any session continuing this packet. Newest facts first with
     oracle, plus live-lineage T13 (R2-02).
   - *Design check:* [design check 04](https://github.com/ArrokothI/arrokothi/blob/dc21f8e989b0828a236d65d3988eb9ade5391af3/docs/development/work/K1.4/design-check-04.md)
     (`dc21f8e9`) is APPROVED WITH REQUIRED CHANGES D04-CHK-01..03; design 04 §6 disposes them.
-  - *Next:* build the correction in this packet (no new design check), then new C, Packet verify, implementation 03 and H.
 - **Round 2 payload C: `3e4c59faa7b6138693bb9094144cafff7a33158e`** (pushed, 2026-11-08).
   - *Design:* [design check 03](https://github.com/ArrokothI/arrokothi/blob/3e55960e0493854490ac83a420ee12295c003e82/docs/development/work/K1.4/design-check-03.md)
     (`3e55960e`) is APPROVED WITH REQUIRED CHANGES D03-CHK-01..03. The design 03 §8 addendum (`c306fe38`)
