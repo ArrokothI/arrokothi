@@ -1,13 +1,27 @@
 /**
  * K1.4 design 03 R1-05 and design 04 R2-02 (review 01 K14-R1-05; review 02 K14-R2-02; design check 03 T12
- * clarification; design check 04 D04-CHK-03): every terminal trigger ends the whole native lineage, and
- * no later host run starts native work.
+ * clarification; design check 04 D04-CHK-03; review 03 K14-R3-02, owner choice 06): in each row below, the
+ * terminal trigger ends every native member, and no later host run starts native work.
+ *
+ * That is a fact about these rows, not about every cleanup. The cascade treats a fulfilled native
+ * `cancelExecution` as the end, but a RUNNING member answers `cancellation_pending`. After a native exception
+ * past READY→RUNNING, no step is left to apply it: the member stays RUNNING with no hold (017 L-36).
+ * B-TERM-LIMIT keeps review 03's two counterexamples and asserts the recorded behaviour.
  *
  * The cleanup sites come from the code, not from the rows. B-TERM-CENSUS resolves every `endLineage`
- * call in `packages/sdk/src` to its literal label, fails closed on any other form, and requires the labels
- * to equal `TERMINATE_SITES`. B-TERM-ORACLE runs every row once, logging the labels it reaches, and the
- * table gives each (row, label) pair one disposition. B-TERM-ABLATION removes one label's cascade at a time
- * and runs each pair's check:
+ * call in `packages/sdk/src` to its literal label and requires the labels to equal `TERMINATE_SITES`. It
+ * is a bounded syntactic guard (017 L-37). It checks:
+ * - dot-property calls of `endLineage`, `terminate`, `cascade` and `cancelExecution`, with a literal label
+ *   or a conditional of literals;
+ * - an identifier with one of those names anywhere outside such a call, which covers aliases and
+ *   `.call`/`.apply`/`.bind` on the dot name;
+ * - element access by a string literal of one of those names.
+ * It does not see static template element access (this[`endLineage`](…)), quoted destructuring aliases
+ * (`const { "endLineage": end } = this`), or names computed at run time. B-TERM-CENSUS keeps
+ * review 03's three escaping forms as recorded exclusions.
+ *
+ * B-TERM-ORACLE runs every row once, logging the labels it reaches, and the table gives each (row, label)
+ * pair one disposition. B-TERM-ABLATION removes one label's cascade at a time and runs each pair's check:
  * - **kill:** the row's behavioural assertions fail;
  * - **empty obligation:** at the label's entry the root is terminal and E has no descendant, and the row
  *   passes (T6);
@@ -16,10 +30,13 @@
  *
  * T12, the refused terminal Outcome's hold, is B-PROTOCOL-HOLD in `bridge-deadline-cancel.test.ts`: its
  * cascade runs at the terminal label, and the hold that follows has no cascade of its own. T13 here is the
- * nonterminal accounting hold with a live lineage. Rows run through the SDK where the stock controllers
- * reach the trigger; T4 is a Driver-level injection, and the rig rows use scripted native controllers.
+ * nonterminal accounting hold with a live lineage. F1–F3 are review 03's one-fault witnesses: the request's
+ * cascade fails once, and only the row's own `cancel.*` cascade ends the lineage. Rows run through the SDK
+ * where the stock controllers reach the trigger; T4 is a Driver-level injection, and the rig rows use
+ * scripted native controllers.
  */
 import assert from "node:assert/strict";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { describe, test } from "node:test";
 import { readFile, readdir } from "node:fs/promises";
 import { relative, resolve } from "node:path";
@@ -27,12 +44,12 @@ import { setImmediate as turn } from "node:timers/promises";
 import ts from "typescript";
 import { createApplication } from "@arrokothi/sdk";
 import type { Application, ExecutionId } from "@arrokothi/sdk";
-import { InMemoryRuntimeStore, ScriptedModelProvider } from "@arrokothi/core/reference";
+import { InMemoryDefinitionStore, InMemoryRuntimeStore, ScriptedModelProvider } from "@arrokothi/core/reference";
 import { ProtocolShapeError } from "../src/legacy-bridge/codec.ts";
 import { LegacyDriver, TERMINATE_SITES } from "../src/legacy-bridge/driver.ts";
 import type { TerminateSite } from "../src/legacy-bridge/driver.ts";
 import { BatchLedger } from "../src/legacy-bridge/ledger.ts";
-import { allowDocs, callingWorkflow, chatAgent, deferred, ingressResults, manualClock, models } from "./bridge-fixtures.ts";
+import { allowDocs, callingWorkflow, chatAgent, deferred, functionWorkflow, ingressResults, manualClock, models } from "./bridge-fixtures.ts";
 import type { Deferred } from "./bridge-fixtures.ts";
 import { scriptedRig } from "./bridge-rig.ts";
 
@@ -102,6 +119,43 @@ class HoldStore extends InMemoryRuntimeStore {
     return super.readExecution(id);
   }
 }
+
+/** Marks the work a Kernel cancellation request starts in the Driver (`requestCancellation`). */
+const REQUEST = new AsyncLocalStorage<true>();
+
+/**
+ * Runs `body` with each `requestCancellation` call inside REQUEST, so the cascade that call starts carries
+ * the mark through its awaits. A cascade started at any other label never does.
+ */
+async function inRequestScope<T>(body: () => Promise<T>): Promise<T> {
+  const original = LegacyDriver.prototype.requestCancellation;
+  LegacyDriver.prototype.requestCancellation = function (this: LegacyDriver, request: Parameters<LegacyDriver["requestCancellation"]>[0]) {
+    return REQUEST.run(true, () => original.call(this, request));
+  };
+  try {
+    return await body();
+  } finally {
+    LegacyDriver.prototype.requestCancellation = original;
+  }
+}
+
+/**
+ * Review 03 K14-R3-02's fault: the first native read of the request's own cascade fails, once. With the
+ * `cancel.request` cascade removed, nothing reads in that scope, so nothing fails.
+ */
+class RequestFaultStore extends HoldStore {
+  faults = 0;
+  override async readExecution(id: Parameters<InMemoryRuntimeStore["readExecution"]>[0]) {
+    if (this.faults === 0 && REQUEST.getStore() === true && new Error().stack!.includes("LegacyDriver.cascade")) {
+      this.faults += 1;
+      throw new Error("injected: the request's cleanup read fails once");
+    }
+    return super.readExecution(id);
+  }
+}
+
+/** The fault count each F row saw in its latest run, for the oracle's schedule checks. */
+const FAULTS = new Map<string, number>();
 
 type Row = { readonly id: string; readonly run: () => Promise<void> };
 
@@ -326,9 +380,49 @@ const ROWS: readonly Row[] = [
     await rig.host.idle(5);
     await assertEnded(await rig.members(), rig.laterSteps, this.id, false);
   } },
+  { id: "F1 app.cancel after the request's cascade failed once (review 03 K14-R3-02)", async run() {
+    const store = new RequestFaultStore();
+    const { app, executionId } = await chatLineage({ runtime: { store } });
+    const cancelled = await inRequestScope(() => app.cancel(executionId).then(() => null, (error: unknown) => error));
+    FAULTS.set("F1", store.faults);
+    assert.equal(app.inspect(executionId).state, "CANCELLED", `${this.id}: Kernel CANCELLED`);
+    await assertEnded(await members(app, executionId), later(app, executionId), this.id);
+    assert.equal(cancelled, null, `${this.id}: app.cancel resolves`);
+  } },
+  { id: "F2 an exchange starts after the request's cascade failed once (Driver rig; review 03 K14-R3-02)", async run() {
+    // The root exists before the exchange starts, so the exchange's own ended check is what ends it.
+    const store = new RequestFaultStore();
+    const rig = await scriptedRig({ root: [{ do: "await", eventKinds: ["external.input"] }] }, undefined, { store });
+    await inRequestScope(async () => {
+      rig.host.dispatchReady();
+      assert.ok(rig.host.coordinator.cancelExecution(rig.host.caller, rig.executionId).ok);
+      await rig.driver.cancellationSettled(rig.executionId);
+    });
+    FAULTS.set("F2", store.faults);
+    await rig.host.idle(20);
+    assert.equal(rig.host.inspect(rig.executionId).state, "CANCELLED", `${this.id}: Kernel CANCELLED`);
+    await assertEnded(await rig.members(), rig.laterSteps, this.id, false);
+  } },
+  { id: "F3 cancellation while the exchange reads its root, after the request's cascade failed once (Driver rig; review 03 K14-R3-02)", async run() {
+    // Held at the exchange's root read, before the forwarding loop: the loop's ended check ends the root.
+    const store = new RequestFaultStore();
+    const rig = await scriptedRig({ root: [{ do: "await", eventKinds: ["external.input"] }] }, undefined, { store, startInput: { label: "user", payload: "go" } });
+    const read = store.hold("LegacyDriver.exchange");
+    await inRequestScope(async () => {
+      rig.host.dispatchReady();
+      await read.reached;
+      assert.ok(rig.host.coordinator.cancelExecution(rig.host.caller, rig.executionId).ok);
+      await rig.driver.cancellationSettled(rig.executionId);
+    });
+    FAULTS.set("F3", store.faults);
+    read.release();
+    await rig.host.idle(20);
+    assert.equal(rig.host.inspect(rig.executionId).state, "CANCELLED", `${this.id}: Kernel CANCELLED`);
+    await assertEnded(await rig.members(), rig.laterSteps, this.id, false);
+  } },
 ];
 
-describe("B-TERM-TRIGGERS: each terminal trigger ends the whole native lineage (review 01 K14-R1-05)", () => {
+describe("B-TERM-TRIGGERS: in each row, the terminal trigger ends every native member (review 01 K14-R1-05; bounded by 017 L-36)", () => {
   for (const row of ROWS) test(row.id, () => row.run());
 });
 
@@ -359,11 +453,18 @@ function literalLabels(node: ts.Expression): string[] | null {
 }
 
 /**
- * Resolves every cleanup call in `files` syntactically. Fails closed: a cleanup name used other than as
- * the callee of a call, an element access by such a name, a non-literal label, a label at two call
- * sites, a cascade outside `endLineage`, or a native cancellation outside `cascade` is an error. The
- * Kernel's `coordinator.cancelExecution` is recognised and excluded. Run-time computed property names are
- * the declared gap of this bounded search.
+ * Resolves every cleanup call in `files` syntactically: a bounded guard (017 L-37), not a sound analysis.
+ * The checked forms are errors unless they resolve:
+ * - a dot-property call of a cleanup name (`x.endLineage(…)`) needs a literal label, or a conditional of
+ *   literals, and each label one call site; `cascade` only from `endLineage`; a native
+ *   `harness.cancelExecution` only from `cascade`. The Kernel's `coordinator.cancelExecution` is
+ *   recognised and excluded, and any other receiver is an error;
+ * - an Identifier with a cleanup name outside such a call, which covers aliases and
+ *   `.call`/`.apply`/`.bind` on the dot name;
+ * - element access by a StringLiteral cleanup name.
+ * Excluded (review 03 K14-R3-03, owner choice 06): static template element access, quoted destructuring
+ * aliases (a StringLiteral property name, then calls through the renamed binding), and names computed at
+ * run time. B-TERM-CENSUS asserts that the first two escape.
  */
 function cleanupCensus(files: Readonly<Record<string, string>>): Census {
   const sites: Site[] = [];
@@ -472,6 +573,22 @@ describe("B-TERM-CENSUS: every cleanup call site resolves to one literal label (
     });
   }
 
+  // Review 03 K14-R3-03's forms, kept as recorded exclusions (017 L-37): each adds a cleanup route that the
+  // census does not see. If the census learns a form, its test fails here and L-37 narrows.
+  const excluded: readonly [string, string][] = [
+    ["static template element access", "  probe(id: string) { return this[`endLineage`](id, \"hold\"); }"],
+    ["a quoted destructuring alias", "  probe(id: string) { const { \"endLineage\": end } = this; return end.call(this, id, \"hold\"); }"],
+    ["a quoted native-cancel alias", "  probe(id: string) { const { \"cancelExecution\": cancel } = this.harness; return cancel.call(this.harness, { executionId: id as ExecutionId, reason: \"x\" }); }"],
+  ];
+  for (const [name, method] of excluded) {
+    test(`recorded exclusion (L-37): ${name} escapes the census`, async () => {
+      const base = cleanupCensus(await sdkSources());
+      const census = cleanupCensus(inject(await sdkSources(), method));
+      assert.deepEqual(census.errors, [], `${name} is not reported`);
+      assert.deepEqual(census.sites.map(site => site.label).sort(), base.sites.map(site => site.label).sort(), `${name} adds no label`);
+    });
+  }
+
   test("negative control: a new labelled site with no table entry fails the label set and the oracle table", async () => {
     const census = cleanupCensus(inject(await sdkSources(), "  probe(id: string) { return this.endLineage(id, \"cancel.new\"); }"));
     assert.deepEqual(census.errors, []);
@@ -507,15 +624,22 @@ const PAIRS: Readonly<Record<string, Partial<Record<TerminateSite, Disposition>>
   C2: { "cancel.request": { redundant: "cancel.step-ended" }, "cancel.step-ended": "kill" },
   C3: { "cancel.request": { redundant: "cancel.application" }, "cancel.application": { redundant: "cancel.request" }, "cancel.forward-loop": { redundant: "cancel.request" } },
   C4: { "cancel.request": { redundant: "cancel.root-created" }, "cancel.root-created": { redundant: "cancel.exchange-start" }, "cancel.exchange-start": { redundant: "cancel.root-created" } },
+  // Review 03 K14-R3-02. With `cancel.request` removed, nothing fails and the row's own label ends the lineage.
+  F1: { "cancel.request": { redundant: "cancel.application" }, "cancel.application": "kill" },
+  F2: { "cancel.request": { redundant: "cancel.exchange-start" }, "cancel.exchange-start": "kill" },
+  F3: { "cancel.request": { redundant: "cancel.forward-loop" }, "cancel.forward-loop": "kill" },
 };
 
-/** Labels with no killing row, each with why no row can distinguish its removal. */
+/**
+ * Labels with no killing row, each with why its removal changes nothing. Only T6's empty obligation is left:
+ * review 03 showed one-fault rows (F1–F3) that kill the three `cancel.*` labels once recorded here.
+ */
 const EQUIVALENT_ONLY: Readonly<Partial<Record<TerminateSite, string>>> = {
   "initial-input": "the root is terminal before the first forward and no step has run, so no descendant exists (T6)",
-  "cancel.application": "app.cancel runs it after the request's cascade finished; a member that cascade missed was created by a step still running (a cancelled parent cannot spawn), and the exchange's ended check after that step ends it (cancel.step-ended, C2)",
-  "cancel.forward-loop": "forwarding creates no member, so the request's cascade has already ended every member (C3)",
-  "cancel.exchange-start": "the exchange waits for root creation, whose own ended check cancels the new root first (C4)",
 };
+
+/** Each F row's expected request-cascade faults: one, except with `cancel.request` itself removed. */
+const expectedFaults = (row: string, ablated: TerminateSite | null) => (!row.startsWith("F") ? null : ablated === "cancel.request" ? 0 : 1);
 
 /** The table's consistency with a set of labels: every label mapped, each with a kill or a recorded reason. */
 function tableErrors(pairs: typeof PAIRS, only: typeof EQUIVALENT_ONLY, labels: readonly string[]): string[] {
@@ -579,12 +703,26 @@ describe("B-TERM-ORACLE: each row reaches exactly the labels the table maps (des
     const { T13: _removed, ...withoutHold } = PAIRS;
     assert.ok(tableErrors(withoutHold, EQUIVALENT_ONLY, TERMINATE_SITES).some(entry => /^hold: no row reaches it/.test(entry)));
   });
+  test("negative control: the table without its F rows fails for each of the three cancel labels", () => {
+    const { F1: _f1, F2: _f2, F3: _f3, ...withoutF } = PAIRS;
+    const errors = tableErrors(withoutF, EQUIVALENT_ONLY, TERMINATE_SITES);
+    for (const label of ["cancel.application", "cancel.exchange-start", "cancel.forward-loop"]) {
+      assert.ok(errors.includes(`${label}: no row kills it and no reason is recorded`), `${label}: ${JSON.stringify(errors)}`);
+    }
+  });
+  test("negative control: restoring an equivalent-only reason for a killed label fails", () => {
+    const restored = { ...EQUIVALENT_ONLY, "cancel.application": "restored for the control" };
+    assert.ok(tableErrors(PAIRS, restored, TERMINATE_SITES).includes("cancel.application: killed, yet recorded as equivalent only"));
+  });
   for (const row of ROWS) {
     test(`baseline ${rowKey(row)}: passes, and reaches exactly its mapped labels`, async t => {
+      FAULTS.delete(rowKey(row));
       const { calls, error } = await logged(row, null);
       t.diagnostic(JSON.stringify(calls.map(call => [call.label, call.entry.map(member => member.lifecycle).join("/")])));
       assert.equal(error, null, `${row.id} passes unablated: ${String(error)}`);
       assert.deepEqual([...new Set(calls.map(call => call.label))].sort(), Object.keys(PAIRS[rowKey(row)]!).sort());
+      const faults = expectedFaults(rowKey(row), null);
+      if (faults !== null) assert.equal(FAULTS.get(rowKey(row)), faults, "the request's cascade failed once");
     });
   }
 });
@@ -593,10 +731,14 @@ describe("B-TERM-ABLATION: each pair's disposition, executed with only that labe
   for (const row of ROWS) {
     for (const [label, disposition] of Object.entries(PAIRS[rowKey(row)]!) as [TerminateSite, Disposition][]) {
       const kind = disposition === "kill" ? "kill" : "empty" in disposition ? "empty obligation" : `redundant by ${disposition.redundant}`;
-      test(`${rowKey(row)} without ${label}: ${kind}`, async () => {
+      test(`${rowKey(row)} without ${label}: ${kind}`, async t => {
+        FAULTS.delete(rowKey(row));
         const { calls, error } = await logged(row, label);
         assert.ok(calls.some(call => call.label === label && call.ablated), `${label} was reached`);
+        const faults = expectedFaults(rowKey(row), label);
+        if (faults !== null) assert.equal(FAULTS.get(rowKey(row)), faults, `the one-fault schedule ran (${faults} request faults)`);
         if (disposition === "kill") {
+          t.diagnostic(String((error as Error | null)?.message).split("\n")[0]!);
           assert.ok(error instanceof assert.AssertionError, `a behavioural assertion of ${row.id} fails: ${String(error)}`);
           return;
         }
@@ -617,4 +759,97 @@ describe("B-TERM-ABLATION: each pair's disposition, executed with only that labe
       });
     }
   }
+});
+
+// -- The recorded limit: a fulfilled cancel call is not an ended member (017 L-36) ------------------
+
+describe("B-TERM-LIMIT: review 03 K14-R3-01's counterexamples, kept with the recorded behaviour (017 L-36)", () => {
+  // These assert what happens today, which L-36 records; they are not a guarantee. A native exception after
+  // READY->RUNNING leaves the member RUNNING, and the cascade's cancel call answers `cancellation_pending`.
+  // Kernel FAILED is authoritative and the accounted input is acknowledged, or Kernel CANCELLED when a Kernel
+  // cancellation reached the running step first. No hold follows and no later step starts. If a later packet
+  // ends or reports the member, these fail, and L-36 is removed with them.
+  for (const fault of ["applyOutcome", "definition lookup"] as const) {
+    test(`L-36 counterexample: one failed ${fault} after READY->RUNNING leaves the root RUNNING with a pending cancellation and no hold`, async t => {
+      let faults = 0;
+      let calls = 0;
+      class Store extends InMemoryRuntimeStore {
+        override transact<T>(...args: Parameters<InMemoryRuntimeStore["transact"]>): Promise<T> {
+          if (fault === "applyOutcome" && faults === 0 && new Error().stack!.includes("Harness.applyOutcome")) {
+            faults += 1;
+            return Promise.reject(new Error("injected: applyOutcome transaction unavailable"));
+          }
+          return super.transact(...args) as Promise<T>;
+        }
+      }
+      class Definitions extends InMemoryDefinitionStore {
+        override async get(...args: Parameters<InMemoryDefinitionStore["get"]>) {
+          if (fault === "definition lookup" && faults === 0 && new Error().stack!.includes("Harness.runController")) {
+            faults += 1;
+            throw new Error("injected: definition lookup unavailable");
+          }
+          return super.get(...args);
+        }
+      }
+      const app = createApplication({
+        runtime: { store: new Store(), definitions: new Definitions() },
+        functions: { work: () => { calls += 1; return { status: "completed", result: "ok" }; } },
+      });
+      const { executionId } = await app.start({ definition: functionWorkflow("cleanup-fault", "work"), input: { label: "user", payload: "go" } });
+      const run = await app.runUntilBlocked(executionId, { timeoutMs: 500, pollIntervalMs: 1 });
+      const request = await app.harness.cancellationRequestOf(executionId);
+      const laterSteps = await app.runUntilIdle();
+      const native = await app.harness.inspect(executionId);
+      t.diagnostic(JSON.stringify({ fault, faults, calls, kernel: run.kernel.state, native: native?.lifecycle, cancellation: request?.state, holds: run.kernel.recoveryHolds.length, acknowledged: run.kernel.acknowledged.length, laterSteps: laterSteps.length }));
+      assert.equal(faults, 1, "one injected fault");
+      assert.equal(calls, fault === "applyOutcome" ? 1 : 0, "the function ran once, or not at all");
+      assert.equal(run.kernel.state, "FAILED", "Kernel FAILED is authoritative");
+      assert.equal(code(run.kernel.result?.value), "arrokothi.bridge.native_error");
+      assert.equal(run.kernel.acknowledged.length, 1, "the accounted input is acknowledged");
+      assert.deepEqual(run.kernel.recoveryHolds, [], "no cleanup hold");
+      assert.equal(native?.lifecycle, "RUNNING", "the native root stays RUNNING");
+      assert.equal(request?.state, "pending", "its cancellation is pending");
+      assert.equal(laterSteps.length, 0, "the Driver starts no later step");
+    });
+  }
+
+  test("L-36 counterexample (implementer-found variant): app.cancel mid-step, then the step's applyOutcome fails; the root stays RUNNING under Kernel CANCELLED", async t => {
+    let faults = 0;
+    let armed = false;
+    const inStep = deferred<void>();
+    const gate = deferred<void>();
+    class Store extends InMemoryRuntimeStore {
+      override transact<T>(...args: Parameters<InMemoryRuntimeStore["transact"]>): Promise<T> {
+        if (armed && faults === 0 && new Error().stack!.includes("Harness.applyOutcome")) {
+          faults += 1;
+          return Promise.reject(new Error("injected: applyOutcome transaction unavailable"));
+        }
+        return super.transact(...args) as Promise<T>;
+      }
+    }
+    const app = createApplication({
+      runtime: { store: new Store() },
+      functions: { work: async () => { inStep.resolve(); await gate.promise; return { status: "completed", result: "ok" }; } },
+    });
+    const { executionId } = await app.start({ definition: functionWorkflow("cancel-mid-step", "work"), input: { label: "user", payload: "go" } });
+    const running = app.runUntilBlocked(executionId, { timeoutMs: 1000, pollIntervalMs: 1 });
+    await inStep.promise;
+    assert.equal((await app.harness.inspect(executionId))?.lifecycle, "RUNNING", "the cancellation reaches a running step");
+    const cancelling = app.cancel(executionId);
+    armed = true;
+    gate.resolve();
+    await cancelling;
+    await running;
+    const laterSteps = await app.runUntilIdle();
+    const view = app.inspect(executionId);
+    const native = await app.harness.inspect(executionId);
+    const request = await app.harness.cancellationRequestOf(executionId);
+    t.diagnostic(JSON.stringify({ faults, kernel: view.state, holds: view.recoveryHolds.length, native: native?.lifecycle, cancellation: request?.state, laterSteps: laterSteps.length }));
+    assert.equal(faults, 1, "one injected fault");
+    assert.equal(view.state, "CANCELLED", "Kernel CANCELLED is authoritative, and app.cancel resolved");
+    assert.deepEqual(view.recoveryHolds, [], "no cleanup hold");
+    assert.equal(native?.lifecycle, "RUNNING", "the native root stays RUNNING");
+    assert.equal(request?.state, "pending", "its cancellation is pending");
+    assert.equal(laterSteps.length, 0, "the Driver starts no later step");
+  });
 });

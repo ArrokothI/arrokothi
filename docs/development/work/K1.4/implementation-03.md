@@ -146,6 +146,12 @@
     scheduling or cascade.
   - A failed cleanup leaves `ended` set and reports the lineage as stopped and its cleanup unconfirmed. It is
     never reported as clean. Nothing is acknowledged.
+
+    > **Correction, 2026-11-11 (round 4, after [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) K14-R3-01; [owner choice 06](owner-choice-06.md)).**
+    > This holds for a cleanup call that rejects. A cascade whose native `cancelExecution` answered
+    > `cancellation_pending` resolves, and `terminate` then offers the Outcome and acknowledges the batch with no
+    > hold. After a native exception past READY→RUNNING the member stays RUNNING, so that cleanup *is* reported as
+    > clean ([017](../../017-known-limitations.md) L-36).
   - Cancellation loss is unchanged: `offer`'s check stands, and a hold on an exchange the Kernel already
     cancelled is refused and ignored.
   - B-FAULT-COLLECT and B-FAULT-ACTIVATE are the one-shot cases. B-FAULT-CLEANUP and B-UNSCHEDULABLE-CLEANUP are
@@ -166,6 +172,11 @@
   - The census resolves native `harness.cancelExecution` and excludes the Kernel's `coordinator.cancelExecution`.
     It fails closed on aliases, `.call`/`.apply`/`.bind`, element access, unresolved receivers, reused labels and
     non-literal labels.
+
+    > **Correction, 2026-11-11 (round 4, after [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) K14-R3-03; [owner choice 06](owner-choice-06.md)).**
+    > "Fails closed" covers identifier aliases, `.call`/`.apply`/`.bind` on the dot name, and element access by a
+    > string literal. Static template element access and quoted destructuring aliases escape, as do names computed
+    > at run time ([017](../../017-known-limitations.md) L-37).
   - The negative controls cover a new unlabelled call, a new labelled site with no table entry, and the deletion
     of T13's hold row.
   - The producer census is derived from the source. It finds 14 call expressions: two Harness delegate edges
@@ -186,6 +197,12 @@
   `cancel.forward-loop` and `cancel.exchange-start`.
 - These are facts about these rows and schedules. They are not a proof for every interleaving.
 
+> **Correction, 2026-11-11 (round 4, after [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) K14-R3-02; [owner choice 06](owner-choice-06.md)).**
+> The counts were accurate; the four "equivalent only" reasons were not. Each of the three `cancel.*` reasons
+> assumed that the request's cascade succeeded. One rejected request cascade distinguishes all three, so rows
+> F1–F3 now kill them, and only `initial-input` (T6) is equivalent only. Round 4's counts are in implementation
+> report 04.
+
 ### Deviations from design 04
 
 1. **G-SLOWCAP and G-SLOWMODEL run the fault variant in their checks.** Design 04 §4 said each row would add the
@@ -202,6 +219,11 @@
      and before that cascade cancels the root.
    - `app.cancel`'s second cascade runs after the request's cascade finished, so it would always see such a
      child. That makes `cancel.application` equivalent only, with that reason recorded.
+
+   > **Correction, 2026-11-11 (round 4, after [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) K14-R3-02; [owner choice 06](owner-choice-06.md)).**
+   > The rig choice stands. The conclusion does not: the argument covers a member created late, not one that an
+   > earlier cascade missed because it failed. Row F1 kills `cancel.application` under one rejected request
+   > cascade.
 5. **The cleanup-failure hold also names the failure it was ending with.** Design 04 §6 required the site and the
    cause; the operator would otherwise lose the original failure.
 
@@ -233,6 +255,11 @@
 - **Bounded searches** are declared in `verification.json`'s limits:
   - the producer and cleanup censuses are syntactic, and computed property names built at run time fall outside
     them;
+
+  > **Correction, 2026-11-11 (round 4, after [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) K14-R3-01 and K14-R3-03; [owner choice 06](owner-choice-06.md)).**
+  > - The cleanup census also misses static template element access and quoted destructuring aliases ([017](../../017-known-limitations.md) L-37).
+  > - A native exception past READY→RUNNING leaves a member RUNNING with no hold; that is not covered by "a failed
+  >   native cleanup" above, because no cleanup call fails ([017](../../017-known-limitations.md) L-36).
   - the oracle is a finite row set.
 - **Cost.** Reconciliation adds no store read. It walks the members of the collect it already holds.
 
@@ -275,6 +302,10 @@ benchmark (K14-G is K1.4-gate's). The mutation registries were not rerun locally
 - **K14-4:** G-SLOWCAP and G-SLOWMODEL hold under the one-fault case they now run.
 - **K14-6:** every cleanup call site is in the oracle, from the source. Every non-equivalent label has a
   behavioural kill, and every equivalence is executed.
+
+  > **Correction, 2026-11-11 (round 4, after [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) K14-R3-02 and K14-R3-03; [owner choice 06](owner-choice-06.md)).**
+  > Three labels recorded as equivalent had a distinguishing row, and the census missed two static forms. Round 4
+  > adds the rows and records the exclusion ([017](../../017-known-limitations.md) L-37).
 - **K14-2, K14-3 and K14-5:** unchanged in mechanism since review 02, which passed them.
 
 **Third-party code and licences:** none. The tests use repository fixtures, `@arrokothi/core/testing`, the

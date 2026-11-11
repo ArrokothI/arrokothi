@@ -414,6 +414,13 @@ row asserts:
 descendant's input nor carry its pauses, so the descendant would be native work that nothing owns or can reach.
 D01-CHK-01 (TERM-01) therefore ends the lineage at every terminal decision.
 
+> **Correction, 2026-11-11 (round 4, after [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) K14-R3-01; [owner choice 06](owner-choice-06.md)).**
+> "Ends the lineage" and step 2's "cascades every non-terminal lineage member" overstate it. The cascade calls
+> the native `cancelExecution` on each member and treats the fulfilled call as the end. A RUNNING member answers
+> `cancellation_pending`. After a native exception past READY→RUNNING (T7's case, among others) no step is left
+> to apply it: the Kernel's state stands, the member stays RUNNING, and no hold follows
+> ([017](../../017-known-limitations.md) L-36). The rows assert ended members for their own schedules only.
+
 **The claim that rested on a helper.**
 - Implementation report 01 said every design 02 §3 item is a maintained test, after a check that matched names
   only (`implementation-01.md:82`). For B-FAIL-CASCADE's scope ("each Driver-originated `fail`, and a root

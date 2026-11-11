@@ -293,6 +293,13 @@ follows without a new design check (006 routine corrections).
   `reportProtocolFailure`, with a bounded diagnostic naming the site and the cause. It neither offers a terminal
   Outcome nor acknowledges the batch. The diagnostic says that the lineage is stopped and its cleanup unconfirmed;
   it never claims the cleanup succeeded.
+
+  > **Correction, 2026-11-11 (round 4, after [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) K14-R3-01; [owner choice 06](owner-choice-06.md)).**
+  > Only a rejected `endLineage` reaches this report. A cascade whose native `cancelExecution` answered
+  > `cancellation_pending` resolves, so `terminate` closes the ledger and offers the Outcome with no hold, although
+  > the RUNNING member has not ended. After a native exception past READY→RUNNING, that member stays RUNNING
+  > ([017](../../017-known-limitations.md) L-36). "Never claims the cleanup succeeded" holds only for a rejected
+  > cleanup call.
 - **The exchange's final catch.** If `terminate` itself rejects, a guarded `hold` reports what happened. That
   path is Kernel-only: no native read, no scheduling and no cascade.
 - **Unchanged.** A cancellation accepted first still wins. `offer`'s cancellation-loss check is untouched, and the
@@ -338,6 +345,15 @@ of three dispositions, and the test runs each one:
   - a `.call`, `.apply` or `.bind` of them.
 
   Computed property names built at run time are a declared gap, outside this bounded search.
+
+  > **Correction, 2026-11-11 (round 4, after [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) K14-R3-02 and K14-R3-03; [owner choice 06](owner-choice-06.md)).**
+  > - **Fails closed** was too wide. Static template element access and quoted destructuring aliases (a
+  >   StringLiteral property name, then `.call` through the renamed binding) also escape the census. They are
+  >   recorded exclusions beside run-time names ([017](../../017-known-limitations.md) L-37).
+  > - **Cancellation rows.** The delayed-creation and late-spawn rows held the request's cleanup successful. One
+  >   rejected request cascade distinguishes `cancel.application`, `cancel.exchange-start` and
+  >   `cancel.forward-loop`, so none of the three is equivalent only. Rows F1–F3 kill each one; only
+  >   `initial-input` (T6) stays equivalent only.
 - **Negative controls.** The census and the oracle check run on mutated inputs and must fail for:
   - an added unlabelled call;
   - an added call with a new label but no table entry;

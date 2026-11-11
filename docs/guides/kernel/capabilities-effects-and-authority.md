@@ -83,8 +83,9 @@ when a factual status must be exact.
 - Child result, peer reply, typed user input, and confirmation waits have no native deadline. With the
   SDK, `humanWaitDeadlineMs` bounds a declared human pause and `start({ executionDeadline })` bounds the
   whole Execution; otherwise own the timeout policy in host code and cancel explicitly when appropriate.
-- The SDK's `app.cancel(id)` cancels the Kernel Execution and its whole native lineage, root and
-  descendants. A direct Harness `cancelExecution` does not cascade to descendants or siblings: enumerate
+- The SDK's `app.cancel(id)` cancels the Kernel Execution and requests the end of its whole native lineage,
+  root and descendants. A member in the middle of a step ends when that step finishes, unless the step fails
+  (L-36). A direct Harness `cancelExecution` does not cascade to descendants or siblings: enumerate
   child links and cancel those you intend to stop. Cancellation is not rollback of an external action.
 - `idempotency: 'per_input'` is narrow in-runtime duplicate recognition for capability requests.
   For direct and confirmed dispatch, an exact prior success replays; unresolved/unknown consequential

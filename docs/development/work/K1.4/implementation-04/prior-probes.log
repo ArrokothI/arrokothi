@@ -1,0 +1,27 @@
+review 03 prior-review01-probes.mjs (blob 9fcba390764560c99491c4ffb476ae4a10895db4) and prior-probes.mjs (blob 2d44c98316fd0e95af03b9378e766cf76c2661c3) at 5e36d514, unchanged, copied to docs/development/work/K1.4/review-03/ for the run and removed after; round 4 tree; node v26.10.0 (trailing spaces stripped).
+Expected: 10/10 pass, exit 0.
+✔ facade preserves real commit and rollback state and original result/error (12.054167ms)
+✔ a hold-cascade removal is non-equivalent for an accounting failure with a live child (142.759042ms)
+ℹ {"ablate":false,"holdCalls":1,"root":"CANCELLED","child":"CANCELLED","hold":"protocol_failure"}
+ℹ {"ablate":true,"holdCalls":1,"root":"WAITING","child":"WAITING","hold":"protocol_failure"}
+✔ a delayed commit signal wakes an already parked no-wake lineage (80.888458ms)
+✔ a one-shot post-commit enqueue lookup failure cannot silently strand settled native work (34.831833ms)
+ℹ {"faults":1,"handled":1,"reason":"confirmation_required","secondReason":"confirmation_required","kernel":"WAITING","native":"WAITING","queued":0,"holds":[],"operations":[{"status":"settled","dispatch":"dispatched"},{"status":"pending","dispatch":"not_dispatched"}]}
+✔ the same lost-enqueue mechanism strands a settled model resumption (35.69125ms)
+ℹ {"faults":1,"reason":"completed","secondReason":"completed","kernel":"COMPLETED","native":"COMPLETED","queued":0,"holds":[],"resumptions":[{"state":"settled"}]}
+✔ control: an ordinary initial input is accounted for and a Function completes (14.273083ms)
+✔ K14-R1-01: settling native work between lineage reads must not commit a human wait (11.326333ms)
+ℹ {"observed":true,"handled":1,"reason":"confirmation_required","kernel":"WAITING","native":"WAITING","secondKernel":"WAITING","secondNative":"WAITING","operations":[{"status":"settled","dispatch":"dispatched"},{"status":"pending","dispatch":"not_dispatched"}]}
+✔ K14-R1-02: exact input retry keeps its originally selected child destination (10.161708ms)
+ℹ {"firstReason":"input_required","finalReason":"failed","explicitReplay":{"eventId":"event-13:arrokothi.sdk79:execution-13:arrokothi.sdk11:application36:0717ecc4-f67b-4d50-acc5-294c412b370a5:reply","receipt":{"boundary":"input_ingress","token":"inp:execution-13:arrokothi.sdk11:application36:0717ecc4-f67b-4d50-acc5-294c412b370a:6","position":6},"replayed":true,"acceptancePosition":6,"disposition":{"kind":"acknowledged","activationId":"execution-13:arrokothi.sdk11:application36:0717ecc4-f67b-4d50-acc5-294c412b370a/activation-3"}}}
+✔ K14-R1-03: failure before forwarding accounts for every acknowledged input (1.972167ms)
+ℹ {"reason":"failed","calls":0,"mailbox":[{"eventId":"event-creation-13:arrokothi.sdk11:application36:b8ee8040-d14c-4910-ac7b-3d5638090a29","inputId":{"producerNamespace":"arrokothi.sdk","destination":"execution-13:arrokothi.sdk11:application36:b8ee8040-d14c-4910-ac7b-3d5638090a29","requestKey":"b8ee8040-d14c-4910-ac7b-3d5638090a29"},"kind":"arrokothi.legacy.start","payload":{"input":{"label":"user","payload":"initial"}},"subscriptionClass":null,"sourceCategory":"application_input","acceptancePosition":1,"disposition":{"kind":"acknowledged","activationId":"execution-13:arrokothi.sdk11:application36:b8ee8040-d14c-4910-ac7b-3d5638090a29/activation-1"},"reserved":false,"receipt":{"boundary":"creation","token":"crt:execution-13:arrokothi.sdk11:application36:b8ee8040-d14c-4910-ac7b-3d5638090a29:1","position":1}},{"eventId":"event-13:arrokothi.sdk79:execution-13:arrokothi.sdk11:application36:b8ee8040-d14c-4910-ac7b-3d5638090a295:later","inputId":{"producerNamespace":"arrokothi.sdk","destination":"execution-13:arrokothi.sdk11:application36:b8ee8040-d14c-4910-ac7b-3d5638090a29","requestKey":"later"},"kind":"arrokothi.legacy.input","payload":{"destination":"execution-13:arrokothi.sdk11:application36:b8ee8040-d14c-4910-ac7b-3d5638090a29","label":"user","payload":"next"},"subscriptionClass":"arrokothi.legacy.input","sourceCategory":"application_input","acceptancePosition":2,"disposition":{"kind":"acknowledged","activationId":"execution-13:arrokothi.sdk11:application36:b8ee8040-d14c-4910-ac7b-3d5638090a29/activation-1"},"reserved":false,"receipt":{"boundary":"input_ingress","token":"inp:execution-13:arrokothi.sdk11:application36:b8ee8040-d14c-4910-ac7b-3d5638090a29:2","position":2}}],"results":[{"eventId":"event-creation-13:arrokothi.sdk11:application36:b8ee8040-d14c-4910-ac7b-3d5638090a29","kind":"arrokothi.legacy.start","status":"discarded"},{"eventId":"event-13:arrokothi.sdk79:execution-13:arrokothi.sdk11:application36:b8ee8040-d14c-4910-ac7b-3d5638090a295:later","kind":"arrokothi.legacy.input","status":"discarded"}]}
+✔ K14-R1-04: the controller hook receives initialized readable services (0.149416ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 489.622708

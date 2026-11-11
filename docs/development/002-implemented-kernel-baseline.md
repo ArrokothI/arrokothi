@@ -1037,8 +1037,11 @@ the Kernel.
   Values over the core limits fail the Execution as `arrokothi.bridge.value_unrepresentable`.
 - `input`, `resolveConfirmation` and `cancel` are Kernel calls. A keyed `input` retry with the destination
   omitted reuses the destination the Kernel recorded for that key. Cancellation, every Driver-originated
-  `fail` and every native terminal root end the whole native lineage. If ending it fails, the Driver stops
-  the lineage and reports a protocol-failure hold, through the Kernel alone. The `controllers(services)` hook
+  `fail` and every native terminal root stop the Driver's native work for E and request the end of every
+  non-terminal member of the native lineage. A READY or WAITING member ends at once; a RUNNING member answers
+  `cancellation_pending`, and only its own step can apply that. After a native exception past READY→RUNNING no
+  step is left, so the member may stay RUNNING while the Kernel's `FAILED` stands, with no hold (017 L-36). If a
+  cleanup call rejects, the Driver reports a protocol-failure hold, through the Kernel alone. The `controllers(services)` hook
   receives the complete services object, with the lineage scheduler the native Runtime uses. A refused Driver `fail` becomes a protocol-failure hold through a
   separate control-scoped caller.
 - The host dispatches READY Executions from a candidate set and fires due Kernel timers at every host entry;

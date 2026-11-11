@@ -162,7 +162,7 @@ Host actions are Kernel calls, each with a Kernel receipt; give a `requestKey` t
 |---|---|
 | Next conversation input | `app.input(id, { requestKey?, label, payload?, destination?, correlationId?, causationId? })`. Without `destination`, the one input-waiting member the latest pause names receives it; when several wait, `destination` is required. A retry with the same `requestKey` keeps the destination the Kernel recorded for it, so it replays even after the pause changed or the Execution ended |
 | Confirmation decision | `app.resolveConfirmation(id, { requestKey?, confirmationId, decision })` |
-| Cancellation | `app.cancel(id)`: cancels the Kernel Execution and the whole native lineage, root and descendants. It does not undo completed external work |
+| Cancellation | `app.cancel(id)`: cancels the Kernel Execution and requests the end of every member of the native lineage, root and descendants. A member in the middle of a step ends when that step finishes; if the step fails, the member can stay running natively while the Kernel's state stands (L-36). It does not undo completed external work |
 | Kernel view | `app.inspect(id)`: state, accepted Emissions, the result, the wait and the mailbox |
 
 Structural input errors (an empty label, a malformed destination or key, an unrepresentable payload) are
@@ -192,7 +192,7 @@ K1.4 keeps every SDK feature, migrates some, and refuses a few by name (K14-4's 
 |---|---|
 | `app.harness.deliverExternalInput({ destination, label, payload })` | `app.input(id, { label, payload, destination? })` |
 | `app.harness.resolveConfirmation({ confirmationId, decision })` | `app.resolveConfirmation(id, { confirmationId, decision })` |
-| `app.harness.cancelExecution({ executionId, reason })` (root only) | `app.cancel(id)`: the whole native lineage; the free-text reason is not recorded |
+| `app.harness.cancelExecution({ executionId, reason })` (root only) | `app.cancel(id)`: a request to end the whole native lineage (L-36); the free-text reason is not recorded |
 | `app.harness.runOnce`, `drainEffects`, `drainResumptions`, `runUntilIdle` | `app.runUntilBlocked(id)`; the Harness mutators refuse |
 | `harness.submitUserInput`, `harness.settleEffect` | Refused: no stock controller requests typed user input, and the trusted result ingress is K2's |
 | `StartedExecution.inputReceipt` | `StartedExecution.receipt` (Kernel) plus the first `ingress_result` Emission |

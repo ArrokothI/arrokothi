@@ -91,7 +91,7 @@
     },
     "packages/sdk/tests/bridge-terminate.test.ts": {
       "disposition": "N",
-      "property": "K1.4 corrections (design 03 R1-05, design 04 R2-02): each terminal trigger ends the native lineage; a source-derived census of cleanup call sites and a (row, label) oracle with executed kills and equivalences."
+      "property": "K1.4 corrections (design 03 R1-05, design 04 R2-02, owner choice 06): in each row, the terminal trigger ends every native member; a source-derived, bounded syntactic census of cleanup call sites (017 L-37) and a (row, label) oracle with executed kills and equivalences; the L-36 counterexamples, asserted as the recorded behaviour."
     },
     "packages/sdk/tests/bridge-values.test.ts": {
       "disposition": "N",
@@ -299,7 +299,7 @@
     },
     "tests/conformance/composition/child-cancellation.test.ts": {
       "disposition": "P",
-      "property": "Native child cancellation stays Runtime behaviour. Bridge: `app.cancel` cancels the whole native lineage (Q3) and a late native result changes no Kernel state (B-CANCEL).",
+      "property": "Native child cancellation stays Runtime behaviour. Bridge: `app.cancel` requests the end of the whole native lineage (Q3; 017 L-36) and a late native result changes no Kernel state (B-CANCEL).",
       "bridge": [
         "B-CANCEL"
       ]

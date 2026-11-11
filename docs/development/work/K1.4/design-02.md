@@ -30,6 +30,12 @@ native work for E and ends the native lineage.
 - **Cascade.** The cascade cancels every non-terminal member of the native lineage, using the native store's
   child links. It runs again after the current step returns, so a child created during that step is cancelled
   too.
+
+  > **Correction, 2026-11-11 (round 4, after [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) K14-R3-01; [owner choice 06](owner-choice-06.md)).**
+  > The cascade *requests* the end of every non-terminal member. A RUNNING member answers
+  > `cancellation_pending`, and only its own step can apply that. If the step ends in a native exception past
+  > READY→RUNNING, the member stays RUNNING, and the cascade still resolves as if it had ended
+  > ([017](../../017-known-limitations.md) L-36).
 - **Driver-originated ends.** Before every Driver-originated `fail` (`value_unrepresentable`, `native_error`,
   `initial_input_rejected`, `native_session_missing`, `wait_deadline_expired`), the Driver sets the flag and runs
   the cascade. After a root `COMPLETED`, it cancels any live descendant before it submits `complete`.

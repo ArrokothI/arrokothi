@@ -131,6 +131,11 @@
 | K14-R1-04 (P2) | Fixed: scheduler-first construction (design 03 §5) | B-HOOK-SERVICES: the review's probe, plus the kept scheduler reporting the queued native root. S-OPT-NATIVE and S-SERVICES. Ablation log row R1-04 |
 | K14-R1-05 (P2) | Fixed: a trigger table with live descendants, and in-test site ablations (design 03 §5, §8) | B-TERM-TRIGGERS T1–T11 and T12; B-TERM-ABLATION catches the removal of each site in every row that shares it |
 
+> **Correction, 2026-11-11 (round 4, after [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) K14-R3-01; [owner choice 06](owner-choice-06.md)).**
+> K14-R1-05's "Fixed" covers the rows' own schedules. It does not mean that every terminal trigger ends every
+> member: a native exception past READY→RUNNING leaves the member RUNNING with a pending cancellation, and no hold
+> follows ([017](../../017-known-limitations.md) L-36).
+
 ### Design-check dispositions (design check 03)
 
 - **D03-CHK-01:**
