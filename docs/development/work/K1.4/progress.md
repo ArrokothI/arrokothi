@@ -2,6 +2,18 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **Round 4 payload C: `697922e251a572d0c96f7a02c1b646b607c351fc`** (pushed, 2026-11-11). It sits on `739a0586`, superseded
+  before any H because it changed the preserved design 02.
+  - *Review:* [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) (Codex GPT-6, `codex/k1.4-review-03` at `5e36d514`) is CHANGES REQUIRED of H
+    `b1769c0f`: K14-R3-01..03, the third in this subsystem, so owner choice 05's route (d) applies.
+  - *Owner:* [owner choice 06](owner-choice-06.md): R3-01 "Record limit" (017 L-36), R3-02 "Promote as tests",
+    R3-03 "Record exclusion" (017 L-37). No production change.
+  - *C:* L-36 and L-37; rows F1–F3 kill the three `cancel.*` labels; B-TERM-LIMIT and the L-37 exclusion tests keep
+    review 03's counterexamples with the recorded behaviour; the baseline, guides and mapping narrowed; dated
+    corrections in designs 03–04 and reports 02–03. Packet verify CI run [`43088962951`](https://github.com/ArrokothI/arrokothi/actions/runs/43088962951) on it: `checks_passed`, 19/19 (repository tests 5,054/5,054).
+  - *H:* [implementation report 04](implementation-04.md), the 007 entry and this file. **WAITING_FOR_REVIEW.**
+  - *Next:* the bounded GPT-6 review 04 against brief 04; no self-acceptance. Report 04's deviation 1 asks the owner
+    to confirm L-36's cancelled variant.
 - **Round 3 payload C: `3e8b4bac60266fda3e277ae0dd381c4936e15ff3`** (pushed, 2026-11-08).
   - *C:* builds R2-01 and R2-02 per design 04 and its §6 addendum (D04-CHK-01..03). The Driver schedules every
     READY member on each `continue`; a failed cleanup is reported as a Kernel hold; the cleanup oracle comes from
