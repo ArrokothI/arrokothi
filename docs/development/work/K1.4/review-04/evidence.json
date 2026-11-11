@@ -1,0 +1,92 @@
+{
+  "base": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+  "payload": "697922e251a572d0c96f7a02c1b646b607c351fc",
+  "candidate": "1b98a76e625ef187ba179fdad2e823ac4dabd521",
+  "previous_review_head": "b1769c0fcdb73bfc6297551b87f80e74bc6cb588",
+  "administrative_files_exact": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/K1.4/implementation-04.md",
+    "docs/development/work/K1.4/progress.md"
+  ],
+  "production_src_files_compared": 196,
+  "source_base": "3e8b4bac60266fda3e277ae0dd381c4936e15ff3",
+  "source_changes": [],
+  "kernel_and_core_unchanged_from_B": true,
+  "historical_records": {
+    "design-03.md": {
+      "old_lines_preserved_in_order": true,
+      "dated_corrections": 1
+    },
+    "design-04.md": {
+      "old_lines_preserved_in_order": true,
+      "dated_corrections": 2
+    },
+    "implementation-02.md": {
+      "old_lines_preserved_in_order": true,
+      "dated_corrections": 1
+    },
+    "implementation-03.md": {
+      "old_lines_preserved_in_order": true,
+      "dated_corrections": 6
+    }
+  },
+  "design_02_preserved": true,
+  "registries_unchanged_from_B": [
+    "tests/fixtures/packet-tools/mutations.json",
+    "tests/fixtures/packet-tools/refusal-guards.json",
+    "tests/fixtures/packet-tools/value-cost.json"
+  ],
+  "delta_files": [
+    "docs/development/002-implemented-kernel-baseline.md",
+    "docs/development/007-work-packets.md",
+    "docs/development/017-known-limitations.md",
+    "docs/development/work/K1.4/design-03.md",
+    "docs/development/work/K1.4/design-04.md",
+    "docs/development/work/K1.4/implementation-02.md",
+    "docs/development/work/K1.4/implementation-03.md",
+    "docs/development/work/K1.4/implementation-04.md",
+    "docs/development/work/K1.4/implementation-04/ablations.log",
+    "docs/development/work/K1.4/implementation-04/d04-witnesses.log",
+    "docs/development/work/K1.4/implementation-04/hold-mutant.log",
+    "docs/development/work/K1.4/implementation-04/prior-probes.log",
+    "docs/development/work/K1.4/implementation-04/review-03-probes.log",
+    "docs/development/work/K1.4/owner-choice-06.md",
+    "docs/development/work/K1.4/progress.md",
+    "docs/development/work/K1.4/verification.json",
+    "docs/guides/deployment/quick-start.md",
+    "docs/guides/kernel/capabilities-effects-and-authority.md",
+    "packages/sdk/tests/bridge-terminate.test.ts",
+    "tests/conformance/legacy-mapping.json"
+  ],
+  "ci": {
+    "checks": 19,
+    "passed_true": 19,
+    "run": {
+      "revision": "697922e251a572d0c96f7a02c1b646b607c351fc",
+      "spec": "docs/development/work/K1.4/verification.json",
+      "head": "697922e251a572d0c96f7a02c1b646b607c351fc",
+      "node": "v26.10.0 npm=11.19.1 python=Python 3.13.18",
+      "runner": "Linux x86_64 cpus=4",
+      "started": "2026-11-11T19:38:08Z",
+      "finished": "2026-11-11T21:55:39Z",
+      "exit": "0"
+    },
+    "mutations": {
+      "registered-mutants": {
+        "killed": 339
+      },
+      "refusal-mutants": {
+        "killed": 358
+      },
+      "value-cost-mutants": {
+        "killed": 238
+      }
+    },
+    "sha256": {
+      "run.txt": "11e549cf9f4831400e1a7713595a5aaed68800555e22c089dc165bc03bdec3d4",
+      "summary.json": "d74ba1b253bdb42a34eff38c3709824773af73fa9945d1b977980ae9b2d6e889",
+      "verify.json": "20e765bc42091315d91d1e966355707e102230bc424108e42137055fde578dd0",
+      "verify.stderr.log": "9b21c9ec3f10ea9a788df0b87d5c0a677d45ddc8cd88d773863d7d265b11a93b"
+    }
+  }
+}
