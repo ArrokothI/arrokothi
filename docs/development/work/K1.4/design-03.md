@@ -420,6 +420,9 @@ D01-CHK-01 (TERM-01) therefore ends the lineage at every terminal decision.
 > `cancellation_pending`. After a native exception past READY→RUNNING (T7's case, among others) no step is left
 > to apply it: the Kernel's state stands, the member stays RUNNING, and no hold follows
 > ([017](../../017-known-limitations.md) L-36). The rows assert ended members for their own schedules only.
+>
+> The same correction applies to design 02 D01-CHK-01's **Cascade** bullet ("The cascade cancels every non-terminal
+> member"). C's `verification.json` preserves design 02 unchanged, so its correction is recorded here.
 
 **The claim that rested on a helper.**
 - Implementation report 01 said every design 02 §3 item is a maintained test, after a check that matched names

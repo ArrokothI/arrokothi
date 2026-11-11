@@ -55,9 +55,10 @@ The same instruction set these bounds:
 ## Effect
 
 - **R3-01** becomes [017](../../017-known-limitations.md) L-36. The baseline and the current guides now say the
-  Driver *requests* the end of every member, and say when that request leaves a member running. Design 02, 03
-  and 04 and implementation reports 02 and 03 get dated corrections where they read a fulfilled cancel call as
-  an ended member.
+  Driver *requests* the end of every member, and say when that request leaves a member running. Designs 03 and
+  04 and implementation reports 02 and 03 get dated corrections where they read a fulfilled cancel call as an
+  ended member. Design 02 is preserved unchanged by `verification.json`, so design 03's correction covers its
+  cascade bullet.
   - The implementer found the same mechanism when a Kernel cancellation reaches a running step that then fails:
     Kernel `CANCELLED` stands and the native member stays `RUNNING`. L-36 states that variant too, and
     B-TERM-LIMIT keeps it. [Implementation report 04](implementation-04.md) flags it for the owner and review 04.
