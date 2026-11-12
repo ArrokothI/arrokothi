@@ -151,6 +151,11 @@ is repeated, and every cascade stays.
    so they stay. L-36, the baseline and the guides govern. The next packet that touches `driver.ts` should narrow
    them.
 
+   > **Correction, 2026-11-11 (round 5, after [review 04](https://github.com/ArrokothI/arrokothi/blob/8ca7288b041d376dad7a8c12f083e43427bbb101/docs/development/work/K1.4/review-04.md) K14-R4-01; [brief 05](https://github.com/ArrokothI/arrokothi/blob/8ca7288b041d376dad7a8c12f083e43427bbb101/docs/development/work/K1.4/review-04/brief-05.md)).**
+   > Review 04 found these comments false (K14-R4-01), and the owner's comment-only fix applies in round 5:
+   > the comments now say the Driver requests native cancellation and starts no further native step, with
+   > L-36's limit. No executable line changed.
+
 ### Additional self-found defects (separate provenance)
 
 1. **L-37's first wording was read as a link.** The builder-docs check reported a missing target in 017, because
@@ -174,6 +179,11 @@ is repeated, and every cascade stays.
 - **The oracle** is a finite row set with one-fault schedules.
 - **Unchanged from round 3:** the committed-READY reconciliation, the detector, the input accounting, and the
   Kernel-only report for a rejected cleanup call.
+
+  > **Correction, 2026-11-11 (round 5, after [review 04](https://github.com/ArrokothI/arrokothi/blob/8ca7288b041d376dad7a8c12f083e43427bbb101/docs/development/work/K1.4/review-04.md) K14-R4-01; [brief 05](https://github.com/ArrokothI/arrokothi/blob/8ca7288b041d376dad7a8c12f083e43427bbb101/docs/development/work/K1.4/review-04/brief-05.md)).**
+  > The Kernel-only report covers `terminate`'s rejected cleanup call only, and the Kernel records it only for
+  > E's unresolved Activation while E is not terminal. `requestCancellation`'s request swallows its rejection,
+  > and `app.cancel`'s fallback (`cancel.application`) requests again (review 04's probe of row F1's schedule).
 
 ## Validation and interpretation
 

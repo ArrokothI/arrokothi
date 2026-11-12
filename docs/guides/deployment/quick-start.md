@@ -73,7 +73,7 @@ Workflow can begin with null; an Agent will wait for input.
 | `start` option or result | Meaning |
 |---|---|
 | `creationKey` | Optional, at most 64 characters from `[A-Za-z0-9._:-]`; defaults to a UUID. An exact retry with the same key and content returns the same Execution with `replayed: true` and does no native work; changed content conflicts. Keys are application-global and last one coordinator lifetime |
-| `executionDeadline` | Optional absolute `Date` on the `runtime.clock` scale. At expiry the Kernel cancels the Execution (cause `execution_deadline`) and the Driver cancels the native lineage |
+| `executionDeadline` | Optional absolute `Date` on the `runtime.clock` scale. At expiry the Kernel cancels the Execution (cause `execution_deadline`) and the Driver requests the end of the native lineage (L-36) |
 | `receipt`, `replayed` | The Kernel creation receipt, and whether this call replayed an earlier creation |
 | `ApplicationStartError` | The native root could not be created; the Kernel Execution was cancelled first. Code `arrokothi.bridge.native_root_exists` (a shared native store already holds that ID) or `arrokothi.bridge.native_creation_failed` |
 | `ownerExecutionId` | Refused by name (`owner_unsupported`): Kernel composition is K4's |

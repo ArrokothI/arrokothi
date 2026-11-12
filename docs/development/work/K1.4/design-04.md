@@ -300,6 +300,12 @@ follows without a new design check (006 routine corrections).
   > the RUNNING member has not ended. After a native exception past READY→RUNNING, that member stays RUNNING
   > ([017](../../017-known-limitations.md) L-36). "Never claims the cleanup succeeded" holds only for a rejected
   > cleanup call.
+
+  > **Correction, 2026-11-11 (round 5, after [review 04](https://github.com/ArrokothI/arrokothi/blob/8ca7288b041d376dad7a8c12f083e43427bbb101/docs/development/work/K1.4/review-04.md) K14-R4-01; [brief 05](https://github.com/ArrokothI/arrokothi/blob/8ca7288b041d376dad7a8c12f083e43427bbb101/docs/development/work/K1.4/review-04/brief-05.md)).**
+  > "A rejected cleanup call" means `terminate`'s own call. The Kernel records that hold only for E's unresolved
+  > Activation while E is not terminal. `requestCancellation`'s request swallows its rejection, as "keeps its
+  > existing handling" below says: no hold follows it. `app.cancel` then requests again (`cancel.application`),
+  > and when that fallback is fulfilled no hold follows either (review 04's probe of row F1's schedule).
 - **The exchange's final catch.** If `terminate` itself rejects, a guarded `hold` reports what happened. That
   path is Kernel-only: no native read, no scheduling and no cascade.
 - **Unchanged.** A cancellation accepted first still wins. `offer`'s cancellation-loss check is untouched, and the

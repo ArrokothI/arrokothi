@@ -152,6 +152,13 @@
     > `cancellation_pending` resolves, and `terminate` then offers the Outcome and acknowledges the batch with no
     > hold. After a native exception past READY→RUNNING the member stays RUNNING, so that cleanup *is* reported as
     > clean ([017](../../017-known-limitations.md) L-36).
+
+    > **Correction, 2026-11-11 (round 5, after [review 04](https://github.com/ArrokothI/arrokothi/blob/8ca7288b041d376dad7a8c12f083e43427bbb101/docs/development/work/K1.4/review-04.md) K14-R4-01; [brief 05](https://github.com/ArrokothI/arrokothi/blob/8ca7288b041d376dad7a8c12f083e43427bbb101/docs/development/work/K1.4/review-04/brief-05.md)).**
+    > "A cleanup call that rejects" means `terminate`'s own call. Only `terminate` reports a rejected cleanup
+    > request, and the Kernel records that hold only for E's unresolved Activation while E is not terminal.
+    > `requestCancellation`'s request swallows its rejection; `app.cancel` then requests again
+    > (`cancel.application`), and when that fallback is fulfilled no hold follows (review 04's probe of row F1's
+    > schedule).
   - Cancellation loss is unchanged: `offer`'s check stands, and a hold on an exchange the Kernel already
     cancelled is refused and ignored.
   - B-FAULT-COLLECT and B-FAULT-ACTIVATE are the one-shot cases. B-FAULT-CLEANUP and B-UNSCHEDULABLE-CLEANUP are

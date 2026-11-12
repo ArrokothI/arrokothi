@@ -376,7 +376,9 @@ export function createApplication(options: ApplicationOptions = {}): Application
       if (!answer.ok) throw new ApplicationInputError(answer.error.classification, answer.error.reason, { refusal: answer.error });
       kernelHost.setKnown(executionId, answer.value.state);
       await driver.cancellationSettled(executionId);
-      // Again after any step that was running: a child it spawned is ended too (D01-CHK-01).
+      // Requests cancellation again, which also reaches a child that a running step spawned since the
+      // first request (D01-CHK-01). A member whose step is still running keeps its request pending
+      // until that step applies it, and a step that fails never does (017 L-36).
       await driver.endLineage(executionId, "cancel.application");
       return answer.value;
     },

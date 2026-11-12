@@ -1,0 +1,28 @@
+previous=b1769c0fcdb73bfc6297551b87f80e74bc6cb588
+base=608f9ece44dbe42b78974bdac9e7ddcd33697705
+candidate=697922e251a572d0c96f7a02c1b646b607c351fc
+changed files: 17
+  document: docs/development/002-implemented-kernel-baseline.md
+  document: docs/development/017-known-limitations.md
+  document: docs/development/work/K1.4/design-03.md
+  document: docs/development/work/K1.4/design-04.md
+  document: docs/development/work/K1.4/implementation-02.md
+  document: docs/development/work/K1.4/implementation-03.md
+  document: docs/development/work/K1.4/implementation-04/ablations.log
+  document: docs/development/work/K1.4/implementation-04/d04-witnesses.log
+  document: docs/development/work/K1.4/implementation-04/hold-mutant.log
+  document: docs/development/work/K1.4/implementation-04/prior-probes.log
+  document: docs/development/work/K1.4/implementation-04/review-03-probes.log
+  document: docs/development/work/K1.4/owner-choice-06.md
+  json, keys changed [administrative_files, limits]: docs/development/work/K1.4/verification.json
+  document: docs/guides/deployment/quick-start.md
+  document: docs/guides/kernel/capabilities-effects-and-authority.md
+  CODE DIFFERS: packages/sdk/tests/bridge-terminate.test.ts (646 printed lines)
+  json, keys changed [files]: tests/conformance/legacy-mapping.json
+packages/kernel/src vs B: identical
+packages/core/src vs B: identical
+tests/fixtures/packet-tools/mutations.json vs B: identical
+tests/fixtures/packet-tools/refusal-guards.json vs B: identical
+tests/fixtures/packet-tools/value-cost.json vs B: identical
+result=FAILED (1)
+exit=1

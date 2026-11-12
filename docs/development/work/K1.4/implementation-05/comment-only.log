@@ -1,0 +1,21 @@
+previous=1b98a76e625ef187ba179fdad2e823ac4dabd521
+base=608f9ece44dbe42b78974bdac9e7ddcd33697705
+candidate=working tree
+changed files: 10
+  document: docs/development/002-implemented-kernel-baseline.md
+  document: docs/development/017-known-limitations.md
+  document: docs/development/work/K1.4/design-04.md
+  document: docs/development/work/K1.4/implementation-03.md
+  document: docs/development/work/K1.4/implementation-04.md
+  json, keys changed [administrative_files, limits]: docs/development/work/K1.4/verification.json
+  document: docs/guides/deployment/quick-start.md
+  code identical without comments: packages/sdk/src/application.ts (391 printed lines)
+  code identical without comments: packages/sdk/src/legacy-bridge/driver.ts (625 printed lines)
+  code identical without comments: packages/sdk/src/types.ts (116 printed lines)
+packages/kernel/src vs B: identical
+packages/core/src vs B: identical
+tests/fixtures/packet-tools/mutations.json vs B: identical
+tests/fixtures/packet-tools/refusal-guards.json vs B: identical
+tests/fixtures/packet-tools/value-cost.json vs B: identical
+result=comment_and_document_only
+exit=0

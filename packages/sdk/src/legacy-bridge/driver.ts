@@ -16,12 +16,25 @@
  * Accounting (design 03 §4, owner choice 04): each exchange's `BatchLedger` gives every Event of
  * its batch exactly one `ingress_result` entry, on every exit, and is the only source of them.
  *
- * Termination (D01-CHK-01, design 03 §5): once E is terminal, or a cancellation request for E
- * arrived, the Driver starts no native work for E and ends the lineage. Every exit that ends E goes
- * through `terminate`, which sets the sticky `ended` flag, ends the lineage, closes the ledger and
- * offers the Outcome. `requestCancellation` sets the flag synchronously and ends the lineage too.
- * If ending the lineage fails, `terminate` reports a protocol hold through the Kernel alone: no native
- * read, scheduling or cascade sits on that path (design 04 §6, D04-CHK-02).
+ * Termination (D01-CHK-01, design 03 §5; 017 L-36): once E is terminal, or a cancellation request
+ * for E arrived, the sticky `ended` flag is set. The Driver then starts no further native step for E
+ * and requests native cancellation of every non-terminal lineage member (`endLineage`, `cascade`).
+ * A request does not prove an ended member. A READY or WAITING member ends at once. A RUNNING member
+ * answers `cancellation_pending`, which only its own step applies; if that step fails, the member stays
+ * RUNNING with the request pending, and the Driver starts no later step (017 L-36).
+ *
+ * An exchange that ends E requests cancellation before it closes the ledger and offers the Outcome: in
+ * `submit` for a native terminal decision, through `terminate` for every other ending exit.
+ * `requestCancellation` sets the flag synchronously and requests too. It swallows a rejected request,
+ * and `app.cancel` then requests again (`cancel.application`).
+ *
+ * Only `terminate` turns a rejected request into a protocol hold. A rejection inside an exchange
+ * reaches it directly, or through the exchange's `exception` exit, which requests once more; if
+ * `terminate`'s request rejects, it reports the hold through the Kernel alone, with no native read,
+ * scheduling or cascade on that path (design 04 §6, D04-CHK-02). The Kernel accepts that hold only for
+ * E's unresolved Activation while E is not terminal, so no hold follows a Kernel cancellation. Outside
+ * an exchange, a rejection at `cancel.root-created` fails `start`, which cancels E, and one at
+ * `cancel.application` rejects `app.cancel`.
  *
  * Scheduling (design 04 §2, §6 D04-CHK-01): committed READY is the fact and a queue entry only a hint.
  * Whenever the lineage's decision is `continue`, the Driver schedules every READY member itself.
@@ -95,8 +108,9 @@ export interface GateDetail {
 }
 
 /**
- * One label per call site that ends a lineage (design 04 §3.1). B-TERM-CENSUS derives the call sites from
- * the source and requires this tuple, the labels used and B-TERM-ORACLE's table to agree.
+ * One label per call site that requests the end of a lineage (design 04 §3.1). B-TERM-CENSUS derives
+ * the call sites from the source and requires this tuple, the labels used and B-TERM-ORACLE's table to
+ * agree.
  */
 export const TERMINATE_SITES = Object.freeze([
   "cancel.request", "cancel.root-created", "cancel.exchange-start", "cancel.forward-loop", "cancel.step-ended", "cancel.application",
@@ -206,7 +220,10 @@ export class LegacyDriver implements ExecutionDriver {
     return readProgress(activation.acceptedProgress, activation.executionId);
   }
 
-  /** Ends E's native lineage from `site`; B-TERM-ABLATION removes one site at a time. */
+  /**
+   * Requests native cancellation of E's lineage from `site` (`cascade`); B-TERM-ABLATION removes one
+   * site at a time. Fulfilment means every request was made, not that every member ended (017 L-36).
+   */
   endLineage(executionId: string, _site: TerminateSite): Promise<void> {
     return this.cascade(executionId);
   }
@@ -215,7 +232,8 @@ export class LegacyDriver implements ExecutionDriver {
 
   /**
    * Creates E's native root after the Kernel accepted E's creation. A failure here is the caller's
-   * to answer (`start` cancels E). A cancellation that arrived meanwhile ends the new root at once.
+   * to answer (`start` cancels E). A cancellation that arrived meanwhile requests the new root's
+   * cancellation at once (`cancel.root-created`).
    */
   async createRoot(executionId: string, input: CreateExecutionInput): Promise<ExecutionHandle> {
     this.scheduler.learn(executionId, executionId);
@@ -254,6 +272,11 @@ export class LegacyDriver implements ExecutionDriver {
     return undefined;
   }
 
+  /**
+   * Sets E's sticky `ended` flag synchronously and requests native cancellation of its lineage
+   * (`cancel.request`). A rejected request is swallowed: no hold follows it, and `app.cancel` requests
+   * again (`cancel.application`).
+   */
   requestCancellation(request: CancellationRequest): undefined {
     this.ended.add(request.executionId);
     this.scheduler.wake(request.executionId);
@@ -266,12 +289,16 @@ export class LegacyDriver implements ExecutionDriver {
     await this.cancelling.get(executionId);
   }
 
-  /** Whether the Driver has stopped native work for E. */
+  /** Whether E's sticky `ended` flag is set: the Driver starts no further native step for E (017 L-36). */
   hasEnded(executionId: string): boolean {
     return this.ended.has(executionId);
   }
 
-  /** Cancels every non-terminal member of E's native lineage, descendants first. */
+  /**
+   * Calls native `cancelExecution` for every non-terminal member of E's lineage, descendants first. A
+   * READY or WAITING member ends at once. A RUNNING member answers `cancellation_pending`, which this
+   * does not check: only that member's own step applies it (017 L-36). A rejected read or call rejects.
+   */
   async cascade(executionId: string): Promise<void> {
     const members = await this.lineageIds(executionId);
     for (const id of members.reverse()) {
@@ -634,9 +661,12 @@ export class LegacyDriver implements ExecutionDriver {
   }
 
   /**
-   * Ends E from `site`: the flag first, then the lineage, then the ledger, then the Outcome. If the
-   * batch's accounting cannot be encoded, nothing is acknowledged: the exchange becomes a protocol
-   * hold (design 03 addendum, D03-CHK-02).
+   * Ends the exchange from `site`: sets the flag, requests the lineage's cancellation, then closes the
+   * ledger and offers the Outcome. A fulfilled request does not prove every member ended (017 L-36). If
+   * the request rejects, this reports a protocol hold through the Kernel alone and acknowledges nothing
+   * (D04-CHK-02); the Kernel records it only while this exchange is unresolved and E is not terminal.
+   * If the batch's accounting cannot be encoded, nothing is acknowledged either: the exchange becomes a
+   * protocol hold (design 03 addendum, D03-CHK-02).
    */
   private async terminate(
     activation: Activation, grant: SubmissionGrant, ledger: BatchLedger, progress: BridgeProgress | null, next: OutcomeNext, site: TerminateSite,

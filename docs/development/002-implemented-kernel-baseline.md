@@ -1037,11 +1037,14 @@ the Kernel.
   Values over the core limits fail the Execution as `arrokothi.bridge.value_unrepresentable`.
 - `input`, `resolveConfirmation` and `cancel` are Kernel calls. A keyed `input` retry with the destination
   omitted reuses the destination the Kernel recorded for that key. Cancellation, every Driver-originated
-  `fail` and every native terminal root stop the Driver's native work for E and request the end of every
+  `fail` and every native terminal root stop the Driver's native steps for E and request the end of every
   non-terminal member of the native lineage. A READY or WAITING member ends at once; a RUNNING member answers
   `cancellation_pending`, and only its own step can apply that. After a native exception past READY→RUNNING no
-  step is left, so the member may stay RUNNING while the Kernel's `FAILED` stands, with no hold (017 L-36). If a
-  cleanup call rejects, the Driver reports a protocol-failure hold, through the Kernel alone. The `controllers(services)` hook
+  step is left, so the member may stay RUNNING while the Kernel's `FAILED`, or an earlier Kernel `CANCELLED`,
+  stands, with no hold (017 L-36). A rejected cleanup request becomes a protocol-failure hold, reported through
+  the Kernel alone, only in the Driver's `terminate`, and the Kernel records it only for E's unresolved
+  Activation while E is not terminal. The request a Kernel cancellation starts swallows its rejection; `cancel`
+  then requests again, and a rejection there rejects `cancel`. The `controllers(services)` hook
   receives the complete services object, with the lineage scheduler the native Runtime uses. A refused Driver `fail` becomes a protocol-failure hold through a
   separate control-scoped caller.
 - The host dispatches READY Executions from a candidate set and fires due Kernel timers at every host entry;
@@ -1063,7 +1066,7 @@ constructor-validation and operation-index bug repairs, and unresolved architect
 the Driver as unmediated Trusted Execution. Native Activations of different Executions may interleave.
 Takeover of a legacy exchange is refused, and nothing survives the process. Preflight is advisory for
 permissions and dynamic services; runtime remains authoritative. The limits are 017 L-01, L-20 and
-L-29 to L-35.
+L-29 to L-37.
 
 ## Current gaps and next work
 

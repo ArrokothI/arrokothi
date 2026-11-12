@@ -54,9 +54,9 @@ export interface ApplicationOptions {
   >>;
   /**
    * When set, each human pause the bridge declares as a Kernel wait carries a deadline this many
-   * milliseconds after the pause was first observed. On expiry the native lineage is cancelled and
-   * the Execution fails with `arrokothi.bridge.wait_deadline_expired`. Deadlines take effect at the
-   * next host call.
+   * milliseconds after the pause was first observed. On expiry the bridge requests cancellation of
+   * the native lineage and the Execution fails with `arrokothi.bridge.wait_deadline_expired`.
+   * Deadlines take effect at the next host call.
    */
   readonly humanWaitDeadlineMs?: number;
   /** Advanced stock-controller strategies. Omitted properties retain the SDK composition. */
