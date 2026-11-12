@@ -2,6 +2,16 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **Round 5 payload C: `72d452bb39e0ae0f846d85e273441d06a9cd22fb`** (pushed, 2026-11-11), directly on round 4's H `1b98a76e`.
+  - *Review:* [review 04](https://github.com/ArrokothI/arrokothi/blob/8ca7288b041d376dad7a8c12f083e43427bbb101/docs/development/work/K1.4/review-04.md) (Codex GPT-6, `codex/k1.4-review-04` at `8ca7288b`) is CHANGES REQUIRED of H
+    `1b98a76e`: one P2 prose finding, K14-R4-01 (brief 05). L-36, L-37, F1–F3 and the closed dispositions stand.
+  - *Owner:* deviation 1 "Confirm both cases"; deviation 3 "Review as is", with the comment-only fix taken now.
+  - *C:* comments and documents only. `driver.ts`, `application.ts` and `types.ts` comments say the Driver requests
+    native cancellation; only `terminate` turns a rejected request into a hold. L-36, the baseline and its limits
+    index, the quick start and `verification.json` follow; dated corrections in reports 03–04 and design 04. Packet
+    verify CI run [`43131441604`](https://github.com/ArrokothI/arrokothi/actions/runs/43131441604) on it: `checks_passed`, 19/19 (repository tests 5,054/5,054).
+  - *H:* [implementation report 05](implementation-05.md), the 007 entry and this file. **WAITING_FOR_REVIEW.**
+  - *Next:* an independent review bounded by brief 05; no self-acceptance.
 - **Round 4 payload C: `697922e251a572d0c96f7a02c1b646b607c351fc`** (pushed, 2026-11-11). It sits on `739a0586`, superseded
   before any H because it changed the preserved design 02.
   - *Review:* [review 03](https://github.com/ArrokothI/arrokothi/blob/5e36d514fb10347a182bbeaa36879ce9074fe72a/docs/development/work/K1.4/review-03.md) (Codex GPT-6, `codex/k1.4-review-03` at `5e36d514`) is CHANGES REQUIRED of H
