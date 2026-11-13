@@ -1,0 +1,21 @@
+{"B":"608f9ece44dbe42b78974bdac9e7ddcd33697705","previous":"1b98a76e625ef187ba179fdad2e823ac4dabd521","C":"72d452bb39e0ae0f846d85e273441d06a9cd22fb","H":"e307943d6b315e724e49107c3b26a1100ef4916c","node":"v26.10.0","typescript":"5.9.3"}
+{"administrative_files":["docs/development/007-work-packets.md","docs/development/work/K1.4/implementation-05.md","docs/development/work/K1.4/progress.md"],"exact_allowlist":true}
+{"path":"packages/sdk/src/application.ts","tokens":3788,"ast_sha256":"7266c9924a4be3d1941c5b9992555e4ee32067db46c81e37b4b9640d750019e7","ast_and_emit_identical":true}
+{"path":"packages/sdk/src/legacy-bridge/driver.ts","tokens":5741,"ast_sha256":"183626e3f255f05ae91492e71e7c1e56872ee888c65f064c64f12b2e96a51189","ast_and_emit_identical":true}
+{"path":"packages/sdk/src/types.ts","tokens":790,"ast_sha256":"f72602cfa9146514fe5be597fb1da49973619b07eaea0061764a787eaed1c991","ast_and_emit_identical":true}
+{"controls":["comment ignored","changed literal detected","changed ASI structure detected"],"passed":true}
+{"changed_files":["docs/development/002-implemented-kernel-baseline.md","docs/development/017-known-limitations.md","docs/development/work/K1.4/design-04.md","docs/development/work/K1.4/implementation-03.md","docs/development/work/K1.4/implementation-04.md","docs/development/work/K1.4/implementation-05/bridge-suites.log","docs/development/work/K1.4/implementation-05/comment-only-control.log","docs/development/work/K1.4/implementation-05/comment-only.log","docs/development/work/K1.4/implementation-05/comment-only.mjs","docs/development/work/K1.4/implementation-05/review-04-probe.log","docs/development/work/K1.4/verification.json","docs/guides/deployment/quick-start.md","packages/sdk/src/application.ts","packages/sdk/src/legacy-bridge/driver.ts","packages/sdk/src/types.ts"],"production_src_files":196,"other_src_files_byte_identical":193,"tests_fixtures_configuration_packages_scripts_unchanged":true,"exception":"verification.json metadata only; checked below"}
+{"verification_changed_keys":["administrative_files","limits"],"checks_inputs_thresholds_preserve_profiles_unchanged":true}
+{"path":"packages/kernel/src","byte_identical_to_B":true}
+{"path":"packages/core/src","byte_identical_to_B":true}
+{"path":"tests/fixtures/packet-tools/mutations.json","byte_identical_to_B":true}
+{"path":"tests/fixtures/packet-tools/refusal-guards.json","byte_identical_to_B":true}
+{"path":"tests/fixtures/packet-tools/value-cost.json","byte_identical_to_B":true}
+{"path":"AGENTS.md","byte_identical_to_B":true}
+{"path":"docs/development/006-development-process.md","byte_identical_to_B":true}
+{"path":"docs/development/008-implementation-report.md","byte_identical_to_B":true}
+{"path":"docs/development/012-review-methods.md","byte_identical_to_B":true}
+{"historical_record":"docs/development/work/K1.4/design-04.md","only_dated_insertions":true}
+{"historical_record":"docs/development/work/K1.4/implementation-03.md","only_dated_insertions":true}
+{"historical_record":"docs/development/work/K1.4/implementation-04.md","only_dated_insertions":true}
+{"L37_and_owner_choices_unchanged":true,"result":"passed"}
