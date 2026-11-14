@@ -2,7 +2,7 @@
 
 Planner: the owner's Claude Code desktop session (`claude-opus-5-5`), 2026-11-14, at the owner's request
 ("Draft the brief"), using Prompt D. The owner chose the route on 2026-11-14: "ArrokothI adapter packet first".
-The owner's answers to the decisions below will be recorded here, and a release record will release it. Written
+The owner's answers are recorded at the end; [release 01](release-01.md) releases it. Written
 under [006 working principle 6](../../006-development-process.md#working-principles) and
 [017](../../017-known-limitations.md).
 
@@ -134,3 +134,19 @@ a scenario, skip a ledger assertion or turn a FAIL into a REFUSED to make the ru
      Prompt E (an adapter, no Kernel change). Design check and review by a session that has not worked on the
      packet and does not read the planner's notes directory: your teammate's GPT-6 or a Claude Fable 5.2
      session. A fresh session does Prompt C.
+
+**Owner answer (2026-11-14), verbatim:** to the five recommendations above, "Accept all". Their effects on this
+brief:
+- **Decision 1: A.** `K1.4-candidate` is a new packet, depending on K1.4 accepted and integrated (met at
+  `eb8472e5`, PR #67). K1.4-gate depends on K1.4-candidate accepted and integrated and on the benchmark owner's
+  E1 release that pins it. The K1 milestone closes when K1.4, K1.4-candidate and K1.4-gate are ACCEPTED.
+- **Decision 2: A.** The candidate drives the Kernel package root, `ExecutionCoordinator`, with a deterministic
+  fake Driver. K1.4-gate runs E1 against the Kernel's public entry.
+- **Decision 3: A.** The candidate lives in `tests/conformance/k0-candidate/` and exports `kernelCandidate`.
+- **Decision 4: A.** The fixture's stale "unimplemented" prose and `refusingCandidate`'s reason are corrected in
+  place. Scenarios, runner and oracle stay byte-identical, and `FIXTURE_VERSION` stays
+  `arrokothi-k0-public-fixture/1`.
+- **Decision 5.** A fresh Claude Opus 5.5 session implements. Design note, then one design check, then build; no
+  Prompt E. The design check and the independent review are done by a session that has not worked on this packet
+  and does not read the planner's notes directory: the owner's teammate's Codex GPT-6, or a Claude Fable 5.2
+  session. A fresh session does the Prompt C cleanup.
