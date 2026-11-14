@@ -2,6 +2,13 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **Owner choice 01 recorded (2026-11-14): "Confirm Q7".** [Owner choice 01](owner-choice-01.md).
+  - *Roles:* this Claude Fable 5.2 session implements. A Codex GPT-6 session does the design check and the review;
+    a Claude Opus session does them if GPT-6 is out of quota.
+  - *Open:* Q1–Q6 of [design 01](design-01.md), which wait for design check 01 and the owner's disposition.
+  - *Code:* none. Build nothing yet.
+  - *Next:* design check 01 of design 01 at `c237db58441eccfa6d59e59779068ab9b93a203d`.
+
 - **Design 01 written; stopped for the owner (2026-11-14).** Branch `claude/k1.4-candidate` from base B
   `c1951226338de6ccd3e4e6289259549551268f61`. Implementer: a Claude Code desktop session on Claude Fable 5.2
   (`claude-fable-5-2`), assigned by the owner; release 01 names Claude Opus 5.5 (design 01 Q7).
