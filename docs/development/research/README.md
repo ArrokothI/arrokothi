@@ -40,9 +40,11 @@ states named in a report are as of its date. Re-check them before use.
 |---|---|---|---|
 | [Live-object validation](2026-10-01-live-object-validation.md) | 2026-10-01 | standard | Refusal cost and work metering; surviving work-charge mutants; exotic key listing; re-prototyped built-ins; live objects versus bytes at boundaries; same-process isolation |
 | [Canonical-bytes kernel](2026-10-02-canonical-bytes-kernel.md) | 2026-10-02 | thorough | Canonical-bytes cores and strict validators; realm integrity and global shadowing; Proxy policy; idempotent creation; fencing and takeover; timers and cancellation; plan/apply structure; evidence tooling; a reliability audit of recent issue reports |
+| [Apache Spark lessons](2026-11-14-apache-spark-lessons.md) | 2026-11-14 | standard | Commit arbitration and its fix history; failure attribution for retry limits; re-running non-deterministic work; cancellation that does not stop work; telemetry as a control input; intent-before-work logs and the scope of exactly-once; what not to borrow |
 
 The 2026-10-02 report extends the earlier one and skips its topics. The earlier report's header lists
-the later findings that update it.
+the later findings that update it. The 2026-11-14 report adds Spark to the 2026-10-02 fencing section
+and does not repeat it.
 
 ## Reading map
 
@@ -58,6 +60,9 @@ the later findings that update it.
 | Plan/apply structure, sole-writer state, module-boundary checks | [Plan/apply decomposition](2026-10-02-canonical-bytes-kernel.md#7-planapply-decomposition-and-structural-single-writer) |
 | Counterexample corpus, mutation registry, verification commands, coverage of varied dimensions | [Evidence tooling](2026-10-02-canonical-bytes-kernel.md#8-evidence-tooling-corpus-mutation-registry-simulation-coverage); [how strict validators are tested](2026-10-02-canonical-bytes-kernel.md#how-strict-validators-are-tested); [Problem 2](2026-10-01-live-object-validation.md#problem-2-deleting-a-work-charge-leaves-the-tests-green) |
 | Citing a recent GitHub issue, small repository or preprint about canonical encodings | [Reliability audit](2026-10-02-canonical-bytes-kernel.md#9-reliability-of-the-julyoctober-2026-issue-cluster) |
+| Action admission and retry, the admission-to-send window, retry limits by failure cause | [Commit arbitration](2026-11-14-apache-spark-lessons.md#1-commit-arbitration-nine-years-on-one-small-component); [counting failures by cause](2026-11-14-apache-spark-lessons.md#2-counting-failures-by-cause) |
+| Driver recovery declarations, replay, native cancellation and stop | [Non-deterministic re-runs](2026-11-14-apache-spark-lessons.md#3-re-running-work-that-is-not-deterministic); [cancellation](2026-11-14-apache-spark-lessons.md#4-cancellation-that-does-not-stop-anything) |
+| Persistent dispatch, checkpoint publication, output replay and retention | [Intent before work](2026-11-14-apache-spark-lessons.md#6-intent-before-work-and-the-scope-of-exactly-once); [smaller findings](2026-11-14-apache-spark-lessons.md#8-smaller-findings); [do not borrow](2026-11-14-apache-spark-lessons.md#9-do-not-borrow) |
 
 Each report closes with its research gaps. Check them before treating an absence as evidence.
 
