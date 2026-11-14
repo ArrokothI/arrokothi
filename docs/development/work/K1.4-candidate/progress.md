@@ -2,6 +2,19 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **Design check 01 disposed; build released by the owner (2026-11-14).**
+  - *Check:* design check 01 (Codex GPT-6, `codex/k1.4-candidate-design-check-01` at
+    `e06984a9573efd1524692ab74332eb7744941bcf`), APPROVED WITH REQUIRED CHANGES D01-CHK-01..09. Read by commit;
+    not merged.
+  - *Owner:* [owner choice 02](owner-choice-02.md): Q1 a by command capability, Q2 b with Q2 a as the root fix,
+    Q3 b with the episode key `(state, activationId, writerEpoch)`, Q4 limits, Q5 and Q6 yes. KC-3 is 12 PASS and
+    3 REFUSED, pinned exactly. The gate is E1's predeclared K1 matrix; the 3 dependency-alternative schedules and
+    D01-CHK-04 move to K2's E2 gate. 007 and both roadmaps amended.
+  - *Design:* [addendum 01](design-01-addendum-01.md) disposes the nine findings and names the five ablations.
+  - *Next:* build in this packet with no new design check; Kernel source unchanged; C, Packet verify in CI,
+    implementation report 01, H, 007 WAITING_FOR_REVIEW. No self-acceptance.
+  - *Local Node:* v26.10.0 is at `~/.local/share/arrokothi/node-v26.10.0-darwin-arm64/bin`; put it first in PATH.
+
 - **Owner choice 01 recorded (2026-11-14): "Confirm Q7".** [Owner choice 01](owner-choice-01.md).
   - *Roles:* this Claude Fable 5.2 session implements. A Codex GPT-6 session does the design check and the review;
     a Claude Opus session does them if GPT-6 is out of quota.

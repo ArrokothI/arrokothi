@@ -113,7 +113,10 @@ depends on a K1 subject, so this prerequisite adds no cycle.
 K1.0 establishes a narrow target-code boundary and quarantines the working legacy implementation,
 with import guards and preserved consumer regressions; it does not implement the new protocol, and
 neither prepared fixtures nor a K1.0 structural pass is an E1 result.
-K1.4 retains the full K1/E1 gate, including these structural obligations. See the
+K1.4 retains the K1/E1 gate, including these structural obligations. Since 2026-11-14 the gate is E1's
+predeclared K1 matrix: the K0 fixture schedules the K1 Kernel has a surface for. The three schedules in which a
+dependency alternative wakes a wait need a trusted non-timeout Event source and move to the K2/E2 gate
+([K1.4-candidate owner choice 02](work/K1.4-candidate/owner-choice-02.md)). See the
 [structure/evidence assessment](013-structure-and-evidence-sequencing.md) and
 [packet contract seed](007-work-packets.md#k10--target-boundary-and-legacy-quarantine).
 This is a planned dependency amendment, not a release of K0.2 or K1.0.

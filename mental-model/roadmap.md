@@ -150,6 +150,11 @@ Legacy bridge and K1/E1 gate. Expected Layer-3 owners:
 - [evidence](mechanisms/evidence.md)
 - [execution-cycle](mechanisms/execution-cycle.md)
 
+The K1/E1 gate judges the K0 fixture schedules that K1 has a surface for. A schedule that needs a trusted
+non-timeout Event source is outside it and belongs to the [K2.4](#k24) gate: the first producers of
+[that source category](mechanisms/waits.md#eligibility-comes-from-trusted-source-category) (settlements, child
+results, peer messages) arrive with K2.
+
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k14--legacy-bridge-and-k1e1-gate).
 
 ## K2.1
@@ -189,6 +194,9 @@ Input requests and K2/E2 gate. Expected Layer-3 owners:
 - [communication](mechanisms/communication.md)
 - [authority](mechanisms/authority.md)
 - [waits](mechanisms/waits.md)
+
+The gate includes the K0 fixture schedules in which a dependency alternative wakes a wait, which the K1 gate
+leaves out (see [K1.4](#k14)).
 
 [Packet scope and dependencies](../docs/development/007-work-packets.md#k24--input-requests-and-k2e2-gate).
 
