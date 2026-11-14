@@ -1,0 +1,6 @@
+# H 64c505bfee13cae340710942e69fe805723aaad9 (git objects); python3 -I docs/development/work/K1.4/review-06/prose-links.py
+ok  mental-model/mechanisms/execution-cycle.md -> mental-model/mechanisms/waits.md
+ok  mental-model/mechanisms/execution-cycle.md -> mental-model/mechanisms/waits.md#registering-a-wait
+ok  mental-model/concepts/values.md -> docs/development/002-implemented-kernel-baseline.md#16-application-sdk-above-core
+links_on_added_lines=3 broken=0
+exit=0

@@ -1,0 +1,14 @@
+# H 64c505bfee13cae340710942e69fe805723aaad9 product tree; v26.10.0; node --test --experimental-strip-types --test-reporter=spec docs/development/work/K1.4/implementation-06/due-at-registration.probe.mjs (the implementer's probe, unchanged)
+{"case":"due-at-registration","deadline":1000100,"now":1000110,"state":"FAILED","code":"arrokothi.bridge.wait_deadline_expired","fires":[],"modelCalls":1}
+{"case":"control","deadline":1000100,"now":1000110,"between":{"state":"WAITING","reason":"input_required"},"state":"FAILED","code":"arrokothi.bridge.wait_deadline_expired","fires":[{"kind":"wait_deadline","result":"expired"}],"modelCalls":1}
+✔ due at registration: a pause whose stored deadline passed before its Outcome expires with no host fire (21.200125ms)
+✔ control: a pause whose deadline passes after it is re-declared expires only through a host fire (4.861209ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 201.054708
+exit=0

@@ -1,0 +1,120 @@
+# H 64c505bfee13cae340710942e69fe805723aaad9 (git objects at the pinned H); sh docs/development/work/K1.4/review-06/claim-search.sh
+## 1. Timer rule, by name: who makes a deadline take effect
+docs/development/002-implemented-kernel-baseline.md:529:- **Timers.** A deadline takes effect by one of three paths:
+docs/development/002-implemented-kernel-baseline.md:530:  1. **Due at registration.** An accepted `await` whose deadline is already due at the Outcome's one
+docs/development/002-implemented-kernel-baseline.md:532:     Event and deadline readiness, with no host fire.
+docs/development/002-implemented-kernel-baseline.md:535:  3. **Execution deadline.** Fire-only (owner choice 01): creation never reads the clock, and an Outcome
+docs/development/002-implemented-kernel-baseline.md:539:  paths 2 and 3 have no instant enforcement (L-22). Without a clock, a deadline is refused as
+docs/development/007-work-packets.md:699:| K1.4 | ACCEPTED | **Owner release 2026-11-03:** [release 01](work/K1.4/release-01.md); [brief 01](work/K1.4/brief-01.md) with the owner's answers (split: the bridge K14-1 to K14-6 here, K14-G in K1.4-gate; legacy tool
+docs/development/014-owner-progress-summary.md:102:- exposes an injected clock and host-fired timers, with an immutable optional Execution deadline set
+docs/development/014-owner-progress-summary.md:389:   `execution-cycle.md` says deadlines take effect only when the host fires them, which is wrong for a wait
+docs/development/014-owner-progress-summary.md:390:   already due at registration (CLEANUP-K14-01). The owner decides whether the scoped correction in
+docs/development/017-known-limitations.md:96:| L-22 | Instant deadline enforcement for live waits and Execution deadlines. A wait left `WAITING` and an Execution deadline take effect only when the host calls `fireTimer` and the fire is accepted; a decision acc
+docs/guides/deployment/quick-start.md:155:or Execution. A human-wait deadline on a waiting Execution and an Execution deadline take effect at the
+docs/guides/deployment/quick-start.md:156:next host call: every `start`, `input`, `resolveConfirmation`, `cancel` and run call fires due Kernel
+docs/guides/deployment/quick-start.md:157:timers first. A human pause whose deadline has already passed when a step's Outcome declares it expires
+mental-model/concepts/operations.md:126:<!-- In-process binding choice (K1.3): readings are safe integers of at least 0 on a host-chosen scale (milliseconds recommended) from an injected KernelClock; no monotonicity is assumed; a wait already due when it regis
+mental-model/concepts/values.md:110:**Canonicalization** turns a valid value into one fixed sequence of bytes. It serves exactly two purposes: deciding whether two values are equal, and measuring how large a value is. It is not a repair step. It runs only on a
+mental-model/mechanisms/execution-cycle.md:17:The Kernel has no scheduler of its own. The host that owns an in-process coordinator decides when to dispatch a `READY` Execution and when to fire the timers the Kernel reports due. A [wait](waits.md) whose deadlin
+mental-model/rewrite-index.md:217:| K1.3 Execution deadline as an optional creation field in canonical content, immutable (owner decision 1); fire-only Execution-deadline enforcement in the in-process binding (owner choice 01, D01-CHK-07) | `mechanisms/creatio
+packages/core/src/effects/outcome.ts:27: * `failure` means the operation definitely did not take effect. `unknown` means the runtime could
+packages/interoperability/mcp/src/import/result.ts:12: * `failure` means the operation definitely did not take effect, `unknown` means the runtime could
+packages/kernel/src/coordinator.ts:32: *   eligible Event is already queued, its one timeout Event when the deadline is already due, else
+packages/kernel/src/coordinator.ts:291:   * Enforcement is fire-only (owner choice 01, D01-CHK-07): creation never reads the clock, so a
+packages/kernel/src/coordinator.ts:292:   * deadline already past creates a `READY` Execution; the host fires its timer (`pendingTimers`,
+packages/kernel/src/coordinator.ts:361:   * a wait already due when it registers expires in that Outcome's decision (W-2), while a live wait's
+packages/kernel/src/coordinator.ts:362:   * deadline and the Execution deadline take effect only when the host calls `fireTimer` and the fire
+packages/kernel/src/coordinator.ts:664: * reading reaches the deadline. Enforcement is fire-only (owner choice 01): nothing else expires it.
+packages/kernel/src/coordinator.ts:696:    return discarded("duplicate", "generation already expired; its one timeout Event stands", retired.endingEventId);
+packages/kernel/src/coordinator.ts:2177:   * - a generation that already expired: `duplicate`, naming its one timeout Event (W-9);
+packages/kernel/src/plan.ts:80: * eligible was queued and the deadline was already due, so the generation retired with its one timeout
+packages/kernel/src/time.ts:8: * registers a wait with a deadline, and when the host fires a timer (`ExecutionCoordinator.fireTimer`).
+packages/kernel/tests/execution-deadline.test.ts:7: * fire-only: creation never reads the clock, so a deadline already past creates a `READY` Execution, and
+packages/kernel/tests/execution-deadline.test.ts:8: * only an accepted host fire expires it, through the same cancellation decision as `cancelExecution`. An
+packages/kernel/tests/execution-deadline.test.ts:62:describe("owner choice 01 (D01-CHK-07): fire-only enforcement", () => {
+packages/kernel/tests/owner-guards.test.ts:274:  test("positive control: a duplicate host fire stays a recorded duplicate with one timeout", () => {
+packages/kernel/tests/owner-guards.test.ts:361:describe("K13-R01-CLOCK-03 three deadline paths: due at registration, live wait, Execution deadline", () => {
+packages/kernel/tests/owner-guards.test.ts:362:  test("due at registration: the Outcome's own reading expires the wait, with no host fire and no pending timer", () => {
+packages/kernel/tests/owner-guards.test.ts:371:  test("live wait: a deadline passed on the clock expires nothing until the host fires it", () => {
+packages/kernel/tests/owner-guards.test.ts:375:    assert.equal(view(opened).state, "WAITING", "no instant enforcement");
+packages/kernel/tests/owner-guards.test.ts:381:  test("Execution deadline: fire-only; creation with a past deadline is READY, an earlier Outcome wins, the fire cancels", () => {
+packages/kernel/tests/race-search/model.ts:11: * - T: `operations.md` § Three clocks, CL-1–CL-3; owner choice 01 (fire-only Execution deadlines);
+packages/kernel/tests/race-search/model.ts:349:/** The Execution-deadline fire (T, CL-1; owner choice 01: fire-only). */
+packages/kernel/tests/race-search/witnesses.ts:57:  { name: "due at registration", source: "W-2 step 3", witnesses: [
+packages/sdk/src/host.ts:77:  /** Fires every timer due on the Kernel clock: live wait and Execution deadlines take effect at host calls (L-22). */
+packages/sdk/src/types.ts:59:   * A deadline still ahead when a step's Outcome declares the pause takes effect at the next host
+packages/sdk/src/types.ts:60:   * call; one already passed by then expires as that Outcome is accepted, unless an input or
+## 2. Timer rule, by alias: deadline, expiry and timers in guides, READMEs, skills and examples
+.agents/skills/arrokothi-architecture/SKILL.md:47:validation, realm integrity, Proxies, idempotency, fencing, timers, plan/apply
+docs/guides/deployment/current-hosting.md:7:scheduler are reference mechanisms, not production crash recovery: Kernel waits, timers and records do
+docs/guides/deployment/quick-start.md:76:| `executionDeadline` | Optional absolute `Date` on the `runtime.clock` scale. At expiry the Kernel cancels the Execution (cause `execution_deadline`) and the Driver requests the end of the native lineage (L-36) |
+docs/guides/deployment/quick-start.md:86:| Human-wait deadline | None unless `humanWaitDeadlineMs` is set; then each declared human pause expires that many milliseconds after it was first observed, and the Execution fails with `arrokothi.bridge.wait_deadline_e
+docs/guides/deployment/quick-start.md:155:or Execution. A human-wait deadline on a waiting Execution and an Execution deadline take effect at the
+docs/guides/deployment/quick-start.md:157:timers first. A human pause whose deadline has already passed when a step's Outcome declares it expires
+docs/guides/execution/native/composition-children-and-concurrency.md:81:Child calls have no configured result deadline. The application owns any timeout. Cancelling the
+docs/guides/execution/native/current-authoring-surface.md:99:- UseCapability deadlines/idempotency do not apply uniformly to other Effects; see
+docs/guides/kernel/capabilities-effects-and-authority.md:78:## Deadlines, retries, and cancellation
+docs/guides/kernel/capabilities-effects-and-authority.md:80:- `UseCapability.deadlineMs` (or policy `maxDeadlineMs`) bounds that operation. The activation wait
+docs/guides/kernel/capabilities-effects-and-authority.md:82:  driving the runtime for deadline handling. See [diagnosis](../execution/native/evaluation-and-diagnosis.md).
+docs/guides/kernel/capabilities-effects-and-authority.md:83:- Child result, peer reply, typed user input, and confirmation waits have no native deadline. With the
+docs/guides/kernel/capabilities-effects-and-authority.md:84:  SDK, `humanWaitDeadlineMs` bounds a declared human pause and `start({ executionDeadline })` bounds the
+docs/guides/kernel/capabilities-effects-and-authority.md:108:Set `AgentLimits`, Workflow `maxTransitions`, provider/output bounds, operation deadlines, and root
+examples/execution-kernel-minimal/app.ts:51:    "password reset": "Send the customer a reset link from the admin console; links expire in 1 hour.",
+examples/execution-kernel-minimal/main.ts:6: * Deterministic and offline. No API key, no network, no clock, no timer.
+examples/execution-kernel-minimal/patterns.ts:135:          key: "publication", ...PUBLISH, input: { title }, idempotency: "per_input", deadlineMs: 30_000,
+## 3. Timer rule, by alias: scheduler and host statements in the mental model
+mental-model/concepts/README.md:19:4. **[operations.md](operations.md)** — Operational vocabulary: who runs what (Kernel Worker, Execution Host), the two trust modes, the three clocks that must never share a timer, and the child, message and correlation term
+mental-model/concepts/core.md:253:A **generation** belongs to the wait, not to the work being awaited, and that is the distinction this term exists to make. If the Runtime registers a similar wait again later, that is a new generation even though the publicati
+mental-model/concepts/core.md:281:A **timeout Event** is a Kernel-minted observation that one wait generation expired. It has stable Event identity, a destination, a distinct timeout class, exact generation correlation and trusted timer provenance.
+mental-model/concepts/core.md:285:It is carried as a mandatory next-batch member rather than selected by a dependency alternative or a subscription. Nothing matches it, and nothing needs to: the Kernel knows which wait expired because it minted the timeout for
+mental-model/concepts/operations.md:51:One process may be both Kernel Worker and Execution Host, and for many applications that is the right answer. Sharing is cheap, and it is also shared fate: a process that dies takes both roles with it. Two names exist any
+mental-model/concepts/operations.md:111:These are the three clocks the Kernel's own semantics turn on, not an inventory of every timer in a deployment. A Driver's heartbeat, a provider's call timeout, a request's expiry, a cleanup schedule: all of those can ru
+mental-model/concepts/operations.md:121:**A scheduler lease expiring proves that time passed.** A lease lapses when its term runs out, which is equally consistent with a dead worker and a slow one still writing — to a clock the two look identical. So expiry
+mental-model/concepts/operations.md:126:<!-- In-process binding choice (K1.3): readings are safe integers of at least 0 on a host-chosen scale (milliseconds recommended) from an injected KernelClock; no monotonicity is assumed; a wait already due when it regis
+mental-model/concepts/operations.md:208:That last point generalizes to the whole page. Every term here sits where a Kernel decision meets a world that did not necessarily obey it: a crash the storage may not survive, a native call the authority never saw, a ti
+mental-model/concepts/state.md:214:The two last for very different lengths of time. The report's binding to its workspace lasts as long as the report needs the workspace: across Activations, across hosts and across the crash. Each attachment lasts only as long
+mental-model/deployment.md:49:A durable substrate is an existing engine that provides persistent storage, timers and dispatch. Building on a mature one is encouraged, but adopting one means checking one thing first: what it re-runs on its own when an answer go
+mental-model/kernel.md:61:The [roadmap mapping](roadmap.md) locates the implementation gates. The Kernel may build on a mature durable substrate — an existing engine for persistent storage, timers and dispatch; owning these semantics does not require a custo
+mental-model/mechanisms/creation.md:48:| Execution deadline, when set | The Execution's deadline timer, whose accepted expiry runs the same [cancellation](lifecycle.md#cancellation-order) as an explicit request |
+mental-model/mechanisms/execution-cycle.md:17:The Kernel has no scheduler of its own. The host that owns an in-process coordinator decides when to dispatch a `READY` Execution and when to fire the timers the Kernel reports due. A [wait](waits.md) whose deadlin
+mental-model/mechanisms/recovery.md:45:Write an immutable candidate checkpoint before proposing its reference. Identify native codec/version, code/config, required resources and integrity where available. Kernel acceptance pins the candidate; rejection does no
+mental-model/mechanisms/waits.md:65:Expiry creates at most one timeout Event per generation. Repeated timer delivery creates no second Event, readiness or logical timeout. A timer for a retired/replaced generation is a no-op. Timeout acceptance is Kernel-inter
+mental-model/mechanisms/waits.md:67:Generation fencing applies to wait-created artifacts such as timers, **not ordinary authenticated results**. A late result stays an accepted mailbox fact and can match a later explicitly correlated wait. It is not discarded
+mental-model/mechanisms/waits.md:103:They cannot separate retaining the mandatory member first from sorting the correct candidates and truncating. Registration checks queued Events before it creates a timeout, and an eligible arrival ends a live wait before an
+mental-model/mechanisms/waits.md:105:If R ends the live wait *before* its timer is accepted, the timer is stale and no T exists. If T was accepted first, a later R does not retract it. Both facts survive; neither establishes external failure. If [cancellation]
+mental-model/rewrite-index.md:217:| K1.3 Execution deadline as an optional creation field in canonical content, immutable (owner decision 1); fire-only Execution-deadline enforcement in the in-process binding (owner choice 01, D01-CHK-07) | `mechanisms/creatio
+mental-model/rewrite-index.md:218:| K1.3 Driver cancellation request: optional, Execution-scoped, after the cancellation commits (owner choice 01, D01-CHK-06) | `mechanisms/lifecycle.md#cancellation-order` (CX-1's request); the in-process member is recorded in
+mental-model/rewrite-index.md:303:  in BASELINE `#waits-timers-and-cancellation-api`: a per-Execution integer from 1, one per accepted
+mental-model/rewrite-index.md:306:- Timeout Event wire kind token, discriminant, encoded schema, storage layout and timer
+mental-model/rewrite-index.md:308:  recorded in BASELINE `#waits-timers-and-cancellation-api`: kind `kernel.wait.timeout`, source
+mental-model/rewrite-index.md:310:  host-pumped timer port (`pendingTimers`, `fireTimer`) whose fire is a hint the Kernel resolves.
+mental-model/rewrite-index.md:316:  consumed by it; recorded in BASELINE `#waits-timers-and-cancellation-api`.
+mental-model/rewrite-index.md:320:  `#waits-timers-and-cancellation-api`: request acceptance and the terminal transition are one
+mental-model/rewrite-index.md:349:  `#waits-timers-and-cancellation-api`: safe integers of at least 0 on a host-chosen scale
+mental-model/rewrite-index.md:351:  registers expires in that decision, and a live wait's deadline or an Execution deadline when the host
+mental-model/sources.md:112:Exact wire encoding, receipt serialization, epoch representation across new exchanges, batch maximum (at least one), wait-generation/subscription spelling, clock units, storage schema and timer machinery remain implementation-owned
+## 4. Wrapper visibility (O-2)
+docs/development/002-implemented-kernel-baseline.md:31:codec and the K14-5 wrapper export (`toCanonicalBytes`, in `wrapper.ts`). The core has
+docs/development/002-implemented-kernel-baseline.md:124:more than 32 entries. `captureWithWork` in the internal SDK capture module returns the result with its per-kind counts.
+docs/development/002-implemented-kernel-baseline.md:193:`createApplication`, at each `toCanonicalBytes` call and inside the serializer window, and refuses when a
+docs/development/002-implemented-kernel-baseline.md:1055:- `toCanonicalBytes` and `ValueIssue` are exported, with the L-01 check and `WrapperEnvironmentError`.
+docs/development/014-owner-progress-summary.md:133:- exports the value wrapper `toCanonicalBytes` under its cooperative contract, with the L-01 startup check that
+docs/development/017-known-limitations.md:75:| L-01 | SDK wrapper fidelity when a host replaced both a serializer identifier's global property and its lexical binding before the SDK module loaded; genuine intrinsics at core module initialization and at SDK mod
+docs/guides/deployment/quick-start.md:21:| `@arrokothi/sdk` | `createApplication`, `defineAgent`, `defineWorkflow`, `toCanonicalBytes`, application/preflight/run types and common definition/schema types |
+docs/guides/deployment/values-at-the-boundary.md:9:import { toCanonicalBytes } from "@arrokothi/sdk";
+docs/guides/deployment/values-at-the-boundary.md:12:const captured = toCanonicalBytes({ title: "Draft", tags: ["a", "b"] });
+docs/guides/deployment/values-at-the-boundary.md:62:`toCanonicalBytes` call and every serializer call check each identifier: its free reference, its own
+docs/guides/deployment/values-at-the-boundary.md:64:- At `createApplication` and `toCanonicalBytes`, a mismatch throws `WrapperEnvironmentError`, whose
+docs/guides/deployment/values-at-the-boundary.md:67:  check refuses that call with `unstable_representation`. Later `createApplication` and `toCanonicalBytes`
+docs/guides/execution/native/current-authoring-surface.md:31:| Definitions | `@arrokothi/sdk` (re-exports), or core root or `/execution`: `defineAgent`, `defineWorkflow`, definition inputs and terminal schemas | [definitions](../../../../packages/core/src/defi
+mental-model/concepts/values.md:323:- **Through the SDK TypeScript wrapper,** the caller hands capture a live object. The wrapper produces canonical bytes, which then pass through the same strict core admission. The capture module stays internal; the SDK's pub
+mental-model/rewrite-index.md:264:  `concepts/values.md#fixed-semantic-limits`. The internal SDK capture wrapper records eight bounded details
+mental-model/roadmap.md:120:Canonical bytes owned and validated by the Kernel; live-object capture stays in an internal SDK
+packages/sdk/README.md:17:`toCanonicalBytes` is the value wrapper the SDK uses at the boundary
+packages/sdk/src/index.ts:10:export { WrapperEnvironmentError, toCanonicalBytes } from "./wrapper.ts";
+packages/sdk/src/wrapper.ts:5: * stays in `internal/`, so the public entry never names its evidence seam.
+packages/sdk/src/wrapper.ts:7:export { WrapperEnvironmentError, checkSerializerEnvironment, toCanonicalBytes } from "./internal/value-capture.ts";
+## 5. Anchors on the old or new doc-comment text in tests, scripts and evidence tools (only the two source lines may match)
+packages/sdk/src/host.ts:77:  /** Fires every timer due on the Kernel clock: live wait and Execution deadlines take effect at host calls (L-22). */
+packages/sdk/src/types.ts:59:   * A deadline still ahead when a step's Outcome declares the pause takes effect at the next host
+exit=0

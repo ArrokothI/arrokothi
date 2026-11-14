@@ -1,0 +1,21 @@
+# H 64c505bfee13cae340710942e69fe805723aaad9 product tree (fresh clone, npm ci); v26.10.0; node --test --experimental-strip-types --test-reporter=spec docs/development/work/K1.4/review-06/timer-paths.probe.mjs
+{"case":"A","deadline":1000100,"now":1000110,"accepted":{"nextState":"READY","wait":{"generation":2,"result":"expired","timeoutEventId":"timeout-79:execution-13:arrokothi.sdk11:application36:ac287e70-a62f-4e73-9fc5-96305ddcb6f11:2"}},"view":{"state":"READY","wait":null,"readiness":{"species":"deadline","generation":2,"timeoutEventId":"timeout-79:execution-13:arrokothi.sdk11:application36:ac287e70-a62f-4e73-9fc5-96305ddcb6f11:2"},"lastRetired":{"generation":2,"retiredBy":"deadline","deadline":1000100},"timerFires":0},"fires":[]}
+{"case":"B","deadline":1000100,"now":1000110,"queued":"queued","accepted":{"nextState":"READY","wait":{"generation":2,"result":"woken","timeoutEventId":null}},"view":{"state":"READY","wait":null,"readiness":{"species":"event","generation":2,"timeoutEventId":null},"lastRetired":{"generation":2,"retiredBy":"event","deadline":1000100},"timerFires":0},"fires":[]}
+{"case":"B-after","reason":"input_required","state":"WAITING","wait":{"generation":3,"deadline":1000210},"now":1000110,"modelCalls":2,"fires":[]}
+{"case":"C","deadline":1000100,"now":1000110,"queued":"queued","accepted":{"nextState":"READY","wait":{"generation":2,"result":"expired","timeoutEventId":"timeout-79:execution-13:arrokothi.sdk11:application36:1964772c-1be1-4411-94ce-ab27f3fa71de1:2"}},"view":{"state":"READY","wait":null,"readiness":{"species":"deadline","generation":2,"timeoutEventId":"timeout-79:execution-13:arrokothi.sdk11:application36:1964772c-1be1-4411-94ce-ab27f3fa71de1:2"},"lastRetired":{"generation":2,"retiredBy":"deadline","deadline":1000100},"timerFires":0},"fires":[]}
+{"case":"D","deadline":1000100,"now":1000110,"between":{"state":"WAITING","timerFires":0},"state":"FAILED","code":"arrokothi.bridge.wait_deadline_expired","fires":[{"kind":"wait_deadline","result":"expired"}]}
+{"case":"E","executionDeadline":999999,"now":1000000,"created":"READY","reason":"cancelled","state":"CANCELLED","fires":[{"kind":"execution_deadline","result":"cancelled"}],"modelCalls":0}
+✔ A: a pause whose stored deadline passed during the step expires as its Outcome is accepted, with no host call (31.730542ms)
+✔ B: an input made during that step wakes the wait first; no timeout is minted (5.60275ms)
+✔ C: a confirmation answer made during that step does not qualify for an input pause; the wait still expires at acceptance (4.031916ms)
+✔ D (control): a deadline still ahead at acceptance leaves a live wait that only a host call expires (3.896875ms)
+✔ E: an Execution deadline already due at creation takes effect only at the next host call (2.784708ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 332.243459
+exit=0

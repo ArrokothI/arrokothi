@@ -1,0 +1,75 @@
+{
+  "run": {
+    "revision": "5b81a1b0cd9e73d7591ea23fd29195e24536d50d",
+    "spec": "docs/development/work/K1.4/verification.json",
+    "head": "5b81a1b0cd9e73d7591ea23fd29195e24536d50d",
+    "node": "v26.10.0 npm=11.19.1 python=Python 3.13.18",
+    "runner": "Linux x86_64 cpus=4",
+    "started": "2026-11-14T07:10:47Z",
+    "finished": "2026-11-14T08:35:33Z",
+    "exit": "0"
+  },
+  "summary_sha256": "d74ba1b253bdb42a34eff38c3709824773af73fa9945d1b977980ae9b2d6e889",
+  "verify_sha256": "d7b9be2343b6acd7f157c535fbb2878a38526f7e00a51f896a16d6a5dbf10b3b",
+  "summary_checks": 19,
+  "summary_passed": 19,
+  "declared_in_spec_at_C": 18,
+  "in_summary_but_not_declared": [
+    "area-gate"
+  ],
+  "counts": {
+    "tool-tests": {
+      "tests": 777
+    },
+    "repository-tests": {
+      "tests": 5054,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "archive-tests": {
+      "tests": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "example-tests": {
+      "tests": 18,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    }
+  },
+  "mutations": {
+    "registered-mutants": {
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 339
+      },
+      "registry_cases": 303
+    },
+    "refusal-mutants": {
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 358
+      },
+      "registry_cases": 358
+    },
+    "value-cost-mutants": {
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 238
+      },
+      "registry_cases": 18
+    }
+  },
+  "profiles_not_run": [
+    "live-provider",
+    "large-memory-timing"
+  ],
+  "acceptance": "not evaluated",
+  "problems": []
+}
