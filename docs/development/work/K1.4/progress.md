@@ -2,6 +2,12 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **INTEGRATED at `eb8472e59f22cab9eefaa559b8b67b745dac4013`** (PR #67, merged by the owner 2026-11-14 12:52:55 UTC).
+  Its parents are B `608f9ece` and the cleanup head `29e5b397`, and its tree equals the cleanup head's.
+  [Integration receipt 01](integration-01.md).
+  - *Open:* owner closure (not recorded); O-3; R6-OBS-01..03; the supported-entry fixture confirmation.
+  - *Next:* K1.4-gate, which still needs the benchmark owner's E1 release and its own owner release.
+    `next_release: none`.
 - **Round 6 correction ACCEPTED at H `64c505bfee13cae340710942e69fe805723aaad9`** ([review 06](review-06.md), Claude
   Fable 5.2, recorded at `8eb918ab`, fast-forwarded). K1.4 stays ACCEPTED at H `e307943d`. Owner-delegated cleanup 02,
   2026-11-14.
