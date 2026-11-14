@@ -2,6 +2,18 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **Round 6 payload C: `5b81a1b0cd9e73d7591ea23fd29195e24536d50d`** (pushed, 2026-11-14), on the cleanup head `b153ccac`:
+  the documentation correction for CLEANUP-K14-01 ([brief 06](cleanup-01/brief-06.md)). K1.4 stays ACCEPTED at H `e307943d`.
+  - *Owner:* [owner choice 07](owner-choice-07.md): "Prepare correction now"; O-2 included; the quick start and the SDK
+    doc comments fixed too; Packet verify runs.
+  - *C:* `execution-cycle.md` names the three timer paths (a wait due when its Outcome is accepted expires in that
+    decision, with no host fire); `values.md` records the public `toCanonicalBytes` re-export (O-2); the quick start,
+    `host.ts:77` and `types.ts:59` get the same scoping as comments only. No executable change. Packet verify CI run
+    [`43569826480`](https://github.com/ArrokothI/arrokothi/actions/runs/43569826480) on it: passed, 19 of 19 checks.
+  - *H:* [implementation report 06](implementation-06.md), the 007 entry and this file. The correction waits for an
+    independent review.
+  - *Next:* a review bounded by brief 06 and owner choice 07; no self-acceptance. After an ACCEPT, the cleanup
+    resumes and the owner merges.
 - **ACCEPTED at H `e307943d6b315e724e49107c3b26a1100ef4916c`** ([review 05](review-05.md), Codex GPT-6, recorded at
   `7bf80555`, fast-forwarded). Owner-delegated cleanup, 2026-11-13 to 2026-11-14.
   - *A:* `99e54a56` transcribes the verdict in 007 and [acceptance 01](acceptance-01.md).
