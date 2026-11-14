@@ -1,12 +1,13 @@
 # Owner progress summary
 
-Snapshot: checked 2026-11-02 against remote main `3475d5d6922b38af6e7637193afb646567d796f9`; K1.4 release 01 is added on 2026-11-03 by the PR that carries this edit.
-TOOLS-02 ranges 2–4 are independently accepted at H2 `0c2573eb61b399508df49d9dad16c732d7e1fd3b`, over payload C2
-`272489a0c3a6e853d17f3ba89f719a627f859847`. Reviews 05 and 06 are recorded at
-`6f3dffb6b7f4da338d0362e3ffee44332f5db0d0`, and the acceptance transcription A is at
-`83a87d804813b05d432022fdafac7c5cfcbe91ef`. Their [cleanup](work/TOOLS-02/cleanup-02.md) is complete, and they are
-[integrated](work/TOOLS-02/integration-02.md) at `3475d5d6` (PR #64). K1.3's [integration](work/K1.3/integration-01.md) is recorded at
-`71f9b048` (PR #62); its owner closure remains pending. The benchmark branch head inspected was
+Snapshot: checked 2026-11-14 against remote main `608f9ece44dbe42b78974bdac9e7ddcd33697705` (K1.4 release 01,
+PR #66) and the K1.4 branch `claude/k1.4`. K1.4 is independently accepted at H
+`e307943d6b315e724e49107c3b26a1100ef4916c`, over payload C `72d452bb39e0ae0f846d85e273441d06a9cd22fb`. Its
+review 05 is recorded at `7bf80555c9549b980b47f60592fc049b9da7e175`, and the acceptance transcription A is at
+`99e54a56d04b98ab2750e2d13e4f67998596a4b9`. Its [cleanup](work/K1.4/cleanup-01.md) is blocked on one Layer-3
+documentation correction, and it is not integrated. TOOLS-02 ranges 2–4 are [integrated](work/TOOLS-02/integration-02.md)
+at `3475d5d6` (PR #64). K1.3's [integration](work/K1.3/integration-01.md) is recorded at `71f9b048` (PR #62); its
+owner closure remains pending. The benchmark branch head inspected was
 `8de04779d279dba82cf834d419e465d2b677ef46`, unchanged since 2026-09-13. Its E1 ledger still records
 `BLOCKED_EXTERNAL` and no gate result. The [status ledger](007-work-packets.md) and linked records own acceptance,
 integration and release.
@@ -23,12 +24,13 @@ integration and release.
 | BINDING-01 | Independently accepted at H `b7a24c79`; integrated at `cd8d9250` (PR #53) |
 | COORD-REFACTOR-01 | Independently accepted at H `23c8919f`; integrated at `d17ea6d1` (PR #56) |
 | TOOLS-01 | Independently accepted at H `a50c3886`; integrated at `8f829003` (PR #45) |
-| TOOLS-02 | Independently accepted and integrated (released 2026-10-23, [release 01](work/TOOLS-02/release-01.md), scope B). Range 1 (T2-1, T2-2) is accepted at H `34ab91a5de23beb4997cdd2ae209a3b67aac50a0` and integrated at `4015599e` (PR #59). Ranges 2–4 (T2-3 to T2-5) are accepted at H2 above and integrated at `3475d5d6` (PR #64). This meets K1.4's TOOLS-02 prerequisite |
+| TOOLS-02 | Independently accepted and integrated (released 2026-10-23, [release 01](work/TOOLS-02/release-01.md), scope B). Range 1 (T2-1, T2-2) is accepted at H `34ab91a5de23beb4997cdd2ae209a3b67aac50a0` and integrated at `4015599e` (PR #59). Ranges 2–4 (T2-3 to T2-5) are accepted at H2 `0c2573eb61b399508df49d9dad16c732d7e1fd3b` and integrated at `3475d5d6` (PR #64). This meets K1.4's TOOLS-02 prerequisite |
 | TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
 | K1.1-correction-03 | Independently accepted at H `4b121d7b`; integrated at `b976f3a3` (PR #48) |
-| Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-28; TOOLS-02 adds L-17) under 006 working principle 6 |
+| Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-37; K1.4 adds L-29–L-37) under 006 working principle 6 |
 | K1.3 | Independently accepted at H `47c0b7f1`; cleanup complete; integrated at `71f9b048` (PR #62); owner closure pending; no successor released |
-| K1.4 | Released 2026-11-03 ([release 01](work/K1.4/release-01.md)); not started. The gate is split into K1.4-gate, not released |
+| K1.4 | Independently accepted at H `e307943d` (K14-1 to K14-6). Cleanup is blocked on one Layer-3 documentation correction ([cleanup 01](work/K1.4/cleanup-01.md)); not integrated |
+| K1.4-gate | Planned, not released. It depends on K1.4's integration and the benchmark owner's E1 release |
 | K1 / E1 | Open; benchmark E1 is BLOCKED_EXTERNAL with NO_RESULT at the inspected revision; supported-entry fixture confirmation remains pending |
 
 ## What has been achieved
@@ -37,8 +39,9 @@ integration and release.
 from the legacy runtime. On main, the private Kernel creates Executions, accepts input, reserves
 batches, dispatches asynchronous Activations and, since K1.2, rules on their Outcomes (below).
 K1.0 and the earlier K1.1 work are accepted, integrated and owner-closed. Waits and cancellation
-are now accepted and integrated in K1.3; mediated Effects remain K2’s. The supported application SDK still uses
-the legacy core. [002](002-implemented-kernel-baseline.md) describes the implemented surface.
+are now accepted and integrated in K1.3; mediated Effects remain K2’s. On main the supported application SDK
+still uses the legacy core; the accepted K1.4 bridge, not yet integrated, routes it through the Kernel (below).
+[002](002-implemented-kernel-baseline.md) describes the implemented surface.
 
 **Answerable Outcome acceptance.** K1.2, completed by its cumulative correction, answered whether
 the Kernel can rule on an asynchronous Runtime's answer. The Kernel accepts the answer whole or
@@ -113,6 +116,40 @@ bridge or an E1 result. It provides no persistence, physical stop, live trusted 
 or automatic recovery from an interrupted commit. A later governed call whose successor still violates
 the checked relations throws; cancellation or retry does not always repair it. The bounded searches,
 sweeps and evidence-credit limits remain as stated in [017](017-known-limitations.md) and the review.
+
+**The supported SDK on the Kernel.** K1.4 answered whether the supported application SDK can drive the
+private Kernel through the asynchronous exchange while the legacy runtime keeps its own behaviour. The accepted
+K1.4 branch now:
+
+- makes every `createApplication` start, run, input, confirmation and cancellation a Kernel call. The SDK host
+  creates the Execution, dispatches it, delivers through one Execution Driver and submits the Outcome to the
+  coordinator. It pumps the Kernel's timers and exposes cancellation, and one stalled Runtime does not block
+  another Execution;
+- runs the 0.8.x Harness, the stock Agent and Workflow controllers, Effects and process-local resumptions as
+  that Driver's native Runtime, a managed native job. Import guards keep it apart from Kernel internals, and a
+  legacy wait becomes a Kernel wait declared in an Outcome;
+- disposes of every public SDK and guide feature in one closed inventory: preserved with a test through the new
+  entry, migrated, or refused by name;
+- exports the value wrapper `toCanonicalBytes` under its cooperative contract, with the L-01 startup check that
+  refuses a serializer environment changed since the SDK loaded;
+- maps each legacy conformance file to ported, replaced with the property it kept, or retired with a reason.
+
+`@arrokothi/sdk` stays `"private"` until a release packet. A direct `@arrokothi/core` Harness remains available
+and is not routed through the Kernel.
+
+The lesson is that an exit path needs the same evidence as a progress path, and that a request is not an
+effect. Late findings were exits that ended an exchange without settling its batch accounting or its native
+lineage, and finally prose that treated a fulfilled native cancellation request as an ended member. The
+accepted packet keeps maintained fault rows and ablations for its labelled cleanup sites, and records what
+native cleanup does not guarantee (L-36) instead of claiming it.
+
+Status: independently accepted at H `e307943d` (K14-1 to K14-6). [Cleanup](work/K1.4/cleanup-01.md) is blocked
+on CLEANUP-K14-01, a one-sentence Layer-3 correction; integration is pending. Limits: this is the bridge, not an
+E1 result; the K1/E1 gate (K14-G) is K1.4-gate's. The Kernel stays in-process and not durable. An
+acknowledgment means the native mailbox took the Event, not that native work ran (L-29). Every takeover of a
+bridge exchange is refused (L-30). Native cleanup is a request: a running member whose step fails can stay
+`RUNNING` with no hold (L-36). The cleanup census is a bounded syntactic guard (L-37). Legacy Effects run
+natively, outside Kernel governance, until K2. 017 L-29 to L-37 list the rest.
 
 **A root-cause audit of accepted design.** DESIGN-AUDIT-01 answered which choices accepted in
 K0.1–K1.2 keep producing defect families, and what the owner's options are for each. It looked hardest at
@@ -298,8 +335,9 @@ Live-value capture, with its Proxy and brand refusals and its work meter, moved 
 
 Status: independently accepted at H `b7a24c79` and integrated at `cd8d9250` (PR #53). Limits: the wrapper
 keeps K1.1-correction-03's cooperative limits (017 L-04–L-09) and is Node-only. Realm hardening is not done
-(L-01, narrowed to the wrapper). The decoder has no metered cost bound (L-14). The supported SDK surface is
-unchanged until K1.4. The owner released the V-ENV hold for the core on 2026-10-22; the wrapper makes no V-ENV claim (L-01), and K1.4 must add a startup check or state L-01 before a public bridge ships.
+(L-01, narrowed to the wrapper). The decoder has no metered cost bound (L-14). The supported SDK surface was
+unchanged until K1.4, whose accepted bridge exports the wrapper behind an L-01 startup check (above). The owner
+released the V-ENV hold for the core on 2026-10-22; the wrapper makes no V-ENV claim (L-01).
 
 **One owner for Kernel state.** COORD-REFACTOR-01 answered whether the coordinator can stop writing accepted
 state itself, so that later packets add behaviour as new plan variants. The private Kernel now:
@@ -343,21 +381,22 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-TOOLS-02 is independently accepted and integrated. K1.3 is integrated, and its owner closure remains pending. No
-successor is released. The remaining dependencies below come from 007.
+K1.4 is independently accepted; its cleanup is blocked on one documentation correction, and it is not
+integrated. K1.3 is integrated, and its owner closure remains pending. No successor is released. The
+remaining dependencies below come from 007.
 
-1. **K1.4** owns the SDK host bridge and full K1/E1 gate. Its packet prerequisites, K1.3 integration and TOOLS-02
-   acceptance and integration, are now met, but it needs its own owner release and is unreleased. The supported SDK surface changes there, as
-   [decision-02](work/DESIGN-AUDIT-01/decision-02.md) specifies, including BINDING-01’s startup check or an
-   explicit L-01 limit in the public bridge contract.
-
-   The benchmark owner still needs to confirm fixtures that drive the new supported entry before K1.3
-   owner closure. In the inspected benchmark ledger, E1 remains `BLOCKED_EXTERNAL`: its prepared capture
-   pins the K0 fixture at `0535160e677231da41b06d9f822e62e2f0364dd1`, all fifteen real-repository schedules
-   are `REFUSED`, and the gate has `NO_RESULT`. That is a result about the old pin, not about the accepted
-   K1.3 candidate. Updating the fixture binding and obtaining the benchmark owner’s decision remain
-   external work; unavailable supported-entry fixtures block K1.4 acceptance. No E1 result is inferred
-   from K1.3’s local tests or Packet verify.
+1. **K1.4 documentation correction and merge.** The cleanup's Layer-3 check found that
+   `execution-cycle.md` says deadlines take effect only when the host fires them, which is wrong for a wait
+   already due at registration (CLEANUP-K14-01). The owner decides whether the scoped correction in
+   [brief 06](work/K1.4/cleanup-01/brief-06.md) and its independent review run before the manual merge. The
+   integration receipt and the owner discussion follow the merge.
+2. **K1.4-gate** runs the benchmark's E1 fixtures against K1.4's supported entry. It depends on K1.4's
+   integration and on the benchmark owner's E1 release, and is not released. In the inspected benchmark ledger,
+   E1 remains `BLOCKED_EXTERNAL`: its prepared capture pins the K0 fixture at
+   `0535160e677231da41b06d9f822e62e2f0364dd1`, all fifteen real-repository schedules are `REFUSED`, and the gate
+   has `NO_RESULT`. That is a result about the old pin, not about K1.3 or K1.4. The benchmark owner still needs
+   to confirm fixtures that drive the new supported entry, which K1.3's owner closure also waits on. No E1 result
+   is inferred from K1.4's tests or Packet verify.
 
 Carry forward:
 - the historical Node 22.22.3 legacy Effect-test cancellation limitation, distinct from TOOLS-01's
@@ -368,7 +407,9 @@ Carry forward:
 - the audit review's three non-blocking P3 intake items for TOOLS-01 or the successor corpus, listed in
   the cleanup record;
 - TOOLS-02 review 05's three P3 notes and its design 06 §5 note, listed in
-  [cleanup 02](work/TOOLS-02/cleanup-02.md).
+  [cleanup 02](work/TOOLS-02/cleanup-02.md);
+- K1.4's two owner items from its [Layer-3 check](work/K1.4/reference-check-01.md): the optional `values.md`
+  wrapper wording (O-2), and whether K1.4 or K1.4-gate triggers the scheduled `evidence.md` rewrite (O-3).
 
 Their scope remains in the ledger's pinned reviews. No new external benchmark result is claimed here.
 

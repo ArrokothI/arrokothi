@@ -2,6 +2,16 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **ACCEPTED at H `e307943d6b315e724e49107c3b26a1100ef4916c`** ([review 05](review-05.md), Codex GPT-6, recorded at
+  `7bf80555`, fast-forwarded). Owner-delegated cleanup, 2026-11-13 to 2026-11-14.
+  - *A:* `99e54a56` transcribes the verdict in 007 and [acceptance 01](acceptance-01.md).
+  - *Evidence:* reviews 01–04, design checks 01/03/04 and attack 01 imported byte for byte (`15d2a131`); review 05's
+    CI ZIP retained.
+  - *Cleanup:* [cleanup 01](cleanup-01.md) and [Layer-3 check 01](reference-check-01.md). **BLOCKED** on
+    CLEANUP-K14-01: `execution-cycle.md` says deadlines take effect only when the host fires them, which is wrong
+    for a wait already due at registration.
+  - *Next:* the owner chooses whether the scoped correction in [brief 06](cleanup-01/brief-06.md) (new C/H,
+    independent review) runs before the manual merge. `next_release: none`.
 - **Round 5 payload C: `72d452bb39e0ae0f846d85e273441d06a9cd22fb`** (pushed, 2026-11-11), directly on round 4's H `1b98a76e`.
   - *Review:* [review 04](https://github.com/ArrokothI/arrokothi/blob/8ca7288b041d376dad7a8c12f083e43427bbb101/docs/development/work/K1.4/review-04.md) (Codex GPT-6, `codex/k1.4-review-04` at `8ca7288b`) is CHANGES REQUIRED of H
     `1b98a76e`: one P2 prose finding, K14-R4-01 (brief 05). L-36, L-37, F1–F3 and the closed dispositions stand.
