@@ -2,6 +2,16 @@
 
 The resume point for any session continuing this packet. Newest facts first within each list.
 
+- **Round 6 correction ACCEPTED at H `64c505bfee13cae340710942e69fe805723aaad9`** ([review 06](review-06.md), Claude
+  Fable 5.2, recorded at `8eb918ab`, fast-forwarded). K1.4 stays ACCEPTED at H `e307943d`. Owner-delegated cleanup 02,
+  2026-11-14.
+  - *Owner:* [owner choice 08](owner-choice-08.md) records, verbatim, the choice of this reviewer instead of GPT-6 and
+    the owner's judgment of its disclosed independence caveat.
+  - *A:* `24b69680` transcribes review 06 in 007, with owner choice 08.
+  - *Cleanup:* [cleanup 02](cleanup-02.md) is **complete**. CLEANUP-K14-01 is closed and O-2 taken; 014 refreshed
+    (R6-OBS-04); review 06's CI ZIP retained; R6-OBS-01..03 carried forward as P3.
+  - *Next:* the owner merges `claude/k1.4` manually; the integration receipt and the owner discussion follow.
+    `next_release: none`; K1.4-gate stays PLANNED.
 - **Round 6 payload C: `5b81a1b0cd9e73d7591ea23fd29195e24536d50d`** (pushed, 2026-11-14), on the cleanup head `b153ccac`:
   the documentation correction for CLEANUP-K14-01 ([brief 06](cleanup-01/brief-06.md)). K1.4 stays ACCEPTED at H `e307943d`.
   - *Owner:* [owner choice 07](owner-choice-07.md): "Prepare correction now"; O-2 included; the quick start and the SDK

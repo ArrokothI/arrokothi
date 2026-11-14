@@ -4,8 +4,9 @@ Snapshot: checked 2026-11-14 against remote main `608f9ece44dbe42b78974bdac9e7dd
 PR #66) and the K1.4 branch `claude/k1.4`. K1.4 is independently accepted at H
 `e307943d6b315e724e49107c3b26a1100ef4916c`, over payload C `72d452bb39e0ae0f846d85e273441d06a9cd22fb`. Its
 review 05 is recorded at `7bf80555c9549b980b47f60592fc049b9da7e175`, and the acceptance transcription A is at
-`99e54a56d04b98ab2750e2d13e4f67998596a4b9`. Its [cleanup](work/K1.4/cleanup-01.md) is blocked on one Layer-3
-documentation correction, and it is not integrated. TOOLS-02 ranges 2–4 are [integrated](work/TOOLS-02/integration-02.md)
+`99e54a56d04b98ab2750e2d13e4f67998596a4b9`. Its round 6 documentation correction (CLEANUP-K14-01) is accepted
+at H `64c505bfee13cae340710942e69fe805723aaad9` by review 06, recorded at `8eb918ab238c7253a7327138a1dbbb3ce8c2d075`.
+Its [cleanup](work/K1.4/cleanup-02.md) is complete and the branch awaits the owner's merge; it is not integrated. TOOLS-02 ranges 2–4 are [integrated](work/TOOLS-02/integration-02.md)
 at `3475d5d6` (PR #64). K1.3's [integration](work/K1.3/integration-01.md) is recorded at `71f9b048` (PR #62); its
 owner closure remains pending. The benchmark branch head inspected was
 `8de04779d279dba82cf834d419e465d2b677ef46`, unchanged since 2026-09-13. Its E1 ledger still records
@@ -29,7 +30,7 @@ integration and release.
 | K1.1-correction-03 | Independently accepted at H `4b121d7b`; integrated at `b976f3a3` (PR #48) |
 | Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-37; K1.4 adds L-29–L-37) under 006 working principle 6 |
 | K1.3 | Independently accepted at H `47c0b7f1`; cleanup complete; integrated at `71f9b048` (PR #62); owner closure pending; no successor released |
-| K1.4 | Independently accepted at H `e307943d` (K14-1 to K14-6). Cleanup is blocked on one Layer-3 documentation correction ([cleanup 01](work/K1.4/cleanup-01.md)); not integrated |
+| K1.4 | Independently accepted at H `e307943d` (K14-1 to K14-6); its round 6 documentation correction is accepted at H `64c505bf` (review 06). Cleanup is complete ([cleanup 02](work/K1.4/cleanup-02.md)); awaiting the owner's merge, not integrated |
 | K1.4-gate | Planned, not released. It depends on K1.4's integration and the benchmark owner's E1 release |
 | K1 / E1 | Open; benchmark E1 is BLOCKED_EXTERNAL with NO_RESULT at the inspected revision; supported-entry fixture confirmation remains pending |
 
@@ -143,8 +144,9 @@ lineage, and finally prose that treated a fulfilled native cancellation request 
 accepted packet keeps maintained fault rows and ablations for its labelled cleanup sites, and records what
 native cleanup does not guarantee (L-36) instead of claiming it.
 
-Status: independently accepted at H `e307943d` (K14-1 to K14-6). [Cleanup](work/K1.4/cleanup-01.md) is blocked
-on CLEANUP-K14-01, a one-sentence Layer-3 correction; integration is pending. Limits: this is the bridge, not an
+Status: independently accepted at H `e307943d` (K14-1 to K14-6). The round 6 documentation correction of
+CLEANUP-K14-01 is accepted at H `64c505bf` (review 06); [cleanup](work/K1.4/cleanup-02.md) is complete and
+integration is pending. Limits: this is the bridge, not an
 E1 result; the K1/E1 gate (K14-G) is K1.4-gate's. The Kernel stays in-process and not durable. An
 acknowledgment means the native mailbox took the Event, not that native work ran (L-29). Every takeover of a
 bridge exchange is refused (L-30). Native cleanup is a request: a running member whose step fails can stay
@@ -381,15 +383,13 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-K1.4 is independently accepted; its cleanup is blocked on one documentation correction, and it is not
-integrated. K1.3 is integrated, and its owner closure remains pending. No successor is released. The
+K1.4 is independently accepted and its cleanup is complete; it is not integrated. K1.3 is integrated, and its owner closure remains pending. No successor is released. The
 remaining dependencies below come from 007.
 
-1. **K1.4 documentation correction and merge.** The cleanup's Layer-3 check found that
-   `execution-cycle.md` says deadlines take effect only when the host fires them, which is wrong for a wait
-   already due at registration (CLEANUP-K14-01). The owner decides whether the scoped correction in
-   [brief 06](work/K1.4/cleanup-01/brief-06.md) and its independent review run before the manual merge. The
-   integration receipt and the owner discussion follow the merge.
+1. **K1.4 merge.** The documentation correction of CLEANUP-K14-01 (`execution-cycle.md` said every deadline
+   needs a host fire, which is wrong for a wait already due at registration) is accepted by
+   [review 06](work/K1.4/review-06.md), and [cleanup 02](work/K1.4/cleanup-02.md) is complete. The owner merges
+   `claude/k1.4` manually; the integration receipt and the owner discussion follow the merge.
 2. **K1.4-gate** runs the benchmark's E1 fixtures against K1.4's supported entry. It depends on K1.4's
    integration and on the benchmark owner's E1 release, and is not released. In the inspected benchmark ledger,
    E1 remains `BLOCKED_EXTERNAL`: its prepared capture pins the K0 fixture at
@@ -408,8 +408,11 @@ Carry forward:
   the cleanup record;
 - TOOLS-02 review 05's three P3 notes and its design 06 §5 note, listed in
   [cleanup 02](work/TOOLS-02/cleanup-02.md);
-- K1.4's two owner items from its [Layer-3 check](work/K1.4/reference-check-01.md): the optional `values.md`
-  wrapper wording (O-2), and whether K1.4 or K1.4-gate triggers the scheduled `evidence.md` rewrite (O-3).
+- K1.4's owner item O-3 from its [Layer-3 check](work/K1.4/reference-check-01.md): whether K1.4 or K1.4-gate
+  triggers the scheduled `evidence.md` rewrite (O-2, the `values.md` wrapper wording, was taken in round 6);
+- K1.4 review 06's P3 observations R6-OBS-01..03, listed in [cleanup 02](work/K1.4/cleanup-02.md): the
+  round 6 spec's fresh-clone ordering sentence and two L-22 wording items in the quick start and the
+  `humanWaitDeadlineMs` doc comment.
 
 Their scope remains in the ledger's pinned reviews. No new external benchmark result is claimed here.
 
