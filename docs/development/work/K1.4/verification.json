@@ -4,7 +4,7 @@
   "require_direct_parent": false,
   "administrative_files": [
     "docs/development/007-work-packets.md",
-    "docs/development/work/K1.4/implementation-05.md",
+    "docs/development/work/K1.4/implementation-06.md",
     "docs/development/work/K1.4/progress.md"
   ],
   "preserve": [
@@ -139,6 +139,166 @@
     {
       "revision": "138937918ed0a0f2677bd5588eedafba6c51750c",
       "path": "docs/development/work/K1.4/design-02.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/acceptance-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/attack-01"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/attack-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/cleanup-01"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/cleanup-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/design-03.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/design-04.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/design-check-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/design-check-03.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/design-check-04.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-02"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-02.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-03"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-03.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-04"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-04.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-05"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-05.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/owner-choice-03"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/owner-choice-03.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/owner-choice-04.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/owner-choice-05.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/owner-choice-06.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/reference-check-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-01"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-02"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-02.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-03"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-03.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-04"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-04.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-05"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-05.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "mental-model/mechanisms/waits.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "mental-model/concepts/operations.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/002-implemented-kernel-baseline.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/017-known-limitations.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/014-owner-progress-summary.md"
     }
   ],
   "whitespace_exceptions": [
@@ -630,6 +790,7 @@
     "Round 3 (review 02 K14-R2-01, K14-R2-02; owner choice 05, a narrow redesign; design 04 with its addendum after design check 04): the Driver schedules every READY member of a continue collect with no store read, an attempt-bound unschedulable-READY detector, and a Kernel-only report when terminate's native cleanup request rejects (scope in the round 5 entry). B-ENQUEUE-LOST-SCHEDULES is a declared bounded search: two producers (capability settlement, model resumption) x eight named gate points, each recorded reached or unreachable. B-PRODUCER-CENSUS derives the native enqueue/wake call sites from packages/core/src/runtime syntactically. B-TERM-CENSUS resolves cleanup calls in packages/sdk/src syntactically (the checked forms and exclusions are in the round 4 entry and 017 L-37). B-TERM-ORACLE and B-TERM-ABLATION run a finite row set: a kill or equivalence is a fact about those rows and schedules, not a proof for every interleaving. The removed-fix mutants stay in-test ablations; mutations.json, refusal-guards.json and value-cost.json stay byte-identical to B.",
     "Round 4 (review 03 K14-R3-01..03; owner choice 06, the owner-choice-05 route (d)): no production change. R3-01 is 017 L-36: a cleanup cascade treats a fulfilled native cancelExecution as the end, but a RUNNING member answers cancellation_pending, and after a native exception past READY->RUNNING it stays RUNNING with no hold while the Kernel's FAILED (or CANCELLED, when a Kernel cancellation reached the running step) stands. B-TERM-LIMIT asserts that recorded behaviour for review 03's two counterexamples and the cancelled variant; it is a limit, not a guarantee. R3-02: rows F1-F3 (one rejected request cascade) kill cancel.application, cancel.exchange-start and cancel.forward-loop; only initial-input (T6) is equivalent only. The oracle is still a finite row set with one-fault schedules, not a proof for every interleaving or fault combination. R3-03 is 017 L-37: B-TERM-CENSUS checks dot-property calls of endLineage, terminate, cascade and cancelExecution (literal labels, or conditionals of literals), identifiers with those names outside such a call (aliases, .call/.apply/.bind on the dot name), and element access by a string literal of those names. It does not see static template element access, quoted destructuring aliases, or names computed at run time; maintained tests show the review's three static instances escape.",
     "Round 5 (review 04 K14-R4-01; brief 05; owner choices 05 and 06 with the owner's 2026-11-11 supplements): comments and documents only. Current descriptions say the Driver requests native cancellation and starts no further native step for E; a fulfilled request is not an ended member (017 L-36, both the FAILED and the CANCELLED case). Only terminate turns a rejected cleanup request into a protocol-failure hold, and the Kernel records it only for E's unresolved Activation while E is not terminal. The request a Kernel cancellation starts swallows its rejection, and app.cancel's cancel.application fallback requests again; review 04's probe of row F1's schedule observes one rejected request, the fallback fulfilled, Kernel CANCELLED, both members CANCELLED and no hold. No executable source, test, fixture or mutation registry changed: the C diff touches only comments in packages/sdk/src, documents and this file; Kernel and core source equal B.",
+    "Round 6 (brief 06, from cleanup 01's CLEANUP-K14-01, the cleanup agent's own finding, and observation O-2; owner choice 07): a scoped documentation correction after review 05's ACCEPT of H e307943d. execution-cycle.md's host paragraph now separates a wait already due when its Outcome is accepted (expired inside that decision with no host fire; owned by waits.md step 3) from the two host-fired paths, a live wait's deadline and an Execution deadline. values.md's in-process capture bullet records that the SDK's public entry re-exports toCanonicalBytes (O-2). Under owner choice 07, the same scoping reaches the quick start's host-call sentence and the doc comments of ApplicationHost.pump (host.ts) and humanWaitDeadlineMs (types.ts). No executable line changed: both TypeScript files print identically without comments at H e307943d and at C. Kernel and core source equal B; waits.md, operations.md, BASELINE, 017, 014 and every K1.4 record and review file other than progress.md and this file are preserved at the cleanup head b153ccac.",
     "Fresh-clone local checks run before the CI dispatch; the CI run is the handoff evidence. No prior results reused; acceptance is not evaluated."
   ]
 }

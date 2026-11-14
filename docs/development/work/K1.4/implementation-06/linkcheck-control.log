@@ -1,0 +1,5 @@
+# tree 5f0e5b0a7b7300263066fd76b279ca2b8a2d1d06 (C's tree without the nine implementation-06 logs, which are force-added because .gitignore ignores *.log; parent b153ccacb57c35652be3aeba43f47a48905e077b); v26.10.0; control: python3 -I docs/development/work/K1.4/implementation-06/linkcheck.py <copy> mental-model/mechanisms/execution-cycle.md, on a scratch copy of mental-model/ and docs/development/*.md with one missing path (wait.md) and one misspelled anchor (#registering-a-wiat) planted in execution-cycle.md line 17; expected exit 1 with exactly those two
+mental-model/mechanisms/execution-cycle.md:17: missing path wait.md
+mental-model/mechanisms/execution-cycle.md:17: missing anchor waits.md#registering-a-wiat
+files=1 links=44 broken=2
+exit=1

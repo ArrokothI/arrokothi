@@ -152,9 +152,12 @@ target. Detached children create no completion dependency.
 native root's view, kept as a deprecated diagnostic. `activations` counts the Kernel exchanges this call
 dispatched. Defaults: 30s host wait, 1,000 exchanges, 10ms longest idle slice (`pollIntervalMs`); waits are
 otherwise event-driven. A timeout or AbortSignal stops the host wait; it does not cancel a model, Effect,
-or Execution. Deadlines take effect at the next host call: every `start`, `input`, `resolveConfirmation`,
-`cancel` and run call fires due Kernel timers first. `runUntilIdle()` is deprecated: it dispatches until
-nothing is READY and does not wait for in-flight native work.
+or Execution. A human-wait deadline on a waiting Execution and an Execution deadline take effect at the
+next host call: every `start`, `input`, `resolveConfirmation`, `cancel` and run call fires due Kernel
+timers first. A human pause whose deadline has already passed when a step's Outcome declares it expires
+as that Outcome is accepted, with no host call, unless an `input` or `resolveConfirmation` made during
+the step wakes the wait first. `runUntilIdle()` is deprecated: it dispatches until nothing is READY and
+does not wait for in-flight native work.
 
 Host actions are Kernel calls, each with a Kernel receipt; give a `requestKey` to make a retry exact:
 

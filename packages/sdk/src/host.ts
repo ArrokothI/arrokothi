@@ -74,7 +74,7 @@ export class ApplicationHost {
     return this.known.get(executionId);
   }
 
-  /** Fires every timer due on the Kernel clock (L-22: deadlines take effect at host calls). */
+  /** Fires every timer due on the Kernel clock: live wait and Execution deadlines take effect at host calls (L-22). */
   pump(): void {
     const now = this.now();
     for (const timer of this.coordinator.pendingTimers()) {
