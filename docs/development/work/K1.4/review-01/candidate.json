@@ -1,0 +1,25 @@
+{
+  "operation": "candidate",
+  "result": "facts_verified",
+  "base": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+  "payload": "0d05d32971dfeda89dc874450e38f440af2c4a1d",
+  "candidate": "072f9627791f43e4d990a6f47c3e32510cbbc011",
+  "specification": "docs/development/work/K1.4/verification.json",
+  "administrative_files": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/K1.4/implementation-01.md",
+    "docs/development/work/K1.4/owner-choice-03.md",
+    "docs/development/work/K1.4/owner-choice-03/limited-members.json",
+    "docs/development/work/K1.4/progress.md"
+  ],
+  "whitespace_exceptions": [
+    "docs/development/work/K1.3/review-01/coverage-comparison.log"
+  ],
+  "evidence": [],
+  "acceptance": "not evaluated",
+  "limits": [
+    "File sets do not establish absence of semantic prose changes",
+    "Owner/reviewer authenticity and command execution are not inferred from metadata",
+    "No remote push or integration claim"
+  ]
+}
