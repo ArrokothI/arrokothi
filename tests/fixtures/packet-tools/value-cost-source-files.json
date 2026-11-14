@@ -180,9 +180,19 @@
   "packages/retrieval/local/src/records.ts",
   "packages/retrieval/local/src/resources.ts",
   "packages/sdk/src/application.ts",
+  "packages/sdk/src/host.ts",
   "packages/sdk/src/index.ts",
   "packages/sdk/src/internal/own-array.ts",
   "packages/sdk/src/internal/value-capture.ts",
+  "packages/sdk/src/legacy-bridge/classify.ts",
+  "packages/sdk/src/legacy-bridge/codec.ts",
+  "packages/sdk/src/legacy-bridge/commit-signal-store.ts",
+  "packages/sdk/src/legacy-bridge/driver.ts",
+  "packages/sdk/src/legacy-bridge/harness-view.ts",
+  "packages/sdk/src/legacy-bridge/ledger.ts",
+  "packages/sdk/src/legacy-bridge/lineage-scheduler.ts",
+  "packages/sdk/src/legacy-bridge/root-ids.ts",
   "packages/sdk/src/preflight.ts",
-  "packages/sdk/src/types.ts"
+  "packages/sdk/src/types.ts",
+  "packages/sdk/src/wrapper.ts"
 ]

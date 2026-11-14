@@ -4,9 +4,11 @@ This page maps the implemented surface; [007](007-work-packets.md) owns acceptan
 and release. Package version `0.8.1` is not an exact experimental identity or a durability verdict.
 Canonical meanings remain with the [reference index](../../mental-model/reference.md).
 
-The supported application SDK still uses `@arrokothi/core`: Harness, Agent/Workflow controllers,
-Effects, waits and process-local resumptions. The numbered capability sections below describe that
-legacy implementation and its useful regressions. [Kernel ownership](kernel-ownership.md) records
+The supported application SDK reaches the private Kernel package (K1.4,
+[§16](#16-application-sdk-above-core)): every start, input, confirmation, cancellation and run is a Kernel
+call, and one legacy Execution Driver runs the `@arrokothi/core` Harness, Agent/Workflow controllers,
+Effects, waits and process-local resumptions as its native Runtime. The numbered capability sections
+below describe that legacy implementation and its useful regressions. [Kernel ownership](kernel-ownership.md) records
 current source boundaries and the owners of deferred extraction. Historical inspection/test counts
 and incremental migration notes are preserved in the [archive](archive.md).
 
@@ -25,7 +27,8 @@ Readers receive deeply frozen values parsed from the owned bytes; the private ow
 bytes, text and count. Primitive identity fields keep their existing string form and limits.
 
 The unchanged live-object capture implementation and `canonicalize@3.0.0` dependency now live in
-`packages/sdk/src/internal/`, outside the public SDK graph and without a Kernel import. The core has
+`packages/sdk/src/internal/`, without a Kernel import. The public SDK graph reaches it through the bridge
+codec and the K14-5 wrapper export (`toCanonicalBytes`, in `wrapper.ts`). The core has
 no JCS or SDK dependency. The wrapper retains its byte stop, meter, Proxy/internal-slot refusals and
 R1–R4, described below. The internal `canonicalizeJsonText` adapter caps its input at 8 MiB before
 copying, checks decoded duplicates and sends its canonical output through strict core validation;
@@ -36,8 +39,8 @@ reports delivery through the per-delivery Kernel-owned `DeliverySettlement` capa
 Promise. The settlement lifetime is one physical delivery; the submission lifetime is one Runtime attempt, as [execution-cycle](../../mental-model/mechanisms/execution-cycle.md) owns.
 
 Effects belong to K2: an Outcome proposing an Effect is refused whole, and a surface a later packet
-owns refuses by name. No supported SDK consumer is routed through the private target package yet;
-K1.4 owns that bridge.
+owns refuses by name. The SDK is routed through the private target package by K1.4's legacy bridge
+([§16](#16-application-sdk-above-core)).
 
 ## Value refusal diagnostics
 
@@ -186,8 +189,11 @@ detectable kinds are claimed again. The owner released the holds of
 [known limitations](017-known-limitations.md). The owner released [invalidation-03](work/DESIGN-AUDIT-01/invalidation-03.md)'s V-ENV hold for the core
 on 2026-10-22 ([hold release](work/BINDING-01/hold-release-01.md)). The core claim is limited to admission,
 parsed content and equality after trusted initialization: call-time binding replacement/shadowing cannot
-steer them. The SDK wrapper makes no V-ENV claim (L-01). Wrapper stable-realm
-fidelity, pre-import poisoning and containment remain outside it. The register now records the released core V-ENV, V-D1, Proxy and re-prototyped-built-in claims.
+steer them. The SDK wrapper's L-01 check (K14-5) resolves the serializer's eight free identifiers at
+`createApplication`, at each `toCanonicalBytes` call and inside the serializer window, and refuses when a
+free reference, its own `globalThis` property and the load-time capture differ; its residual precondition
+is genuine intrinsics at SDK module load (L-01). Wrapper stable-realm fidelity and containment remain
+outside it. The register now records the released core V-ENV, V-D1, Proxy and re-prototyped-built-in claims.
 Its unread entries are the `unread:*` rows of the corpus report's `register.by_classification` (017 L-17);
 at `302fee9de7dc857ce58cf1e86d7fbb223af7c5fb` they were 1,174. Those entries earn no credit and carry no per-entry semantic
 limit until a recorded reading; no historical evidence is promoted by this relocation.
@@ -997,20 +1003,70 @@ whole-architecture release-readiness campaign in [`001`](001-current-status-and-
 
 ## 16. Application SDK above core
 
-**Implemented capability.** `@arrokothi/sdk` creates one shared Harness, stock Agent/Workflow
-controllers, reference runtime services, shared model services, store-backed operation/memory views,
-implementation registries, idempotent definition registration, preflighted initial creation/input,
-and bounded host driving with explicit lifecycle/wait reasons. No authority is inferred from authored
-requirements or catalogs. Core remains directly available.
+**Implemented capability.** `@arrokothi/sdk` (`"private": true`) runs every Execution through the private
+Kernel package. `createApplication` builds one `ExecutionCoordinator`, the host loop
+(`packages/sdk/src/host.ts`) and one legacy Execution Driver (`packages/sdk/src/legacy-bridge/`). The
+Driver privately owns one shared Harness with the stock Agent/Workflow controllers, reference runtime
+services, shared model services, store-backed operation/memory views and implementation registries, as a
+managed native job. Definition registration stays idempotent; no authority is inferred from authored
+requirements or catalogs. A direct `@arrokothi/core` Harness remains available and is not routed through
+the Kernel.
 
-**Evidence.** `packages/sdk/src/`, `packages/sdk/tests/`, the SDK-backed
-`examples/execution-kernel-minimal/`, and `scripts/check-builder-docs.ts`.
-The [SDK design/findings note](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/legacy/development/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md) records defaults, limits,
+**The bridge API (K1.4, design [01](work/K1.4/design-01.md), [02](work/K1.4/design-02.md), [03](work/K1.4/design-03.md) and [04](work/K1.4/design-04.md)).**
+- `start` validates and preflights, creates the Kernel Execution atomically with its initial input
+  (`creationKey`, at most 64 characters, exact replay; absolute `executionDeadline`), then creates the
+  native root synchronously under the same ID inside a one-shot root-identity scope. A native creation
+  error cancels the Execution and throws `ApplicationStartError`.
+- Each Kernel exchange forwards its Event batch to the native root and runs one native step. The Driver
+  classifies the lineage with one total function of native store records: `complete`, `fail`, `continue`,
+  `await` (only when every member is in a human pause), or open (no Outcome yet; slow native work stays
+  `RUNNING` with no Kernel wait). An `await` is committed only when a second read of the lineage equals the
+  one it was classified from, so it describes one instant of the native store. The native Runtime writes
+  through a store facade that wakes a parked exchange after every transaction in its lineage. Whenever the
+  decision is `continue`, the Driver queues every READY member itself, with no store read, so a native
+  enqueue that failed after its commit strands nothing. A member the store still shows READY at a revision
+  where its claim ran no Activation fails the Execution `native_error`. An `await`
+  declares input subscriptions `arrokothi.legacy.input` and `arrokothi.legacy.confirmation`, with an
+  optional `humanWaitDeadlineMs` deadline anchored per pause.
+- Emissions per Outcome: the batch's `arrokothi.bridge.ingress_result`, then the `arrokothi.bridge.pause`
+  Emission for an `await`, then native Emissions, at most 256; a longer carry continues on later exchanges.
+  Every Event of the batch that carries input has exactly one `ingress_result` entry on every exit:
+  forwarded with the native status, `rejected`, `ignored`, `discarded` (never attempted before a terminal
+  decision) or `unknown` (a forward that threw; L-29, owner choice 04). If that accounting cannot be
+  encoded, nothing is acknowledged and the exchange becomes a protocol-failure hold.
+  Values over the core limits fail the Execution as `arrokothi.bridge.value_unrepresentable`.
+- `input`, `resolveConfirmation` and `cancel` are Kernel calls. A keyed `input` retry with the destination
+  omitted reuses the destination the Kernel recorded for that key. Cancellation, every Driver-originated
+  `fail` and every native terminal root stop the Driver's native steps for E and request the end of every
+  non-terminal member of the native lineage. A READY or WAITING member ends at once; a RUNNING member answers
+  `cancellation_pending`, and only its own step can apply that. After a native exception past READY→RUNNING no
+  step is left, so the member may stay RUNNING while the Kernel's `FAILED`, or an earlier Kernel `CANCELLED`,
+  stands, with no hold (017 L-36). A rejected cleanup request becomes a protocol-failure hold, reported through
+  the Kernel alone, only in the Driver's `terminate`, and the Kernel records it only for E's unresolved
+  Activation while E is not terminal. The request a Kernel cancellation starts swallows its rejection; `cancel`
+  then requests again, and a rejection there rejects `cancel`. The `controllers(services)` hook
+  receives the complete services object, with the lineage scheduler the native Runtime uses. A refused Driver `fail` becomes a protocol-failure hold through a
+  separate control-scoped caller.
+- The host dispatches READY Executions from a candidate set and fires due Kernel timers at every host entry;
+  `runUntilBlocked` derives its reason from Kernel state and the latest pause Emission.
+- `Application.harness` is a deprecated read view (`LegacyHarnessView`): readers pass through, mutators
+  refuse with `LegacyHarnessMutationRefused`. `runtime.scheduler` and `ownerExecutionId` are refused by name;
+  `runtime.maxActivationsPerRun` is ignored with a warning.
+- `toCanonicalBytes` and `ValueIssue` are exported, with the L-01 check and `WrapperEnvironmentError`.
+
+**Evidence.** `packages/sdk/src/`, `packages/sdk/tests/` (the bridge corpus `bridge-*.test.ts`, the K14-4
+inventory `bridge-inventory.test.ts` and B-WRAPPER `wrapper-environment.test.ts`), the SDK-backed
+`examples/execution-kernel-minimal/`, `scripts/check-builder-docs.ts`, the K14-3 rules in
+`tests/conformance/architecture/boundary-policy.ts` with `legacy-bridge-boundaries.test.ts`, and the K14-6
+mapping `tests/conformance/legacy-mapping.json` with `architecture/legacy-mapping.test.ts`.
+The [SDK design/findings note](https://github.com/ArrokothI/arrokothi/blob/9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49/docs/legacy/development/2026-09-baseline/009-sdk-bootstrap-design-and-findings.md) records the pre-K1.4 defaults, limits,
 constructor-validation and operation-index bug repairs, and unresolved architectural concerns.
 
-**Boundaries.** This is application composition, not new kernel semantics. Preflight is advisory for
-permissions and dynamic services; runtime remains authoritative. Default stores are in memory;
-host waiting limits do not interrupt arbitrary trusted code or supply provider cancellation/durability.
+**Boundaries.** The Kernel does not mediate native tools, children, user input or memory: they run inside
+the Driver as unmediated Trusted Execution. Native Activations of different Executions may interleave.
+Takeover of a legacy exchange is refused, and nothing survives the process. Preflight is advisory for
+permissions and dynamic services; runtime remains authoritative. The limits are 017 L-01, L-20 and
+L-29 to L-37.
 
 ## Current gaps and next work
 

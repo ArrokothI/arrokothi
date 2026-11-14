@@ -46,14 +46,34 @@ test('SDK capture is internal and its transitive graph imports no Kernel', async
   }), []);
   const sdk = workspace.packages.get('@arrokothi/sdk')!;
   assert.deepEqual([...sdk.exports.keys()], ['.']);
+  // K1.4 (design 02 D01-CHK-06): the public graph now reaches internal/. Kept property: exactly the
+  // bridge codec (encoding) and the wrapper module (the K14-5 export and the L-01 check) import it, and
+  // the entry exports exactly the wrapper's bindings.
   const publicGraph = await walkModuleGraph(workspace, ['packages/sdk/src/index.ts']);
-  assert.equal([...publicGraph.files].some(file => file.startsWith('packages/sdk/src/internal/')), false);
+  const internalImporters = publicGraph.edges
+    .filter(edge => edge.resolution.kind === 'internal' && edge.resolution.file.startsWith('packages/sdk/src/internal/') && !edge.from.startsWith('packages/sdk/src/internal/'))
+    .map(edge => edge.from);
+  assert.deepEqual([...new Set(internalImporters)].sort(), [
+    'packages/sdk/src/legacy-bridge/codec.ts', 'packages/sdk/src/wrapper.ts',
+  ]);
   const sdkPublic = await import('../../sdk/src/index.ts');
-  assert.deepEqual(Object.keys(sdkPublic).sort(), ['ApplicationConfigurationError', 'createApplication', 'defineAgent', 'defineWorkflow', 'definitionRef']);
+  assert.deepEqual(Object.keys(sdkPublic).sort(), [
+    'ApplicationConfigurationError', 'ApplicationInputError', 'ApplicationStartError', 'LegacyHarnessMutationRefused',
+    'WrapperEnvironmentError', 'createApplication', 'defineAgent', 'defineWorkflow', 'definitionRef', 'toCanonicalBytes',
+  ]);
 });
 
-test('the relocated capture implementation is byte-identical to released B before its new byte bridge', async () => {
+// K1.4 (design 02 D01-CHK-06): the prefix may differ from released B only by the L-01 call inside the
+// serializer window and the two own-array helpers that check imports; removing exactly those restores B.
+const L01_IMPORT = ['import { appendOwn, defineAt, defineData, readAt, restoreDescriptor, sizedList } from "./own-array.ts";',
+  'import { appendOwn, defineAt, defineData, descriptorValue, isDataDescriptor, readAt, restoreDescriptor, sizedList } from "./own-array.ts";'] as const;
+const L01_CALL = '    // L-01 (K1.4): a lexical shadow of a free identifier, which the swap above cannot reach, refuses the call.\n    checkSerializerEnvironment();\n';
+
+test('the relocated capture implementation is byte-identical to released B before its new byte bridge, apart from the L-01 call', async () => {
   const source = await readFile(resolve(root, 'packages/sdk/src/internal/value-capture.ts'), 'utf8');
-  const prefix = source.slice(0, source.indexOf('// Internal SDK bridge:')).trimEnd() + '\n';
+  const current = source.slice(0, source.indexOf('// Internal SDK bridge:')).trimEnd() + '\n';
+  assert.equal(current.split(L01_CALL).length, 2, 'exactly one L-01 call in the prefix');
+  assert.equal(current.split(L01_IMPORT[1]).length, 2, 'exactly one widened own-array import');
+  const prefix = current.replace(L01_CALL, '').replace(L01_IMPORT[1], L01_IMPORT[0]);
   assert.equal(createHash('sha256').update(prefix).digest('hex'), '8d6e7585d0c62791df1ff9849cc1ca10b716321f7745caa137a31f1acd7cf1b6');
 });

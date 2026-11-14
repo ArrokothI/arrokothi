@@ -1,0 +1,32 @@
+[
+  {
+    "origin": "artifact-9fd619f5375d598ebb2b88aa",
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:890:3@deedd7950724",
+    "target": "target.kernel-landing-zone.890.3.deedd7950724"
+  },
+  {
+    "origin": "artifact-9fd619f5375d598ebb2b88aa",
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:2894:5@deedd7950724",
+    "target": "target.kernel-landing-zone.2894.5.deedd7950724"
+  },
+  {
+    "origin": "artifact-9fd619f5375d598ebb2b88aa",
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:3099:5@deedd7950724",
+    "target": "target.kernel-landing-zone.3099.5.deedd7950724"
+  },
+  {
+    "origin": "artifact-9fd619f5375d598ebb2b88aa",
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:3138:5@deedd7950724",
+    "target": "target.kernel-landing-zone.3138.5.deedd7950724"
+  },
+  {
+    "origin": "artifact-9fd619f5375d598ebb2b88aa",
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:3205:5@deedd7950724",
+    "target": "target.kernel-landing-zone.3205.5.deedd7950724"
+  },
+  {
+    "origin": "artifact-9fd619f5375d598ebb2b88aa",
+    "member": "tests/conformance/architecture/kernel-landing-zone.test.ts:3304:5@deedd7950724",
+    "target": "target.kernel-landing-zone.3304.5.deedd7950724"
+  }
+]

@@ -1,0 +1,22 @@
+# tree 5f0e5b0a7b7300263066fd76b279ca2b8a2d1d06 (C's tree without the nine implementation-06 logs, which are force-added because .gitignore ignores *.log; parent b153ccacb57c35652be3aeba43f47a48905e077b); v26.10.0; node docs/development/work/K1.4/implementation-06/../implementation-05/comment-only.mjs b153ccacb57c35652be3aeba43f47a48905e077b 608f9ece44dbe42b78974bdac9e7ddcd33697705 (working tree before the logs were added, so no log is listed)
+previous=b153ccacb57c35652be3aeba43f47a48905e077b
+base=608f9ece44dbe42b78974bdac9e7ddcd33697705
+candidate=working tree
+changed files: 9
+fatal: path 'docs/development/work/K1.4/implementation-06/due-at-registration.probe.mjs' exists on disk, but not in 'b153ccacb57c35652be3aeba43f47a48905e077b'
+  new script: docs/development/work/K1.4/implementation-06/due-at-registration.probe.mjs (69 lines)
+  document: docs/development/work/K1.4/implementation-06/linkcheck.py
+  document: docs/development/work/K1.4/owner-choice-07.md
+  json, keys changed [administrative_files, preserve, limits]: docs/development/work/K1.4/verification.json
+  document: docs/guides/deployment/quick-start.md
+  document: mental-model/concepts/values.md
+  document: mental-model/mechanisms/execution-cycle.md
+  code identical without comments: packages/sdk/src/host.ts (135 printed lines)
+  code identical without comments: packages/sdk/src/types.ts (116 printed lines)
+packages/kernel/src vs B: identical
+packages/core/src vs B: identical
+tests/fixtures/packet-tools/mutations.json vs B: identical
+tests/fixtures/packet-tools/refusal-guards.json vs B: identical
+tests/fixtures/packet-tools/value-cost.json vs B: identical
+result=comment_and_document_only
+exit=0

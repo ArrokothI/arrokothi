@@ -10,14 +10,14 @@ const conversation = createPatternApp([
 const id = await conversation.startConversation("Title it Building useful applications");
 assert.equal((await conversation.application.runUntilBlocked(id)).reason, "input_required");
 console.log("Committed title:", (await conversation.harness.structuredMemoryOf(id))?.values["title"]?.value);
-await conversation.harness.deliverExternalInput({ destination: id, label: "user", payload: "Publish it" });
+await conversation.application.input(id, { label: "user", payload: "Publish it" });
 assert.equal((await conversation.application.runUntilBlocked(id)).reason, "confirmation_required");
 const [confirmation] = await conversation.harness.pendingConfirmations();
 assert.ok(confirmation);
 console.log("Exact proposal awaiting approval:", confirmation.proposal);
 assert.equal(conversation.articles.size, 0);
 // Simulated approval ONLY for this offline fake publisher. Real applications use a trusted human UI.
-await conversation.harness.resolveConfirmation({ confirmationId: confirmation.confirmationId, decision: "approve" });
+await conversation.application.resolveConfirmation(id, { confirmationId: confirmation.confirmationId, decision: "approve" });
 assert.equal((await conversation.application.runUntilBlocked(id)).reason, "input_required");
 assert.equal(conversation.articles.size, 1);
 console.log("Published records:", [...conversation.articles]);
@@ -27,7 +27,7 @@ const workflowId = await workflow.startWorkflow("Explain how to build an applica
 assert.equal((await workflow.application.runUntilBlocked(workflowId)).reason, "confirmation_required");
 const [approval] = await workflow.harness.pendingConfirmations();
 assert.ok(approval);
-await workflow.harness.resolveConfirmation({ confirmationId: approval.confirmationId, decision: "approve" });
+await workflow.application.resolveConfirmation(workflowId, { confirmationId: approval.confirmationId, decision: "approve" });
 const result = await workflow.application.runUntilBlocked(workflowId);
 assert.equal(result.reason, "completed");
 const completed = result.execution;

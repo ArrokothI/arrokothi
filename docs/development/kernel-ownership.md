@@ -10,14 +10,17 @@ own what the Kernel means. This file owns only *where code lives and what it may
 
 ## Zones
 
-Four owners, by repo-relative path prefix. A path in no zone (tests, examples, scripts, docs) is
-unzoned and carries no new rule from this packet.
+Five owners, by repo-relative path prefix. A file belongs to the zone whose matching root is
+longest, so `legacy-bridge` owns its files and `host-sdk` owns the rest of `packages/sdk/src`; two
+zones with an equal-length matching root are refused (`zoneOf`). A path in no zone (tests,
+examples, scripts, docs) is unzoned and carries no new rule from this packet.
 
 | Zone id | Roots | Owner and status |
 |---|---|---|
 | `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; K1.2 Outcome acceptance, takeover and the recovery holds; every later boundary refuses by name.** |
 | `legacy-core` | `packages/core/src` | The current 0.8.x `Harness`/controller implementation. Explicitly legacy, fully supported, unchanged by this packet. |
 | `runtime-integrations` | `packages/agents/strands/src`, `packages/models/gemini/src`, `packages/retrieval/local/src`, `packages/interoperability/mcp/src` | Provider and Runtime adapters. Depend inward on `legacy-core` today. |
+| `legacy-bridge` | `packages/sdk/src/legacy-bridge` | K1.4's legacy Driver: the 0.8.x `Harness` as a managed native job behind the Kernel's Driver protocol, with its lineage scheduler, root identity scope, codec, lineage classifier, commit-signalling store facade, batch ledger and the deprecated Harness view. Execution-side code, not Kernel code (DX-5, DX-6). |
 | `host-sdk` | `packages/sdk/src` | Application bootstrap and host composition. |
 
 `packages/kernel` is a new directory rather than a rename of `packages/core`. A rename would carry
@@ -38,14 +41,18 @@ and moves live-object capture plus its own-array helper to SDK internal code (6 
 COORD-REFACTOR-01 adds the plan union, the state owner and its record shapes (19 Kernel files).
 K1.3 adds the injected clock's reading (`time.ts`) and the pure wait semantics (`waits.ts`): 21 Kernel files.
 The core reaches no legacy, SDK or third-party module. The wrapper retains the unchanged
-`canonicalize@3.0.0` dependency; it imports no Kernel module and adds no public SDK export.
+`canonicalize@3.0.0` dependency and imports no Kernel or bridge module. K1.4 routes the SDK through
+the Kernel: the host and bridge files named in `SDK_KERNEL_IMPORTERS` reach `@arrokothi/kernel`
+through its package root only, and `host-sdk` and `legacy-bridge` reach each other by relative path
+(the table names the zone). The third column lists every workspace reach, not only `legacy-core`.
 
 | Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |
 |---|---|---|---|
 | `target-kernel` | 21 | nothing | nothing |
 | `legacy-core` | 143 | — | nothing |
 | `runtime-integrations` | 16 | `@arrokothi/core`, `@arrokothi/core/execution`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `@langchain/core/documents`, `@langchain/textsplitters`, `@modelcontextprotocol/client`, `@modelcontextprotocol/server`, `@strands-agents/sdk` |
-| `host-sdk` | 6 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `canonicalize` |
+| `legacy-bridge` | 8 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/kernel`, `host-sdk` | nothing |
+| `host-sdk` | 8 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`, `@arrokothi/kernel`, `legacy-bridge` | `canonicalize` |
 
 Every zone reaches `node:` builtins; those are omitted above. `legacy-core` reaching no third-party
 package is the existing vendor-neutrality property, retained and re-attributed to the legacy zone by
@@ -60,13 +67,15 @@ row relation against the manifests rather than checking that each name occurs so
 |---|---|---|
 | `@arrokothi/kernel` | `.` | No (private) |
 | `@arrokothi/core` | `.`, `./execution`, `./ports`, `./reference`, `./testing` | Yes |
-| `@arrokothi/sdk` | `.` | Yes |
+| `@arrokothi/sdk` | `.` | No (private) |
 | `@arrokothi/integration-strands` | `.` | Yes |
 | `@arrokothi/provider-gemini` | `.` | Yes |
 | `@arrokothi/retrieval-local` | `.` | Yes |
 | `@arrokothi/integration-mcp` | `.` | Yes |
 
-Only `@arrokothi/kernel` is new, and only it is private. Every other row is unchanged by this packet.
+Only `@arrokothi/kernel` is new. K1.4 makes `@arrokothi/sdk` private as well: it depends on the
+private Kernel, so it is unpublishable until a release packet decides how to publish both
+([K1.4 owner choices 01](work/K1.4/owner-choices-01.md) Q1, [owner choices 02](work/K1.4/owner-choices-02.md) D).
 
 `@arrokothi/core`'s five subpaths export 227 / 227 / 44 / 33 / 21 runtime names. K1.0 moves no legacy
 source, so those counts and the digests over their sorted name lists are pinned in the guard; a later

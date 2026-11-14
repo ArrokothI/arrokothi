@@ -1,0 +1,32 @@
+✔ control: an ordinary initial input is accounted for and a Function completes (14.1365ms)
+✖ K14-R1-01: settling native work between lineage reads must not commit a human wait (2014.182167ms)
+ℹ {"observed":false,"handled":1,"reason":"timeout","kernel":"RUNNING","native":"WAITING","secondKernel":"RUNNING","secondNative":"WAITING","operations":[{"status":"pending","dispatch":"dispatched"},{"status":"pending","dispatch":"not_dispatched"}]}
+✔ K14-R1-02: exact input retry keeps its originally selected child destination (19.193708ms)
+ℹ {"firstReason":"input_required","finalReason":"failed","explicitReplay":{"eventId":"event-13:arrokothi.sdk79:execution-13:arrokothi.sdk11:application36:ca3f5c14-5b93-4d17-a681-e9d751a063915:reply","receipt":{"boundary":"input_ingress","token":"inp:execution-13:arrokothi.sdk11:application36:ca3f5c14-5b93-4d17-a681-e9d751a06391:6","position":6},"replayed":true,"acceptancePosition":6,"disposition":{"kind":"acknowledged","activationId":"execution-13:arrokothi.sdk11:application36:ca3f5c14-5b93-4d17-a681-e9d751a06391/activation-3"}}}
+✔ K14-R1-03: failure before forwarding accounts for every acknowledged input (2.248417ms)
+ℹ {"reason":"failed","calls":0,"mailbox":[{"eventId":"event-creation-13:arrokothi.sdk11:application36:9ea69ca7-9c9d-4a41-b210-37959e38bba1","inputId":{"producerNamespace":"arrokothi.sdk","destination":"execution-13:arrokothi.sdk11:application36:9ea69ca7-9c9d-4a41-b210-37959e38bba1","requestKey":"9ea69ca7-9c9d-4a41-b210-37959e38bba1"},"kind":"arrokothi.legacy.start","payload":{"input":{"label":"user","payload":"initial"}},"subscriptionClass":null,"sourceCategory":"application_input","acceptancePosition":1,"disposition":{"kind":"acknowledged","activationId":"execution-13:arrokothi.sdk11:application36:9ea69ca7-9c9d-4a41-b210-37959e38bba1/activation-1"},"reserved":false,"receipt":{"boundary":"creation","token":"crt:execution-13:arrokothi.sdk11:application36:9ea69ca7-9c9d-4a41-b210-37959e38bba1:1","position":1}},{"eventId":"event-13:arrokothi.sdk79:execution-13:arrokothi.sdk11:application36:9ea69ca7-9c9d-4a41-b210-37959e38bba15:later","inputId":{"producerNamespace":"arrokothi.sdk","destination":"execution-13:arrokothi.sdk11:application36:9ea69ca7-9c9d-4a41-b210-37959e38bba1","requestKey":"later"},"kind":"arrokothi.legacy.input","payload":{"destination":"execution-13:arrokothi.sdk11:application36:9ea69ca7-9c9d-4a41-b210-37959e38bba1","label":"user","payload":"next"},"subscriptionClass":"arrokothi.legacy.input","sourceCategory":"application_input","acceptancePosition":2,"disposition":{"kind":"acknowledged","activationId":"execution-13:arrokothi.sdk11:application36:9ea69ca7-9c9d-4a41-b210-37959e38bba1/activation-1"},"reserved":false,"receipt":{"boundary":"input_ingress","token":"inp:execution-13:arrokothi.sdk11:application36:9ea69ca7-9c9d-4a41-b210-37959e38bba1:2","position":2}}],"results":[{"eventId":"event-creation-13:arrokothi.sdk11:application36:9ea69ca7-9c9d-4a41-b210-37959e38bba1","kind":"arrokothi.legacy.start","status":"discarded"},{"eventId":"event-13:arrokothi.sdk79:execution-13:arrokothi.sdk11:application36:9ea69ca7-9c9d-4a41-b210-37959e38bba15:later","kind":"arrokothi.legacy.input","status":"discarded"}]}
+✔ K14-R1-04: the controller hook receives initialized readable services (0.191208ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2242.297459
+
+✖ failing tests:
+
+test at docs/development/work/K1.4/review-01/probes.mjs:24:1
+✖ K14-R1-01: settling native work between lineage reads must not commit a human wait (2014.182167ms)
+  AssertionError [ERR_ASSERTION]: the intended interleaving ran
+      at TestContext.<anonymous> (file:///private/tmp/arrokothi-k14-review02-c/docs/development/work/K1.4/review-01/probes.mjs:81:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

@@ -51,9 +51,11 @@ proposal → current authorization → optional exact-payload confirmation
          → dispatch → environment outcome → correlated observation
 ```
 
-The UI discovers requests using `pendingConfirmations()` or `confirmationRequestsOf(id)`, shows the
-stored `proposal`, and calls `resolveConfirmation({ confirmationId, decision: 'approve' | 'decline' })`
-through a trusted authenticated handler. Approval rechecks current authority and dispatches the
+The UI discovers requests using `pendingConfirmations()` or `confirmationRequestsOf(id)` (on
+`app.harness` in an SDK application), shows the stored `proposal`, and resolves it through a trusted
+authenticated handler: `app.resolveConfirmation(id, { confirmationId, decision: 'approve' | 'decline' })`
+with the SDK, which delivers the decision as Kernel input, or `resolveConfirmation({ confirmationId, decision })`
+on a direct `@arrokothi/core` Harness. Approval rechecks current authority and dispatches the
 stored payload, or returns `status: 'replayed'` from a prior authoritative success without another
 external call; a changed payload needs a new proposal. Reusing the same confirmation ID cannot
 produce a second dispatch. Natural-language “yes”, an emission, or a Working Note is not resolution.
@@ -78,10 +80,13 @@ when a factual status must be exact.
 - `UseCapability.deadlineMs` (or policy `maxDeadlineMs`) bounds that operation. The activation wait
   budget only determines whether to yield; it is not an operation timeout. The host must continue
   driving the runtime for deadline handling. See [diagnosis](../execution/native/evaluation-and-diagnosis.md).
-- Child result, peer reply, typed user input, and confirmation waits have no configured deadline.
-  Own their timeout policy in host code; cancel explicitly when appropriate.
-- `cancelExecution` does not cascade to descendants or siblings. Enumerate child links and cancel
-  those you intend to stop. Cancellation is not rollback of an external action.
+- Child result, peer reply, typed user input, and confirmation waits have no native deadline. With the
+  SDK, `humanWaitDeadlineMs` bounds a declared human pause and `start({ executionDeadline })` bounds the
+  whole Execution; otherwise own the timeout policy in host code and cancel explicitly when appropriate.
+- The SDK's `app.cancel(id)` cancels the Kernel Execution and requests the end of its whole native lineage,
+  root and descendants. A member in the middle of a step ends when that step finishes, unless the step fails
+  (L-36). A direct Harness `cancelExecution` does not cascade to descendants or siblings: enumerate
+  child links and cancel those you intend to stop. Cancellation is not rollback of an external action.
 - `idempotency: 'per_input'` is narrow in-runtime duplicate recognition for capability requests.
   For direct and confirmed dispatch, an exact prior success replays; unresolved/unknown consequential
   work blocks automatic redispatch. Equivalent confirmations approved concurrently linearize at
@@ -95,7 +100,8 @@ when a factual status must be exact.
 ## Security and budgets
 
 The current profile is trusted-local: policy enforcement applies to Harness-mediated operations;
-it is not a sandbox for arbitrary code in the process. Legitimately readable secrets can leak through
+it is not a sandbox for arbitrary code in the process. Under the SDK those operations still run natively
+inside the legacy Driver; the Kernel does not mediate them (Trusted Execution). Legitimately readable secrets can leak through
 legitimately allowed output; no general information-flow guarantee exists. Treat model/retrieved
 content as data that can influence requests, never permission.
 

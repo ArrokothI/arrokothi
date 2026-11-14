@@ -1,0 +1,796 @@
+{
+  "version": 1,
+  "base": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+  "require_direct_parent": false,
+  "administrative_files": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/K1.4/implementation-06.md",
+    "docs/development/work/K1.4/progress.md"
+  ],
+  "preserve": [
+    {
+      "revision": "72e6f5ec51a83476967623b263365fb682a1ead6",
+      "path": "docs/development/work/K1.3/review-01/coverage-comparison.log"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/BINDING-01"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/COORD-REFACTOR-01"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/DOCS-CLEANUP-01"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/K1.1-correction-02"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/K1.1-correction-03"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/K1.2"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/K1.2-correction-01"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/K1.3"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/PLAN-01"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/TOOLS-01"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/TOOLS-02"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/TOOLS-02A"
+    },
+    {
+      "revision": "6831b112b8a14f54ca481b965abf755801e7aefe",
+      "path": "docs/development/work/DESIGN-AUDIT-01"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/006-development-process.md"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/008-implementation-report.md"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/009-universal-prompts.md"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/012-review-methods.md"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/research"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": ".github"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "packages/agents"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "packages/core"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "packages/interoperability"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "packages/models"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "packages/retrieval"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "packages/kernel/src"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "packages/kernel/package.json"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/K1.4/release-01.md"
+    },
+    {
+      "revision": "608f9ece44dbe42b78974bdac9e7ddcd33697705",
+      "path": "docs/development/work/K1.4/brief-01.md"
+    },
+    {
+      "revision": "138937918ed0a0f2677bd5588eedafba6c51750c",
+      "path": "docs/development/work/K1.4/design-01.md"
+    },
+    {
+      "revision": "138937918ed0a0f2677bd5588eedafba6c51750c",
+      "path": "docs/development/work/K1.4/owner-choices-01.md"
+    },
+    {
+      "revision": "138937918ed0a0f2677bd5588eedafba6c51750c",
+      "path": "docs/development/work/K1.4/owner-choices-02.md"
+    },
+    {
+      "revision": "138937918ed0a0f2677bd5588eedafba6c51750c",
+      "path": "docs/development/work/K1.4/design-02.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/acceptance-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/attack-01"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/attack-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/cleanup-01"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/cleanup-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/design-03.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/design-04.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/design-check-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/design-check-03.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/design-check-04.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-02"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-02.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-03"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-03.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-04"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-04.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-05"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/implementation-05.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/owner-choice-03"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/owner-choice-03.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/owner-choice-04.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/owner-choice-05.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/owner-choice-06.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/reference-check-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-01"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-01.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-02"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-02.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-03"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-03.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-04"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-04.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-05"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/work/K1.4/review-05.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "mental-model/mechanisms/waits.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "mental-model/concepts/operations.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/002-implemented-kernel-baseline.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/017-known-limitations.md"
+    },
+    {
+      "revision": "b153ccacb57c35652be3aeba43f47a48905e077b",
+      "path": "docs/development/014-owner-progress-summary.md"
+    }
+  ],
+  "whitespace_exceptions": [
+    {
+      "path": "docs/development/work/K1.3/review-01/coverage-comparison.log",
+      "revision": "72e6f5ec51a83476967623b263365fb682a1ead6",
+      "reason": "Review 01's raw coverage-comparison output, committed by the reviewer, keeps two source excerpts that end in spaces; the sealed review evidence is preserved byte for byte instead of edited."
+    }
+  ],
+  "evidence": [],
+  "candidate": "docs/development/work/K1.4/verification.json",
+  "environment": {
+    "pass": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "set": {
+      "LANG": "C.UTF-8"
+    },
+    "absent": [
+      {
+        "name": "NODE_OPTIONS",
+        "effect": "Never passed: an inherited preload or flag would change every Node child. Only the reads phase sets it, for its own traced runs."
+      },
+      {
+        "name": "NODE_TEST_CONTEXT",
+        "effect": "Never passed: the Node test runner sets it in its own children. read-trace.mjs reads it only to label a test child."
+      },
+      {
+        "name": "NODE_V8_COVERAGE",
+        "effect": "Never passed: reach runs set a temporary directory for their own children."
+      },
+      {
+        "name": "KERNEL_POISON_MODE",
+        "effect": "Absent from every declared command, so preload.ts stays inactive in repository tests. run-poison-sweep.ts sets it in each poison child it spawns."
+      },
+      {
+        "name": "KERNEL_POISON_OUT",
+        "effect": "Absent from every declared command; run-poison-sweep.ts sets it with KERNEL_POISON_MODE."
+      },
+      {
+        "name": "KERNEL_POISON_NAMES",
+        "effect": "Absent from every declared command; run-poison-sweep.ts sets it with KERNEL_POISON_MODE."
+      },
+      {
+        "name": "PACKET_ORACLE_CHECK",
+        "effect": "Absent from every declared command; oracle-probe.mjs sets it for the oracle child it spawns, the only process that loads oracle-reach.mjs."
+      },
+      {
+        "name": "PACKET_REACH_FILE",
+        "effect": "Absent from every declared command; oracle-probe.mjs sets it with PACKET_ORACLE_CHECK."
+      },
+      {
+        "name": "ARROKOTHI_READ_TRACE",
+        "effect": "Absent from verdict commands; the reads phase sets it together with NODE_OPTIONS."
+      },
+      {
+        "name": "GEMINI_MODEL",
+        "effect": "Read only by the live-provider canary scripts, which owner choice 01 keeps not run."
+      },
+      {
+        "name": "GEMINI_API_KEY",
+        "effect": "Never passed. Read only through geminiApiKeyFromEnv's default argument, which the live-provider canaries use; no selected test calls it."
+      },
+      {
+        "name": "GOOGLE_API_KEY",
+        "effect": "Never passed; the same fallback as GEMINI_API_KEY."
+      },
+      {
+        "name": "GOOGLE_GENERATIVE_AI_API_KEY",
+        "effect": "Never passed; the same fallback as GEMINI_API_KEY."
+      },
+      {
+        "name": "FLOOR_ORDER_LOG",
+        "effect": "node-floor A10 fixtures only; check-node-floor.py sets a temporary path. No declared command selects them."
+      },
+      {
+        "name": "FLOOR_READ_DIR",
+        "effect": "node-floor A11 fixture only; check-node-floor.py sets a temporary path. No declared command selects it."
+      },
+      {
+        "name": "ARROKOTHI_VALUE_COST_LOAD",
+        "effect": "Absent from every declared command; value-cost-probe.mjs sets it for the test process it spawns, the only process that loads value-cost-witness.mjs, which writes a load failure to that path (KC3-R1-EVID-02)."
+      },
+      {
+        "name": "ARROKOTHI_TARGET_WITNESS",
+        "effect": "Absent from declared commands; the target-set runner sets it only for its invocation-bound witness processes."
+      }
+    ],
+    "census": {
+      "roots": [
+        "packages",
+        "tests",
+        "scripts",
+        "examples"
+      ],
+      "computed": [
+        {
+          "path": "packages/kernel/tests/sweep/run-poison-sweep.ts",
+          "text": "env: { ...process.env, KERNEL_POISON_MODE: mode, KERNEL_POISON_OUT: dir, KERNEL_POISON_NAMES: namesFile },",
+          "reason": "Passes the sweep's own declared environment to each poison child and adds the three poison names; reads no other name."
+        },
+        {
+          "path": "packages/models/gemini/src/index.ts",
+          "text": "export function geminiApiKeyFromEnv(env: Record<string, string | undefined> = process.env): string | undefined {",
+          "reason": "Production default argument; reads GEMINI_API_KEY, GOOGLE_API_KEY or GOOGLE_GENERATIVE_AI_API_KEY, all declared absent."
+        },
+        {
+          "path": "tests/tooling/oracle-probe.mjs",
+          "text": "env: { ...process.env, PACKET_ORACLE_CHECK: name, PACKET_REACH_FILE: witness },",
+          "reason": "Passes its declared environment to the oracle child and adds PACKET_ORACLE_CHECK and PACKET_REACH_FILE."
+        },
+        {
+          "path": "tests/tooling/value-cost-probe.mjs",
+          "text": "], { encoding: 'utf8', maxBuffer: innerOutput, env: { ...process.env, ARROKOTHI_VALUE_COST_LOAD: load } });",
+          "reason": "Passes its declared environment to the selected test process and adds ARROKOTHI_VALUE_COST_LOAD."
+        }
+      ]
+    }
+  },
+  "inputs": [
+    {
+      "id": "archive-snapshot",
+      "kind": "git_snapshot",
+      "revision": "9fd2faa71bc4e2b7b4798c53a0360b669c5d7b49",
+      "environment": "ARROKOTHI_EVIDENCE_ROOT",
+      "source": "docs/development/archive.md pinned Git fallback; verified against the tree before and after use"
+    },
+    {
+      "id": "value-cost-baseline",
+      "kind": "git_snapshot",
+      "revision": "b9c1e549c81fa4fe4f18fa1a36986f1a5581fc9b",
+      "environment": "ARROKOTHI_VALUE_COST_BASELINE",
+      "source": "Design 03 maintains review 01 accepted-byte differential at fixed B; read-only baseline source snapshot"
+    }
+  ],
+  "checks": [
+    {
+      "id": "tool-tests",
+      "argv": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/tooling",
+        "-p",
+        "test_*.py"
+      ],
+      "timeout_seconds": 1200,
+      "output_limit_bytes": 1048576,
+      "counts": {
+        "tests": "^Ran (\\d+) tests in "
+      },
+      "minimum_counts": {
+        "tests": 777
+      }
+    },
+    {
+      "id": "inventory",
+      "operation": "inventory",
+      "spec": "tests/fixtures/packet-tools/inventory.json",
+      "expected": "provenance_verified"
+    },
+    {
+      "id": "adoption",
+      "operation": "corpus",
+      "spec": "tests/fixtures/packet-tools/adoption.json",
+      "expected": "mappings_complete"
+    },
+    {
+      "id": "dimensions",
+      "operation": "coverage",
+      "spec": "tests/fixtures/packet-tools/coverage.json",
+      "expected": "coverage_reported"
+    },
+    {
+      "id": "registered-mutants",
+      "operation": "mutations",
+      "spec": "tests/fixtures/packet-tools/mutations.json",
+      "expected": "selected_cases_passed"
+    },
+    {
+      "id": "refusal-mutants",
+      "operation": "mutations",
+      "spec": "tests/fixtures/packet-tools/refusal-guards.json",
+      "expected": "selected_cases_passed"
+    },
+    {
+      "id": "value-cost-mutants",
+      "operation": "mutations",
+      "spec": "tests/fixtures/packet-tools/value-cost.json",
+      "expected": "selected_cases_passed"
+    },
+    {
+      "id": "refusal-census",
+      "argv": [
+        "python3",
+        "-B",
+        "tests/tooling/check-refusal-registry.py"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "oracle-census",
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/registry-check.mjs"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "typecheck",
+      "argv": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "repository-tests",
+      "catalog": {
+        "script": "test",
+        "script_text": "node --test --experimental-strip-types packages/core/tests/*.test.ts packages/kernel/tests/*.test.ts packages/models/gemini/tests/*.test.ts packages/retrieval/local/tests/*.test.ts packages/agents/strands/tests/*.test.ts packages/interoperability/mcp/tests/*.test.ts tests/conformance/*/*.test.ts packages/sdk/tests/*.test.ts",
+        "flags": [
+          "--test",
+          "--experimental-strip-types"
+        ],
+        "globs": [
+          "packages/core/tests/*.test.ts",
+          "packages/kernel/tests/*.test.ts",
+          "packages/models/gemini/tests/*.test.ts",
+          "packages/retrieval/local/tests/*.test.ts",
+          "packages/agents/strands/tests/*.test.ts",
+          "packages/interoperability/mcp/tests/*.test.ts",
+          "tests/conformance/*/*.test.ts",
+          "packages/sdk/tests/*.test.ts"
+        ]
+      },
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576,
+      "counts": {
+        "tests": "^[#\u2139] tests (\\d+)$",
+        "fail": "^[#\u2139] fail (\\d+)$",
+        "cancelled": "^[#\u2139] cancelled (\\d+)$",
+        "skipped": "^[#\u2139] skipped (\\d+)$",
+        "todo": "^[#\u2139] todo (\\d+)$"
+      },
+      "minimum_counts": {
+        "tests": 4957
+      },
+      "exact_counts": {
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "archive-tests",
+      "catalog": {
+        "script": "test:archive-evidence",
+        "script_text": "node --test --experimental-strip-types tests/archive/*.test.ts",
+        "flags": [
+          "--test",
+          "--experimental-strip-types"
+        ],
+        "globs": [
+          "tests/archive/*.test.ts"
+        ]
+      },
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576,
+      "counts": {
+        "tests": "^[#\u2139] tests (\\d+)$",
+        "fail": "^[#\u2139] fail (\\d+)$",
+        "cancelled": "^[#\u2139] cancelled (\\d+)$",
+        "skipped": "^[#\u2139] skipped (\\d+)$",
+        "todo": "^[#\u2139] todo (\\d+)$"
+      },
+      "minimum_counts": {
+        "tests": 1
+      },
+      "exact_counts": {
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "inputs": [
+        "archive-snapshot"
+      ]
+    },
+    {
+      "id": "kernel-sweeps",
+      "argv": [
+        "npm",
+        "run",
+        "test:kernel-sweeps"
+      ],
+      "timeout_seconds": 2400,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "race-search",
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "packages/kernel/tests/race-search/run.ts"
+      ],
+      "timeout_seconds": 1800,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "value-cost-dimensions",
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-dimensions.mjs"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576,
+      "inputs": [
+        "value-cost-baseline"
+      ]
+    },
+    {
+      "id": "value-cost-continuations",
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/tooling/capture-continuations.mjs",
+        "full"
+      ],
+      "timeout_seconds": 3600,
+      "output_limit_bytes": 1048576
+    },
+    {
+      "id": "example-tests",
+      "catalog": {
+        "script": "test:example:execution-kernel",
+        "script_text": "node --test --experimental-strip-types examples/execution-kernel-minimal/*.test.ts",
+        "flags": [
+          "--test",
+          "--experimental-strip-types"
+        ],
+        "globs": [
+          "examples/execution-kernel-minimal/*.test.ts"
+        ]
+      },
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576,
+      "counts": {
+        "tests": "^[#\u2139] tests (\\d+)$",
+        "fail": "^[#\u2139] fail (\\d+)$",
+        "cancelled": "^[#\u2139] cancelled (\\d+)$",
+        "skipped": "^[#\u2139] skipped (\\d+)$",
+        "todo": "^[#\u2139] todo (\\d+)$"
+      },
+      "minimum_counts": {
+        "tests": 1
+      },
+      "exact_counts": {
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "builder-docs",
+      "argv": [
+        "npm",
+        "run",
+        "check:builder-docs"
+      ],
+      "timeout_seconds": 900,
+      "output_limit_bytes": 1048576
+    }
+  ],
+  "profiles_not_run": [
+    {
+      "id": "live-provider",
+      "reason": "Owner choice 01: credentialed/paid execution requires a separate run; no run is authorized here.",
+      "checks": [
+        {
+          "id": "profile.gemini-provider-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:gemini"
+          ]
+        },
+        {
+          "id": "profile.mcp-gemini-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:mcp:gemini"
+          ]
+        },
+        {
+          "id": "profile.workflow-scenario-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:workflow"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "large-memory-timing",
+      "reason": "Owner choice 01: historical engine-limit, heap and timing studies retained in the pinned inventory; individual semantic mappings/command adapters remain pending P1. No execution credit.",
+      "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "sources": [
+        "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts",
+        "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts",
+        "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts",
+        "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+      ],
+      "checks": [
+        {
+          "id": "profile.probe-diagnostics-maxlen",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts"
+          ],
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.probe-maxlen",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts"
+          ],
+          "environment": {
+            "TREE": "$ROOT"
+          },
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.probe-namespace",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts"
+          ],
+          "environment": {
+            "TREE": "$ROOT"
+          },
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.refusal-cost-probe-04",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+          ],
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "K1.4 ranges A and B (owner release 01; owner choices 01 and 02; design 01 as changed by design 02). Range A: the legacy Driver over the 0.8.x Harness, its lineage scheduler, root identity scope, codec and lineage classifier, the SDK host that owns the in-process coordinator, the Kernel-routed SDK methods, the deprecated Harness view, the option dispositions, the private SDK manifest, the builder-docs admission and the legacy-bridge zone with its K14-3 rules. Range B: the K14-4 inventory (packages/sdk/tests/bridge-inventory.test.ts), the K14-5 wrapper export with the L-01 check (wrapper.ts, value-capture.ts, wrapper-environment.test.ts), the K14-6 mapping (tests/conformance/legacy-mapping.json, architecture/legacy-mapping.test.ts, X-row header notes), the guides, the SDK README, the builder skill, Layer 3, BASELINE and 017.",
+    "The bridge corpus is the B-* tests in packages/sdk/tests/bridge-*.test.ts. B-QUIESCE-CELLS is a declared bounded search over forged records (the record model): lifecycle x wait kind x pending operation (effect kind, dispatch, confirmation) x resumption state for one member and for a parent waiting on a call child; and, from round 2 (design 03), one operation's effect kind x status x dispatch x outcome x confirmation state x lifecycle x wait kind x resumption state (none, pending, settled, invalidated), plus two operations per member over every pair of six verdict classes; nothing outside that product is claimed. K14-4's closure is a declared bounded search: the SDK's exports and the members of its SDK-declared exported types (one level into anonymous, mapped and utility-typed members), the 35 Harness methods, and the backticked SDK and Harness members, sdk imports and example files of the guide pages reachable from docs/guides/README.md, the SDK README, the builder skill and examples/execution-kernel-minimal.",
+    "No Kernel source changes: packages/kernel/src is preserved at B. packages/kernel/tests/binding-surface.test.ts restates three BINDING-01 assertions with their kept properties (design 02 D01-CHK-06): the capture graph imports no Kernel, the public runtime keys are the new exact list, and the capture prefix is byte-identical to B apart from the L-01 call.",
+    "The adoption manifest's preserved table is regenerated mechanically by TOOLS-02's regenerate in a fresh clone; no new credit.",
+    "Round 2 (review 01 K14-R1-01..05; design 03 with its addendum after design check 03; owner choice 04): the validated double-collect observation, the commit-signalling store facade, the per-batch ledger, scheduler-first construction and one terminate path. B-OBSERVE-SCHEDULES is a declared bounded search over real native settlements: four fixtures (F1-F4) x every named gate point (register, park, validated, submit, and each read of the first and second collect, before and after); each schedule is recorded reached or unreachable with its ordering reason, and a fallback release is never counted as covered. B-TERM-TRIGGERS runs T1-T11 with a live descendant (T4 and T11 injected at Driver level; T8-T11 through the Driver rig's scripted controllers) and T12 in B-PROTOCOL-HOLD; T6 is recorded as having no descendant by construction. The removed-cascade mutants are in-test ablations (B-TERM-ABLATION), not registry mutants: the registry runner cannot resolve workspace packages. mutations.json, refusal-guards.json and value-cost.json stay byte-identical to B.",
+    "Round 3 (review 02 K14-R2-01, K14-R2-02; owner choice 05, a narrow redesign; design 04 with its addendum after design check 04): the Driver schedules every READY member of a continue collect with no store read, an attempt-bound unschedulable-READY detector, and a Kernel-only report when terminate's native cleanup request rejects (scope in the round 5 entry). B-ENQUEUE-LOST-SCHEDULES is a declared bounded search: two producers (capability settlement, model resumption) x eight named gate points, each recorded reached or unreachable. B-PRODUCER-CENSUS derives the native enqueue/wake call sites from packages/core/src/runtime syntactically. B-TERM-CENSUS resolves cleanup calls in packages/sdk/src syntactically (the checked forms and exclusions are in the round 4 entry and 017 L-37). B-TERM-ORACLE and B-TERM-ABLATION run a finite row set: a kill or equivalence is a fact about those rows and schedules, not a proof for every interleaving. The removed-fix mutants stay in-test ablations; mutations.json, refusal-guards.json and value-cost.json stay byte-identical to B.",
+    "Round 4 (review 03 K14-R3-01..03; owner choice 06, the owner-choice-05 route (d)): no production change. R3-01 is 017 L-36: a cleanup cascade treats a fulfilled native cancelExecution as the end, but a RUNNING member answers cancellation_pending, and after a native exception past READY->RUNNING it stays RUNNING with no hold while the Kernel's FAILED (or CANCELLED, when a Kernel cancellation reached the running step) stands. B-TERM-LIMIT asserts that recorded behaviour for review 03's two counterexamples and the cancelled variant; it is a limit, not a guarantee. R3-02: rows F1-F3 (one rejected request cascade) kill cancel.application, cancel.exchange-start and cancel.forward-loop; only initial-input (T6) is equivalent only. The oracle is still a finite row set with one-fault schedules, not a proof for every interleaving or fault combination. R3-03 is 017 L-37: B-TERM-CENSUS checks dot-property calls of endLineage, terminate, cascade and cancelExecution (literal labels, or conditionals of literals), identifiers with those names outside such a call (aliases, .call/.apply/.bind on the dot name), and element access by a string literal of those names. It does not see static template element access, quoted destructuring aliases, or names computed at run time; maintained tests show the review's three static instances escape.",
+    "Round 5 (review 04 K14-R4-01; brief 05; owner choices 05 and 06 with the owner's 2026-11-11 supplements): comments and documents only. Current descriptions say the Driver requests native cancellation and starts no further native step for E; a fulfilled request is not an ended member (017 L-36, both the FAILED and the CANCELLED case). Only terminate turns a rejected cleanup request into a protocol-failure hold, and the Kernel records it only for E's unresolved Activation while E is not terminal. The request a Kernel cancellation starts swallows its rejection, and app.cancel's cancel.application fallback requests again; review 04's probe of row F1's schedule observes one rejected request, the fallback fulfilled, Kernel CANCELLED, both members CANCELLED and no hold. No executable source, test, fixture or mutation registry changed: the C diff touches only comments in packages/sdk/src, documents and this file; Kernel and core source equal B.",
+    "Round 6 (brief 06, from cleanup 01's CLEANUP-K14-01, the cleanup agent's own finding, and observation O-2; owner choice 07): a scoped documentation correction after review 05's ACCEPT of H e307943d. execution-cycle.md's host paragraph now separates a wait already due when its Outcome is accepted (expired inside that decision with no host fire; owned by waits.md step 3) from the two host-fired paths, a live wait's deadline and an Execution deadline. values.md's in-process capture bullet records that the SDK's public entry re-exports toCanonicalBytes (O-2). Under owner choice 07, the same scoping reaches the quick start's host-call sentence and the doc comments of ApplicationHost.pump (host.ts) and humanWaitDeadlineMs (types.ts). No executable line changed: both TypeScript files print identically without comments at H e307943d and at C. Kernel and core source equal B; waits.md, operations.md, BASELINE, 017, 014 and every K1.4 record and review file other than progress.md and this file are preserved at the cleanup head b153ccac.",
+    "Fresh-clone local checks run before the CI dispatch; the CI run is the handoff evidence. No prior results reused; acceptance is not evaluated."
+  ]
+}

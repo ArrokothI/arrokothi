@@ -1,0 +1,39 @@
+{
+  "revision": "72d452bb39e0ae0f846d85e273441d06a9cd22fb",
+  "artifact_id": 13912370616,
+  "sha256": "bb0c66324851f55cf0fb2548084f01d3e052adb04c37e2fe3f18351e4d17eda1",
+  "checks_counted": 19,
+  "passed_counted": 19,
+  "tests": {
+    "tool-tests": {
+      "tests": 777
+    },
+    "repository-tests": {
+      "tests": 5054,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "archive-tests": {
+      "tests": 4,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "example-tests": {
+      "tests": 18,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    }
+  },
+  "mutants_counted": {
+    "registered-mutants": 339,
+    "refusal-mutants": 358,
+    "value-cost-mutants": 238
+  },
+  "result": "passed"
+}

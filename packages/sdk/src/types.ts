@@ -42,11 +42,25 @@ export interface ApplicationOptions {
   };
   readonly authorizer?: HarnessOptions["authorizer"];
   readonly confirmationPolicy?: HarnessOptions["confirmationPolicy"];
-  /** In-memory defaults. Replacing a port alone does not establish crash recovery. */
+  /**
+   * In-memory defaults. Replacing a port alone does not establish crash recovery.
+   *
+   * `scheduler` is refused by name: Kernel dispatch and the bridge's lineage scheduler own native
+   * scheduling (K1.4). `maxActivationsPerRun` is accepted and ignored; preflight warns.
+   */
   readonly runtime?: Partial<Pick<HarnessOptions,
     "store" | "definitions" | "scheduler" | "clock" | "ids" | "inlineWait" |
     "activationBudget" | "maxActivationsPerRun" | "defaultEffectDeadlineMs" | "securityProfile"
   >>;
+  /**
+   * When set, each human pause the bridge declares as a Kernel wait carries a deadline this many
+   * milliseconds after the pause was first observed. On expiry the bridge requests cancellation of
+   * the native lineage and the Execution fails with `arrokothi.bridge.wait_deadline_expired`.
+   * A deadline still ahead when a step's Outcome declares the pause takes effect at the next host
+   * call; one already passed by then expires as that Outcome is accepted, unless an input or
+   * confirmation answer queued during the step wakes the wait first.
+   */
+  readonly humanWaitDeadlineMs?: number;
   /** Advanced stock-controller strategies. Omitted properties retain the SDK composition. */
   readonly controllers?: (services: ApplicationServices) => {
     readonly agent?: AgentControllerOptions;
@@ -54,11 +68,40 @@ export interface ApplicationOptions {
   };
 }
 
-export interface StartExecutionInput extends Omit<CreateExecutionInput, "definition"> {
+export interface StartExecutionInput extends Omit<CreateExecutionInput, "definition" | "ownerExecutionId"> {
   /** A definition is registered idempotently; a ref must already exist and match its integrity. */
   readonly definition: ExecutionDefinition | ExecutionDefinitionRef;
-  /** Delivered before any SDK-driven Activation. Omit to deliberately start without external input. */
+  /** Accepted atomically with creation, before any Activation. Omit to start without external input. */
   readonly input?: Omit<DeliverExternalInputInput, "destination">;
+  /**
+   * Retry key. Only a caller-supplied key makes a retry exact: the same key and content replay the
+   * creation. At most 64 characters from `[A-Za-z0-9._:-]`. Defaults to a fresh UUID.
+   */
+  readonly creationKey?: string;
+  /** An absolute instant on the `runtime.clock` scale; the Execution is cancelled once it passes. */
+  readonly executionDeadline?: Date;
+}
+
+/** A host input to a running Execution: the next conversation turn. */
+export interface ApplicationInput {
+  /** Retry key; only a caller-supplied key makes a retry exact. Defaults to a fresh UUID. */
+  readonly requestKey?: string;
+  readonly label: string;
+  readonly payload?: DeliverExternalInputInput["payload"];
+  /**
+   * The native Execution that receives it. Defaults to the one input-waiting member the latest
+   * pause names, or the Execution itself; required when several members wait for input.
+   */
+  readonly destination?: string;
+  readonly correlationId?: string | null;
+  readonly causationId?: string | null;
+}
+
+/** A host decision for a pending confirmation in the Execution's native lineage. */
+export interface ApplicationConfirmation {
+  readonly requestKey?: string;
+  readonly confirmationId: string;
+  readonly decision: "approve" | "decline";
 }
 
 export interface PreflightDiagnostic {
@@ -80,5 +123,33 @@ export class ApplicationConfigurationError extends Error {
     super(report.diagnostics.filter(d => d.severity === "error").map(d => `${d.path}: ${d.message}`).join("\n"));
     this.name = "ApplicationConfigurationError";
     this.diagnostics = report.diagnostics;
+  }
+}
+
+/** `start` cancelled the Execution it created because its native root could not be created. */
+export class ApplicationStartError extends Error {
+  readonly code: string;
+  readonly executionId: string | null;
+  readonly refusal?: unknown;
+  constructor(code: string, message: string, options: { readonly executionId?: string | null; readonly refusal?: unknown; readonly cause?: unknown } = {}) {
+    super(message, options.cause === undefined ? undefined : { cause: options.cause });
+    this.name = "ApplicationStartError";
+    this.code = code;
+    this.executionId = options.executionId ?? null;
+    if (options.refusal !== undefined) this.refusal = options.refusal;
+  }
+}
+
+/** A host input, confirmation, cancellation or read was refused before any record was written. */
+export class ApplicationInputError extends Error {
+  readonly code: string;
+  readonly issues?: readonly unknown[];
+  readonly refusal?: unknown;
+  constructor(code: string, message: string, details: { readonly issues?: readonly unknown[]; readonly refusal?: unknown } = {}) {
+    super(message);
+    this.name = "ApplicationInputError";
+    this.code = code;
+    if (details.issues !== undefined) this.issues = details.issues;
+    if (details.refusal !== undefined) this.refusal = details.refusal;
   }
 }

@@ -35,7 +35,8 @@ and [compiled example](../../../../examples/execution-kernel-minimal/patterns.ts
 configuration. Read access does not imply write access, and exposing a write callable does not allow
 its proposed write.
 
-Host code can inspect the full committed view with `Harness.structuredMemoryOf(id)`; a replacement
+Host code can inspect the full committed view with `Harness.structuredMemoryOf(id)` (`app.harness` in an
+SDK application); a replacement
 `AgentInformationCompiler` receives only the authorized read snapshot. Ordinary Stage code,
 capability executors, and `ExecutionView` have no direct memory handle. A deterministic Stage can
 validate its **own input or observations**, but cannot fetch arbitrary committed memory through its

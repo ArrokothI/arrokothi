@@ -14,6 +14,8 @@ As one decision, the Kernel atomically reserves the exact Event [batch](../conce
 
 Sending proceeds through the [Driver](../concepts/core.md#execution-driver) without synchronously waiting for native work in the coordinator loop. The Driver may call a local function or submit a remote job. Dispatch acknowledgment, heartbeat, cancellation signals and diagnostic streaming are operational traffic, not extra progress-writing Outcomes.
 
+The Kernel has no scheduler of its own. The host that owns an in-process coordinator decides when to dispatch a `READY` Execution and when to fire the timers the Kernel reports due. A [wait](waits.md) whose deadline is already due when its Outcome is accepted, and for which no queued Event qualifies, expires inside that acceptance decision with no host fire ([registering a wait](waits.md#registering-a-wait), step 3). A live wait's deadline and an Execution deadline take effect only when the host fires them, so a host that never pumps timers never expires either of those.
+
 Conceptual data shape (not a frozen wire schema):
 
 ```text

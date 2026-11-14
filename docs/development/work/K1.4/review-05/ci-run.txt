@@ -1,0 +1,8 @@
+revision=72d452bb39e0ae0f846d85e273441d06a9cd22fb
+spec=docs/development/work/K1.4/verification.json
+head=72d452bb39e0ae0f846d85e273441d06a9cd22fb
+node=v26.10.0 npm=11.19.1 python=Python 3.13.18
+runner=Linux x86_64 cpus=4
+started=2026-11-12T01:01:00Z
+finished=2026-11-12T03:12:11Z
+exit=0

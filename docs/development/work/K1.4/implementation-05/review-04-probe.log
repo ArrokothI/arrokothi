@@ -1,0 +1,18 @@
+TAP version 13
+# Subtest: one rejected cancel.request cleanup is swallowed; the real fallback ends both members with no hold
+ok 1 - one rejected cancel.request cleanup is swallowed; the real fallback ends both members with no hold
+  ---
+  duration_ms: 29.706959
+  type: 'test'
+  ...
+# {"faults":1,"cleanup":[["cancel.request","rejected"],["cancel.application","fulfilled"]],"kernel":"CANCELLED","holds":[],"members":["CANCELLED","CANCELLED"],"laterSteps":0}
+1..1
+# tests 1
+# suites 0
+# pass 1
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 273.555958
+exit=0

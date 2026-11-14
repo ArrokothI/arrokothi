@@ -5,7 +5,10 @@ Deployment owns application assembly, process/resource lifetime and physical enf
 
 ## Available in 0.8.x
 
-- [SDK quick start](quick-start.md): install, imports, composition root, preflight and bounded driving.
+- [SDK quick start](quick-start.md): install, imports, composition root, preflight, bounded driving
+  through the Kernel, and migrating from the 0.8.x SDK.
+- [Values at the boundary](values-at-the-boundary.md): the canonical-bytes wrapper, its limits, its
+  cooperative contract and the L-01 environment check.
 - [Current hosting limits](current-hosting.md): in-memory state, authenticated application boundaries,
   and responsibility for external business records.
 - [Provider wiring](../execution/providers/current-wiring.md): inject models, credentials and adapters.

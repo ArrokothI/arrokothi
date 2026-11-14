@@ -2,13 +2,19 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { setTimeout as delay } from "node:timers/promises";
 import { createApplication, defineAgent, defineWorkflow, definitionRef, ApplicationConfigurationError } from "@arrokothi/sdk";
-import type { ApplicationOptions, StartExecutionInput } from "@arrokothi/sdk";
+import type { Application, ApplicationOptions, StartExecutionInput } from "@arrokothi/sdk";
 import type { ModelProvider } from "@arrokothi/core/ports";
 import {
   ScriptedModelProvider, portableModelFeatures, createDeferredModelProvider,
   createCapabilityCatalog, createAllowListAuthorizer, createCapabilityConfirmationPolicy,
   InMemoryRuntimeStore, FifoScheduler, createNoInlineWaitBudget,
 } from "@arrokothi/core/reference";
+
+/** The native ingress results the bridge reported for E, in acceptance order (K1.4 S-START-RECEIPT). */
+const ingressResults = (app: Application, executionId: string) => app.inspect(executionId).emissions
+  .map(emission => emission.value as { kind?: string; results?: { status: string }[] })
+  .filter(value => value.kind === "arrokothi.bridge.ingress_result")
+  .flatMap(value => value.results ?? []);
 
 const features = portableModelFeatures({ capabilityCalls: true, structuredOutput: true });
 const models = (provider: ModelProvider) => ({ providers: [provider], bindings: {
@@ -39,8 +45,10 @@ const script = () => new ScriptedModelProvider({ id: "script", steps: [
 test("a pure Function Workflow needs no model or policy and preserves emission versus terminal result", async () => {
   const app = createApplication({ functions: upper });
   const started = await app.start({ definition: transform(), input: { label: "text", payload: "hello" } });
-  assert.equal(started.inputReceipt?.status, "delivered");
+  assert.equal(started.replayed, false);
+  assert.equal(typeof started.receipt.token, "string");
   const run = await app.runUntilBlocked(started.executionId);
+  assert.equal(ingressResults(app, started.executionId)[0]?.status, "delivered");
   assert.equal(run.reason, "completed");
   assert.equal(run.execution.terminalResult?.value, null);
   assert.deepEqual((await app.harness.emissionsOf(started.executionId))[0]?.body, { kind: "text", text: "HELLO" });
@@ -139,7 +147,7 @@ test("approved exact payload dispatches once through the shared catalog, store, 
   assert.equal(calls, 0);
   const [confirmation] = await app.harness.pendingConfirmations();
   assert.ok(confirmation);
-  await app.harness.resolveConfirmation({ confirmationId: confirmation.confirmationId, decision: "approve" });
+  await app.resolveConfirmation(executionId, { confirmationId: confirmation.confirmationId, decision: "approve" });
   assert.equal((await app.runUntilBlocked(executionId)).reason, "completed");
   assert.equal(calls, 1);
 });
@@ -189,7 +197,7 @@ test("slow capabilities settle without an unbounded drain and cancellation remai
   finish();
   assert.equal((await app.runUntilBlocked(executionId, { timeoutMs: 1000, pollIntervalMs: 1 })).reason, "completed");
   const idle = await app.start({ definition: agent("respond_and_wait") });
-  await app.harness.cancelExecution({ executionId: idle.executionId });
+  await app.cancel(idle.executionId);
   assert.equal((await app.runUntilBlocked(idle.executionId)).reason, "cancelled");
 });
 
@@ -199,7 +207,7 @@ test("conversation response yields input_required and cumulative budgets are unc
   const app = createApplication({ models: models(provider) });
   const { executionId } = await app.start({ definition: defineAgent({ ...d, spec: { ...d.spec, limits: { ...d.spec.limits, maxModelCalls: 1 } } }), input: { label: "user", payload: "hello" } });
   assert.equal((await app.runUntilBlocked(executionId)).reason, "input_required");
-  await app.harness.deliverExternalInput({ destination: executionId, label: "user", payload: "again" });
+  await app.input(executionId, { label: "user", payload: "again" });
   assert.equal((await app.runUntilBlocked(executionId)).reason, "failed");
   assert.equal(provider.requests.length, 1);
 });
@@ -216,14 +224,16 @@ test("bounded loops report activation_limit, leaving the Execution runnable", as
   await assert.rejects(app.runUntilBlocked(executionId, { timeoutMs: NaN }), /finite/);
 });
 
-test("SDK start serializes initial input ahead of concurrent scheduler driving", async () => {
-  class SlowScheduler extends FifoScheduler {
-    override async enqueue(id: Parameters<FifoScheduler["enqueue"]>[0]) { await super.enqueue(id); await delay(1); }
-  }
-  const app = createApplication({ functions: upper, runtime: { scheduler: new SlowScheduler() } });
+test("SDK start accepts initial input atomically with creation, ahead of concurrent driving", async () => {
+  // K1.4: the shared scheduler is the bridge's; a host-supplied one is refused by name.
+  assert.throws(() => createApplication({ functions: upper, runtime: { scheduler: new FifoScheduler() } }),
+    (error: unknown) => error instanceof ApplicationConfigurationError && error.diagnostics[0]?.code === "scheduler_owned_by_bridge");
+  const app = createApplication({ functions: upper });
   const started = app.start({ definition: transform(), input: { label: "text", payload: "first" } });
   await app.runUntilIdle();
   const { executionId } = await started;
+  await delay(1);
+  await app.runUntilIdle();
   assert.deepEqual((await app.harness.emissionsOf(executionId))[0]?.body, { kind: "text", text: "FIRST" });
 });
 
@@ -273,7 +283,7 @@ test("child definitions are preflighted recursively; confirmation in a called ch
   assert.notEqual(result.waitingExecutionId, executionId);
   assert.equal(calls, 0);
   const [confirmation] = await app.harness.pendingConfirmations();
-  await app.harness.resolveConfirmation({ confirmationId: confirmation!.confirmationId, decision: "decline" });
+  await app.resolveConfirmation(executionId, { confirmationId: confirmation!.confirmationId, decision: "decline" });
   assert.equal((await app.runUntilBlocked(executionId)).reason, "completed");
   assert.equal(calls, 0);
 });

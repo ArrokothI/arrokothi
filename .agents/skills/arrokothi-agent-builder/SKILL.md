@@ -22,7 +22,10 @@ before copying provider code or adding dependencies.
 
 - Start ordinary applications with `createApplication`, `defineAgent`, and `defineWorkflow` from
   `@arrokothi/sdk`; use `register` for child definitions, preflighted `start`, and `runUntilBlocked`
-  for a bounded host request. Inspect returned diagnostics/reasons and Harness receipts. Core
+  for a bounded host request. Every SDK host call goes through the Kernel: send turns with `app.input`,
+  decisions with `app.resolveConfirmation`, and stop with `app.cancel`; `app.harness` is a deprecated
+  read-only view whose mutators refuse. Inspect returned diagnostics/reasons, Kernel receipts and
+  `app.inspect`. Core
   `/ports` and `/reference` supply explicit deployment policy and integration seams; `/testing` is
   test scaffolding. Start from
   [the current example](../../../examples/execution-kernel-minimal/README.md).

@@ -1,3 +1,5 @@
+// K1.4 conformance mapping: X. The Kernel claim is now owned by `packages/kernel/tests/cancellation.test.ts`, B-CANCEL; this file stays as native
+// regression of the legacy Runtime behind the Driver (tests/conformance/legacy-mapping.json).
 /** Deterministic RUNNING-cancellation and Effect-dispatch linearization. */
 
 import { describe, test } from "node:test";

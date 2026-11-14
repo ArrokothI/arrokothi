@@ -1,0 +1,14 @@
+# tree 5f0e5b0a7b7300263066fd76b279ca2b8a2d1d06 (C's tree without the nine implementation-06 logs, which are force-added because .gitignore ignores *.log; parent b153ccacb57c35652be3aeba43f47a48905e077b); v26.10.0; node --test --experimental-strip-types docs/development/work/K1.4/implementation-06/due-at-registration.probe.mjs
+{"case":"due-at-registration","deadline":1000100,"now":1000110,"state":"FAILED","code":"arrokothi.bridge.wait_deadline_expired","fires":[],"modelCalls":1}
+{"case":"control","deadline":1000100,"now":1000110,"between":{"state":"WAITING","reason":"input_required"},"state":"FAILED","code":"arrokothi.bridge.wait_deadline_expired","fires":[{"kind":"wait_deadline","result":"expired"}],"modelCalls":1}
+✔ due at registration: a pause whose stored deadline passed before its Outcome expires with no host fire (23.155917ms)
+✔ control: a pause whose deadline passes after it is re-declared expires only through a host fire (5.102958ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 200.41775
+exit=0

@@ -61,8 +61,11 @@ runtime evidence below remains authoritative for what actually happened.
 
 ## Observability APIs
 
-`Harness.inspect(id)` returns runtime status, waiting dependency, failure and terminal result.
-Do not use it as a mutable runtime handle. Query only the evidence you need:
+In an SDK application, `app.inspect(id)` is the Kernel's view and is authoritative: state, accepted
+Emissions, the result, the declared wait and the mailbox. The native readers below are diagnostics on
+`app.harness`; they can briefly disagree with the Kernel (L-32). `Harness.inspect(id)` returns the native
+status, waiting dependency, failure and terminal result. Do not use it as a mutable runtime handle.
+Query only the evidence you need:
 
 | Question | Public read API |
 |---|---|
@@ -82,8 +85,8 @@ options. Trace data may contain sensitive inputs, so apply the application's log
 
 Slow local model work uses ControllerResumptions; capability work uses PendingOperations and result
 Events. Do not fake either by delivering `capability.completed` through external ingress or calling
-`settleEffect` with invented results. Trusted settlement is for an executor/environment result that
-actually occurred.
+`settleEffect` with invented results; the SDK's `app.harness` refuses `settleEffect` outright. Trusted
+settlement is for an executor/environment result that actually occurred.
 
 ## When to change the framework
 

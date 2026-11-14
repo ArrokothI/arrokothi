@@ -1,0 +1,108 @@
+✖ a one-shot applyOutcome failure after READY->RUNNING must not certify clean cleanup (17.300208ms)
+ℹ {"fault":"applyOutcome","faults":1,"calls":1,"kernel":"FAILED","native":"RUNNING","nativeLater":"RUNNING","cancellation":"pending","holds":[],"acknowledged":1,"laterSteps":0,"result":{"resultId":"result-79:execution-13:arrokothi.sdk11:application36:f876467d-e01d-4335-8952-eff20eb72edf92:execution-13:arrokothi.sdk11:application36:f876467d-e01d-4335-8952-eff20eb72edf/activation-1","kind":"failed","value":{"code":"arrokothi.bridge.native_error","message":"Error: review: applyOutcome transaction unavailable"},"activationId":"execution-13:arrokothi.sdk11:application36:f876467d-e01d-4335-8952-eff20eb72edf/activation-1","receipt":{"boundary":"outcome_acceptance","token":"out:execution-13:arrokothi.sdk11:application36:f876467d-e01d-4335-8952-eff20eb72edf:3","position":3}}}
+✖ a one-shot definition lookup failure after READY->RUNNING must not certify clean cleanup (2.524709ms)
+ℹ {"fault":"definition lookup","faults":1,"calls":0,"kernel":"FAILED","native":"RUNNING","nativeLater":"RUNNING","cancellation":"pending","holds":[],"acknowledged":1,"laterSteps":0,"result":{"resultId":"result-79:execution-13:arrokothi.sdk11:application36:251f37b8-5f76-4acc-a477-5a9d2edbfe0992:execution-13:arrokothi.sdk11:application36:251f37b8-5f76-4acc-a477-5a9d2edbfe09/activation-1","kind":"failed","value":{"code":"arrokothi.bridge.native_error","message":"Error: review: definition lookup unavailable"},"activationId":"execution-13:arrokothi.sdk11:application36:251f37b8-5f76-4acc-a477-5a9d2edbfe09/activation-1","receipt":{"boundary":"outcome_acceptance","token":"out:execution-13:arrokothi.sdk11:application36:251f37b8-5f76-4acc-a477-5a9d2edbfe09:3","position":3}}}
+✔ cancel.application is non-equivalent after one rejected request cascade (20.505542ms)
+ℹ {"baseline":{"ablate":false,"faults":1,"kernel":"CANCELLED","members":["CANCELLED","CANCELLED"],"later":0},"removed":{"ablate":true,"faults":1,"kernel":"CANCELLED","members":["WAITING","WAITING"],"later":0}}
+✔ cancel.exchange-start is non-equivalent when a pre-existing root survives a rejected request cascade (7.754333ms)
+ℹ {"baseline":{"ablate":false,"faults":1,"kernel":"CANCELLED","members":[{"id":"execution-13:arrokothi.sdk11:application8:scripted","lifecycle":"CANCELLED"}],"busy":0},"removed":{"ablate":true,"faults":1,"kernel":"CANCELLED","members":[{"id":"execution-13:arrokothi.sdk11:application8:scripted","lifecycle":"READY"}],"busy":0}}
+✔ cancel.forward-loop is non-equivalent after one rejected request cascade (5.208292ms)
+ℹ {"baseline":{"ablate":false,"faults":1,"kernel":"CANCELLED","members":[{"id":"execution-13:arrokothi.sdk11:application8:scripted","lifecycle":"CANCELLED"}],"busy":0},"removed":{"ablate":true,"faults":1,"kernel":"CANCELLED","members":[{"id":"execution-13:arrokothi.sdk11:application8:scripted","lifecycle":"READY"}],"busy":0}}
+✖ cleanup census fails closed on static template element access (22.025459ms)
+ℹ {"name":"static template element access","errors":[],"baselineLabels":16,"mutatedLabels":16}
+✖ cleanup census fails closed on quoted destructuring alias (19.677791ms)
+ℹ {"name":"quoted destructuring alias","errors":[],"baselineLabels":16,"mutatedLabels":16}
+✖ cleanup census fails closed on quoted native-cancel alias (15.923125ms)
+ℹ {"name":"quoted native-cancel alias","errors":[],"baselineLabels":16,"mutatedLabels":16}
+ℹ tests 8
+ℹ suites 0
+ℹ pass 3
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 624.90475
+
+✖ failing tests:
+
+test at docs/development/work/K1.4/review-03/probes.mjs:17:3
+✖ a one-shot applyOutcome failure after READY->RUNNING must not certify clean cleanup (17.300208ms)
+  AssertionError [ERR_ASSERTION]: cleanup must end the logical lineage or report it unconfirmed
+      at TestContext.<anonymous> (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.4/review-03/probes.mjs:44:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.4/review-03/probes.mjs:17:3
+✖ a one-shot definition lookup failure after READY->RUNNING must not certify clean cleanup (2.524709ms)
+  AssertionError [ERR_ASSERTION]: cleanup must end the logical lineage or report it unconfirmed
+      at TestContext.<anonymous> (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.4/review-03/probes.mjs:44:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.4/review-03/probes.mjs:147:4
+✖ cleanup census fails closed on static template element access (22.025459ms)
+  AssertionError [ERR_ASSERTION]: the extra statically named cleanup route must not disappear
+      at TestContext.<anonymous> (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.4/review-03/probes.mjs:151:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.4/review-03/probes.mjs:147:4
+✖ cleanup census fails closed on quoted destructuring alias (19.677791ms)
+  AssertionError [ERR_ASSERTION]: the extra statically named cleanup route must not disappear
+      at TestContext.<anonymous> (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.4/review-03/probes.mjs:151:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.4/review-03/probes.mjs:147:4
+✖ cleanup census fails closed on quoted native-cancel alias (15.923125ms)
+  AssertionError [ERR_ASSERTION]: the extra statically named cleanup route must not disappear
+      at TestContext.<anonymous> (file:///Users/rex-shih/Documents/ArrokothI/arrokothi/docs/development/work/K1.4/review-03/probes.mjs:151:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

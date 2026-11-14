@@ -1,0 +1,65 @@
+review 03 d04-attacks.mjs (design check 04's attacks, blob 43f08646fa6d79807fa5760ad402864f248d1a6d) at 5e36d514, unchanged and without d04-install-design.mjs; each test asserts its defect exists, so a failure means the defect no longer reproduces; round 4 tree; node v26.10.0 (trailing spaces stripped).
+Expected: 2 tests, 0 pass, exit 1.
+✖ D04 idle-only reconciliation starves a settled READY child while another member continues (35.507584ms)
+ℹ {"faults":1,"calls":1,"rootSteps":19,"childSteps":1,"child":"COMPLETED","queued":["root"],"holds":[]}
+✖ postcommit failure plus a cleanup read failure silently loses the exception report (87.8415ms)
+ℹ {"faults":2,"kernel":"RUNNING","native":"READY","holds":[{"cause":"protocol_failure","reason":"the response of the attempt at writer epoch 1 could not be classified as an Outcome: native cleanup at exception failed, so execution-13:arrokothi.sdk11:application36:e9f9365e-7b18-419c-ae44-580eefa08c7c's lineage is stopped but not confirmed ended: Error: native reads unavailable; it was ending with {\"code\":\"arrokothi.bridge.native_error\",\"message\":\"Error: native reads unavailable\"}","activationId":"execution-13:arrokothi.sdk11:application36:e9f9365e-7b18-419c-ae44-580eefa08c7c/activation-1","writerEpoch":1,"permittedNextActions":["request_takeover","submit_outcome"]}]}
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 305.472583
+
+✖ failing tests:
+
+test at docs/development/work/K1.4/review-03/d04-attacks.mjs:9:1
+✖ D04 idle-only reconciliation starves a settled READY child while another member continues (35.507584ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'COMPLETED'
+  - 'READY'
+
+      at TestContext.<anonymous> (file:///Users/rex-shih/Documents/ArrokothI/wt-k1.4/docs/development/work/K1.4/review-03/d04-attacks.mjs:33:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'COMPLETED',
+    expected: 'READY',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/development/work/K1.4/review-03/d04-attacks.mjs:41:1
+✖ postcommit failure plus a cleanup read failure silently loses the exception report (87.8415ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+  + [
+  +   {
+  +     activationId: 'execution-13:arrokothi.sdk11:application36:e9f9365e-7b18-419c-ae44-580eefa08c7c/activation-1',
+  +     cause: 'protocol_failure',
+  +     permittedNextActions: [
+  +       'request_takeover',
+  +       'submit_outcome'
+  +     ],
+  +     reason: `the response of the attempt at writer epoch 1 could not be classified as an Outcome: native cleanup at exception failed, so execution-13:arrokothi.sdk11:application36:e9f9365e-7b18-419c-ae44-580eefa08c7c's lineage is stopped but not confirmed ended: Error: native reads unavailable; it was ending with {"code":"arrokothi.bridge.native_error","message":"Error: native reads unavailable"}`,
+  +     writerEpoch: 1
+  +   }
+  + ]
+  - []
+
+      at TestContext.<anonymous> (file:///Users/rex-shih/Documents/ArrokothI/wt-k1.4/docs/development/work/K1.4/review-03/d04-attacks.mjs:59:125)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { cause: 'protocol_failure', reason: `the response of the attempt at writer epoch 1 could not be classified as an Outcome: native cleanup at exception failed, so execution-13:arrokothi.sdk11:application36:e9f9365e-7b18-419c-ae44-580eefa08c7c's lineage is stopped but not confirmed ended: Error: native reads unavailable; it was ending with {"code":"arrokothi.bridge.native_error","message":"Error: native reads unavailable"}`, activationId: 'execution-13:arrokothi.sdk11:application36:e9f9365e-7b18-419c-ae44-580eefa08c7c/activation-1', writerEpoch: 1, permittedNextActions: [Array] } ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

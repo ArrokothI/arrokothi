@@ -1,0 +1,21 @@
+verify	UNKNOWN STEP	2026-11-14T07:10:32.4427442Z   REVISION: 5b81a1b0cd9e73d7591ea23fd29195e24536d50d
+verify	UNKNOWN STEP	2026-11-14T07:10:32.4427846Z   SPEC: docs/development/work/K1.4/verification.json
+verify	UNKNOWN STEP	2026-11-14T07:10:32.4683687Z   REVISION: 5b81a1b0cd9e73d7591ea23fd29195e24536d50d
+verify	UNKNOWN STEP	2026-11-14T07:10:32.4684123Z   SPEC: docs/development/work/K1.4/verification.json
+verify	UNKNOWN STEP	2026-11-14T07:10:38.3942518Z [command]/usr/bin/git rev-parse --verify --quiet 5b81a1b0cd9e73d7591ea23fd29195e24536d50d^{object}
+verify	UNKNOWN STEP	2026-11-14T07:10:39.2909382Z HEAD is now at 5b81a1b0 K1.4 round 6: Layer-3 timer-path correction (brief 06, owner choice 07)
+verify	UNKNOWN STEP	2026-11-14T07:10:39.4459658Z   node-version: 26.10.0
+verify	UNKNOWN STEP	2026-11-14T07:10:39.4463531Z   REVISION: 5b81a1b0cd9e73d7591ea23fd29195e24536d50d
+verify	UNKNOWN STEP	2026-11-14T07:10:39.4463890Z   SPEC: docs/development/work/K1.4/verification.json
+verify	UNKNOWN STEP	2026-11-14T07:10:40.4052951Z Acquiring 26.10.0 - x64 from https://github.com/actions/node-versions/releases/download/26.10.0-35737674515/node-26.10.0-linux-x64.tar.gz
+verify	UNKNOWN STEP	2026-11-14T07:10:43.9501465Z node: v26.10.0
+verify	UNKNOWN STEP	2026-11-14T07:10:43.9742322Z   REVISION: 5b81a1b0cd9e73d7591ea23fd29195e24536d50d
+verify	UNKNOWN STEP	2026-11-14T07:10:43.9742567Z   SPEC: docs/development/work/K1.4/verification.json
+verify	UNKNOWN STEP	2026-11-14T07:10:44.1245480Z   REVISION: 5b81a1b0cd9e73d7591ea23fd29195e24536d50d
+verify	UNKNOWN STEP	2026-11-14T07:10:44.1245730Z   SPEC: docs/development/work/K1.4/verification.json
+verify	UNKNOWN STEP	2026-11-14T07:10:47.6528710Z ^[[36;1m  echo "revision=$REVISION"^[[0m
+verify	UNKNOWN STEP	2026-11-14T07:10:47.6529061Z ^[[36;1m  echo "head=$(git rev-parse HEAD)"^[[0m
+verify	UNKNOWN STEP	2026-11-14T07:10:47.6586687Z   REVISION: 5b81a1b0cd9e73d7591ea23fd29195e24536d50d
+verify	UNKNOWN STEP	2026-11-14T07:10:47.6586931Z   SPEC: docs/development/work/K1.4/verification.json
+verify	UNKNOWN STEP	2026-11-14T08:35:34.0267302Z   REVISION: 5b81a1b0cd9e73d7591ea23fd29195e24536d50d
+verify	UNKNOWN STEP	2026-11-14T08:35:34.0267487Z   SPEC: docs/development/work/K1.4/verification.json

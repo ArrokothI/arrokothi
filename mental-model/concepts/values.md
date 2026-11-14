@@ -320,7 +320,7 @@ is supplied here.
 The sections above assume a value that has already been decoded. What has to happen before that point depends on how a value reaches the Kernel, not on what kind of value it is. Any root can arrive either way, whether it is creation input, an Event payload, an Outcome's progress or an Effect's arguments:
 
 - **Over a wire binding,** it arrives as bytes, and a decoder turns them into a value. The duplicate-key rule applies there.
-- **Through the internal SDK TypeScript wrapper,** the caller hands capture a live object. The wrapper produces canonical bytes, which then pass through the same strict core admission. This module is not a public SDK entry; K1.4 owns that bridge.
+- **Through the SDK TypeScript wrapper,** the caller hands capture a live object. The wrapper produces canonical bytes, which then pass through the same strict core admission. The capture module stays internal; the SDK's public entry re-exports its `toCanonicalBytes` (see the [implemented baseline](../../docs/development/002-implemented-kernel-baseline.md#16-application-sdk-above-core)).
 
 A decoded value is plain data that nobody else holds. A live object differs in three ways:
 

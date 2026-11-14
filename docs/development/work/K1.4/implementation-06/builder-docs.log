@@ -1,0 +1,7 @@
+# tree 5f0e5b0a7b7300263066fd76b279ca2b8a2d1d06 (C's tree without the nine implementation-06 logs, which are force-added because .gitignore ignores *.log; parent b153ccacb57c35652be3aeba43f47a48905e077b); v26.10.0; npm run check:builder-docs
+
+> arrokothi-agent-kernel@0.8.1 check:builder-docs
+> node --experimental-strip-types scripts/check-builder-docs.ts
+
+Builder checks passed: 75 Markdown files, 2299 local links/anchors, 58 public package imports. Named symbols are checked by npm run typecheck.
+exit=0

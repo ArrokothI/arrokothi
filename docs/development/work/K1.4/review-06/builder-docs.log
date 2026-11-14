@@ -1,0 +1,7 @@
+# H 64c505bfee13cae340710942e69fe805723aaad9 product tree (fresh clone, npm ci); v26.10.0; npm run check:builder-docs
+
+> arrokothi-agent-kernel@0.8.1 check:builder-docs
+> node --experimental-strip-types scripts/check-builder-docs.ts
+
+Builder checks passed: 75 Markdown files, 2302 local links/anchors, 58 public package imports. Named symbols are checked by npm run typecheck.
+exit=0

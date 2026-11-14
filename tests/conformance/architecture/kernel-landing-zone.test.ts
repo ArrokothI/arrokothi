@@ -46,7 +46,9 @@ import {
   TARGET_KERNEL_ENTRY_MODULES,
   TARGET_KERNEL_RULES,
   ZONES,
+  SDK_KERNEL_IMPORTERS,
   boundaryViolations,
+  zoneOf,
   type BoundaryRules,
   type Zone,
 } from "./boundary-policy.ts";
@@ -506,7 +508,12 @@ describe("K1.0 legacy quarantine", () => {
     // name to prove the specifier resolves and that the published surface is only the refusal. It is
     // named exactly rather than excluded by directory, so a second importer under `architecture/`
     // would still fail this check.
+    // K1.4 adds the SDK host and bridge files that reach the Kernel through its package root
+    // (owner choices 01 Q1); they are named exactly in SDK_KERNEL_IMPORTERS.
     const VERIFIERS = [
+      ...SDK_KERNEL_IMPORTERS,
+      // K1.4: the bridge corpus forces a Kernel refusal of the Driver's Outcome (B-PROTOCOL-HOLD).
+      "packages/sdk/tests/bridge-deadline-cancel.test.ts",
       "packages/sdk/tests/capture-corpus.ts", "packages/sdk/tests/capture-metering.ts",
       "packages/sdk/tests/capture-refusals.test.ts", "packages/sdk/tests/capture-work.test.ts",
       "packages/sdk/tests/value-capture-inventory.ts", "packages/sdk/tests/value-capture-static.test.ts",
@@ -531,7 +538,7 @@ describe("K1.0 legacy quarantine", () => {
     assert.deepEqual(
       [...new Set(importers)].sort(),
       VERIFIERS,
-      "no SDK, example, script, legacy or integration source is routed through unfinished target work",
+      "only the named SDK host and bridge files reach the Kernel; no example, script, legacy or integration source does",
     );
   });
 
@@ -683,8 +690,9 @@ describe("K1.0 policy and inventory agree", () => {
       },
       {
         name: "a published package is claimed to be private",
-        edits: [["| `@arrokothi/sdk` | `.` | Yes |", "| `@arrokothi/sdk` | `.` | No (private) |"]],
-        expect: /package @arrokothi\/sdk is publishable but the document says it is not published/,
+        // K1.4 made the SDK private; the published example is an integration package.
+        edits: [["| `@arrokothi/integration-strands` | `.` | Yes |", "| `@arrokothi/integration-strands` | `.` | No (private) |"]],
+        expect: /package @arrokothi\/integration-strands is publishable but the document says it is not published/,
       },
       {
         name: "an exported subpath is dropped from a row",
@@ -803,7 +811,8 @@ describe("K1.0 policy and inventory agree", () => {
     readonly relativeOutside: readonly string[];
   }> => {
     const files: string[] = [];
-    for (const root of zone.roots) files.push(...(await typeScriptFilesUnder(REPO_ROOT, root)));
+    // K1.4: a nested zone owns its files; the zone around it does not count them twice (zoneOf).
+    for (const root of zone.roots) files.push(...(await typeScriptFilesUnder(REPO_ROOT, root)).filter((file) => zoneOf(file) === zone));
 
     const reaches = new Set<string>();
     const thirdParty = new Set<string>();
@@ -817,11 +826,16 @@ describe("K1.0 policy and inventory agree", () => {
         }
         const resolution = resolveSpecifier(workspace, file, specifier);
         if (resolution.kind === "internal") {
-          const targetInZone = zone.roots.some(
-            (root) => resolution.file === root || resolution.file.startsWith(`${root}/`),
-          );
+          const targetZone = zoneOf(resolution.file);
+          const targetInZone = targetZone === zone;
+          // Zones nested in one package (`host-sdk` around `legacy-bridge`) reach each other by
+          // relative path; the table names the reached zone. Any other relative edge is unlisted.
+          const nested = targetZone !== undefined && zone.roots.some((root) => targetZone.roots.some(
+            (other) => other.startsWith(`${root}/`) || root.startsWith(`${other}/`),
+          ));
           if (!targetInZone) {
-            if (specifier.startsWith(".")) relativeOutside.push(`${file} reaches ${resolution.file} via ${specifier}`);
+            if (specifier.startsWith(".") && nested) reaches.add(targetZone.id);
+            else if (specifier.startsWith(".")) relativeOutside.push(`${file} reaches ${resolution.file} via ${specifier}`);
             else reaches.add(specifier);
           }
         } else if (resolution.kind === "external") {
@@ -915,7 +929,7 @@ describe("K1.0 policy and inventory agree", () => {
         anchor: "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 |",
         short: "| DX-1 |",
       },
-      { table: "Export", anchor: "| `@arrokothi/sdk` | `.` | Yes |", short: "| `@arrokothi/sdk` |" },
+      { table: "Export", anchor: "| `@arrokothi/integration-strands` | `.` | Yes |", short: "| `@arrokothi/integration-strands` |" },
     ];
 
     for (const { table, anchor, short } of cases) {
@@ -1538,7 +1552,7 @@ describe("K1.0 policy and inventory agree", () => {
       // The same defect class in the Current cross-boundary section: a fenced mention of its next
       // heading (`## Export ownership`) before a contradictory dependency table must not truncate.
       const real = await realInventory();
-      const anchor = "| `host-sdk` | 6 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `canonicalize` |\n";
+      const anchor = "| `host-sdk` | 8 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`, `@arrokothi/kernel`, `legacy-bridge` | `canonicalize` |\n";
       const badDependencyTable =
         "| Zone | `.ts` files | Reaches `legacy-core` via | Reaches third-party |\n|---|---|---|---|\n| `target-kernel` | 999 | `@arrokothi/core` | nothing |\n";
       const mutated = mutate(real, [[
@@ -2912,14 +2926,14 @@ describe("K1.0 policy and inventory agree", () => {
       const workspace = await loadWorkspace(REPO_ROOT);
       const disagreements = inventoryDisagreements(
         parseInventory(mutate(real, [[
-          "| `@arrokothi/sdk` | `.` | Yes |",
-          `| \`@arrokothi/sdk\` | \`.\` | ${IDEOGRAPHIC}Yes |`,
+          "| `@arrokothi/integration-strands` | `.` | Yes |",
+          `| \`@arrokothi/integration-strands\` | \`.\` | ${IDEOGRAPHIC}Yes |`,
         ]])),
         policy,
         workspace,
       );
       assert.ok(
-        disagreements.some((message) => message.includes("Export row for @arrokothi/sdk is malformed")),
+        disagreements.some((message) => message.includes("Export row for @arrokothi/integration-strands is malformed")),
         `an ideographic-space-padded value is not "yes"; got: ${JSON.stringify(disagreements)}`,
       );
     });
@@ -2990,11 +3004,11 @@ describe("K1.0 policy and inventory agree", () => {
     // fail the first half, and one that is stricter about everything would fail the second.
     const REAL_DEPENDENCY_ROW = targetKernelDependencyRow();
     const REAL_HOST_SDK_ROW =
-      "| `host-sdk` | 6 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference` | `canonicalize` |";
+      "| `host-sdk` | 8 | `@arrokothi/core`, `@arrokothi/core/ports`, `@arrokothi/core/reference`, `@arrokothi/kernel`, `legacy-bridge` | `canonicalize` |";
     const REAL_ZONE_ROW =
       "| `target-kernel` | `packages/kernel/src` | New Kernel work under the target Activation/Outcome protocol. **K1.1 implements creation, input ingress, reservation and dispatch; K1.2 Outcome acceptance, takeover and the recovery holds; every later boundary refuses by name.** |";
     const REAL_PRIVATE_PACKAGE_ROW = "| `@arrokothi/kernel` | `.` | No (private) |";
-    const REAL_PUBLISHED_PACKAGE_ROW = "| `@arrokothi/sdk` | `.` | Yes |";
+    const REAL_PUBLISHED_PACKAGE_ROW = "| `@arrokothi/integration-strands` | `.` | Yes |";
     const REAL_DX1_ROW =
       "| DX-1 | `packages/core/src/util/hash.ts` | migratable | K1.1 | First packet that needs stable identity/receipt hashing. |";
     const REAL_DX3_ROW =
@@ -3128,7 +3142,7 @@ describe("K1.0 policy and inventory agree", () => {
           REAL_ZONE_ROW,
           REAL_ZONE_ROW.replace("`packages/kernel/src`", "`packages/kernel/src`, `packages/kernel/src`"),
         ],
-        ["an unquoted subpath beside the correct one", REAL_PUBLISHED_PACKAGE_ROW, "| `@arrokothi/sdk` | `.`, ./secret | Yes |"],
+        ["an unquoted subpath beside the correct one", REAL_PUBLISHED_PACKAGE_ROW, "| `@arrokothi/integration-strands` | `.`, ./secret | Yes |"],
         [
           "a second path in a single-valued deferred cell",
           REAL_DX1_ROW,
@@ -3156,7 +3170,7 @@ describe("K1.0 policy and inventory agree", () => {
       // would otherwise be compared against nothing at all.
       const unreadable = await dependencyUnreadable(
         REAL_HOST_SDK_ROW,
-        REAL_HOST_SDK_ROW.replace("`@arrokothi/core/reference` |", "`@arrokothi/core/reference` and evil-package |"),
+        REAL_HOST_SDK_ROW.replace("`legacy-bridge` |", "`legacy-bridge` and evil-package |"),
       );
       assert.ok(
         unreadable.some((message) => /Dependency row for host-sdk is malformed/.test(message)),
@@ -3234,7 +3248,7 @@ describe("K1.0 policy and inventory agree", () => {
         "`No` and `No (private)` are the same normalised answer",
       );
       assert.equal(parseInventory(real).packages.get("@arrokothi/kernel")?.published, false);
-      assert.equal(parseInventory(real).packages.get("@arrokothi/sdk")?.published, true);
+      assert.equal(parseInventory(real).packages.get("@arrokothi/integration-strands")?.published, true);
       // And the claim is still compared, so the vocabulary did not become a way to agree.
       const wrong = await ownershipDisagreements(REAL_PRIVATE_PACKAGE_ROW, "| `@arrokothi/kernel` | `.` | Yes |");
       assert.ok(
@@ -3351,7 +3365,7 @@ describe("K1.0 policy and inventory agree", () => {
       assert.equal(dependency.rows.get("runtime-integrations")?.thirdParty.length, 5);
       assert.deepEqual(
         [...(dependency.rows.get("host-sdk")?.reaches ?? [])],
-        ["@arrokothi/core", "@arrokothi/core/ports", "@arrokothi/core/reference"],
+        ["@arrokothi/core", "@arrokothi/core/ports", "@arrokothi/core/reference", "@arrokothi/kernel", "legacy-bridge"],
       );
     });
   });

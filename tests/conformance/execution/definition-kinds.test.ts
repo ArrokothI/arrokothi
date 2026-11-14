@@ -1,3 +1,5 @@
+// K1.4 conformance mapping: X. The Kernel claim is now owned by `packages/kernel/tests/creation.test.ts`, B-PIN; this file stays as native
+// regression of the legacy Runtime behind the Driver (tests/conformance/legacy-mapping.json).
 /**
  * Definition kinds and pinning.
  *

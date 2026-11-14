@@ -1,0 +1,27 @@
+node v26.10.0
+R1-02 retained destination: CAUGHT
+  control (fix present): exit 0; tests 2; pass 2; fail 0
+  ablated (fix removed): exit 1; tests 2; pass 0; fail 2
+    ✖ review 01 K14-R1-02: the child's pause disappears and E ends; the omitted-destination retry replays (24.652542ms)
+    ✖ a later fork leaves several input pauses: the earlier keyed retry still replays; a new key needs a destination (11.792916ms)
+    ✖ B-INPUT-RETRY: an exact keyed retry keeps the destination the Kernel recorded (37.015958ms)
+R1-04 scheduler before the hook: CAUGHT
+  control (fix present): exit 0; tests 2; pass 2; fail 0
+  ablated (fix removed): exit 1; tests 2; pass 0; fail 2
+    ✖ S-OPT-NATIVE (P): native options configure the Driver's native Runtime as before (1.14825ms)
+    ✖ B-HOOK-SERVICES (review 01 K14-R1-04): the hook receives the initialized lineage scheduler the native Runtime uses (1.99725ms)
+R1-03 unknown for a failed forward: CAUGHT
+  control (fix present): exit 0; tests 7; pass 7; fail 0
+  ablated (fix removed): exit 1; tests 7; pass 5; fail 2
+    ✖ the second of three forwards fails before its commit: delivered, unknown, discarded; one native delivery (5.241958ms)
+    ✖ design check 03: a delivery commits, then the scheduler's read fails; unknown then discarded, one native delivery, never a second (7.746208ms)
+    ✖ B-ACK-EXITS: every exit accounts for each acknowledged Event once (review 01 K14-R1-03) (57.414458ms)
+R1-03 never a second forward: CAUGHT
+  control (fix present): exit 0; tests 1; pass 1; fail 0
+  ablated (fix removed): exit 1; tests 1; pass 0; fail 1
+    ✖ B-ACK-ONCE (Driver level): an Event left attempted by a refused Outcome is never forwarded a second time (11.278041ms)
+R1-01 step loop waits for the in-flight enqueue: CAUGHT
+  control (fix present): exit 0; tests 1; pass 1; fail 0
+  ablated (fix removed): exit 1; tests 1; pass 0; fail 1
+    ✖ B-RES: a slow model call resumes exactly once inside one open exchange (28.1675ms)
+all caught
