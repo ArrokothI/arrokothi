@@ -2,6 +2,19 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **Round 2 started (2026-11-15): review 01 is CHANGES REQUIRED of H `484afd13d7652958f6496afc56d9aa9c098d58b1`.**
+  - *Review:* [review 01](https://github.com/ArrokothI/arrokothi/blob/7b8a63fa5f087f870663bc143257e5181d0d385c/docs/development/work/K1.4-candidate/review-01.md) (Codex GPT-6, `codex/k1.4-candidate-review-01` at
+    `7b8a63fa5f087f870663bc143257e5181d0d385c`), three P2 findings: K14C-R01-01 (a refused timeout name fell into
+    the `to-<generation>` label), K14C-R01-02 (the ablations were outside the mutation registry), K14C-R01-03
+    (the `evidence.md` sentence generalized a K1 scope decision). Read by commit; not merged.
+    [Brief 02](https://github.com/ArrokothI/arrokothi/blob/7b8a63fa5f087f870663bc143257e5181d0d385c/docs/development/work/K1.4-candidate/review-01/brief-02.md) governs the correction.
+  - *Owner:* [owner choice 03](owner-choice-03.md): register ABL-1 to ABL-5 through the existing workflow, keep
+    the maintained test; stop and ask if registration needs a packet-tools change or a waiver.
+  - *Design:* [design 02](design-02.md) answers brief 02's three questions. Registration needs data only
+    (registry cases, a coverage family, five `unread` hold-register entries) and one probe file.
+  - *Next:* the round-2 payload C, Packet verify in CI at C, implementation report 02, H, 007 WAITING_FOR_REVIEW.
+    Kernel source unchanged. No self-acceptance.
+
 - **Round 1 payload C: `61ea8126507506b043ce5ba6515073f62c19c42f`** (pushed, 2026-11-14). **WAITING_FOR_REVIEW.**
   - *C:* the candidate, its encoder and fake Driver, five test files, the README for E1, decision 4's prose
     corrections, the K1.0 guard's three named importers, nine mapping rows, BASELINE §15, 017 L-38 to L-44, one
