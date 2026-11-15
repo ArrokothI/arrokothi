@@ -987,6 +987,18 @@ policy and isolation backends.
 canaries. Cross-framework benchmark subjects and their evaluation live in the standalone
 `ArrokothI/benchmark` repository, not in this repository.
 
+**The K0 public fixture and its real-Kernel candidate.** `tests/conformance/k0/` is the K0.2 public
+fixture: 15 schedules, a runner that compares complete observations, an independent operation ledger,
+and candidates that only validate the oracle (a refusal control and scripted transcripts).
+`tests/conformance/k0-candidate/` (K1.4-candidate) adds `kernelCandidate`, which implements the fixture's
+`K0Candidate` port by driving `ExecutionCoordinator` through the `@arrokothi/kernel` package root with a
+deterministic fake Driver. Its pinned verdicts are 12 PASS and 3 REFUSED: the refused schedules need a
+trusted non-timeout Event source, which K1 does not have. Its
+[README](../../tests/conformance/k0-candidate/README.md) gives the locator, the pin contract and the
+conventions; [017](017-known-limitations.md) L-38 to L-44 give the limits. A run in this repository is the
+candidate's own report. It is not an E1 result: the benchmark has not captured it, and the K1/E1 gate is
+K1.4-gate's.
+
 **Non-obvious invariant.** Semantic conformance ≠ behavioral quality evaluation ≠ performance
 measurement ≠ live integration health. A passing category cannot substitute for another.
 

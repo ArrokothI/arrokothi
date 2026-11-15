@@ -2,10 +2,12 @@
  * K0.2 public fixture — target-protocol vocabulary.
  *
  * This module is deliberately dependency-free. It imports nothing from `@arrokothi/*` because it
- * describes the **target** Kernel protocol decided by K0.1, which the current 0.8.x packages do not
- * implement (`docs/development/002-implemented-kernel-baseline.md`). Importing the current
- * `ExecutionWait`/`ControllerProgress` vocabulary would bake legacy shapes into an oracle that exists
- * to judge the replacement; see `docs/development/013-structure-and-evidence-sequencing.md`.
+ * describes the **target** Kernel protocol decided by K0.1, as an oracle independent of any
+ * implementation. The legacy 0.8.x packages do not implement that protocol; `packages/kernel` has
+ * implemented its K1 part since K1.1–K1.3 (`docs/development/002-implemented-kernel-baseline.md`).
+ * Importing the legacy `ExecutionWait`/`ControllerProgress` vocabulary, or the Kernel's own types,
+ * would bake an implementation's shapes into an oracle that exists to judge it; see
+ * `docs/development/013-structure-and-evidence-sequencing.md`.
  *
  * Every rule restated here is cited to its accepted owner:
  *   W = `tests/fixtures/k0/protocol-worksheet.md` §5 (waits)

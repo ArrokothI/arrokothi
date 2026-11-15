@@ -1,13 +1,17 @@
 /**
  * K0.2 public fixture — candidates.
  *
- * Two kinds live here, and the difference between them is the whole point of this packet.
+ * Two kinds live here, and the difference between them is the whole point of this packet. Neither
+ * drives a Kernel. The candidate that drives the real target Kernel is `kernelCandidate`, in
+ * `tests/conformance/k0-candidate/` (K1.4-candidate); it is kept out of this directory so the oracle and
+ * its subject are pinned separately.
  *
- * 1. `refusingCandidate` is the only candidate that speaks for the **actual repository**. The target
- *    asynchronous protocol is unimplemented (`docs/development/002-implemented-kernel-baseline.md`:
- *    the current tree still has the 0.8.x `Harness`, synchronous controller invocation and
- *    `ControllerResumption`), so it refuses every scenario. Refusal is a third verdict, not a pass and
- *    not a failure. This is what stops a prepared fixture from being mistaken for a K1 result.
+ * 1. `refusingCandidate` is the **refusal control**. It implements nothing and refuses every scenario.
+ *    Refusal is a third verdict, not a pass and not a failure. When K0.2 shipped, this was also the
+ *    only honest answer for the repository: the target asynchronous protocol was unimplemented, and
+ *    the control is what stopped a prepared fixture from being mistaken for a K1 result. K1.1–K1.3
+ *    have since built that protocol in `packages/kernel`. The control stays, so the runner's REFUSED
+ *    verdict keeps a candidate that exercises it.
  *
  * 2. Scripted transcript candidates exist only to **validate the oracle**, never to claim behavior.
  *    A transcript is a hand-authored trace of what some Kernel would have been observed doing. The
@@ -25,8 +29,9 @@ import type { OperationSink } from "./operation-sink.ts";
 // -- The refusing candidate --------------------------------------------------
 
 /**
- * Scaffolding must explicitly refuse unsupported APIs (007's packet preamble). This refuses all of
- * them, naming why, rather than returning a plausible-looking empty observation.
+ * Scaffolding must explicitly refuse unsupported APIs (007's packet preamble). This control refuses
+ * every scenario, naming why, rather than returning a plausible-looking empty observation. Its `name`
+ * is kept from K0.2, because external captures record it.
  */
 export const refusingCandidate: K0Candidate = {
   name: "unimplemented-target-protocol",
@@ -34,8 +39,8 @@ export const refusingCandidate: K0Candidate = {
     return {
       refused: true,
       reason:
-        `scenario ${scenario.id} requires the target Activation/Outcome protocol, which no packet has implemented yet; ` +
-        `K1.1–K1.3 own create/dispatch, Outcome acceptance and wait/cancellation races`,
+        `scenario ${scenario.id}: this refusal control implements nothing of the target Activation/Outcome protocol and claims nothing about it; ` +
+        `the candidate that drives the real Kernel is kernelCandidate in tests/conformance/k0-candidate`,
     };
   },
 };

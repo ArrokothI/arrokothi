@@ -269,9 +269,10 @@ export interface CandidateRun {
 }
 
 /**
- * The port a K1 candidate implements to be judged by this fixture. K0.2 ships no implementation of it
- * against the supported entry: the only candidate here that speaks to the real 0.8.x surface is the
- * refusing one, because the target protocol is unimplemented.
+ * The port a K1 candidate implements to be judged by this fixture. This directory ships no
+ * implementation of it against a Kernel: its candidates are the refusal control and the scripted
+ * transcripts that validate the oracle. The candidate that drives the real target Kernel is
+ * `kernelCandidate` in `tests/conformance/k0-candidate/` (K1.4-candidate).
  */
 export interface K0Candidate {
   readonly name: string;
@@ -312,8 +313,8 @@ export type RunOptions = OperationSinkBundle;
  * Drive one candidate through one scenario.
  *
  * A `REFUSED` result is neither a pass nor a failure: it records that the candidate declined to claim
- * the behavior at all. That is the honest verdict for the current tree and the reason this fixture
- * cannot be mistaken for a K1 result.
+ * the behavior at all. It is the refusal control's verdict on every scenario, and a real candidate's
+ * verdict on a schedule it has no surface for. A count of passes never includes it.
  */
 export function runScenario(candidate: K0Candidate, scenario: Scenario, options: RunOptions): ScenarioResult {
   const started = candidate.begin(scenario, options.sink);
