@@ -2,6 +2,20 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **Round 3 started (2026-11-15), design only: review 02 is CHANGES REQUIRED of H
+  `14a7ef485282ab2c16d08702be5d61cfeb9997e7`.**
+  - *Review:* [review 02](https://github.com/ArrokothI/arrokothi/blob/2a95a49a6e7ff46242a137f9d9ca6835e70ed946/docs/development/work/K1.4-candidate/review-02.md) (Codex GPT-6, `codex/k1.4-candidate-review-02` at
+    `2a95a49a6e7ff46242a137f9d9ca6835e70ed946`). K14C-R01-02 and K14C-R01-03 are closed. K14C-R02-01 (P2) is
+    open and continues K14C-R01-01: a generated fallback string is outside the collision check, so it can equal
+    a laboratory name, in the timeout, wait-generation and Execution families. Read by commit; not merged.
+  - *Owner:* stop-and-redesign fired; the owner chose "Redesign with a design check (recommended)"
+    ([record](https://github.com/ArrokothI/arrokothi/blob/2a95a49a6e7ff46242a137f9d9ca6835e70ed946/docs/development/work/K1.4-candidate/review-02/owner-choice.md)). [Brief 03](https://github.com/ArrokothI/arrokothi/blob/2a95a49a6e7ff46242a137f9d9ca6835e70ed946/docs/development/work/K1.4-candidate/review-02/brief-03.md) governs.
+  - *Design:* [design 03](design-03.md) answers brief 03's five questions: one name ledger per scope that every
+    emitted and resolved identity string goes through. It has three owner questions (OQ-1 to OQ-3).
+  - *Code:* none in this round. The candidate is as at H. No C and no H.
+  - *Next:* the design check of design 03 (a session that has not worked on this packet), then the owner's
+    disposition. No build before both. Kernel, fixture and packet tools stay unchanged.
+
 - **Round 2 payload C: `7392e4a640c07c9a2989464cd2a979938c37ee25`** (pushed, 2026-11-15). **WAITING_FOR_REVIEW.**
   - *C:* the timeout name table with provenance and its nine tests; five registry cases with their coverage
     family and hold-register entries; `ablation-probe.mjs` and `ablation-table.ts`; the latest-grant witness; the
