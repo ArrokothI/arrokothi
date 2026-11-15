@@ -1,0 +1,13 @@
+{
+  "B": "c1951226338de6ccd3e4e6289259549551268f61",
+  "C": "61ea8126507506b043ce5ba6515073f62c19c42f",
+  "H": "484afd13d7652958f6496afc56d9aa9c098d58b1",
+  "result": "scope_verified",
+  "administrativeFiles": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/K1.4-candidate/implementation-01.md",
+    "docs/development/work/K1.4-candidate/progress.md"
+  ],
+  "packagesTree": "3525377b4425feb24132a011938ce5b8fcf6cc63",
+  "fixture": "Comments, refusal reason, and describe title only; other executable bytes preserved after transpilation."
+}
