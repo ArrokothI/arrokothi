@@ -34,7 +34,16 @@ const REPO_ROOT = resolve(DIRECTORY, "../../..");
 /** The candidate itself: what E1 loads and what the import guard constrains. */
 const IMPLEMENTATION = ["canonical-json.ts", "fake-driver.ts", "kernel-candidate.ts"];
 /** Test-side files. They are outside the candidate's import closure. */
-const TEST_SIDE = ["ablations.test.ts", "blindness.test.ts", "boundary.test.ts", "conventions.test.ts", "support.ts", "verdicts.test.ts"];
+const TEST_SIDE = [
+  "ablation-probe.mjs",
+  "ablation-table.ts",
+  "ablations.test.ts",
+  "blindness.test.ts",
+  "boundary.test.ts",
+  "conventions.test.ts",
+  "support.ts",
+  "verdicts.test.ts",
+];
 const DOCUMENTS = ["README.md"];
 
 const read = (file: string): string => readFileSync(join(DIRECTORY, file), "utf8");

@@ -24,7 +24,9 @@
  *
  * - **`rejection`** (§A5): the most recent reportable Kernel refusal for an Execution, dropped when that
  *   Execution's episode key `(state, activationId, writerEpoch)` changes.
- * - **Unnamed timeout Event** (§A4): reported as `to-<laboratory name of its own generation>`.
+ * - **Unnamed timeout Event** (§A4): reported as `to-<laboratory name of its own generation>`. Only a
+ *   timeout no `deliver_timer` command has named takes the label; a name or label that already denotes
+ *   another timeout ID exposes the new ID in the Kernel's spelling (`TimeoutNames`, review 01).
  * - **Clock** (§A9): starts at 1 and moves only to a listed pending deadline when `deliver_timer` fires it.
  *
  * ## Recorded limits (`docs/development/017-known-limitations.md`)
@@ -136,6 +138,10 @@ function unsupportedCommand(command: Command): string | null {
  * A pair is bound only when the name and the ID are both unbound, and it is never overwritten. So an ID
  * that already has a name keeps it, and a name that already has an ID keeps that: either way a wrong
  * identity shows as a literal difference in the Observation instead of being repaired here.
+ *
+ * This table is for the families whose unnamed ID has exactly one spelling, the Kernel's own: Executions
+ * and wait generations. A refused pair therefore needs no record. Timeout Events have a second source of
+ * names and use `TimeoutNames`.
  */
 class Aliases {
   readonly #idByName = new Map<string, string>();
@@ -156,14 +162,88 @@ class Aliases {
   }
 }
 
-/** One alias table per Execution, created on first use. */
-class AliasesByExecution {
-  readonly #tables = new Map<string, Aliases>();
+/**
+ * How one Kernel timeout Event ID is shown, and where that came from.
+ *
+ * - `command`: a `deliver_timer` command named it.
+ * - `convention`: no command has named it, and it carries the owner-adopted label of its own generation
+ *   (§A4, owner choice 02 Q2 b).
+ * - `exposed`: a name was offered for it that already denotes another ID. It is shown in the Kernel's own
+ *   spelling from then on, so the identity difference is a literal difference in the Observation.
+ */
+type TimeoutShown =
+  | { readonly source: "command"; readonly name: string }
+  | { readonly source: "convention"; readonly name: string }
+  | { readonly source: "exposed" };
 
-  of(executionId: string): Aliases {
+/**
+ * Laboratory names for one Execution's timeout Events, with the provenance of every binding.
+ *
+ * The plain alias table above is not enough for this family, because it is the only one with a second
+ * source of names: the `to-<generation>` label. A table that answers only "this ID has no name" cannot
+ * tell a timeout no command named from one whose offered name was refused, and the label would then
+ * cover an identity conflict (review 01 K14C-R01-01). So this table keeps three facts apart, and the
+ * label is one of its bindings, made and checked like any other.
+ *
+ * Invariants, for one Execution and one run:
+ * 1. A name denotes at most one ID, for good. `#idByName` only grows, and it holds labels as well as
+ *    command names, so a label and a command name can never show two IDs as one.
+ * 2. An ID is shown under one name at a time. That name changes at most once: from its label to the
+ *    first name a command gives it (§A4). A later command's different name does not rebind it.
+ * 3. An offered name that would break rule 1 is not bound. The ID it was offered for becomes `exposed`
+ *    and stays so. Nothing here chooses which identity is right.
+ */
+class TimeoutNames {
+  readonly #idByName = new Map<string, string>();
+  readonly #shownById = new Map<string, TimeoutShown>();
+
+  /** A `deliver_timer` command named the timeout Event the Kernel answered with. */
+  nameByCommand(name: string, id: string): void {
+    const shown = this.#shownById.get(id);
+    if (shown !== undefined && shown.source !== "convention") return;
+    const denoted = this.#idByName.get(name);
+    if (denoted !== undefined && denoted !== id) {
+      this.#shownById.set(id, { source: "exposed" });
+      return;
+    }
+    this.#idByName.set(name, id);
+    this.#shownById.set(id, { source: "command", name });
+  }
+
+  /**
+   * The name to report for a timeout mailbox entry. `label` is the entry's `to-<generation>` label, or
+   * `null` when its generation has no laboratory name. An entry no command has named takes the label
+   * here, as a binding; if the label already denotes another ID, the entry is exposed instead.
+   */
+  show(id: string, label: string | null): string {
+    let shown = this.#shownById.get(id);
+    if (shown === undefined && label !== null) {
+      const denoted = this.#idByName.get(label);
+      if (denoted !== undefined && denoted !== id) {
+        shown = { source: "exposed" };
+      } else {
+        this.#idByName.set(label, id);
+        shown = { source: "convention", name: label };
+      }
+      this.#shownById.set(id, shown);
+    }
+    return shown === undefined || shown.source === "exposed" ? `kernel-event:${id}` : shown.name;
+  }
+}
+
+/** One table per Execution, created on first use. */
+class ByExecution<Table> {
+  readonly #tables = new Map<string, Table>();
+  readonly #create: () => Table;
+
+  constructor(create: () => Table) {
+    this.#create = create;
+  }
+
+  of(executionId: string): Table {
     let table = this.#tables.get(executionId);
     if (table === undefined) {
-      table = new Aliases();
+      table = this.#create();
       this.#tables.set(executionId, table);
     }
     return table;
@@ -216,8 +296,8 @@ function begin(options: KernelCandidateOptions, scenario: Scenario, _sink: Opera
   const coordinator = new Coordinator({ driver, clock });
 
   const executions = new Aliases();
-  const generations = new AliasesByExecution();
-  const timeouts = new AliasesByExecution();
+  const generations = new ByExecution(() => new Aliases());
+  const timeouts = new ByExecution(() => new TimeoutNames());
   const rejections = new Map<string, RejectionMemory>();
 
   /** The Kernel's ID for a laboratory Execution name. A name the Kernel never created has nothing to address. */
@@ -249,14 +329,10 @@ function begin(options: KernelCandidateOptions, scenario: Scenario, _sink: Opera
       }
       // A timeout Event is Kernel-minted and has no payload. A `deliver_timer` command names it; one
       // minted at registration has no command, and takes the owner-adopted `to-<generation>` label from
-      // its own generation (§A4). A generation with no laboratory name leaves the Kernel's spelling.
-      const named = timeouts.of(view.executionId).nameOf(entry.eventId);
-      if (named !== null) {
-        names.set(entry.eventId, named);
-        continue;
-      }
+      // its own generation (§A4). The table decides which applies, and exposes an ID whose offered name
+      // or label already denotes another ID. A generation with no laboratory name has no label.
       const generation = generations.of(view.executionId).nameOf(String(entry.waitGeneration));
-      names.set(entry.eventId, generation !== null ? `to-${generation}` : `kernel-event:${entry.eventId}`);
+      names.set(entry.eventId, timeouts.of(view.executionId).show(entry.eventId, generation === null ? null : `to-${generation}`));
     }
     return names;
   };
@@ -465,7 +541,7 @@ function begin(options: KernelCandidateOptions, scenario: Scenario, _sink: Opera
           if (answer.result !== "expired" && answer.result !== "duplicate" && answer.result !== "stale" && answer.result !== "not_due") {
             throw new Error(`the timer fire answered ${answer.result}: ${answer.reason}`);
           }
-          if (answer.timeoutEventId !== null) timeouts.of(executionId).bind(command.timeoutEvent.eventId, answer.timeoutEventId);
+          if (answer.timeoutEventId !== null) timeouts.of(executionId).nameByCommand(command.timeoutEvent.eventId, answer.timeoutEventId);
           return observe(executionId);
         }
         case "recover": {

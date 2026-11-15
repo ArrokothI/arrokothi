@@ -18139,6 +18139,300 @@
         "decision": "docs/development/work/BINDING-01/hold-release-01.md",
         "reason": "Its run set matches released claims through the test-side binding facade, a probe's child processes or the target runner's child test processes, so its register entry is unread (owner choice 02; design 03 section 1). The adopted historical-family mutant kill is a P1-M route by named maintained tests; it earns no conformance or correction credit."
       }
+    },
+    {
+      "id": "k14-candidate.abl-1",
+      "source": "K1.4-candidate design 01 addendum 01 section A11; design check 01 D01-CHK-09; review 01 K14C-R01-02; owner choice 03",
+      "assertion": "k14-candidate.abl-1.killed",
+      "files": [
+        "packages/kernel/package.json",
+        "tests/conformance/k0/fixture.ts",
+        "tests/conformance/k0/operation-sink.ts",
+        "tests/conformance/k0/scenarios.ts",
+        "tests/conformance/k0-candidate/ablation-probe.mjs",
+        "tests/conformance/k0-candidate/ablation-table.ts",
+        "tests/conformance/k0-candidate/canonical-json.ts",
+        "tests/conformance/k0-candidate/fake-driver.ts",
+        "tests/conformance/k0-candidate/kernel-candidate.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/conformance/k0-candidate/ablation-probe.mjs",
+        "ABL-1",
+        "--link-workspace-kernel"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k14-candidate-ablation",
+      "input": {
+        "ablation": "ABL-1",
+        "site": "packages/kernel/src/coordinator.ts",
+        "obligation": "OA-2: an exact duplicate of an accepted Outcome is answered from its record, before fresh validation",
+        "scenario": "control-duplicate-conflicting-outcome",
+        "step": 3,
+        "fields": [
+          "rejection"
+        ],
+        "observed": "expected no recorded rejection, observed \\{\"classification\":\"stale_exchange\"",
+        "rejecting_test": "tests/conformance/k0-candidate/ablations.test.ts > K1.4-candidate KC-1: removing a Kernel decision turns its witness schedule to FAIL > ABL-1 (coordinator.ts): control-duplicate-conflicting-outcome fails at step 3 in rejection"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "ABL-1 OA-2 removed",
+          "operator": "kernel-decision-ablation",
+          "obligation": "OA-2: an exact duplicate of an accepted Outcome is answered from its record, before fresh validation",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "const already = record.acceptedOutcome(activationId);",
+          "after": "const already = null;",
+          "id": "mutation-69a9e53f3bee2033cb365560f43348b95956502b6a1f20e542d61c4d4f2c612a"
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate.abl-2",
+      "source": "K1.4-candidate design 01 addendum 01 section A11; design check 01 D01-CHK-09; review 01 K14C-R01-02; owner choice 03",
+      "assertion": "k14-candidate.abl-2.killed",
+      "files": [
+        "packages/kernel/package.json",
+        "tests/conformance/k0/fixture.ts",
+        "tests/conformance/k0/operation-sink.ts",
+        "tests/conformance/k0/scenarios.ts",
+        "tests/conformance/k0-candidate/ablation-probe.mjs",
+        "tests/conformance/k0-candidate/ablation-table.ts",
+        "tests/conformance/k0-candidate/canonical-json.ts",
+        "tests/conformance/k0-candidate/fake-driver.ts",
+        "tests/conformance/k0-candidate/kernel-candidate.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/conformance/k0-candidate/ablation-probe.mjs",
+        "ABL-2",
+        "--link-workspace-kernel"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k14-candidate-ablation",
+      "input": {
+        "ablation": "ABL-2",
+        "site": "packages/kernel/src/coordinator.ts",
+        "obligation": "ID-4/OA-3: a proposal at a superseded writer epoch is refused as a stale exchange",
+        "scenario": "identity-create-and-activation",
+        "step": 7,
+        "fields": [
+          "rejection"
+        ],
+        "observed": "rejection classification: expected stale_exchange, observed unauthorized_submission",
+        "rejecting_test": "tests/conformance/k0-candidate/ablations.test.ts > K1.4-candidate KC-1: removing a Kernel decision turns its witness schedule to FAIL > ABL-2 (coordinator.ts): identity-create-and-activation fails at step 7 in rejection"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "ABL-2 ID-4/OA-3 removed",
+          "operator": "kernel-decision-ablation",
+          "obligation": "ID-4/OA-3: a proposal at a superseded writer epoch is refused as a stale exchange",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "if (epochForCurrency !== null && epochForCurrency !== currentEpoch) {",
+          "after": "if (false) {",
+          "id": "mutation-58fe7445c5aab1d415357e47282800c643dbbd860f3bb066c2d74dddb5c631e3"
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate.abl-3",
+      "source": "K1.4-candidate design 01 addendum 01 section A11; design check 01 D01-CHK-09; review 01 K14C-R01-02; owner choice 03",
+      "assertion": "k14-candidate.abl-3.killed",
+      "files": [
+        "packages/kernel/package.json",
+        "tests/conformance/k0/fixture.ts",
+        "tests/conformance/k0/operation-sink.ts",
+        "tests/conformance/k0/scenarios.ts",
+        "tests/conformance/k0-candidate/ablation-probe.mjs",
+        "tests/conformance/k0-candidate/ablation-table.ts",
+        "tests/conformance/k0-candidate/canonical-json.ts",
+        "tests/conformance/k0-candidate/fake-driver.ts",
+        "tests/conformance/k0-candidate/kernel-candidate.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/conformance/k0-candidate/ablation-probe.mjs",
+        "ABL-3",
+        "--link-workspace-kernel"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k14-candidate-ablation",
+      "input": {
+        "ablation": "ABL-3",
+        "site": "packages/kernel/src/coordinator.ts",
+        "obligation": "CX-6: a proposal for a cancelled Execution loses with the cancellation classification and its fixed reason",
+        "scenario": "control-cancel-versus-complete",
+        "step": 3,
+        "fields": [
+          "rejection"
+        ],
+        "observed": "rejection classification: expected cancellation_terminal_conflict, observed terminal_destination",
+        "rejecting_test": "tests/conformance/k0-candidate/ablations.test.ts > K1.4-candidate KC-1: removing a Kernel decision turns its witness schedule to FAIL > ABL-3 (coordinator.ts): control-cancel-versus-complete fails at step 3 in rejection"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "ABL-3 CX-6 removed",
+          "operator": "kernel-decision-ablation",
+          "obligation": "CX-6: a proposal for a cancelled Execution loses with the cancellation classification and its fixed reason",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    if (record.state === \"CANCELLED\") {\n      if (identityUsable && capture.outcome !== null) return err(this.#refuseLosing(record, activationId, capture.outcome));",
+          "after": "    if (false) {\n      if (identityUsable && capture.outcome !== null) return err(this.#refuseLosing(record, activationId, capture.outcome));",
+          "id": "mutation-6e7dcdc08a7cb7f3b21e9e38f09560a7811ac5cff516b0ee40695d45115676c1"
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate.abl-4",
+      "source": "K1.4-candidate design 01 addendum 01 section A11; design check 01 D01-CHK-09; review 01 K14C-R01-02; owner choice 03",
+      "assertion": "k14-candidate.abl-4.killed",
+      "files": [
+        "packages/kernel/package.json",
+        "tests/conformance/k0/fixture.ts",
+        "tests/conformance/k0/operation-sink.ts",
+        "tests/conformance/k0/scenarios.ts",
+        "tests/conformance/k0-candidate/ablation-probe.mjs",
+        "tests/conformance/k0-candidate/ablation-table.ts",
+        "tests/conformance/k0-candidate/canonical-json.ts",
+        "tests/conformance/k0-candidate/fake-driver.ts",
+        "tests/conformance/k0-candidate/kernel-candidate.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/conformance/k0-candidate/ablation-probe.mjs",
+        "ABL-4",
+        "--link-workspace-kernel"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k14-candidate-ablation",
+      "input": {
+        "ablation": "ABL-4",
+        "site": "packages/kernel/src/coordinator.ts",
+        "obligation": "B-2/B-6: after wait-ended readiness the batch is selected by the retired wait's rule, not by acceptance order",
+        "scenario": "k0-trace",
+        "step": 7,
+        "fields": [
+          "dispatchedBatch"
+        ],
+        "observed": "dispatchedBatch: expected \\[\"cont-1\"\\], observed \\[\"bq-1\"\\]",
+        "rejecting_test": "tests/conformance/k0-candidate/ablations.test.ts > K1.4-candidate KC-1: removing a Kernel decision turns its witness schedule to FAIL > ABL-4 (coordinator.ts): k0-trace fails at step 7 in dispatchedBatch"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "ABL-4 B-2/B-6 removed",
+          "operator": "kernel-decision-ablation",
+          "obligation": "B-2/B-6: after wait-ended readiness the batch is selected by the retired wait's rule, not by acceptance order",
+          "path": "packages/kernel/src/coordinator.ts",
+          "before": "    if (readiness === null) {\n      carriedEvents = record.queuedEvents(bound);",
+          "after": "    if (true) {\n      carriedEvents = record.queuedEvents(bound);",
+          "id": "mutation-f65044904098b8b220a6c467303171a53e25a71d55b0d4617092aef31df87fae"
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate.abl-5",
+      "source": "K1.4-candidate design 01 addendum 01 section A11; design check 01 D01-CHK-09; review 01 K14C-R01-02; owner choice 03",
+      "assertion": "k14-candidate.abl-5.killed",
+      "files": [
+        "packages/kernel/package.json",
+        "tests/conformance/k0/fixture.ts",
+        "tests/conformance/k0/operation-sink.ts",
+        "tests/conformance/k0/scenarios.ts",
+        "tests/conformance/k0-candidate/ablation-probe.mjs",
+        "tests/conformance/k0-candidate/ablation-table.ts",
+        "tests/conformance/k0-candidate/canonical-json.ts",
+        "tests/conformance/k0-candidate/fake-driver.ts",
+        "tests/conformance/k0-candidate/kernel-candidate.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/conformance/k0-candidate/ablation-probe.mjs",
+        "ABL-5",
+        "--link-workspace-kernel"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k14-candidate-ablation",
+      "input": {
+        "ablation": "ABL-5",
+        "site": "packages/kernel/src/outcome.ts",
+        "obligation": "EF-1/EF-2: an Outcome proposing an Effect is refused whole at envelope validation",
+        "scenario": "effect-refusal-and-sink-attribution",
+        "step": 2,
+        "fields": [
+          "state",
+          "progressRevision",
+          "progress",
+          "emissions",
+          "acknowledged",
+          "queued",
+          "dispatchedBatch",
+          "activationId",
+          "receipt",
+          "rejection"
+        ],
+        "observed": "state: expected \"RUNNING\", observed \"READY\"",
+        "rejecting_test": "tests/conformance/k0-candidate/ablations.test.ts > K1.4-candidate KC-1: removing a Kernel decision turns its witness schedule to FAIL > ABL-5 (outcome.ts): effect-refusal-and-sink-attribution fails at step 2 in state, progressRevision, progress, emissions, acknowledged, queued, dispatchedBatch, activationId, receipt, rejection"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "ABL-5 EF-1/EF-2 removed",
+          "operator": "kernel-decision-ablation",
+          "obligation": "EF-1/EF-2: an Outcome proposing an Effect is refused whole at envelope validation",
+          "path": "packages/kernel/src/outcome.ts",
+          "before": "  if (length !== null && length > 0) {\n    appendIssue(issues, {\n      path: \"effects\",",
+          "after": "  if (false) {\n    appendIssue(issues, {\n      path: \"effects\",",
+          "id": "mutation-850ac0075fdb1b2216bf7199932e88ed4f3f109cea0dcc38dcc499495182985d"
+        }
+      ]
     }
   ],
   "source_trees": [

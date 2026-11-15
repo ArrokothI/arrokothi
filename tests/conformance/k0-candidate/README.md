@@ -109,6 +109,12 @@ them. The candidate translates as follows.
   `deliver_timer` named as `to-<laboratory name of its own generation>`. This is the corpus's own spelling,
   adopted by the owner as an exception. Another schedule that spelled such an Event differently would fail.
   The root fix is a fixture revision that lets the laboratory name a wait's timeout Event.
+- **Timeout names keep their source.** For each Execution, a name denotes at most one timeout ID for the whole
+  run, whether a `deliver_timer` command gave it or it is a `to-<generation>` label. A timeout carrying its
+  label takes the first name a command gives it; a command-named timeout keeps that name. A name or label that
+  already denotes another timeout ID is never reused or replaced: the new ID is reported as `kernel-event:…`
+  from then on. So only a timeout no command has named gets the label, and an identity conflict shows as a
+  literal difference.
 - **`rejection`.** The fixture does not say when a reported rejection ends. The candidate reports the most recent
   Kernel refusal of a create, input or Outcome command for an Execution, and drops it when that Execution's
   `(state, activationId, writerEpoch)` changes. The classification and reason are the Kernel's words. This rule
@@ -148,8 +154,11 @@ expectations while it runs; they cannot show how a convention was chosen.
 | `verdicts.test.ts` | The pinned verdict of every scenario through the unmodified runner |
 | `blindness.test.ts` | The candidate reads commands, never expectations |
 | `boundary.test.ts` | The import guard and the locator |
-| `ablations.test.ts` | Removing a Kernel decision turns its witness schedule to FAIL |
+| `ablations.test.ts` | Removing a Kernel decision turns its witness schedule to FAIL; the latest-grant adapter mutant |
+| `ablation-table.ts` | The five ablation rows: site, obligation, witness schedule, step and fields |
+| `ablation-probe.mjs` | The mutation registry's runner for those rows (`tests/fixtures/packet-tools/mutations.json`) |
 | `conventions.test.ts` | Witnesses for the conventions and limits above |
 | `support.ts` | Test helpers |
 
-Design records: `docs/development/work/K1.4-candidate/` (design 01, its addendum 01, owner choices 01 and 02).
+Design records: `docs/development/work/K1.4-candidate/` (design 01, its addendum 01, design 02, owner choices 01
+to 03).

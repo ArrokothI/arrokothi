@@ -569,6 +569,10 @@
       "disposition": "R",
       "property": "Typed user input needs a custom controller, which the SDK does not host; native regression only. The deprecated `harness.submitUserInput` refuses by name (inventory S-HARNESS-W)."
     },
+    "tests/conformance/k0-candidate/ablation-table.ts": {
+      "disposition": "S",
+      "property": "K1.4-candidate: support file for this directory's cases."
+    },
     "tests/conformance/k0-candidate/ablations.test.ts": {
       "disposition": "U",
       "property": "K1.4-candidate: the real-Kernel candidate for the K0 fixture, over the Kernel package root; not Harness conformance."

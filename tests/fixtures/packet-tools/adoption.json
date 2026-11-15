@@ -281746,6 +281746,61 @@
             "facts": "Detector site: node:child_process spawns of scripts/check-builder-docs.ts over an isolated fixture tree. The results are the documentation checker's verdicts on the private Kernel import admission and the SDK manifest's private flag; no Kernel or SDK path runs, so the V-ENV core claim does not bear on it."
           },
           "reason": "K1.4 range A per-entry reading of a new maintained test, by the route TOOLS-02 range 4 used for this file (design 03 section 1; owner choice 02)."
+        },
+        {
+          "key": "case:k14-candidate.abl-1",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "unread",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+          "reason": "K1.4-candidate round 2 (owner choice 03): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+        },
+        {
+          "key": "case:k14-candidate.abl-2",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "unread",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+          "reason": "K1.4-candidate round 2 (owner choice 03): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+        },
+        {
+          "key": "case:k14-candidate.abl-3",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "unread",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+          "reason": "K1.4-candidate round 2 (owner choice 03): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+        },
+        {
+          "key": "case:k14-candidate.abl-4",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "unread",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+          "reason": "K1.4-candidate round 2 (owner choice 03): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+        },
+        {
+          "key": "case:k14-candidate.abl-5",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "unread",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+          "reason": "K1.4-candidate round 2 (owner choice 03): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
         }
       ]
     }

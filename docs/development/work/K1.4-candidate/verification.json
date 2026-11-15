@@ -4,7 +4,7 @@
   "require_direct_parent": false,
   "administrative_files": [
     "docs/development/007-work-packets.md",
-    "docs/development/work/K1.4-candidate/implementation-01.md",
+    "docs/development/work/K1.4-candidate/implementation-02.md",
     "docs/development/work/K1.4-candidate/progress.md"
   ],
   "preserve": [
@@ -415,6 +415,18 @@
     {
       "revision": "5e04358a7b87f3813020aef12da2d5fea57c96e0",
       "path": "docs/development/work/K1.4-candidate/design-01-addendum-01.md"
+    },
+    {
+      "revision": "484afd13d7652958f6496afc56d9aa9c098d58b1",
+      "path": "docs/development/work/K1.4-candidate/implementation-01.md"
+    },
+    {
+      "revision": "c3887f604ee70807027c9b6ed9ac1cc22e893fdb",
+      "path": "docs/development/work/K1.4-candidate/owner-choice-03.md"
+    },
+    {
+      "revision": "c3887f604ee70807027c9b6ed9ac1cc22e893fdb",
+      "path": "docs/development/work/K1.4-candidate/design-02.md"
     }
   ],
   "whitespace_exceptions": [
@@ -672,7 +684,7 @@
         "todo": "^[#ℹ] todo (\\d+)$"
       },
       "minimum_counts": {
-        "tests": 5212
+        "tests": 5225
       },
       "exact_counts": {
         "fail": 0,
@@ -898,11 +910,13 @@
     }
   ],
   "limits": [
-    "K1.4-candidate, one range (owner release 01; brief 01; design 01 with addendum 01; owner choices 01 and 02). The candidate: tests/conformance/k0-candidate/{kernel-candidate,canonical-json,fake-driver}.ts, driving ExecutionCoordinator through the @arrokothi/kernel package root. Its tests: verdicts (KC-3: 12 PASS and 3 REFUSED, pinned exactly), blindness (KC-2), boundary (KC-1 import guard, KC-5 locator), ablations (KC-1) and conventions. Its README is the locator and pin contract for the benchmark's E1.",
-    "No Kernel source change: packages is preserved whole at B, with package.json, package-lock.json and tsconfig.json. The fixture's scenarios, runner, oracle and coverage are preserved at B; decision 4 changes comments in tests/conformance/k0/{candidate,fixture,protocol-vocabulary}.ts, the refusal control's reason string, and refusal.test.ts's header and describe title.",
+    "K1.4-candidate, round 2: the correction after review 01 of H 484afd13 (K14C-R01-01..03), under brief 02 (read by commit at 7b8a63fa), owner choice 03 and design 02. Round 1's records stand: owner release 01; brief 01; design 01 with addendum 01; owner choices 01 and 02; implementation report 01. The candidate: tests/conformance/k0-candidate/{kernel-candidate,canonical-json,fake-driver}.ts, driving ExecutionCoordinator through the @arrokothi/kernel package root. Its tests: verdicts (KC-3: 12 PASS and 3 REFUSED, pinned exactly), blindness (KC-2), boundary (KC-1 import guard, KC-5 locator), ablations (KC-1) and conventions. Its README is the locator and pin contract for the benchmark's E1.",
+    "No Kernel source change: packages is preserved whole at B, with package.json, package-lock.json and tsconfig.json. The fixture's scenarios, runner, oracle and coverage are preserved at B; decision 4 changes comments in tests/conformance/k0/{candidate,fixture,protocol-vocabulary}.ts, the refusal control's reason string, and refusal.test.ts's header and describe title. scripts and tests/tooling are preserved at B: registering the ablations changed no packet tool.",
     "One architecture guard is extended by name: kernel-landing-zone.test.ts lists the three candidate files that import the Kernel package root. The ablation test loads each edited temporary copy of the Kernel source in a child process, from a generated entry file with literal imports, so the literal-import guard is preserved at B.",
-    "The five ablations (ABL-1 to ABL-5) are a maintained test with a declared table. They are not cases of tests/fixtures/packet-tools/mutations.json, so the registered-mutants check earns no kill from them (017 L-44; addendum 01 section A11).",
+    "Round 2, K14C-R01-01: the candidate's timeout name table keeps each binding's source (command, convention or exposed). A name or label that already denotes another timeout ID exposes the new ID in the Kernel's spelling; only a timeout no command has named takes the to-<generation> label. Review 01's two probes and the adjacent cases are maintained tests in conventions.test.ts.",
+    "Round 2, K14C-R01-02 (owner choice 03): ABL-1 to ABL-5 are cases k14-candidate.abl-1 to -5 of tests/fixtures/packet-tools/mutations.json, run by the registered-mutants check through tests/conformance/k0-candidate/ablation-probe.mjs, with a coverage family and five unread hold-register entries in adoption.json. They are mechanism_witness records: a registry kill of them earns no conformance or correction credit (017 L-44). The probe links the temporary copy's Kernel package into its node_modules, because that copy has no workspace install. The maintained test stays and reads the same table. Review 01's latest-grant adapter mutant is a maintained witness there, not a registry case.",
+    "Round 2, K14C-R01-03: the sentence in mental-model/mechanisms/evidence.md now ties a gate exclusion to the gate's owner-approved scope and predeclaration; a missing surface does not exempt an in-scope obligation. The K1 matrix decision stays in 007, the roadmaps and owner choice 02.",
     "The candidate's run in this repository is its own report. It is not an E1 result: the benchmark has not captured it, and the K1/E1 gate is K1.4-gate's. Three fixture schedules (51 of 142 steps) are refused because K1 has no trusted non-timeout Event source (017 L-21, L-38).",
-    "Documents: 007 (the K1.4-candidate, K1.4-gate and K2.4 sections and rows, the K1 and K2 milestone rows), 001, mental-model/roadmap.md, mental-model/mechanisms/evidence.md (one sentence on predeclared gate matrices), BASELINE section 15, 017 L-38 to L-44, tests/conformance/legacy-mapping.json (nine rows)."
+    "Documents: 007 (the K1.4-candidate, K1.4-gate and K2.4 sections and rows, the K1 and K2 milestone rows), 001, mental-model/roadmap.md, mental-model/mechanisms/evidence.md, BASELINE section 15, 017 L-38 to L-44, tests/conformance/legacy-mapping.json (ten rows)."
   ]
 }
