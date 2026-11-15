@@ -2,6 +2,20 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **Round 2 payload C: `7392e4a640c07c9a2989464cd2a979938c37ee25`** (pushed, 2026-11-15). **WAITING_FOR_REVIEW.**
+  - *C:* the timeout name table with provenance and its nine tests; five registry cases with their coverage
+    family and hold-register entries; `ablation-probe.mjs` and `ablation-table.ts`; the latest-grant witness; the
+    rewritten gate sentence in `evidence.md`; 017 L-39 and L-44; the README; the verification spec.
+    `packages/`, `scripts/` and `tests/tooling/` are byte-identical to B.
+  - *Result:* 12 PASS and 3 REFUSED, unchanged. Not an E1 result.
+  - *Packet verify:* CI run [`43704493967`](https://github.com/ArrokothI/arrokothi/actions/runs/43704493967) at C: `checks_passed`, 19 of 19 checks, exit 0, on Node v26.10.0; repository tests 5,225 of 5,225 with no failure, skip or todo. `registered-mutants` ran 308 cases and killed 344 mutants (303 and 339 in round 1): each of the five new cases passed its control and killed its mutant by its own row, with `semantic_credit: none`. `adoption` reports `mappings_complete` with 308 case entries, and `dimensions` counts five `k14-candidate-ablation` cases. The artifact `packet-verify-7392e4a640c07c9a2989464cd2a979938c37ee25` records `revision` and `head` both equal to C in `run.txt`.
+  - *H:* [implementation report 02](implementation-02.md), the 007 row and this file.
+  - *For the reviewer:* a conflicting timeout name is exposed, not thrown; the probe links the Kernel package
+    into the registry's temporary copy; a new registry category; design 02 had no design check.
+  - *Next:* an independent review of the cumulative candidate by a Codex GPT-6 session. No self-acceptance.
+    After an ACCEPT: Prompt C cleanup by a fresh session, then the owner's merge. E1 round 3 is the benchmark
+    owner's separate release.
+
 - **Round 2 started (2026-11-15): review 01 is CHANGES REQUIRED of H `484afd13d7652958f6496afc56d9aa9c098d58b1`.**
   - *Review:* [review 01](https://github.com/ArrokothI/arrokothi/blob/7b8a63fa5f087f870663bc143257e5181d0d385c/docs/development/work/K1.4-candidate/review-01.md) (Codex GPT-6, `codex/k1.4-candidate-review-01` at
     `7b8a63fa5f087f870663bc143257e5181d0d385c`), three P2 findings: K14C-R01-01 (a refused timeout name fell into
