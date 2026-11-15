@@ -2,6 +2,22 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **Round 1 payload C: `61ea8126507506b043ce5ba6515073f62c19c42f`** (pushed, 2026-11-14). **WAITING_FOR_REVIEW.**
+  - *C:* the candidate, its encoder and fake Driver, five test files, the README for E1, decision 4's prose
+    corrections, the K1.0 guard's three named importers, nine mapping rows, BASELINE §15, 017 L-38 to L-44, one
+    sentence in `evidence.md`, and the verification spec. `packages/` is byte-identical to B.
+  - *Result:* 12 PASS and 3 REFUSED through the unmodified runner; ABL-1 to ABL-5 each fail at the predicted step
+    and field. Not an E1 result.
+  - *Packet verify:* CI run [`43676796376`](https://github.com/ArrokothI/arrokothi/actions/runs/43676796376) at C: `checks_passed`, 19 of 19 checks, exit 0, on Node v26.10.0; repository tests 5,212 of 5,212 with no failure, skip or todo. The artifact `packet-verify-61ea8126507506b043ce5ba6515073f62c19c42f` records `revision` and `head` both equal to C in `run.txt`.
+  - *H:* [implementation report 01](implementation-01.md), the 007 row and this file.
+  - *Deviations for the reviewer:* the ablations are a maintained test, not registry cases (017 L-44); they run in a
+    child process so the literal-import guard stays as it was; one Layer-3 sentence in `evidence.md`.
+  - *Local note:* `packages/sdk/tests/bridge-observe.test.ts` B-NOTIFY-NOWAKE failed once in a loaded local full
+    run (5,211 of 5,212) and passed three times alone; `packages/` is unchanged from B.
+  - *Next:* an independent review by a Codex GPT-6 session that has not worked on this packet. No self-acceptance.
+    After an ACCEPT: Prompt C cleanup by a fresh session, then the owner's merge. E1 round 3 is the benchmark
+    owner's separate release.
+
 - **Design check 01 disposed; build released by the owner (2026-11-14).**
   - *Check:* design check 01 (Codex GPT-6, `codex/k1.4-candidate-design-check-01` at
     `e06984a9573efd1524692ab74332eb7744941bcf`), APPROVED WITH REQUIRED CHANGES D01-CHK-01..09. Read by commit;
