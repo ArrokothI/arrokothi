@@ -1,0 +1,343 @@
+{
+  "run_id": 43704493967,
+  "job_id": 132782552879,
+  "artifact_id": 14160801105,
+  "artifact_sha256": "071fa3cc80c05cff24aab58462a70b478849fd9afa8eb53b5d258b56939b1d49",
+  "revision": "7392e4a640c07c9a2989464cd2a979938c37ee25",
+  "summary_passed": 19,
+  "summary_total": 19,
+  "result": "checks_passed",
+  "checks": [
+    {
+      "id": "tool-tests",
+      "passed": true,
+      "counts": {
+        "tests": 777
+      },
+      "exit": 0,
+      "status": "finished"
+    },
+    {
+      "id": "inventory",
+      "passed": true,
+      "result": "provenance_verified",
+      "counts": {
+        "artifact": 208,
+        "mention": 1333,
+        "additional": 8
+      }
+    },
+    {
+      "id": "adoption",
+      "passed": true,
+      "result": "mappings_complete",
+      "counts": {
+        "origins": 1549,
+        "counterexamples": 621,
+        "families": 26,
+        "members": 415,
+        "suite_targets": 74,
+        "preserved": 23,
+        "kills": 0
+      }
+    },
+    {
+      "id": "dimensions",
+      "passed": true,
+      "result": "coverage_reported",
+      "counts": null
+    },
+    {
+      "id": "registered-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 344
+      },
+      "case_count": 308,
+      "k14_cases": [
+        {
+          "case": "k14-candidate.abl-1",
+          "content_key": "case-3a576996668e5135520fd93e2873a99e28fb6fb147c7d153d742bb5f5eeb0906",
+          "claim": {
+            "kind": "mechanism_witness",
+            "owner": "K1.4-candidate",
+            "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+            "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+            "semantic_credit": "none"
+          },
+          "kind": "probe",
+          "control": "passed",
+          "baseline": {
+            "status": "finished",
+            "exit": 0,
+            "output": "{\"case\":\"k14-candidate.abl-1\",\"assertion\":\"k14-candidate.abl-1.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"control-duplicate-conflicting-outcome\",\"steps\":5}\n"
+          },
+          "mutations": [
+            {
+              "mutation": "mutation-69a9e53f3bee2033cb365560f43348b95956502b6a1f20e542d61c4d4f2c612a",
+              "status": "killed",
+              "run": {
+                "status": "finished",
+                "exit": 17,
+                "output": "{\"case\":\"k14-candidate.abl-1\",\"assertion\":\"k14-candidate.abl-1.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"control-duplicate-conflicting-outcome step 3: rejection\"],\"scenario\":\"control-duplicate-conflicting-outcome\",\"steps\":5}\n"
+              },
+              "invalid": false,
+              "killed_by": "control-duplicate-conflicting-outcome step 3: rejection",
+              "content_key": "mutation-69a9e53f3bee2033cb365560f43348b95956502b6a1f20e542d61c4d4f2c612a"
+            }
+          ]
+        },
+        {
+          "case": "k14-candidate.abl-2",
+          "content_key": "case-b06b9eb2e651fce4de57157b511894f6088588793ff297f2523a4bcbddfbb2e7",
+          "claim": {
+            "kind": "mechanism_witness",
+            "owner": "K1.4-candidate",
+            "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+            "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+            "semantic_credit": "none"
+          },
+          "kind": "probe",
+          "control": "passed",
+          "baseline": {
+            "status": "finished",
+            "exit": 0,
+            "output": "{\"case\":\"k14-candidate.abl-2\",\"assertion\":\"k14-candidate.abl-2.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"identity-create-and-activation\",\"steps\":10}\n"
+          },
+          "mutations": [
+            {
+              "mutation": "mutation-58fe7445c5aab1d415357e47282800c643dbbd860f3bb066c2d74dddb5c631e3",
+              "status": "killed",
+              "run": {
+                "status": "finished",
+                "exit": 17,
+                "output": "{\"case\":\"k14-candidate.abl-2\",\"assertion\":\"k14-candidate.abl-2.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"identity-create-and-activation step 7: rejection\"],\"scenario\":\"identity-create-and-activation\",\"steps\":10}\n"
+              },
+              "invalid": false,
+              "killed_by": "identity-create-and-activation step 7: rejection",
+              "content_key": "mutation-58fe7445c5aab1d415357e47282800c643dbbd860f3bb066c2d74dddb5c631e3"
+            }
+          ]
+        },
+        {
+          "case": "k14-candidate.abl-3",
+          "content_key": "case-8259438caf9a72cf0c6a159d3d090a90afb5403935822dc73dfdae45134d4dcf",
+          "claim": {
+            "kind": "mechanism_witness",
+            "owner": "K1.4-candidate",
+            "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+            "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+            "semantic_credit": "none"
+          },
+          "kind": "probe",
+          "control": "passed",
+          "baseline": {
+            "status": "finished",
+            "exit": 0,
+            "output": "{\"case\":\"k14-candidate.abl-3\",\"assertion\":\"k14-candidate.abl-3.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"control-cancel-versus-complete\",\"steps\":12}\n"
+          },
+          "mutations": [
+            {
+              "mutation": "mutation-6e7dcdc08a7cb7f3b21e9e38f09560a7811ac5cff516b0ee40695d45115676c1",
+              "status": "killed",
+              "run": {
+                "status": "finished",
+                "exit": 17,
+                "output": "{\"case\":\"k14-candidate.abl-3\",\"assertion\":\"k14-candidate.abl-3.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"control-cancel-versus-complete step 3: rejection\"],\"scenario\":\"control-cancel-versus-complete\",\"steps\":12}\n"
+              },
+              "invalid": false,
+              "killed_by": "control-cancel-versus-complete step 3: rejection",
+              "content_key": "mutation-6e7dcdc08a7cb7f3b21e9e38f09560a7811ac5cff516b0ee40695d45115676c1"
+            }
+          ]
+        },
+        {
+          "case": "k14-candidate.abl-4",
+          "content_key": "case-707915e137e6bc6b704c8aac2a7081854bfec394c620bd332d5f3a7cdc70667b",
+          "claim": {
+            "kind": "mechanism_witness",
+            "owner": "K1.4-candidate",
+            "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+            "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+            "semantic_credit": "none"
+          },
+          "kind": "probe",
+          "control": "passed",
+          "baseline": {
+            "status": "finished",
+            "exit": 0,
+            "output": "{\"case\":\"k14-candidate.abl-4\",\"assertion\":\"k14-candidate.abl-4.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"k0-trace\",\"steps\":9}\n"
+          },
+          "mutations": [
+            {
+              "mutation": "mutation-f65044904098b8b220a6c467303171a53e25a71d55b0d4617092aef31df87fae",
+              "status": "killed",
+              "run": {
+                "status": "finished",
+                "exit": 17,
+                "output": "{\"case\":\"k14-candidate.abl-4\",\"assertion\":\"k14-candidate.abl-4.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"k0-trace step 7: dispatchedBatch\"],\"scenario\":\"k0-trace\",\"steps\":9}\n"
+              },
+              "invalid": false,
+              "killed_by": "k0-trace step 7: dispatchedBatch",
+              "content_key": "mutation-f65044904098b8b220a6c467303171a53e25a71d55b0d4617092aef31df87fae"
+            }
+          ]
+        },
+        {
+          "case": "k14-candidate.abl-5",
+          "content_key": "case-b1766a04ae3c63ba32b2c6632eb37ed59e5832d4a5ce78c30643b35de28bb772",
+          "claim": {
+            "kind": "mechanism_witness",
+            "owner": "K1.4-candidate",
+            "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+            "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+            "semantic_credit": "none"
+          },
+          "kind": "probe",
+          "control": "passed",
+          "baseline": {
+            "status": "finished",
+            "exit": 0,
+            "output": "{\"case\":\"k14-candidate.abl-5\",\"assertion\":\"k14-candidate.abl-5.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"effect-refusal-and-sink-attribution\",\"steps\":4}\n"
+          },
+          "mutations": [
+            {
+              "mutation": "mutation-850ac0075fdb1b2216bf7199932e88ed4f3f109cea0dcc38dcc499495182985d",
+              "status": "killed",
+              "run": {
+                "status": "finished",
+                "exit": 17,
+                "output": "{\"case\":\"k14-candidate.abl-5\",\"assertion\":\"k14-candidate.abl-5.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"effect-refusal-and-sink-attribution step 2: state, progressRevision, progress, emissions, acknowledged, queued, dispatchedBatch, activationId, receipt, rejection\"],\"scenario\":\"effect-refusal-and-sink-attribution\",\"steps\":4}\n"
+              },
+              "invalid": false,
+              "killed_by": "effect-refusal-and-sink-attribution step 2: state, progressRevision, progress, emissions, acknowledged, queued, dispatchedBatch, activationId, receipt, rejection",
+              "content_key": "mutation-850ac0075fdb1b2216bf7199932e88ed4f3f109cea0dcc38dcc499495182985d"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "refusal-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 358
+      },
+      "case_count": 358,
+      "k14_cases": []
+    },
+    {
+      "id": "value-cost-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 238
+      },
+      "case_count": 18,
+      "k14_cases": []
+    },
+    {
+      "id": "refusal-census",
+      "passed": true,
+      "counts": {},
+      "exit": 0,
+      "status": "finished"
+    },
+    {
+      "id": "oracle-census",
+      "passed": true,
+      "counts": {},
+      "exit": 0,
+      "status": "finished"
+    },
+    {
+      "id": "typecheck",
+      "passed": true,
+      "counts": {},
+      "exit": 0,
+      "status": "finished"
+    },
+    {
+      "id": "repository-tests",
+      "passed": true,
+      "counts": {
+        "tests": 5225,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "status": "finished"
+    },
+    {
+      "id": "archive-tests",
+      "passed": true,
+      "counts": {
+        "tests": 4,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "status": "finished"
+    },
+    {
+      "id": "kernel-sweeps",
+      "passed": true,
+      "counts": {},
+      "exit": 0,
+      "status": "finished"
+    },
+    {
+      "id": "race-search",
+      "passed": true,
+      "counts": {},
+      "exit": 0,
+      "status": "finished"
+    },
+    {
+      "id": "value-cost-dimensions",
+      "passed": true,
+      "counts": {},
+      "exit": 0,
+      "status": "finished"
+    },
+    {
+      "id": "value-cost-continuations",
+      "passed": true,
+      "counts": {},
+      "exit": 0,
+      "status": "finished"
+    },
+    {
+      "id": "example-tests",
+      "passed": true,
+      "counts": {
+        "tests": 18,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "exit": 0,
+      "status": "finished"
+    },
+    {
+      "id": "builder-docs",
+      "passed": true,
+      "counts": {},
+      "exit": 0,
+      "status": "finished"
+    },
+    {
+      "id": "area-gate",
+      "passed": true,
+      "result": "reported",
+      "counts": null
+    }
+  ]
+}
