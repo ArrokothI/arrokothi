@@ -41,6 +41,12 @@ const TEST_SIDE = [
   "blindness.test.ts",
   "boundary.test.ts",
   "conventions.test.ts",
+  "identity-lab.ts",
+  "identity-mutants.ts",
+  "identity-probe.mjs",
+  "identity-search.test.ts",
+  "identity-witnesses.ts",
+  "identity.test.ts",
   "support.ts",
   "verdicts.test.ts",
 ];
@@ -252,7 +258,17 @@ describe("K1.4-candidate KC-5: a locator E1 can pin", () => {
     assert.equal(candidate.name, "arrokothi-kernel-coordinator");
     assert.equal(KERNEL_CANDIDATE_VERSION, "arrokothi-k0-kernel-candidate/1");
     const exported = [...withoutComments(read("kernel-candidate.ts")).matchAll(/^export (?:const|function|interface|type|class) (\w+)/gm)].map((match) => match[1]);
-    assert.deepEqual(exported.sort(), ["BUILT_FOR_FIXTURE_VERSION", "KERNEL_CANDIDATE_VERSION", "KernelCandidateOptions", "createKernelCandidate", "kernelCandidate"]);
+    // Besides the locator: the two errors a run can end on by the candidate's own rules (design 03), and the code type of one.
+    assert.deepEqual(exported.sort(), [
+      "AnswerContradiction",
+      "AnswerContradictionCode",
+      "BUILT_FOR_FIXTURE_VERSION",
+      "KERNEL_CANDIDATE_VERSION",
+      "KernelCandidateOptions",
+      "UnknownLaboratoryReference",
+      "createKernelCandidate",
+      "kernelCandidate",
+    ]);
   });
 
   test("the candidate was built for the fixture version this checkout holds", () => {

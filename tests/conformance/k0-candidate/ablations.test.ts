@@ -222,7 +222,7 @@ describe("K1.4-candidate KC-1: removing a Kernel decision turns its witness sche
   }
   const registered = (): RegistryCase[] =>
     (JSON.parse(readFileSync(resolve(REPO_ROOT, REGISTRY), "utf8")) as { cases: RegistryCase[] }).cases.filter(
-      (entry) => entry.category === "k14-candidate-ablation" || entry.id.startsWith("k14-candidate."),
+      (entry) => entry.category === "k14-candidate-ablation" || entry.id.startsWith("k14-candidate.abl-"),
     );
   const caseId = (ablation: Ablation): string => `k14-candidate.${ablation.id.toLowerCase()}`;
   const testTitle = (ablation: Ablation): string =>

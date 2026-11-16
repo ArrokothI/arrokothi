@@ -281801,6 +281801,83 @@
           "claim": "V-ENV",
           "decision": "docs/development/work/BINDING-01/hold-release-01.md",
           "reason": "K1.4-candidate round 2 (owner choice 03): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+        },
+        {
+          "key": "case:k14-candidate.identity-m1",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "unread",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+          "reason": "K1.4-candidate round 3 (owner choice 04): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+        },
+        {
+          "key": "case:k14-candidate.identity-m2",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "unread",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+          "reason": "K1.4-candidate round 3 (owner choice 04): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+        },
+        {
+          "key": "case:k14-candidate.identity-m3",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "unread",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+          "reason": "K1.4-candidate round 3 (owner choice 04): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+        },
+        {
+          "key": "case:k14-candidate.identity-m4",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "unread",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+          "reason": "K1.4-candidate round 3 (owner choice 04): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+        },
+        {
+          "key": "case:k14-candidate.identity-m5",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "unread",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+          "reason": "K1.4-candidate round 3 (owner choice 04): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+        },
+        {
+          "key": "case:k14-candidate.identity-m6",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "unread",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+          "reason": "K1.4-candidate round 3 (owner choice 04): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
+        },
+        {
+          "key": "case:k14-candidate.identity-m7",
+          "matched": [
+            "V-ENV",
+            "re-prototyped-built-in"
+          ],
+          "classification": "unread",
+          "claim": "V-ENV",
+          "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+          "reason": "K1.4-candidate round 3 (owner choice 04): a new registry case whose run set matches released claims, recomputed at C; unread, with no credit and no limit until a per-entry reading."
         }
       ]
     }

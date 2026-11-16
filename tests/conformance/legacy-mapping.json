@@ -597,6 +597,26 @@
       "disposition": "S",
       "property": "K1.4-candidate: support file for this directory's cases."
     },
+    "tests/conformance/k0-candidate/identity-lab.ts": {
+      "disposition": "S",
+      "property": "K1.4-candidate: support file for this directory's cases."
+    },
+    "tests/conformance/k0-candidate/identity-mutants.ts": {
+      "disposition": "S",
+      "property": "K1.4-candidate: support file for this directory's cases."
+    },
+    "tests/conformance/k0-candidate/identity-search.test.ts": {
+      "disposition": "U",
+      "property": "K1.4-candidate: the real-Kernel candidate for the K0 fixture, over the Kernel package root; not Harness conformance."
+    },
+    "tests/conformance/k0-candidate/identity-witnesses.ts": {
+      "disposition": "S",
+      "property": "K1.4-candidate: support file for this directory's cases."
+    },
+    "tests/conformance/k0-candidate/identity.test.ts": {
+      "disposition": "U",
+      "property": "K1.4-candidate: the real-Kernel candidate for the K0 fixture, over the Kernel package root; not Harness conformance."
+    },
     "tests/conformance/k0-candidate/kernel-candidate.ts": {
       "disposition": "S",
       "property": "K1.4-candidate: support file for this directory's cases."

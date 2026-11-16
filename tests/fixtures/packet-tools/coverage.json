@@ -11,7 +11,8 @@
     "state-owner-bypass",
     "k13-semantic",
     "historical-family-adoption",
-    "k14-candidate-ablation"
+    "k14-candidate-ablation",
+    "k14-candidate-identity"
   ],
   "families": [
     {
@@ -3110,6 +3111,84 @@
             "site": "abl-5",
             "environment": "ordinary",
             "stage": "k14-candidate-ablation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate-identity",
+      "domains": {
+        "site": [
+          "m1",
+          "m2",
+          "m3",
+          "m4",
+          "m5",
+          "m6",
+          "m7"
+        ],
+        "environment": [
+          "ordinary"
+        ],
+        "stage": [
+          "k14-candidate-identity"
+        ]
+      },
+      "cases": [
+        {
+          "case": "k14-candidate.identity-m1",
+          "values": {
+            "site": "m1",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
+          }
+        },
+        {
+          "case": "k14-candidate.identity-m2",
+          "values": {
+            "site": "m2",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
+          }
+        },
+        {
+          "case": "k14-candidate.identity-m3",
+          "values": {
+            "site": "m3",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
+          }
+        },
+        {
+          "case": "k14-candidate.identity-m4",
+          "values": {
+            "site": "m4",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
+          }
+        },
+        {
+          "case": "k14-candidate.identity-m5",
+          "values": {
+            "site": "m5",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
+          }
+        },
+        {
+          "case": "k14-candidate.identity-m6",
+          "values": {
+            "site": "m6",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
+          }
+        },
+        {
+          "case": "k14-candidate.identity-m7",
+          "values": {
+            "site": "m7",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
           }
         }
       ]

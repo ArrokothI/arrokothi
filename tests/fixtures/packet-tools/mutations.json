@@ -18433,6 +18433,393 @@
           "id": "mutation-850ac0075fdb1b2216bf7199932e88ed4f3f109cea0dcc38dcc499495182985d"
         }
       ]
+    },
+    {
+      "id": "k14-candidate.identity-m1",
+      "source": "K1.4-candidate design 03 section 9 and addendum 01 section A4; design check 03 D03-CHK-04; owner choice 04",
+      "assertion": "k14-candidate.identity-m1.killed",
+      "files": [
+        "packages/kernel/package.json",
+        "tests/conformance/k0/fixture.ts",
+        "tests/conformance/k0/operation-sink.ts",
+        "tests/conformance/k0-candidate/canonical-json.ts",
+        "tests/conformance/k0-candidate/fake-driver.ts",
+        "tests/conformance/k0-candidate/identity-lab.ts",
+        "tests/conformance/k0-candidate/identity-mutants.ts",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "tests/conformance/k0-candidate/identity-witnesses.ts",
+        "tests/conformance/k0-candidate/kernel-candidate.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "M1",
+        "--link-workspace-kernel"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k14-candidate-identity",
+      "input": {
+        "row": "M1",
+        "site": "tests/conformance/k0-candidate/kernel-candidate.ts",
+        "obligation": "design 03 \u00a73: a fresh string is recorded in the ledger like any other string",
+        "witness": "tests/conformance/k0-candidate/identity-witnesses.ts > WITNESSES.M1",
+        "rejects": "three timeouts, three strings|a reference by the fresh Execution string",
+        "rejecting_test": "tests/conformance/k0-candidate/identity.test.ts > K1.4-candidate identity: each mechanism mutant fails its witness (addendum \u00a7A4) > M1: without \"design 03 \u00a73: a fresh string is recorded in the ledger like any other string\", its witness fails by a named assertion"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "M1 identity mechanism part removed",
+          "operator": "adapter-mechanism-ablation",
+          "obligation": "design 03 \u00a73: a fresh string is recorded in the ledger like any other string",
+          "path": "tests/conformance/k0-candidate/kernel-candidate.ts",
+          "before": "    this.#denotes.set(text, id);\n    return text;",
+          "after": "    if (!fresh) this.#denotes.set(text, id);\n    return text;",
+          "id": "mutation-eaafd08c1848bb6f3ea6612b0ee874e174455fb6b74d7538dd890909486b8f6e"
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate.identity-m2",
+      "source": "K1.4-candidate design 03 section 9 and addendum 01 section A4; design check 03 D03-CHK-04; owner choice 04",
+      "assertion": "k14-candidate.identity-m2.killed",
+      "files": [
+        "packages/kernel/package.json",
+        "tests/conformance/k0/fixture.ts",
+        "tests/conformance/k0/operation-sink.ts",
+        "tests/conformance/k0-candidate/canonical-json.ts",
+        "tests/conformance/k0-candidate/fake-driver.ts",
+        "tests/conformance/k0-candidate/identity-lab.ts",
+        "tests/conformance/k0-candidate/identity-mutants.ts",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "tests/conformance/k0-candidate/identity-witnesses.ts",
+        "tests/conformance/k0-candidate/kernel-candidate.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "M2",
+        "--link-workspace-kernel"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k14-candidate-identity",
+      "input": {
+        "row": "M2",
+        "site": "tests/conformance/k0-candidate/kernel-candidate.ts",
+        "obligation": "design 03 \u00a73: a fresh string is the first variant the ledger does not hold",
+        "witness": "tests/conformance/k0-candidate/identity-witnesses.ts > WITNESSES.M2",
+        "rejects": "every Event string is distinct|the fresh string is the first free variant",
+        "rejecting_test": "tests/conformance/k0-candidate/identity.test.ts > K1.4-candidate identity: each mechanism mutant fails its witness (addendum \u00a7A4) > M2: without \"design 03 \u00a73: a fresh string is the first variant the ledger does not hold\", its witness fails by a named assertion"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "M2 identity mechanism part removed",
+          "operator": "adapter-mechanism-ablation",
+          "obligation": "design 03 \u00a73: a fresh string is the first variant the ledger does not hold",
+          "path": "tests/conformance/k0-candidate/kernel-candidate.ts",
+          "before": "for (let variant = 2; this.#denotes.has(text); variant += 1)",
+          "after": "for (let variant = 2; false; variant += 1)",
+          "id": "mutation-2f68d2bf001c484076fd10686a6a46dc0105fc87027d7d715522a7c46bb58780"
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate.identity-m3",
+      "source": "K1.4-candidate design 03 section 9 and addendum 01 section A4; design check 03 D03-CHK-04; owner choice 04",
+      "assertion": "k14-candidate.identity-m3.killed",
+      "files": [
+        "packages/kernel/package.json",
+        "tests/conformance/k0/fixture.ts",
+        "tests/conformance/k0/operation-sink.ts",
+        "tests/conformance/k0-candidate/canonical-json.ts",
+        "tests/conformance/k0-candidate/fake-driver.ts",
+        "tests/conformance/k0-candidate/identity-lab.ts",
+        "tests/conformance/k0-candidate/identity-mutants.ts",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "tests/conformance/k0-candidate/identity-witnesses.ts",
+        "tests/conformance/k0-candidate/kernel-candidate.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "M3",
+        "--link-workspace-kernel"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k14-candidate-identity",
+      "input": {
+        "row": "M3",
+        "site": "tests/conformance/k0-candidate/kernel-candidate.ts",
+        "obligation": "design 03 \u00a74 rule 1: the Q2 b label is written through the ledger",
+        "witness": "tests/conformance/k0-candidate/identity-witnesses.ts > WITNESSES.M3",
+        "rejects": "the label and the input are two strings|the label names one Event only",
+        "rejecting_test": "tests/conformance/k0-candidate/identity.test.ts > K1.4-candidate identity: each mechanism mutant fails its witness (addendum \u00a7A4) > M3: without \"design 03 \u00a74 rule 1: the Q2 b label is written through the ledger\", its witness fails by a named assertion"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "M3 identity mechanism part removed",
+          "operator": "adapter-mechanism-ablation",
+          "obligation": "design 03 \u00a74 rule 1: the Q2 b label is written through the ledger",
+          "edits": [
+            {
+              "path": "tests/conformance/k0-candidate/kernel-candidate.ts",
+              "before": "  /** The ID a string denotes: the inverse of what Observations show. */",
+              "after": "  unchecked(id: string, text: string): string {\n    this.#shown.set(id, text);\n    return text;\n  }\n\n  /** The ID a string denotes: the inverse of what Observations show. */"
+            },
+            {
+              "path": "tests/conformance/k0-candidate/kernel-candidate.ts",
+              "before": "        eventLedger.assign(wait.timeoutEventId, label);",
+              "after": "        if (label === null) eventLedger.assign(wait.timeoutEventId, null);\n        else eventLedger.unchecked(wait.timeoutEventId, label);"
+            }
+          ],
+          "id": "mutation-d99ba20ae106cf8c2e4125c8d5ebc943b61e3cd35d4d30185cdb747267369400"
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate.identity-m4",
+      "source": "K1.4-candidate design 03 section 9 and addendum 01 section A4; design check 03 D03-CHK-04; owner choice 04",
+      "assertion": "k14-candidate.identity-m4.killed",
+      "files": [
+        "packages/kernel/package.json",
+        "tests/conformance/k0/fixture.ts",
+        "tests/conformance/k0/operation-sink.ts",
+        "tests/conformance/k0-candidate/canonical-json.ts",
+        "tests/conformance/k0-candidate/fake-driver.ts",
+        "tests/conformance/k0-candidate/identity-lab.ts",
+        "tests/conformance/k0-candidate/identity-mutants.ts",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "tests/conformance/k0-candidate/identity-witnesses.ts",
+        "tests/conformance/k0-candidate/kernel-candidate.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "M4",
+        "--link-workspace-kernel"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k14-candidate-identity",
+      "input": {
+        "row": "M4",
+        "site": "tests/conformance/k0-candidate/kernel-candidate.ts",
+        "obligation": "design 03 \u00a74 rule 1: an input Event's string comes from the Event ledger, not from its payload",
+        "witness": "tests/conformance/k0-candidate/identity-witnesses.ts > WITNESSES.M4",
+        "rejects": "two request keys, two strings|then an input under its name|then a timeout under its name",
+        "rejecting_test": "tests/conformance/k0-candidate/identity.test.ts > K1.4-candidate identity: each mechanism mutant fails its witness (addendum \u00a7A4) > M4: without \"design 03 \u00a74 rule 1: an input Event's string comes from the Event ledger, not from its payload\", its witness fails by a named assertion"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "M4 identity mechanism part removed",
+          "operator": "adapter-mechanism-ablation",
+          "obligation": "design 03 \u00a74 rule 1: an input Event's string comes from the Event ledger, not from its payload",
+          "path": "tests/conformance/k0-candidate/kernel-candidate.ts",
+          "before": "      const text = ledger.assign(entry.eventId, null);",
+          "after": "      const text = entry.sourceCategory === \"application_input\" ? String(carriedName(entry)) : ledger.assign(entry.eventId, null);",
+          "id": "mutation-fb23b57215e5c646ba7cd08b044a08987240417e6bea1b26bbec064e18317de0"
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate.identity-m5",
+      "source": "K1.4-candidate design 03 section 9 and addendum 01 section A4; design check 03 D03-CHK-04; owner choice 04",
+      "assertion": "k14-candidate.identity-m5.killed",
+      "files": [
+        "packages/kernel/package.json",
+        "tests/conformance/k0/fixture.ts",
+        "tests/conformance/k0/operation-sink.ts",
+        "tests/conformance/k0-candidate/canonical-json.ts",
+        "tests/conformance/k0-candidate/fake-driver.ts",
+        "tests/conformance/k0-candidate/identity-lab.ts",
+        "tests/conformance/k0-candidate/identity-mutants.ts",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "tests/conformance/k0-candidate/identity-witnesses.ts",
+        "tests/conformance/k0-candidate/kernel-candidate.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "M5",
+        "--link-workspace-kernel"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k14-candidate-identity",
+      "input": {
+        "row": "M5",
+        "site": "tests/conformance/k0-candidate/kernel-candidate.ts",
+        "obligation": "design 03 \u00a74 rule 6: a reference resolves through the inverse of what Observations show",
+        "witness": "tests/conformance/k0-candidate/identity-witnesses.ts > WITNESSES.M5",
+        "rejects": "a fire by the fresh string|the schedule continues on the fresh string",
+        "rejecting_test": "tests/conformance/k0-candidate/identity.test.ts > K1.4-candidate identity: each mechanism mutant fails its witness (addendum \u00a7A4) > M5: without \"design 03 \u00a74 rule 6: a reference resolves through the inverse of what Observations show\", its witness fails by a named assertion"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "M5 identity mechanism part removed",
+          "operator": "adapter-mechanism-ablation",
+          "obligation": "design 03 \u00a74 rule 6: a reference resolves through the inverse of what Observations show",
+          "path": "tests/conformance/k0-candidate/kernel-candidate.ts",
+          "before": "    return this.#denotes.get(text) ?? null;",
+          "after": "    const id = this.#denotes.get(text);\n    return id !== undefined && this.#tookOffer.has(id) ? id : null;",
+          "id": "mutation-b9974a87478b2aff38790d74e49632706acf4ab66ce45dce1202d746681dc28f"
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate.identity-m6",
+      "source": "K1.4-candidate design 03 section 9 and addendum 01 section A4; design check 03 D03-CHK-04; owner choice 04",
+      "assertion": "k14-candidate.identity-m6.killed",
+      "files": [
+        "packages/kernel/package.json",
+        "tests/conformance/k0/fixture.ts",
+        "tests/conformance/k0/operation-sink.ts",
+        "tests/conformance/k0-candidate/canonical-json.ts",
+        "tests/conformance/k0-candidate/fake-driver.ts",
+        "tests/conformance/k0-candidate/identity-lab.ts",
+        "tests/conformance/k0-candidate/identity-mutants.ts",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "tests/conformance/k0-candidate/identity-witnesses.ts",
+        "tests/conformance/k0-candidate/kernel-candidate.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "M6",
+        "--link-workspace-kernel"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k14-candidate-identity",
+      "input": {
+        "row": "M6",
+        "site": "tests/conformance/k0-candidate/kernel-candidate.ts",
+        "obligation": "owner choice 04 OQ-1: a string an Observation has shown never changes",
+        "witness": "tests/conformance/k0-candidate/identity-witnesses.ts > WITNESSES.M6",
+        "rejects": "the label stays",
+        "rejecting_test": "tests/conformance/k0-candidate/identity.test.ts > K1.4-candidate identity: each mechanism mutant fails its witness (addendum \u00a7A4) > M6: without \"owner choice 04 OQ-1: a string an Observation has shown never changes\", its witness fails by a named assertion"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "M6 identity mechanism part removed",
+          "operator": "adapter-mechanism-ablation",
+          "obligation": "owner choice 04 OQ-1: a string an Observation has shown never changes",
+          "path": "tests/conformance/k0-candidate/kernel-candidate.ts",
+          "before": "    if (already !== undefined) return already;",
+          "after": "    if (already !== undefined && (preferred === null || this.#denotes.has(preferred))) return already;",
+          "id": "mutation-0d2856e386c3bfafb2ca5d97bd4e0ace7abbe098a822f7a9b3ae46cd8d076684"
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate.identity-m7",
+      "source": "K1.4-candidate design 03 section 9 and addendum 01 section A4; design check 03 D03-CHK-04; owner choice 04",
+      "assertion": "k14-candidate.identity-m7.killed",
+      "files": [
+        "packages/kernel/package.json",
+        "tests/conformance/k0/fixture.ts",
+        "tests/conformance/k0/operation-sink.ts",
+        "tests/conformance/k0-candidate/canonical-json.ts",
+        "tests/conformance/k0-candidate/fake-driver.ts",
+        "tests/conformance/k0-candidate/identity-lab.ts",
+        "tests/conformance/k0-candidate/identity-mutants.ts",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "tests/conformance/k0-candidate/identity-witnesses.ts",
+        "tests/conformance/k0-candidate/kernel-candidate.ts"
+      ],
+      "argv": [
+        "node",
+        "--no-warnings",
+        "--experimental-strip-types",
+        "tests/conformance/k0-candidate/identity-probe.mjs",
+        "M7",
+        "--link-workspace-kernel"
+      ],
+      "timeout_seconds": 60,
+      "output_limit_bytes": 65536,
+      "failure_exit": 17,
+      "category": "k14-candidate-identity",
+      "input": {
+        "row": "M7",
+        "site": "tests/conformance/k0-candidate/kernel-candidate.ts",
+        "obligation": "design 03 addendum 01 \u00a7A1 rule 4: a Kernel answer is checked against the inspection made after it",
+        "witness": "tests/conformance/k0-candidate/identity-witnesses.ts > WITNESSES.M7",
+        "rejects": "a duplicate fire answered with an ID the mailbox does not hold|answered with the first's timeout",
+        "rejecting_test": "tests/conformance/k0-candidate/identity.test.ts > K1.4-candidate identity: each mechanism mutant fails its witness (addendum \u00a7A4) > M7: without \"design 03 addendum 01 \u00a7A1 rule 4: a Kernel answer is checked against the inspection made after it\", its witness fails by a named assertion"
+      },
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit."
+      },
+      "mutants": [
+        {
+          "name": "M7 identity mechanism part removed",
+          "operator": "adapter-mechanism-ablation",
+          "obligation": "design 03 addendum 01 \u00a7A1 rule 4: a Kernel answer is checked against the inspection made after it",
+          "path": "tests/conformance/k0-candidate/kernel-candidate.ts",
+          "before": "    for (const claim of claims) claim(view);",
+          "after": "    for (const claim of claims) void claim;",
+          "id": "mutation-520c98cef5918bf22eafced8a91c6a7f2d324e5321439e9cfaa8b873db647007"
+        }
+      ]
     }
   ],
   "source_trees": [

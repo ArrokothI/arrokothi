@@ -75,8 +75,10 @@ members before that.
 The three refused schedules send `kernel_event` Events: trusted results that wake a wait through a dependency
 alternative. The K1 Kernel has one ingress, application input, and no trusted non-timeout Event source
 ([017](../../../docs/development/017-known-limitations.md) L-21). The candidate decides this in `begin`, from each
-command's kind and its Event's category only. It does not compare scenario IDs, and the refusal names the first
-unsupported step.
+command's kind, its Event's category, and whether an `await` selects an Event by `eventIdentity`. It does not
+compare scenario IDs, and the refusal names the first unsupported step. The third test is there because the
+candidate cannot name an Event to the Kernel before the Kernel has minted its ID. Only `cited-decision-edges`
+has one, after its first refused step.
 
 What the refusal costs:
 
@@ -98,23 +100,38 @@ refusals visible in its result, and never count them as passes or as Kernel viol
 The fixture compares most names literally, as if the laboratory had supplied them. The Kernel mints several of
 them. The candidate translates as follows.
 
-- **Execution IDs, wait generations, timeout Events:** a laboratory name is paired with the Kernel's ID when the
-  Kernel first returns that ID in answer to the command carrying the name. Generations and timeout Events are
-  paired per Execution. A pair is never overwritten. A Kernel ID with no name is reported in the Kernel's own
-  spelling (`kernel-execution:…`, `kernel-generation:…`, `kernel-event:…`), so it shows as a difference.
-- **Input Events:** the laboratory's Event name travels as the Event's payload, and is read back from the
-  Kernel's mailbox. This also makes "same content" and "different content" mean what the fixture means.
+- **Identity strings.** The translated positions are `executionId`; `liveWaitGeneration` and
+  `waitEndedReadiness[].generation`; and every member of `acknowledged`, `queued`, `terminalDispositions` and
+  `dispatchedBatch`. Each comes from a name ledger: one for Executions over the run, and for each Execution one
+  for wait generations and one for Events. Input Events and timeout Events share the Event ledger, because they
+  fill the same lists.
+  - **One string per Kernel ID, for the whole run.** A ledger's map from Kernel ID to string is one-to-one and
+    never changes. So within a run the same string means the same Kernel ID, and different strings mean
+    different Kernel IDs.
+  - **A name attaches at the Kernel's answer.** A laboratory name is offered when the Kernel answers the command
+    that carries it, for the ID that answer names. If the name already denotes another ID, or no answer
+    announced the ID, the ID gets a fresh string: `kernel-<family>:<id>`, or its first `~2`, `~3`, … variant that
+    denotes nothing. Any string an Observation showed can be offered again as a name; it is checked like any
+    other.
+  - **A reference means what the Observations show.** A later command's Execution or generation string resolves
+    through the same ledger. A string that denotes nothing makes `apply` throw `UnknownLaboratoryReference`.
+  - **An answer is checked against the inspection.** After each Kernel call, what the answer names must be what
+    the inspection holds: the Execution, the input Event and the name its payload carries, the wait generation
+    and the Activation that registered it, the timeout Event and its generation. A contradiction makes `apply`
+    throw `AnswerContradiction`.
+  - **What this does not show.** The claim is about IDs within one run. A Kernel ID that is wrong but consistent
+    from its first appearance takes the offered name like any other.
+- **Input Events:** the laboratory's Event name also travels as the Event's payload, so that "same content" and
+  "different content" mean what the fixture means. The payload is checked against the name that was offered. It
+  is never read as the Event's name.
 - **The unnamed timeout Event.** `control-subscription-wait-deadline` step 6 expects `to-gd2`, a timeout the
-  Kernel mints when a deadline is already due. No command names it. The candidate reports a timeout that no
-  `deliver_timer` named as `to-<laboratory name of its own generation>`. This is the corpus's own spelling,
-  adopted by the owner as an exception. Another schedule that spelled such an Event differently would fail.
-  The root fix is a fixture revision that lets the laboratory name a wait's timeout Event.
-- **Timeout names keep their source.** For each Execution, a name denotes at most one timeout ID for the whole
-  run, whether a `deliver_timer` command gave it or it is a `to-<generation>` label. A timeout carrying its
-  label takes the first name a command gives it; a command-named timeout keeps that name. A name or label that
-  already denotes another timeout ID is never reused or replaced: the new ID is reported as `kernel-event:…`
-  from then on. So only a timeout no command has named gets the label, and an identity conflict shows as a
-  literal difference.
+  Kernel mints when a wait registers with its deadline already due. No command names it. The candidate offers it
+  the name `to-<laboratory name of its own generation>`, at the registration answer that announces it. This is
+  the corpus's own spelling, adopted by the owner as an exception. It keeps that string even if a later
+  `deliver_timer` names it. Another schedule that spelled such an Event differently would fail. The root fix is
+  a fixture revision that lets the laboratory name a wait's timeout Event.
+- **`ingressRefused`** is outside the identity rule. It echoes the command's own name for an input the Kernel
+  refused because the destination had ended. No Event exists, so it can equal the string of an Event that does.
 - **`rejection`.** The fixture does not say when a reported rejection ends. The candidate reports the most recent
   Kernel refusal of a create, input or Outcome command for an Execution, and drops it when that Execution's
   `(state, activationId, writerEpoch)` changes. The classification and reason are the Kernel's words. This rule
@@ -123,8 +140,8 @@ them. The candidate translates as follows.
 - **The clock.** `deliver_timer` carries no instant. The candidate's clock starts at 1 and moves only to a
   pending deadline the Kernel lists for the timer being fired. The Kernel decides whether the fire does anything.
 
-The last three were chosen at design time by reading the corpus. The tests show the candidate does not read
-expectations while it runs; they cannot show how a convention was chosen.
+The timeout label, the `rejection` rule and the clock were chosen at design time by reading the corpus. The tests
+show the candidate does not read expectations while it runs; they cannot show how a convention was chosen.
 
 ## What a PASS here does not show
 
@@ -158,7 +175,12 @@ expectations while it runs; they cannot show how a convention was chosen.
 | `ablation-table.ts` | The five ablation rows: site, obligation, witness schedule, step and fields |
 | `ablation-probe.mjs` | The mutation registry's runner for those rows (`tests/fixtures/packet-tools/mutations.json`) |
 | `conventions.test.ts` | Witnesses for the conventions and limits above |
+| `identity.test.ts` | The identity rule: transitions, the reviews' counterexamples, answer checks, the oracle's own controls |
+| `identity-search.test.ts` | The bounded search: 4,126 runs over adversarial names, judged by the oracle |
+| `identity-lab.ts` | A recording laboratory and the independent oracle those tests use |
+| `identity-witnesses.ts`, `identity-mutants.ts` | Seven mechanism mutants of the identity rule and the witness that rejects each |
+| `identity-probe.mjs` | The mutation registry's runner for those seven rows |
 | `support.ts` | Test helpers |
 
-Design records: `docs/development/work/K1.4-candidate/` (design 01, its addendum 01, design 02, owner choices 01
-to 03).
+Design records: `docs/development/work/K1.4-candidate/` (design 01 and its addendum 01, design 02, design 03 and
+its addendum 01, owner choices 01 to 04). Design 03 replaces the identity sections of the earlier ones.

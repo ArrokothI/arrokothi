@@ -519,7 +519,7 @@ describe("K1.0 legacy quarantine", () => {
       "packages/sdk/tests/value-capture-inventory.ts", "packages/sdk/tests/value-capture-static.test.ts",
       "packages/sdk/tests/value-capture.test.ts", "packages/sdk/tests/value-diagnostic-work.test.ts",
       "packages/sdk/tests/value-refusal-cost.test.ts", "packages/sdk/tests/wrapper-roots.ts",
-      "tests/conformance/architecture/kernel-landing-zone.test.ts", "tests/conformance/k0-candidate/conventions.test.ts", "tests/conformance/k0-candidate/fake-driver.ts", "tests/conformance/k0-candidate/kernel-candidate.ts",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts", "tests/conformance/k0-candidate/conventions.test.ts", "tests/conformance/k0-candidate/fake-driver.ts", "tests/conformance/k0-candidate/identity-lab.ts", "tests/conformance/k0-candidate/kernel-candidate.ts",
     ];
 
     const importers: string[] = [];

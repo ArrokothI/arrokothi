@@ -6,17 +6,18 @@
  * It is test-side adapter code: it is not Kernel code and it changes no Kernel semantics.
  *
  * Design: `docs/development/work/K1.4-candidate/design-01.md`, as changed by
- * `design-01-addendum-01.md` and owner choice 02. Section numbers below (§A2 …) are the addendum's.
+ * `design-01-addendum-01.md` and owner choice 02. Section numbers below (§A2 …) are that addendum's.
+ * Identity rendering follows `design-03.md` and `design-03-addendum-01.md` (owner choice 04); "rule n"
+ * below is design 03 §4's, with rules 4 and 5 as addendum 01 §A1 restates them.
  *
  * ## What this module may and may not do
  *
  * 1. **The Kernel decides.** Nothing here classifies, selects, deduplicates or compares content.
  *    `create` and `create_retry` make the same call, and so do `submit_outcome` and `resubmit_outcome`.
  * 2. **Bytes in.** Every laboratory value reaches the Kernel as canonical bytes (`canonical-json.ts`).
- * 3. **Fail visible.** A Kernel-minted ID with no laboratory name is reported in the Kernel's own
- *    spelling, marked `kernel-…:`. A Kernel answer this module has no rule for makes `apply` throw,
- *    which the runner records as FAIL. The one declared exception to "never a guessed fixture name" is
- *    the unnamed timeout Event (§A4, owner choice 02 Q2 b).
+ * 3. **Fail visible.** A Kernel answer this module has no rule for makes `apply` throw, which the runner
+ *    records as FAIL. So does an answer that contradicts the inspection made after it
+ *    (`AnswerContradiction`), and a reference that denotes nothing (`UnknownLaboratoryReference`).
  * 4. **Blind.** `begin` reads the scenario's `id` and each step's `command`, to check that the Kernel has
  *    a surface for it (§A2). It never reads an expectation, and it keeps nothing from that scan.
  *
@@ -24,10 +25,29 @@
  *
  * - **`rejection`** (§A5): the most recent reportable Kernel refusal for an Execution, dropped when that
  *   Execution's episode key `(state, activationId, writerEpoch)` changes.
- * - **Unnamed timeout Event** (§A4): reported as `to-<laboratory name of its own generation>`. Only a
- *   timeout no `deliver_timer` command has named takes the label; a name or label that already denotes
- *   another timeout ID exposes the new ID in the Kernel's spelling (`TimeoutNames`, review 01).
+ * - **Unnamed timeout Event** (owner choice 02 Q2 b): a timeout the Kernel mints when a wait registers
+ *   already due is offered the name `to-<laboratory name of its own generation>`, at that answer.
  * - **Clock** (§A9): starts at 1 and moves only to a listed pending deadline when `deliver_timer` fires it.
+ *
+ * ## Identity strings (design 03)
+ *
+ * The translated identity positions are `executionId`; `liveWaitGeneration` and
+ * `waitEndedReadiness[].generation`; and every member of `acknowledged`, `queued`, `terminalDispositions`
+ * and `dispatchedBatch`. Each is the value of a name ledger: one for Executions over the run, and for
+ * each native Execution one for wait generations and one for Events, input and timeout alike.
+ *
+ * - A ledger's map from native ID to string is injective and never changes during a run. So within a
+ *   run the same string means the same Kernel ID, and different strings mean different ones.
+ * - A laboratory name attaches only when the Kernel answers the command that carries it, to the ID
+ *   that answer names. An ID no answer announced, or whose offered name already denotes another ID,
+ *   gets a fresh string: `kernel-<family>:<id>`, or its first free `~n` variant.
+ * - A later command's reference resolves through the same ledger, so it addresses the ID every
+ *   Observation shows under that string.
+ *
+ * Outside this: `ingressRefused` echoes the command's own name for an input the Kernel refused, since
+ * no Event exists; Activation IDs, receipts and epochs pass through verbatim; `emissions` lists keys.
+ * The claim is about IDs within one run. A wrong ID that is consistent from its first appearance takes
+ * the offered name like any other.
  *
  * ## Recorded limits (`docs/development/017-known-limitations.md`)
  *
@@ -45,8 +65,10 @@ import type {
   KernelClock,
   OutcomeEnvelope as KernelOutcomeEnvelope,
   OutcomeNext as KernelOutcomeNext,
+  MailboxEntryView,
   RefusalRecord,
   SubmissionGrant,
+  WaitOutcome,
 } from "@arrokothi/kernel";
 
 import { FIXTURE_VERSION } from "../k0/fixture.ts";
@@ -97,13 +119,46 @@ export interface KernelCandidateOptions {
   readonly Coordinator?: CoordinatorConstructor;
 }
 
+// -- Declared failures --------------------------------------------------------
+
+/** A command referred to an Execution or a wait generation by a string that denotes nothing in this run. */
+export class UnknownLaboratoryReference extends Error {
+  override readonly name = "UnknownLaboratoryReference";
+}
+
+/** Which row of design 03 addendum 01 §A1 a Kernel answer and the inspection after it disagree on. */
+export type AnswerContradictionCode =
+  | "execution"
+  | "input_entry"
+  | "input_payload"
+  | "input_unoffered"
+  | "wait_presence"
+  | "wait_activation"
+  | "wait_timeout"
+  | "timeout_generation";
+
+/**
+ * A Kernel answer and the inspection made after it disagree. Thrown after the Kernel answered; nothing
+ * is repaired and no other command is sent.
+ */
+export class AnswerContradiction extends Error {
+  override readonly name = "AnswerContradiction";
+  readonly code: AnswerContradictionCode;
+
+  constructor(code: AnswerContradictionCode, detail: string) {
+    super(`answer contradiction (${code}): ${detail}`);
+    this.code = code;
+  }
+}
+
 // -- Capability preflight (§A2) -----------------------------------------------
 
 /**
  * Why the K1 Kernel has no surface for `command`, or `null` when it has one.
  *
- * Reads the command's kind and an Event's source category, and nothing else. It decides no selector
- * match, envelope validity, replay or acceptance.
+ * Reads the command's kind, an Event's source category, and whether an `await` selects an Event by
+ * identity (owner choice 04, OQ-2). It decides no selector match, envelope validity, replay or
+ * acceptance.
  */
 function unsupportedCommand(command: Command): string | null {
   const noTrustedIngress = (category: string): string =>
@@ -115,10 +170,21 @@ function unsupportedCommand(command: Command): string | null {
       return command.initialInput.category === "application_input" ? null : `${command.kind} carries ${noTrustedIngress(command.initialInput.category)}`;
     case "accept_event":
       return command.event.category === "application_input" ? null : `accept_event carries ${noTrustedIngress(command.event.category)}`;
+    case "submit_outcome":
+    case "resubmit_outcome": {
+      // An Event's Kernel ID does not exist before the Kernel mints it, so this candidate has no way to
+      // name an Event to the Kernel inside a declaration. K1 also has no Event such an alternative
+      // could match (017 L-21). The string is never passed on untranslated.
+      const next = command.outcome.next as { readonly step?: unknown; readonly wait?: { readonly dependencies?: unknown } | null };
+      const alternatives: readonly unknown[] = next.step === "await" && Array.isArray(next.wait?.dependencies) ? next.wait.dependencies : [];
+      const byIdentity = alternatives.some((alternative) => alternative !== null && typeof alternative === "object" && Object.hasOwn(alternative, "eventIdentity"));
+      return byIdentity
+        ? `${command.kind} declares a dependency alternative that selects an Event by identity, and this candidate cannot name an Event ` +
+            `to the K1 Kernel before the Kernel has minted its ID (docs/development/017-known-limitations.md L-21, L-38)`
+        : null;
+    }
     case "dispatch":
     case "redeliver_dispatch":
-    case "submit_outcome":
-    case "resubmit_outcome":
     case "accept_cancellation":
     case "deliver_timer":
     case "recover":
@@ -130,108 +196,62 @@ function unsupportedCommand(command: Command): string | null {
   }
 }
 
-// -- Aliases (§A3) ------------------------------------------------------------
+// -- The name ledger (design 03 §3) ----------------------------------------------
 
 /**
- * Laboratory names for Kernel-minted IDs of one family.
+ * For one scope, the one-to-one map between Kernel-minted IDs and the strings Observations show.
  *
- * A pair is bound only when the name and the ID are both unbound, and it is never overwritten. So an ID
- * that already has a name keeps it, and a name that already has an ID keeps that: either way a wrong
- * identity shows as a literal difference in the Observation instead of being repaired here.
- *
- * This table is for the families whose unnamed ID has exactly one spelling, the Kernel's own: Executions
- * and wait generations. A refused pair therefore needs no record. Timeout Events have a second source of
- * names and use `TimeoutNames`.
+ * `assign` is the only writer. It records a pair only after finding that the string denotes nothing, and
+ * no pair is ever changed or removed. So `#shown` is one injective function for the whole run, and
+ * `#denotes` is its inverse. That holds whatever the strings look like: a laboratory name, a label and a
+ * fresh string are all ordinary entries, checked the same way, in either arrival order.
  */
-class Aliases {
-  readonly #idByName = new Map<string, string>();
-  readonly #nameById = new Map<string, string>();
+class Ledger {
+  readonly #family: string;
+  readonly #shown = new Map<string, string>();
+  readonly #denotes = new Map<string, string>();
+  /** The IDs shown under the name that was offered for them. */
+  readonly #tookOffer = new Set<string>();
 
-  bind(name: string, id: string): void {
-    if (this.#idByName.has(name) || this.#nameById.has(id)) return;
-    this.#idByName.set(name, id);
-    this.#nameById.set(id, name);
-  }
-
-  idOf(name: string): string | null {
-    return this.#idByName.get(name) ?? null;
-  }
-
-  nameOf(id: string): string | null {
-    return this.#nameById.get(id) ?? null;
-  }
-}
-
-/**
- * How one Kernel timeout Event ID is shown, and where that came from.
- *
- * - `command`: a `deliver_timer` command named it.
- * - `convention`: no command has named it, and it carries the owner-adopted label of its own generation
- *   (§A4, owner choice 02 Q2 b).
- * - `exposed`: a name was offered for it that already denotes another ID. It is shown in the Kernel's own
- *   spelling from then on, so the identity difference is a literal difference in the Observation.
- */
-type TimeoutShown =
-  | { readonly source: "command"; readonly name: string }
-  | { readonly source: "convention"; readonly name: string }
-  | { readonly source: "exposed" };
-
-/**
- * Laboratory names for one Execution's timeout Events, with the provenance of every binding.
- *
- * The plain alias table above is not enough for this family, because it is the only one with a second
- * source of names: the `to-<generation>` label. A table that answers only "this ID has no name" cannot
- * tell a timeout no command named from one whose offered name was refused, and the label would then
- * cover an identity conflict (review 01 K14C-R01-01). So this table keeps three facts apart, and the
- * label is one of its bindings, made and checked like any other.
- *
- * Invariants, for one Execution and one run:
- * 1. A name denotes at most one ID, for good. `#idByName` only grows, and it holds labels as well as
- *    command names, so a label and a command name can never show two IDs as one.
- * 2. An ID is shown under one name at a time. That name changes at most once: from its label to the
- *    first name a command gives it (§A4). A later command's different name does not rebind it.
- * 3. An offered name that would break rule 1 is not bound. The ID it was offered for becomes `exposed`
- *    and stays so. Nothing here chooses which identity is right.
- */
-class TimeoutNames {
-  readonly #idByName = new Map<string, string>();
-  readonly #shownById = new Map<string, TimeoutShown>();
-
-  /** A `deliver_timer` command named the timeout Event the Kernel answered with. */
-  nameByCommand(name: string, id: string): void {
-    const shown = this.#shownById.get(id);
-    if (shown !== undefined && shown.source !== "convention") return;
-    const denoted = this.#idByName.get(name);
-    if (denoted !== undefined && denoted !== id) {
-      this.#shownById.set(id, { source: "exposed" });
-      return;
-    }
-    this.#idByName.set(name, id);
-    this.#shownById.set(id, { source: "command", name });
+  constructor(family: string) {
+    this.#family = family;
   }
 
   /**
-   * The name to report for a timeout mailbox entry. `label` is the entry's `to-<generation>` label, or
-   * `null` when its generation has no laboratory name. An entry no command has named takes the label
-   * here, as a binding; if the label already denotes another ID, the entry is exposed instead.
+   * The string for `id`. An ID that already has one keeps it, whatever is offered. Otherwise it takes
+   * `preferred` if that string denotes nothing, and a fresh string if not.
    */
-  show(id: string, label: string | null): string {
-    let shown = this.#shownById.get(id);
-    if (shown === undefined && label !== null) {
-      const denoted = this.#idByName.get(label);
-      if (denoted !== undefined && denoted !== id) {
-        shown = { source: "exposed" };
-      } else {
-        this.#idByName.set(label, id);
-        shown = { source: "convention", name: label };
-      }
-      this.#shownById.set(id, shown);
-    }
-    return shown === undefined || shown.source === "exposed" ? `kernel-event:${id}` : shown.name;
+  assign(id: string, preferred: string | null): string {
+    const already = this.#shown.get(id);
+    if (already !== undefined) return already;
+    const fresh = preferred === null || this.#denotes.has(preferred);
+    const text = fresh ? this.#freshFor(id) : preferred;
+    if (!fresh) this.#tookOffer.add(id);
+    this.#shown.set(id, text);
+    this.#denotes.set(text, id);
+    return text;
+  }
+
+  /** The ID a string denotes: the inverse of what Observations show. */
+  resolve(text: string): string | null {
+    return this.#denotes.get(text) ?? null;
+  }
+
+  /** Whether `id` is shown under the name offered for it, and not under a fresh string. */
+  tookOffer(id: string): boolean {
+    return this.#tookOffer.has(id);
+  }
+
+  /** The Kernel's own spelling, or its first variant that denotes nothing. The ledger is finite, so this ends. */
+  #freshFor(id: string): string {
+    const base = `kernel-${this.#family}:${id}`;
+    let text = base;
+    for (let variant = 2; this.#denotes.has(text); variant += 1) text = `${base}~${variant}`;
+    return text;
   }
 }
 
-/** One table per Execution, created on first use. */
+/** One table per native Execution, created on first use. */
 class ByExecution<Table> {
   readonly #tables = new Map<string, Table>();
   readonly #create: () => Table;
@@ -248,6 +268,12 @@ class ByExecution<Table> {
     }
     return table;
   }
+}
+
+/** The laboratory name an input Event's payload carries, or `undefined` when it carries none. */
+function carriedName(entry: MailboxEntryView): unknown {
+  const payload = entry.payload as { readonly eventId?: unknown } | null;
+  return payload !== null && typeof payload === "object" && !Array.isArray(payload) ? payload.eventId : undefined;
 }
 
 // -- The candidate ------------------------------------------------------------
@@ -295,44 +321,109 @@ function begin(options: KernelCandidateOptions, scenario: Scenario, _sink: Opera
   const clock: KernelClock = { now: () => now };
   const coordinator = new Coordinator({ driver, clock });
 
-  const executions = new Aliases();
-  const generations = new ByExecution(() => new Aliases());
-  const timeouts = new ByExecution(() => new TimeoutNames());
+  const executions = new Ledger("execution");
+  const generations = new ByExecution(() => new Ledger("generation"));
+  /** Input and timeout Events share one ledger: they fill the same lists. */
+  const events = new ByExecution(() => new Ledger("event"));
+  /** Rule 5: the name each input Event was first offered, by Event ID. Kept apart from the shown string. */
+  const offeredInputNames = new ByExecution(() => new Map<string, string>());
+  /** Rule 4: what this command's Kernel answer claims, to be checked against the inspection after it. */
+  let claims: ((view: ExecutionView) => void)[] = [];
   const rejections = new Map<string, RejectionMemory>();
 
-  /** The Kernel's ID for a laboratory Execution name. A name the Kernel never created has nothing to address. */
+  /** The Kernel ID an Execution string denotes (rule 6). A string that denotes nothing has nothing to address. */
   const kernelExecution = (name: string): string => {
-    const id = executions.idOf(name);
-    if (id === null) throw new Error(`the command names Execution ${JSON.stringify(name)}, which the Kernel has not created in this run`);
+    const id = executions.resolve(name);
+    if (id === null) throw new UnknownLaboratoryReference(`the command names Execution ${JSON.stringify(name)}, which the Kernel has not created in this run`);
     return id;
   };
 
   const viewOf = (executionId: string): ExecutionView => {
     const answer = coordinator.inspect(LABORATORY, executionId);
     if (!answer.ok) throw new Error(`inspect was refused (${answer.error.classification}): ${answer.error.reason}`);
+    if (answer.value.executionId !== executionId) {
+      throw new AnswerContradiction("execution", `the inspection of ${executionId} describes ${answer.value.executionId}`);
+    }
     return answer.value;
   };
 
-  const generationName = (executionId: string, generation: number): string =>
-    generations.of(executionId).nameOf(String(generation)) ?? `kernel-generation:${generation}`;
+  // -- Rule 4: one answer against one inspection (addendum 01 §A1) ------------------------------------------
 
-  /** The laboratory name of each mailbox entry, by Kernel Event ID. */
+  /** An accepted input answer named `eventId` for a command whose Event name is `name`. */
+  const claimInput = (eventId: string, name: string) => (view: ExecutionView): void => {
+    const entry = view.mailbox.find((candidate) => candidate.eventId === eventId);
+    if (entry === undefined || entry.sourceCategory !== "application_input") {
+      throw new AnswerContradiction("input_entry", `the answer names input Event ${eventId}, which the inspection does not hold as application input`);
+    }
+    if (carriedName(entry) !== name) {
+      throw new AnswerContradiction("input_payload", `the answer names Event ${eventId} for the command's ${JSON.stringify(name)}, and its payload carries another name`);
+    }
+  };
+
+  /** A fire of `generation` answered with `answered`: that generation's one timeout entry, or none. */
+  const claimTimer = (generation: number, answered: string | null) => (view: ExecutionView): void => {
+    const held = view.mailbox.filter((entry) => entry.sourceCategory === "kernel_timeout" && entry.waitGeneration === generation);
+    const agrees = answered === null ? held.length === 0 : held.length === 1 && held[0]?.eventId === answered;
+    if (!agrees) {
+      throw new AnswerContradiction(
+        "timeout_generation",
+        `the fire of generation ${generation} answered ${answered === null ? "no timeout Event" : answered}, and the inspection holds ` +
+          `${held.length === 0 ? "no timeout Event" : held.map((entry) => entry.eventId).join(", ")} for that generation`,
+      );
+    }
+  };
+
+  /** An accepted Outcome of `activationId` answered with `wait`. */
+  const claimWait = (activationId: string, declaredAwait: boolean, wait: WaitOutcome | null) => (view: ExecutionView): void => {
+    if ((wait !== null) !== declaredAwait) {
+      throw new AnswerContradiction("wait_presence", `the accepted Outcome ${declaredAwait ? "declared a wait and the answer has none" : "declared no wait and the answer has one"}`);
+    }
+    if (wait === null) return;
+    const live = view.wait !== null && view.wait.generation === wait.generation ? view.wait : null;
+    const retired = view.retiredWaits.find((candidate) => candidate.generation === wait.generation) ?? null;
+    const registeredBy = live !== null ? live.registeredBy : retired !== null ? retired.registeredBy : null;
+    if (registeredBy !== activationId) {
+      throw new AnswerContradiction(
+        "wait_activation",
+        `the answer names wait generation ${wait.generation} for Activation ${activationId}, and the inspection records it as registered by ${registeredBy ?? "nobody"}`,
+      );
+    }
+    if (wait.result === "expired" && wait.timeoutEventId === null) {
+      throw new AnswerContradiction("wait_timeout", `the answer says generation ${wait.generation} expired at registration and names no timeout Event`);
+    }
+    if (wait.timeoutEventId !== null) {
+      const timeoutEventId = wait.timeoutEventId;
+      const entry = view.mailbox.find((candidate) => candidate.eventId === timeoutEventId);
+      const belongs =
+        entry !== undefined &&
+        entry.sourceCategory === "kernel_timeout" &&
+        entry.waitGeneration === wait.generation &&
+        retired !== null &&
+        retired.endingEventId === timeoutEventId;
+      if (!belongs) {
+        throw new AnswerContradiction("timeout_generation", `the answer names timeout Event ${timeoutEventId} for generation ${wait.generation}, and the inspection does not hold it as that generation's`);
+      }
+    }
+  };
+
+  /** The string of a wait generation (rule 3: printing offers nothing). */
+  const generationName = (executionId: string, generation: number): string => generations.of(executionId).assign(String(generation), null);
+
+  /** The string of each mailbox entry, by Kernel Event ID, in mailbox order (rules 3 and 5). */
   const eventNames = (view: ExecutionView): Map<string, string> => {
     const names = new Map<string, string>();
+    const ledger = events.of(view.executionId);
+    const offered = offeredInputNames.of(view.executionId);
     for (const entry of view.mailbox) {
       if (entry.sourceCategory === "application_input") {
-        // The laboratory name travels as the payload, so it is read back from what the Kernel holds.
-        const payload = entry.payload as { readonly eventId?: unknown } | null;
-        const carried = payload !== null && typeof payload === "object" && !Array.isArray(payload) ? payload.eventId : undefined;
-        names.set(entry.eventId, typeof carried === "string" ? carried : `kernel-event:${entry.eventId}`);
-        continue;
+        // The name travels in the payload so that "same content" means what the fixture means. It is
+        // checked against the name that was offered, and never read as the Event's name.
+        const name = offered.get(entry.eventId);
+        if (name === undefined) throw new AnswerContradiction("input_unoffered", `the inspection holds input Event ${entry.eventId}, which no answer named`);
+        if (carriedName(entry) !== name) throw new AnswerContradiction("input_payload", `the payload of Event ${entry.eventId} no longer carries the name it was offered`);
       }
-      // A timeout Event is Kernel-minted and has no payload. A `deliver_timer` command names it; one
-      // minted at registration has no command, and takes the owner-adopted `to-<generation>` label from
-      // its own generation (§A4). The table decides which applies, and exposes an ID whose offered name
-      // or label already denotes another ID. A generation with no laboratory name has no label.
-      const generation = generations.of(view.executionId).nameOf(String(entry.waitGeneration));
-      names.set(entry.eventId, timeouts.of(view.executionId).show(entry.eventId, generation === null ? null : `to-${generation}`));
+      const text = ledger.assign(entry.eventId, null);
+      names.set(entry.eventId, text);
     }
     return names;
   };
@@ -340,8 +431,9 @@ function begin(options: KernelCandidateOptions, scenario: Scenario, _sink: Opera
   /** One inspection after the command, joined with what the command's own answer said. */
   const observe = (executionId: string, facts: AnswerFacts = {}): Observation => {
     const view = viewOf(executionId);
+    for (const claim of claims) claim(view);
     const names = eventNames(view);
-    const name = (eventId: string): string => names.get(eventId) ?? `kernel-event:${eventId}`;
+    const name = (eventId: string): string => names.get(eventId) ?? events.of(view.executionId).assign(eventId, null);
     const activation = view.activation;
 
     // §A5: drop the stored refusal when the episode key changed, then store this command's, then report.
@@ -368,7 +460,7 @@ function begin(options: KernelCandidateOptions, scenario: Scenario, _sink: Opera
 
     const hold = view.recoveryHolds[0];
     return {
-      executionId: executions.nameOf(view.executionId) ?? `kernel-execution:${view.executionId}`,
+      executionId: executions.assign(view.executionId, null),
       state: view.state,
       progressRevision: view.progressRevision,
       progress: plainCopy(view.acceptedProgress),
@@ -455,8 +547,19 @@ function begin(options: KernelCandidateOptions, scenario: Scenario, _sink: Opera
     };
     const answer = coordinator.submitOutcome(LABORATORY, envelope, grant);
     if (!answer.ok) return observeRefusal(answer.error, "the Outcome");
-    if (outcome.next.step === "await" && answer.value.wait !== null) {
-      generations.of(executionId).bind(outcome.next.wait.generation, String(answer.value.wait.generation));
+    const wait = answer.value.wait;
+    claims.push(claimWait(outcome.activationId, outcome.next.step === "await", wait));
+    if (outcome.next.step === "await" && wait !== null) {
+      const generationLedger = generations.of(executionId);
+      const key = String(wait.generation);
+      const shownGeneration = generationLedger.assign(key, outcome.next.wait.generation);
+      if (wait.timeoutEventId !== null) {
+        // Owner choice 02 Q2 b: a timeout minted at registration is offered its generation's label,
+        // here, at the answer that announces it, and only if the generation took its laboratory name.
+        const eventLedger = events.of(executionId);
+        const label = generationLedger.tookOffer(key) ? `to-${shownGeneration}` : null;
+        eventLedger.assign(wait.timeoutEventId, label);
+      }
     }
     return observe(executionId, { receiptToken: answer.value.receipt.token });
   };
@@ -467,10 +570,19 @@ function begin(options: KernelCandidateOptions, scenario: Scenario, _sink: Opera
     return { activationId: activation.activationId, writerEpoch: activation.writerEpoch };
   };
 
+  /** An accepted input answer: the offer (rule 2), the retained offered name (rule 5) and the claim (rule 4). */
+  const offerInput = (executionId: string, eventId: string, name: string): void => {
+    events.of(executionId).assign(eventId, name);
+    const offered = offeredInputNames.of(executionId);
+    if (!offered.has(eventId)) offered.set(eventId, name);
+    claims.push(claimInput(eventId, name));
+  };
+
   return {
     apply(command: Command): Observation {
       const problem = unsupportedCommand(command);
       if (problem !== null) throw new Error(`unsupported command reached apply: ${problem}`);
+      claims = [];
       switch (command.kind) {
         case "create":
         case "create_retry": {
@@ -484,7 +596,8 @@ function begin(options: KernelCandidateOptions, scenario: Scenario, _sink: Opera
             initialInput: inputContent(command.initialInput),
           });
           if (!answer.ok) return observeRefusal(answer.error, "the create");
-          executions.bind(command.executionId, answer.value.executionId);
+          executions.assign(answer.value.executionId, command.executionId);
+          offerInput(answer.value.executionId, answer.value.initialEventId, command.initialInput.eventId);
           return observe(answer.value.executionId, { receiptToken: answer.value.receipt.token });
         }
         case "accept_event": {
@@ -496,8 +609,12 @@ function begin(options: KernelCandidateOptions, scenario: Scenario, _sink: Opera
             requestKey: (event as Extract<FixtureEvent, { category: "application_input" }>).requestKey,
             ...content,
           });
-          if (answer.ok) return observe(executionId);
+          if (answer.ok) {
+            offerInput(executionId, answer.value.eventId, event.eventId);
+            return observe(executionId);
+          }
           if (answer.error.classification === "terminal_destination" && answer.error.executionId === executionId) {
+            // No Event was accepted, so there is no Kernel ID and no ledger entry: the command's own name is echoed.
             return observe(executionId, { ingressRefused: event.eventId });
           }
           return observeRefusal(answer.error, "the input");
@@ -525,9 +642,9 @@ function begin(options: KernelCandidateOptions, scenario: Scenario, _sink: Opera
         }
         case "deliver_timer": {
           const executionId = kernelExecution(command.executionId);
-          const minted = generations.of(executionId).idOf(command.generation);
+          const minted = generations.of(executionId).resolve(command.generation);
           if (minted === null) {
-            throw new Error(`deliver_timer names wait generation ${JSON.stringify(command.generation)}, which the Kernel never issued for this Execution`);
+            throw new UnknownLaboratoryReference(`deliver_timer names wait generation ${JSON.stringify(command.generation)}, which the Kernel never issued for this Execution`);
           }
           const generation = Number(minted);
           // Laboratory scheduling only: move the clock to this timer's own persisted deadline when the
@@ -541,7 +658,8 @@ function begin(options: KernelCandidateOptions, scenario: Scenario, _sink: Opera
           if (answer.result !== "expired" && answer.result !== "duplicate" && answer.result !== "stale" && answer.result !== "not_due") {
             throw new Error(`the timer fire answered ${answer.result}: ${answer.reason}`);
           }
-          if (answer.timeoutEventId !== null) timeouts.of(executionId).nameByCommand(command.timeoutEvent.eventId, answer.timeoutEventId);
+          claims.push(claimTimer(generation, answer.timeoutEventId));
+          if (answer.timeoutEventId !== null) events.of(executionId).assign(answer.timeoutEventId, command.timeoutEvent.eventId);
           return observe(executionId);
         }
         case "recover": {

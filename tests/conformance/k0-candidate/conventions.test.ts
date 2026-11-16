@@ -154,9 +154,10 @@ describe("K1.4-candidate: aliases are scoped to their Execution (design check 01
     assert.deepEqual([dueX.state, dueX.queued, dueX.waitEndedReadiness], ["READY", ["to-first-of-x"], [{ generation: "first-of-x", species: "deadline" }]]);
     assert.deepEqual([dueY.state, dueY.queued, dueY.waitEndedReadiness], ["READY", ["to-first-of-y"], [{ generation: "first-of-y", species: "deadline" }]]);
 
-    // A later fire names the same Event; the explicit name is bound to it from then on.
+    // A later fire names the same Event. A shown string never changes, so the label stays
+    // (design 03, owner choice 04 OQ-1; at H the command's name replaced it).
     const named = apply(timer("x", "first-of-x", "named-by-timer"));
-    assert.deepEqual(named.queued, ["named-by-timer"]);
+    assert.deepEqual(named, dueX);
     assert.deepEqual(apply({ kind: "inspect", executionId: "y" }).queued, ["to-first-of-y"]);
   });
 
@@ -182,9 +183,10 @@ describe("K1.4-candidate: aliases are scoped to their Execution (design check 01
 
 /**
  * Review 01 K14C-R01-01. At H `484afd13` a `deliver_timer` name that could not be bound left the timeout
- * ID looking unnamed, and the `to-<generation>` label then covered the conflict. The timeout name table
- * now keeps each binding's provenance (`TimeoutNames`). The first two tests are the review's probes
- * (`review-01/probes.mjs` at `7b8a63fa`), with the repaired behavior as the expectation.
+ * ID looking unnamed, and the `to-<generation>` label then covered the conflict. The first two tests are
+ * the review's probes (`review-01/probes.mjs` at `7b8a63fa`), with the repaired behavior as the
+ * expectation. Since round 3 the mechanism is the name ledger of design 03, and three tests here state
+ * owner choice 04's OQ-1: a shown string never changes. `identity.test.ts` holds the ledger's own tests.
  */
 describe("K1.4-candidate: timeout names keep their provenance (review 01 K14C-R01-01)", () => {
   /** A coordinator that keeps the last inspected view, so a test can read the Kernel's own timeout IDs. */
@@ -292,20 +294,20 @@ describe("K1.4-candidate: timeout names keep their provenance (review 01 K14C-R0
     assert.equal(timeoutIds().length, 1);
   });
 
-  test("an unnamed timeout takes a command's name once; its old label still denotes it and no other", () => {
+  test("an unnamed timeout keeps its label when commands name it later, and the label names no second ID", () => {
     const { apply, timeoutIds } = capturing();
     apply(create("x", "kx", input("initial", "x", "initial")));
     const due = apply(waitOn(apply(dispatchOne()), "g1", 1));
     assert.deepEqual(due.queued, ["to-g1"]);
-    assert.deepEqual(apply(timer("x", "g1", "named-by-timer")).queued, ["named-by-timer"]);
-    assert.deepEqual(apply(timer("x", "g1", "named-again")).queued, ["named-by-timer"]);
+    assert.deepEqual(apply(timer("x", "g1", "named-by-timer")), due, "OQ-1: the label stays");
+    assert.deepEqual(apply(timer("x", "g1", "named-again")), due);
 
-    // The next generation's timeout is offered the first one's old label.
+    // The next generation's timeout is offered the first one's label.
     apply(waitOn(apply(dispatchOne()), "g2", 30));
     const second = apply(timer("x", "g2", "to-g1"));
     assert.equal(timeoutIds().length, 2);
-    assert.deepEqual(second.acknowledged, ["initial", "named-by-timer"]);
-    assert.deepEqual(second.queued, [`kernel-event:${timeoutIds()[1]}`], "a label is a binding: it cannot name a second ID");
+    assert.deepEqual(second.acknowledged, ["initial", "to-g1"]);
+    assert.deepEqual(second.queued, [`kernel-event:${timeoutIds()[1]}`], "a label is a ledger entry: it cannot name a second ID");
   });
 
   test("a label that already denotes a command-named timeout is not given to an unnamed one", () => {
@@ -325,7 +327,7 @@ describe("K1.4-candidate: timeout names keep their provenance (review 01 K14C-R0
     assert.deepEqual(apply(timer("x", "g2", "free-name")).queued, [`kernel-event:${timeoutIds()[1]}`]);
   });
 
-  test("a command name that denotes another timeout exposes even a timeout that already had its label", () => {
+  test("a labelled timeout offered another timeout's name keeps its own label", () => {
     const { apply, timeoutIds } = capturing();
     apply(create("x", "kx", input("initial", "x", "initial")));
     const first = apply(waitOn(apply(dispatchOne()), "g1", 1));
@@ -333,10 +335,11 @@ describe("K1.4-candidate: timeout names keep their provenance (review 01 K14C-R0
     const second = apply(waitOn(apply(dispatchOne()), "g2", 1));
     assert.deepEqual([second.acknowledged, second.queued], [["initial", "to-g1"], ["to-g2"]]);
 
-    // g2's timeout, which carries the label `to-g2`, is now offered `to-g1`.
+    // g2's timeout, which carries the label `to-g2`, is now offered `to-g1`. Its string does not change
+    // (OQ-1), and `to-g1` goes on denoting the first timeout.
     const offered = apply(timer("x", "g2", "to-g1"));
-    assert.deepEqual(offered.acknowledged, ["initial", "to-g1"]);
-    assert.deepEqual(offered.queued, [`kernel-event:${timeoutIds()[1]}`]);
+    assert.deepEqual(offered, second);
+    assert.equal(timeoutIds().length, 2);
   });
 
   test("a duplicate fire under the same name and a fire of an ended generation change nothing", () => {
