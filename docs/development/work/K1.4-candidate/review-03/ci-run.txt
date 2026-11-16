@@ -1,0 +1,8 @@
+revision=41bd3aaa5cf83c51e93d41da567558d34f943410
+spec=docs/development/work/K1.4-candidate/verification.json
+head=41bd3aaa5cf83c51e93d41da567558d34f943410
+node=v26.10.0 npm=11.19.1 python=Python 3.13.18
+runner=Linux x86_64 cpus=4
+started=2026-11-16T03:28:11Z
+finished=2026-11-16T05:47:20Z
+exit=0

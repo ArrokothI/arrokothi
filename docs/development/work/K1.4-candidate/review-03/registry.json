@@ -1,0 +1,768 @@
+{
+  "operation": "mutations",
+  "revision": "41bd3aaa5cf83c51e93d41da567558d34f943410",
+  "registry": "tests/fixtures/packet-tools/mutations.json",
+  "result": "selected_cases_passed",
+  "counts": {
+    "killed": 12
+  },
+  "cases": [
+    {
+      "case": "k14-candidate.abl-1",
+      "content_key": "case-3a576996668e5135520fd93e2873a99e28fb6fb147c7d153d742bb5f5eeb0906",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k14-candidate.abl-1\",\"assertion\":\"k14-candidate.abl-1.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"control-duplicate-conflicting-outcome\",\"steps\":5}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-69a9e53f3bee2033cb365560f43348b95956502b6a1f20e542d61c4d4f2c612a",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k14-candidate.abl-1\",\"assertion\":\"k14-candidate.abl-1.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"control-duplicate-conflicting-outcome step 3: rejection\"],\"scenario\":\"control-duplicate-conflicting-outcome\",\"steps\":5}\n"
+          },
+          "invalid": false,
+          "killed_by": "control-duplicate-conflicting-outcome step 3: rejection",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"k14-candidate.abl-1\",\"assertion\":\"k14-candidate.abl-1.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"control-duplicate-conflicting-outcome step 3: rejection\"],\"scenario\":\"control-duplicate-conflicting-outcome\",\"steps\":5}\n"
+            }
+          },
+          "content_key": "mutation-69a9e53f3bee2033cb365560f43348b95956502b6a1f20e542d61c4d4f2c612a"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"k14-candidate.abl-1\",\"assertion\":\"k14-candidate.abl-1.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"control-duplicate-conflicting-outcome\",\"steps\":5}\n"
+        }
+      }
+    },
+    {
+      "case": "k14-candidate.abl-2",
+      "content_key": "case-b06b9eb2e651fce4de57157b511894f6088588793ff297f2523a4bcbddfbb2e7",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k14-candidate.abl-2\",\"assertion\":\"k14-candidate.abl-2.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"identity-create-and-activation\",\"steps\":10}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-58fe7445c5aab1d415357e47282800c643dbbd860f3bb066c2d74dddb5c631e3",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k14-candidate.abl-2\",\"assertion\":\"k14-candidate.abl-2.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"identity-create-and-activation step 7: rejection\"],\"scenario\":\"identity-create-and-activation\",\"steps\":10}\n"
+          },
+          "invalid": false,
+          "killed_by": "identity-create-and-activation step 7: rejection",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"k14-candidate.abl-2\",\"assertion\":\"k14-candidate.abl-2.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"identity-create-and-activation step 7: rejection\"],\"scenario\":\"identity-create-and-activation\",\"steps\":10}\n"
+            }
+          },
+          "content_key": "mutation-58fe7445c5aab1d415357e47282800c643dbbd860f3bb066c2d74dddb5c631e3"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"k14-candidate.abl-2\",\"assertion\":\"k14-candidate.abl-2.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"identity-create-and-activation\",\"steps\":10}\n"
+        }
+      }
+    },
+    {
+      "case": "k14-candidate.abl-3",
+      "content_key": "case-8259438caf9a72cf0c6a159d3d090a90afb5403935822dc73dfdae45134d4dcf",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k14-candidate.abl-3\",\"assertion\":\"k14-candidate.abl-3.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"control-cancel-versus-complete\",\"steps\":12}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-6e7dcdc08a7cb7f3b21e9e38f09560a7811ac5cff516b0ee40695d45115676c1",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k14-candidate.abl-3\",\"assertion\":\"k14-candidate.abl-3.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"control-cancel-versus-complete step 3: rejection\"],\"scenario\":\"control-cancel-versus-complete\",\"steps\":12}\n"
+          },
+          "invalid": false,
+          "killed_by": "control-cancel-versus-complete step 3: rejection",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"k14-candidate.abl-3\",\"assertion\":\"k14-candidate.abl-3.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"control-cancel-versus-complete step 3: rejection\"],\"scenario\":\"control-cancel-versus-complete\",\"steps\":12}\n"
+            }
+          },
+          "content_key": "mutation-6e7dcdc08a7cb7f3b21e9e38f09560a7811ac5cff516b0ee40695d45115676c1"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"k14-candidate.abl-3\",\"assertion\":\"k14-candidate.abl-3.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"control-cancel-versus-complete\",\"steps\":12}\n"
+        }
+      }
+    },
+    {
+      "case": "k14-candidate.abl-4",
+      "content_key": "case-707915e137e6bc6b704c8aac2a7081854bfec394c620bd332d5f3a7cdc70667b",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k14-candidate.abl-4\",\"assertion\":\"k14-candidate.abl-4.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"k0-trace\",\"steps\":9}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-f65044904098b8b220a6c467303171a53e25a71d55b0d4617092aef31df87fae",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k14-candidate.abl-4\",\"assertion\":\"k14-candidate.abl-4.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"k0-trace step 7: dispatchedBatch\"],\"scenario\":\"k0-trace\",\"steps\":9}\n"
+          },
+          "invalid": false,
+          "killed_by": "k0-trace step 7: dispatchedBatch",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"k14-candidate.abl-4\",\"assertion\":\"k14-candidate.abl-4.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"k0-trace step 7: dispatchedBatch\"],\"scenario\":\"k0-trace\",\"steps\":9}\n"
+            }
+          },
+          "content_key": "mutation-f65044904098b8b220a6c467303171a53e25a71d55b0d4617092aef31df87fae"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"k14-candidate.abl-4\",\"assertion\":\"k14-candidate.abl-4.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"k0-trace\",\"steps\":9}\n"
+        }
+      }
+    },
+    {
+      "case": "k14-candidate.abl-5",
+      "content_key": "case-b1766a04ae3c63ba32b2c6632eb37ed59e5832d4a5ce78c30643b35de28bb772",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k14-candidate.abl-5\",\"assertion\":\"k14-candidate.abl-5.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"effect-refusal-and-sink-attribution\",\"steps\":4}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-850ac0075fdb1b2216bf7199932e88ed4f3f109cea0dcc38dcc499495182985d",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k14-candidate.abl-5\",\"assertion\":\"k14-candidate.abl-5.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"effect-refusal-and-sink-attribution step 2: state, progressRevision, progress, emissions, acknowledged, queued, dispatchedBatch, activationId, receipt, rejection\"],\"scenario\":\"effect-refusal-and-sink-attribution\",\"steps\":4}\n"
+          },
+          "invalid": false,
+          "killed_by": "effect-refusal-and-sink-attribution step 2: state, progressRevision, progress, emissions, acknowledged, queued, dispatchedBatch, activationId, receipt, rejection",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"k14-candidate.abl-5\",\"assertion\":\"k14-candidate.abl-5.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"effect-refusal-and-sink-attribution step 2: state, progressRevision, progress, emissions, acknowledged, queued, dispatchedBatch, activationId, receipt, rejection\"],\"scenario\":\"effect-refusal-and-sink-attribution\",\"steps\":4}\n"
+            }
+          },
+          "content_key": "mutation-850ac0075fdb1b2216bf7199932e88ed4f3f109cea0dcc38dcc499495182985d"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"k14-candidate.abl-5\",\"assertion\":\"k14-candidate.abl-5.killed\",\"reached\":true,\"passed\":true,\"scenario\":\"effect-refusal-and-sink-attribution\",\"steps\":4}\n"
+        }
+      }
+    },
+    {
+      "case": "k14-candidate.identity-m1",
+      "content_key": "case-f94f9327da27321393b1be28f41b339827173c124d4e3194f8cb36ff6831dcc1",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k14-candidate.identity-m1\",\"assertion\":\"k14-candidate.identity-m1.killed\",\"reached\":true,\"passed\":true}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-eaafd08c1848bb6f3ea6612b0ee874e174455fb6b74d7538dd890909486b8f6e",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k14-candidate.identity-m1\",\"assertion\":\"k14-candidate.identity-m1.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"three timeouts, three strings: the strings are not distinct: [\\\"initial\\\",\\\"taken\\\",\\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\",\\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\"]\",\"a reference by the fresh Execution string: expected an Observation, and the candidate threw UnknownLaboratoryReference: the command names Execution \\\"kernel-execution:execution-12:identity-lab10:k0-fixture2:k2\\\", which the Kernel has not created in this run\",\"oracle, lab 0: relation: step 9: queued[0]: \\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2 and is now shown for timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:3\",\"oracle, lab 1: exit: step 2: the command made no Kernel call and threw: the command names Execution \\\"kernel-execution:execution-12:identity-lab10:k0-fixture2:k2\\\", which the Kernel has not created in this run\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "three timeouts, three strings: the strings are not distinct: [\"initial\",\"taken\",\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\",\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\"]",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"k14-candidate.identity-m1\",\"assertion\":\"k14-candidate.identity-m1.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"three timeouts, three strings: the strings are not distinct: [\\\"initial\\\",\\\"taken\\\",\\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\",\\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\"]\",\"a reference by the fresh Execution string: expected an Observation, and the candidate threw UnknownLaboratoryReference: the command names Execution \\\"kernel-execution:execution-12:identity-lab10:k0-fixture2:k2\\\", which the Kernel has not created in this run\",\"oracle, lab 0: relation: step 9: queued[0]: \\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2 and is now shown for timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:3\",\"oracle, lab 1: exit: step 2: the command made no Kernel call and threw: the command names Execution \\\"kernel-execution:execution-12:identity-lab10:k0-fixture2:k2\\\", which the Kernel has not created in this run\"]}\n"
+            }
+          },
+          "content_key": "mutation-eaafd08c1848bb6f3ea6612b0ee874e174455fb6b74d7538dd890909486b8f6e"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"k14-candidate.identity-m1\",\"assertion\":\"k14-candidate.identity-m1.killed\",\"reached\":true,\"passed\":true}\n"
+        }
+      }
+    },
+    {
+      "case": "k14-candidate.identity-m2",
+      "content_key": "case-79e14ee494c87fde2a32899ade6344fd8ec6a5480aa73f99233a8ead934559a2",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k14-candidate.identity-m2\",\"assertion\":\"k14-candidate.identity-m2.killed\",\"reached\":true,\"passed\":true}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-2f68d2bf001c484076fd10686a6a46dc0105fc87027d7d715522a7c46bb58780",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k14-candidate.identity-m2\",\"assertion\":\"k14-candidate.identity-m2.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"every Event string is distinct: the strings are not distinct: [\\\"initial\\\",\\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\",\\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2~2\\\",\\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\"]\",\"the fresh string is the first free variant: expected \\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2~3\\\", got \\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\"\",\"oracle, lab 0: relation: step 7: queued[1]: \\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 and is now shown for timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "every Event string is distinct: the strings are not distinct: [\"initial\",\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\",\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2~2\",\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\"]",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"k14-candidate.identity-m2\",\"assertion\":\"k14-candidate.identity-m2.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"every Event string is distinct: the strings are not distinct: [\\\"initial\\\",\\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\",\\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2~2\\\",\\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\"]\",\"the fresh string is the first free variant: expected \\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2~3\\\", got \\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\"\",\"oracle, lab 0: relation: step 7: queued[1]: \\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 and is now shown for timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\"]}\n"
+            }
+          },
+          "content_key": "mutation-2f68d2bf001c484076fd10686a6a46dc0105fc87027d7d715522a7c46bb58780"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"k14-candidate.identity-m2\",\"assertion\":\"k14-candidate.identity-m2.killed\",\"reached\":true,\"passed\":true}\n"
+        }
+      }
+    },
+    {
+      "case": "k14-candidate.identity-m3",
+      "content_key": "case-97833a4b7f44ce97a25245a303133796409848ac3d0e8b09155affb4da1d6063",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k14-candidate.identity-m3\",\"assertion\":\"k14-candidate.identity-m3.killed\",\"reached\":true,\"passed\":true}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-d99ba20ae106cf8c2e4125c8d5ebc943b61e3cd35d4d30185cdb747267369400",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k14-candidate.identity-m3\",\"assertion\":\"k14-candidate.identity-m3.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"the label and the input are two strings: the strings are not distinct: [\\\"initial\\\",\\\"to-g1\\\",\\\"to-g1\\\"]\",\"the label names one Event only: the strings are not distinct: [\\\"initial\\\",\\\"to-g1\\\",\\\"to-g1\\\",\\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\"]\",\"oracle, lab 0: relation: step 3: queued[1]: \\\"to-g1\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 and is now shown for event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:ka\",\"oracle, lab 0: relation: step 4: queued[1]: \\\"to-g1\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 and is now shown for event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:ka\",\"oracle, lab 0: relation: step 5: queued[0]: \\\"to-g1\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 and is now shown for event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:ka\",\"oracle, lab 0: relation: step 6: queued[0]: \\\"to-g1\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 and is now shown for event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:ka\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "the label and the input are two strings: the strings are not distinct: [\"initial\",\"to-g1\",\"to-g1\"]",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"k14-candidate.identity-m3\",\"assertion\":\"k14-candidate.identity-m3.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"the label and the input are two strings: the strings are not distinct: [\\\"initial\\\",\\\"to-g1\\\",\\\"to-g1\\\"]\",\"the label names one Event only: the strings are not distinct: [\\\"initial\\\",\\\"to-g1\\\",\\\"to-g1\\\",\\\"kernel-event:timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:2\\\"]\",\"oracle, lab 0: relation: step 3: queued[1]: \\\"to-g1\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 and is now shown for event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:ka\",\"oracle, lab 0: relation: step 4: queued[1]: \\\"to-g1\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 and is now shown for event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:ka\",\"oracle, lab 0: relation: step 5: queued[0]: \\\"to-g1\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 and is now shown for event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:ka\",\"oracle, lab 0: relation: step 6: queued[0]: \\\"to-g1\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 and is now shown for event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:ka\"]}\n"
+            }
+          },
+          "content_key": "mutation-d99ba20ae106cf8c2e4125c8d5ebc943b61e3cd35d4d30185cdb747267369400"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"k14-candidate.identity-m3\",\"assertion\":\"k14-candidate.identity-m3.killed\",\"reached\":true,\"passed\":true}\n"
+        }
+      }
+    },
+    {
+      "case": "k14-candidate.identity-m4",
+      "content_key": "case-212fad0ac16cb5a8941db19fcf06098dafc0bb35c5cb8c5d09f6436a132d9f32",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k14-candidate.identity-m4\",\"assertion\":\"k14-candidate.identity-m4.killed\",\"reached\":true,\"passed\":true}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-fb23b57215e5c646ba7cd08b044a08987240417e6bea1b26bbec064e18317de0",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k14-candidate.identity-m4\",\"assertion\":\"k14-candidate.identity-m4.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"two request keys, two strings: the strings are not distinct: [\\\"initial\\\",\\\"same\\\",\\\"same\\\"]\",\"a timeout, then an input under its name: the strings are not distinct: [\\\"initial\\\",\\\"shared\\\",\\\"shared\\\"]\",\"oracle, lab 0: relation: step 2: queued[2]: \\\"same\\\" denotes event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:k1 and is now shown for event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:k2\",\"oracle, lab 1: relation: step 4: queued[1]: \\\"shared\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 and is now shown for event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:ka\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "two request keys, two strings: the strings are not distinct: [\"initial\",\"same\",\"same\"]",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"k14-candidate.identity-m4\",\"assertion\":\"k14-candidate.identity-m4.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"two request keys, two strings: the strings are not distinct: [\\\"initial\\\",\\\"same\\\",\\\"same\\\"]\",\"a timeout, then an input under its name: the strings are not distinct: [\\\"initial\\\",\\\"shared\\\",\\\"shared\\\"]\",\"oracle, lab 0: relation: step 2: queued[2]: \\\"same\\\" denotes event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:k1 and is now shown for event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:k2\",\"oracle, lab 1: relation: step 4: queued[1]: \\\"shared\\\" denotes timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 and is now shown for event-12:identity-lab42:execution-12:identity-lab10:k0-fixture2:kx2:ka\"]}\n"
+            }
+          },
+          "content_key": "mutation-fb23b57215e5c646ba7cd08b044a08987240417e6bea1b26bbec064e18317de0"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"k14-candidate.identity-m4\",\"assertion\":\"k14-candidate.identity-m4.killed\",\"reached\":true,\"passed\":true}\n"
+        }
+      }
+    },
+    {
+      "case": "k14-candidate.identity-m5",
+      "content_key": "case-0d558e455a50e4a5742656d8f870736495ba08412a451e9b16f83ff0d1476c0c",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k14-candidate.identity-m5\",\"assertion\":\"k14-candidate.identity-m5.killed\",\"reached\":true,\"passed\":true}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-b9974a87478b2aff38790d74e49632706acf4ab66ce45dce1202d746681dc28f",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k14-candidate.identity-m5\",\"assertion\":\"k14-candidate.identity-m5.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"a fire by the fresh string: expected an Observation, and the candidate threw UnknownLaboratoryReference: deliver_timer names wait generation \\\"kernel-generation:2\\\", which the Kernel never issued for this Execution\",\"oracle, lab 0: exit: step 7: the command made no Kernel call and threw: deliver_timer names wait generation \\\"kernel-generation:2\\\", which the Kernel never issued for this Execution\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "a fire by the fresh string: expected an Observation, and the candidate threw UnknownLaboratoryReference: deliver_timer names wait generation \"kernel-generation:2\", which the Kernel never issued for this Execution",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"k14-candidate.identity-m5\",\"assertion\":\"k14-candidate.identity-m5.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"a fire by the fresh string: expected an Observation, and the candidate threw UnknownLaboratoryReference: deliver_timer names wait generation \\\"kernel-generation:2\\\", which the Kernel never issued for this Execution\",\"oracle, lab 0: exit: step 7: the command made no Kernel call and threw: deliver_timer names wait generation \\\"kernel-generation:2\\\", which the Kernel never issued for this Execution\"]}\n"
+            }
+          },
+          "content_key": "mutation-b9974a87478b2aff38790d74e49632706acf4ab66ce45dce1202d746681dc28f"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"k14-candidate.identity-m5\",\"assertion\":\"k14-candidate.identity-m5.killed\",\"reached\":true,\"passed\":true}\n"
+        }
+      }
+    },
+    {
+      "case": "k14-candidate.identity-m6",
+      "content_key": "case-1d6a4c122f22ac9d36a91c16d1169ab9391f6a602d945081b760e46cf48f7e38",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k14-candidate.identity-m6\",\"assertion\":\"k14-candidate.identity-m6.killed\",\"reached\":true,\"passed\":true}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-0d2856e386c3bfafb2ca5d97bd4e0ace7abbe098a822f7a9b3ae46cd8d076684",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k14-candidate.identity-m6\",\"assertion\":\"k14-candidate.identity-m6.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"the label stays: expected [\\\"to-g1\\\"], got [\\\"first-name\\\"]\",\"nothing else moved: expected {\\\"executionId\\\":\\\"x\\\",\\\"state\\\":\\\"READY\\\",\\\"progressRevision\\\":1,\\\"progress\\\":null,\\\"emissions\\\":[],\\\"acknowledged\\\":[\\\"initial\\\"],\\\"queued\\\":[\\\"to-g1\\\"],\\\"terminalDispositions\\\":[],\\\"liveWaitGeneration\\\":null,\\\"waitEndedReadiness\\\":[{\\\"generation\\\":\\\"g1\\\",\\\"species\\\":\\\"deadline\\\"}],\\\"acceptedDeadline\\\":null,\\\"dispatchedBatch\\\":null,\\\"activationId\\\":null,\\\"ingressRefused\\\":null,\\\"receipt\\\":\\\"out:execution-12:identity-lab10:k0-fixture2:kx:3\\\",\\\"rejection\\\":null,\\\"writerEpoch\\\":0,\\\"recoveryHold\\\":null,\\\"effectIntents\\\":[]}, got {\\\"executionId\\\":\\\"x\\\",\\\"state\\\":\\\"READY\\\",\\\"progressRevision\\\":1,\\\"progress\\\":null,\\\"emissions\\\":[],\\\"acknowledged\\\":[\\\"initial\\\"],\\\"queued\\\":[\\\"first-name\\\"],\\\"terminalDispositions\\\":[],\\\"liveWaitGeneration\\\":null,\\\"waitEndedReadiness\\\":[{\\\"generation\\\":\\\"g1\\\",\\\"species\\\":\\\"deadline\\\"}],\\\"acceptedDeadline\\\":null,\\\"dispatchedBatch\\\":null,\\\"activationId\\\":null,\\\"ingressRefused\\\":null,\\\"receipt\\\":\\\"out:execution-12:identity-lab10:k0-fixture2:kx:3\\\",\\\"rejection\\\":null,\\\"writerEpoch\\\":0,\\\"recoveryHold\\\":null,\\\"effectIntents\\\":[]}\",\"oracle, lab 0: relation: step 3: queued[0]: timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 was shown as \\\"to-g1\\\" and is now \\\"first-name\\\"\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "the label stays: expected [\"to-g1\"], got [\"first-name\"]",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"k14-candidate.identity-m6\",\"assertion\":\"k14-candidate.identity-m6.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"the label stays: expected [\\\"to-g1\\\"], got [\\\"first-name\\\"]\",\"nothing else moved: expected {\\\"executionId\\\":\\\"x\\\",\\\"state\\\":\\\"READY\\\",\\\"progressRevision\\\":1,\\\"progress\\\":null,\\\"emissions\\\":[],\\\"acknowledged\\\":[\\\"initial\\\"],\\\"queued\\\":[\\\"to-g1\\\"],\\\"terminalDispositions\\\":[],\\\"liveWaitGeneration\\\":null,\\\"waitEndedReadiness\\\":[{\\\"generation\\\":\\\"g1\\\",\\\"species\\\":\\\"deadline\\\"}],\\\"acceptedDeadline\\\":null,\\\"dispatchedBatch\\\":null,\\\"activationId\\\":null,\\\"ingressRefused\\\":null,\\\"receipt\\\":\\\"out:execution-12:identity-lab10:k0-fixture2:kx:3\\\",\\\"rejection\\\":null,\\\"writerEpoch\\\":0,\\\"recoveryHold\\\":null,\\\"effectIntents\\\":[]}, got {\\\"executionId\\\":\\\"x\\\",\\\"state\\\":\\\"READY\\\",\\\"progressRevision\\\":1,\\\"progress\\\":null,\\\"emissions\\\":[],\\\"acknowledged\\\":[\\\"initial\\\"],\\\"queued\\\":[\\\"first-name\\\"],\\\"terminalDispositions\\\":[],\\\"liveWaitGeneration\\\":null,\\\"waitEndedReadiness\\\":[{\\\"generation\\\":\\\"g1\\\",\\\"species\\\":\\\"deadline\\\"}],\\\"acceptedDeadline\\\":null,\\\"dispatchedBatch\\\":null,\\\"activationId\\\":null,\\\"ingressRefused\\\":null,\\\"receipt\\\":\\\"out:execution-12:identity-lab10:k0-fixture2:kx:3\\\",\\\"rejection\\\":null,\\\"writerEpoch\\\":0,\\\"recoveryHold\\\":null,\\\"effectIntents\\\":[]}\",\"oracle, lab 0: relation: step 3: queued[0]: timeout-42:execution-12:identity-lab10:k0-fixture2:kx1:1 was shown as \\\"to-g1\\\" and is now \\\"first-name\\\"\"]}\n"
+            }
+          },
+          "content_key": "mutation-0d2856e386c3bfafb2ca5d97bd4e0ace7abbe098a822f7a9b3ae46cd8d076684"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"k14-candidate.identity-m6\",\"assertion\":\"k14-candidate.identity-m6.killed\",\"reached\":true,\"passed\":true}\n"
+        }
+      }
+    },
+    {
+      "case": "k14-candidate.identity-m7",
+      "content_key": "case-7d18579d0a8fc4320ec0378db349ebbcbf9bd31fc4565f66097a2a687ee89f1d",
+      "claim": {
+        "kind": "mechanism_witness",
+        "owner": "K1.4-candidate",
+        "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+        "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+        "semantic_credit": "none"
+      },
+      "kind": "probe",
+      "control": "passed",
+      "baseline": {
+        "status": "finished",
+        "exit": 0,
+        "output": "{\"case\":\"k14-candidate.identity-m7\",\"assertion\":\"k14-candidate.identity-m7.killed\",\"reached\":true,\"passed\":true}\n"
+      },
+      "mutations": [
+        {
+          "mutation": "mutation-520c98cef5918bf22eafced8a91c6a7f2d324e5321439e9cfaa8b873db647007",
+          "status": "killed",
+          "run": {
+            "status": "finished",
+            "exit": 17,
+            "output": "{\"case\":\"k14-candidate.identity-m7\",\"assertion\":\"k14-candidate.identity-m7.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"a duplicate fire answered with an ID the mailbox does not hold: expected AnswerContradiction (timeout_generation), and the candidate returned an Observation\",\"a duplicate fire of the second generation answered with the first's timeout: expected AnswerContradiction (timeout_generation), and the candidate returned an Observation\",\"oracle, lab 0: exit: step 4: the answer contradicts the inspection (timeout_generation) and the command did not throw AnswerContradiction\",\"oracle, lab 1: exit: step 7: the answer contradicts the inspection (timeout_generation) and the command did not throw AnswerContradiction\"]}\n"
+          },
+          "invalid": false,
+          "killed_by": "a duplicate fire answered with an ID the mailbox does not hold: expected AnswerContradiction (timeout_generation), and the candidate returned an Observation",
+          "determinism": {
+            "passed": true,
+            "runs": 2,
+            "repeat": {
+              "status": "finished",
+              "exit": 17,
+              "output": "{\"case\":\"k14-candidate.identity-m7\",\"assertion\":\"k14-candidate.identity-m7.killed\",\"reached\":true,\"passed\":false,\"failures\":[\"a duplicate fire answered with an ID the mailbox does not hold: expected AnswerContradiction (timeout_generation), and the candidate returned an Observation\",\"a duplicate fire of the second generation answered with the first's timeout: expected AnswerContradiction (timeout_generation), and the candidate returned an Observation\",\"oracle, lab 0: exit: step 4: the answer contradicts the inspection (timeout_generation) and the command did not throw AnswerContradiction\",\"oracle, lab 1: exit: step 7: the answer contradicts the inspection (timeout_generation) and the command did not throw AnswerContradiction\"]}\n"
+            }
+          },
+          "content_key": "mutation-520c98cef5918bf22eafced8a91c6a7f2d324e5321439e9cfaa8b873db647007"
+        }
+      ],
+      "determinism": {
+        "passed": true,
+        "runs": 2,
+        "repeat": {
+          "status": "finished",
+          "exit": 0,
+          "output": "{\"case\":\"k14-candidate.identity-m7\",\"assertion\":\"k14-candidate.identity-m7.killed\",\"reached\":true,\"passed\":true}\n"
+        }
+      }
+    }
+  ],
+  "determinism_sample": [
+    "k14-candidate.abl-1",
+    "k14-candidate.abl-2",
+    "k14-candidate.abl-3",
+    "k14-candidate.abl-4",
+    "k14-candidate.abl-5",
+    "k14-candidate.identity-m1",
+    "k14-candidate.identity-m2",
+    "k14-candidate.identity-m3",
+    "k14-candidate.identity-m4",
+    "k14-candidate.identity-m5",
+    "k14-candidate.identity-m6",
+    "k14-candidate.identity-m7"
+  ],
+  "environment": {
+    "passed": [
+      "PATH",
+      "HOME",
+      "TMPDIR"
+    ],
+    "unset_in_parent": [],
+    "set": {
+      "LANG": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "inputs": [],
+    "absent": [],
+    "inherited_values_recorded": false
+  },
+  "acceptance": "not evaluated",
+  "witnesses": [
+    {
+      "case": "k14-candidate.abl-1",
+      "kind": "mechanism_witness",
+      "owner": "K1.4-candidate",
+      "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+      "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k14-candidate.abl-2",
+      "kind": "mechanism_witness",
+      "owner": "K1.4-candidate",
+      "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+      "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k14-candidate.abl-3",
+      "kind": "mechanism_witness",
+      "owner": "K1.4-candidate",
+      "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+      "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k14-candidate.abl-4",
+      "kind": "mechanism_witness",
+      "owner": "K1.4-candidate",
+      "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+      "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k14-candidate.abl-5",
+      "kind": "mechanism_witness",
+      "owner": "K1.4-candidate",
+      "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+      "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The ablation is a Kernel-decision mutant killed by a named K0 schedule run through kernelCandidate and the fixture's unmodified runner; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k14-candidate.identity-m1",
+      "kind": "mechanism_witness",
+      "owner": "K1.4-candidate",
+      "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+      "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k14-candidate.identity-m2",
+      "kind": "mechanism_witness",
+      "owner": "K1.4-candidate",
+      "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+      "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k14-candidate.identity-m3",
+      "kind": "mechanism_witness",
+      "owner": "K1.4-candidate",
+      "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+      "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k14-candidate.identity-m4",
+      "kind": "mechanism_witness",
+      "owner": "K1.4-candidate",
+      "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+      "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k14-candidate.identity-m5",
+      "kind": "mechanism_witness",
+      "owner": "K1.4-candidate",
+      "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+      "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k14-candidate.identity-m6",
+      "kind": "mechanism_witness",
+      "owner": "K1.4-candidate",
+      "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+      "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    },
+    {
+      "case": "k14-candidate.identity-m7",
+      "kind": "mechanism_witness",
+      "owner": "K1.4-candidate",
+      "decision": "docs/development/work/BINDING-01/hold-release-01.md",
+      "reason": "Its run set matches released claims: the V-ENV detector finds intrinsic references in the candidate, the fixture, the identity lab and this probe, and the text of the files it names matches the re-prototyped-built-in recipe. So its register entry is unread (TOOLS-02 owner choice 02; design 03 section 1). The row is an adapter mechanism mutant killed by a named witness of the candidate's identity rule; it earns no conformance or correction credit.",
+      "semantic_credit": "none",
+      "reproduced": true
+    }
+  ],
+  "limits": [
+    "Only the listed cases and mutations were executed",
+    "Structured witnesses rely on reviewed independent fixtures; no universal causal proof",
+    "Trusted repository commands run without containment; temporary copies protect source files"
+  ],
+  "review_link_controls": {
+    "absent_link_without_flag": {
+      "result": "invalid_run",
+      "exit": 1
+    },
+    "existing_link_to_other_checkout": {
+      "result": "invalid_run",
+      "exit": 1,
+      "preserved": true
+    },
+    "with_flag": "twelve controls and twelve mutated copies use their own copied Kernel"
+  }
+}

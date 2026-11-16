@@ -1,0 +1,32 @@
+{
+  "workflow_run": 43798331633,
+  "job": 133072232338,
+  "artifact_id": 14201012405,
+  "artifact_sha256": "9c8ac55b5c8cfe6be195b40b5b47824efb5b7b20ef6a51bba79f058a62ab0292",
+  "artifact_bytes": 3076456,
+  "revision": "41bd3aaa5cf83c51e93d41da567558d34f943410",
+  "summary_member": "summary.json",
+  "checks_total": 19,
+  "checks_passed_counted": 19,
+  "summary_result": "checks_passed",
+  "mutation_results": {
+    "registered-mutants": {
+      "cases": 315,
+      "counts": {
+        "killed": 351
+      }
+    },
+    "refusal-mutants": {
+      "cases": 358,
+      "counts": {
+        "killed": 358
+      }
+    },
+    "value-cost-mutants": {
+      "cases": 18,
+      "counts": {
+        "killed": 238
+      }
+    }
+  }
+}

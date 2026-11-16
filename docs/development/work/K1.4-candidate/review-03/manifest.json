@@ -1,0 +1,82 @@
+{
+  "README.md": {
+    "bytes": 5231,
+    "sha256": "5e61906c5b13190bac2da36bba2df5d836f6456cd1a8cffba6361ac93803c930"
+  },
+  "adversarial.json": {
+    "bytes": 230,
+    "sha256": "fb17c9ecb089c9fd16db34c9277c78274fe9a0af703b15db8770004cc72b8065"
+  },
+  "adversarial.mjs": {
+    "bytes": 6526,
+    "sha256": "1e81a0e3a0bc95db7d1f39e7f6662cb284bcfe58fd1075671c77b68679ab0de2"
+  },
+  "brief-04.md": {
+    "bytes": 6934,
+    "sha256": "59e2f7fa68120c49cd4f5d18dfb935d6178aeaad0297ad0cd63877a2f930e766"
+  },
+  "candidate.json": {
+    "bytes": 874,
+    "sha256": "20deccdc5941350b552cd931cd6c144dfe409331320a74f96e2f94808df5db55"
+  },
+  "ci-artifact.zip": {
+    "bytes": 3076456,
+    "sha256": "9c8ac55b5c8cfe6be195b40b5b47824efb5b7b20ef6a51bba79f058a62ab0292"
+  },
+  "ci-inspection.json": {
+    "bytes": 722,
+    "sha256": "4e19b9f8aeae059d39dfa9fa3404404586dcd8fadde4c81f80091a951d0403f4"
+  },
+  "ci-revision.log": {
+    "bytes": 1747,
+    "sha256": "f99eccf5dddea1f3ad47d481b23f24f9b972b5705ecc07a61aa6267c37867d50"
+  },
+  "ci-run.txt": {
+    "bytes": 297,
+    "sha256": "8bb99cfe66649173f4e07683442497b58a497d1b6f605a8fd2b14cd9ea96cd2e"
+  },
+  "ci-summary.json": {
+    "bytes": 2556,
+    "sha256": "0ea30df133e2ac3643a2926d6274291a5d515a36a64bb38aa87be68bf56c30c6"
+  },
+  "oracle-probes.jsonl": {
+    "bytes": 1578,
+    "sha256": "1809114f42cc304a5f68c7dfce83affbfae839c961f30c7d15d61be70038ccac"
+  },
+  "oracle-probes.mjs": {
+    "bytes": 3529,
+    "sha256": "d3137cdb2e44417989c699158aff13d811d31a9781127456b7b8316d72d6b54c"
+  },
+  "registry-check.py": {
+    "bytes": 3088,
+    "sha256": "2f1781a24eaf7aa7f3a59b98a3d47f3f0fff6e9af9cddc2cd6d51c21c0ed04b9"
+  },
+  "registry.json": {
+    "bytes": 54449,
+    "sha256": "dede4219484a51ac90b903922e49822786aa5c5173fc39b0fb104c36487ca4fa"
+  },
+  "review02-corrected.jsonl": {
+    "bytes": 5308,
+    "sha256": "4822a46c73f92e10f86476791b3389b7bf03f33a1c17b774dd2ac5eb68092d81"
+  },
+  "review02-corrected.mjs": {
+    "bytes": 8846,
+    "sha256": "83ef5e70e3d70f01c4f869377372dee301541d657e96a62728a64eb11819b6f7"
+  },
+  "review02-original.log": {
+    "bytes": 475,
+    "sha256": "b5e37bbeab4ad4399ecc3998884b72d682156595658f14b6a8641b7a1f2bf3d7"
+  },
+  "review02-original.mjs": {
+    "bytes": 8533,
+    "sha256": "a7a5e3fb2e71124ac40c765bcf8da6f59c1e67bf4176d2ed03281ffa4081c992"
+  },
+  "scope-check.py": {
+    "bytes": 2712,
+    "sha256": "106a145d2191118cae91654f3a6a97683005efb9e5f170a7e5f3fce5eefe0208"
+  },
+  "scope.json": {
+    "bytes": 1810,
+    "sha256": "86867c79ae52eb6a8fb5a5d2979af66567e98beeee4cfd75bbffd1c2d77ce888"
+  }
+}
