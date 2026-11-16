@@ -7,10 +7,9 @@ reviewed H ddc53bd132fde4f71bc989ccec7f4d0e430a45dc.
 Review record docs/development/work/K1.4-candidate/review-03.md on
 codex/k1.4-candidate-review-03; pin the full recording commit in the reviewer's push handoff.
 Open finding K14C-R03-01 (P2); K14C-R03-02 is a nonblocking P3 wording correction.
-Owner supplemental decision: none received when this brief was prepared.
-Unresolved authority: 006's third-CHANGES-REQUIRED stop-and-redesign route decision.
-Read this brief first. Do not start another patch round before that owner decision.
-If the owner selects redesign, answer these questions in design-04.md and obtain a new design check.
+Owner supplemental decision: review-03/owner-choice.md; redesign with a new design check.
+Unresolved authority: no corrected oracle design approved yet; the new design check is required.
+Read this brief first. Answer these questions in design-04.md and obtain a new design check before building.
 Apply 006 and 012: correct the mechanism, maintain every counterexample, and re-audit the cumulative packet.
 Use 008 for report 04 and 006 for new C/H plus verification/push handoff. No successor release.
 ```
@@ -82,6 +81,6 @@ no benchmark release. packages/, scripts/ and tests/tooling/ remain equal to B. 
 017 limits, unread holds and semantic_credit none. D01-CHK-04 and the three dependency-alternative schedules
 remain assigned to K2.4/E2. Do not reopen the repaired ledger merely because its oracle was incomplete.
 
-The owner must first choose a 006 route. Under the recommended redesign route, the design note and fresh
+The [owner selected redesign](owner-choice.md) on 2026-11-16. The design note and fresh independent
 design check precede the build. Stop for the owner if the correction would change an approved convention,
 reduce a mandatory claim or require changes outside these bounds. No self-acceptance.

@@ -12,8 +12,8 @@
     "sha256": "1e81a0e3a0bc95db7d1f39e7f6662cb284bcfe58fd1075671c77b68679ab0de2"
   },
   "brief-04.md": {
-    "bytes": 6934,
-    "sha256": "59e2f7fa68120c49cd4f5d18dfb935d6178aeaad0297ad0cd63877a2f930e766"
+    "bytes": 6882,
+    "sha256": "35b1d82bad5d910e27c4fb74b8cc917a84aaa29d32bc09eea667c8e08df4789e"
   },
   "candidate.json": {
     "bytes": 874,
@@ -46,6 +46,10 @@
   "oracle-probes.mjs": {
     "bytes": 3529,
     "sha256": "d3137cdb2e44417989c699158aff13d811d31a9781127456b7b8316d72d6b54c"
+  },
+  "owner-choice.md": {
+    "bytes": 1090,
+    "sha256": "99d073e9eda103c4628f2f19e349b6d44f6a8a97dbd94ca762ea7aad951abbfe"
   },
   "registry-check.py": {
     "bytes": 3088,

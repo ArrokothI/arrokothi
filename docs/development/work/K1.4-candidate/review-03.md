@@ -307,6 +307,12 @@ this review chat; **no route answer had been received when this record was prepa
 build is authorized by this record before that decision. [Brief 04](review-03/brief-04.md) gives the
 concrete proposed correction and preserves that decision gate.
 
+**Subsequent owner supplement, 2026-11-16:** the owner replied, “Redesign the oracle’s
+command/call/inspection checks, with a new design check (recommended)”. The separately attributed
+[owner decision](review-03/owner-choice.md) resolves the route choice above. Brief 04 now requires
+design 04 and a fresh independent design check before the correction build. The finding and verdict
+are unchanged; no narrower claim, acceptance, integration or successor release was authorized.
+
 Reviewer changes are this record, its evidence/correction brief and the 007 status row only. No
 candidate fix or third-party code/dependency/asset was incorporated. The new probes are independently
 authored against repository APIs; the review 02 reproducer and registry wrapper are explicitly
@@ -316,7 +322,7 @@ for verification; no new third-party license clearance is asserted.
 **Transcription:** K1.4-candidate — CHANGES_REQUESTED. Independent cumulative review 03 of H
 ddc53bd132fde4f71bc989ccec7f4d0e430a45dc: CHANGES REQUIRED. K14C-R02-01 closed; prior registry/gate
 closures preserved. K14C-R03-01 (P2) blocks oracle-completeness closure; K14C-R03-02 is a P3 wording
-note. Third CHANGES REQUIRED: stop-and-redesign, owner route pending. No acceptance, integration or
+note. Third CHANGES REQUIRED: owner selected redesign with a new design check. No acceptance, integration or
 successor release.
 
 CHANGES REQUIRED
