@@ -2,6 +2,19 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **Design check 03 disposed; round-3 build released by the owner (2026-11-15).**
+  - *Check:* [design check 03](https://github.com/ArrokothI/arrokothi/blob/62092a70fec6e82ef4dcec17ce27195debf6b5ca/docs/development/work/K1.4-candidate/design-check-03.md) (Codex GPT-6, `codex/k1.4-candidate-design-check-03` at
+    `62092a70fec6e82ef4dcec17ce27195debf6b5ca`), APPROVED WITH REQUIRED CHANGES D03-CHK-01..05. Read by commit;
+    not merged.
+  - *Owner:* [owner choice 04](owner-choice-04.md): OQ-1, OQ-2 and OQ-3 accepted as recommended; keep the search
+    small; the seven mechanism mutants are registry cases with `semantic_credit: none`.
+  - *Design:* [design 03 addendum 01](design-03-addendum-01.md) disposes the five required changes: association
+    checks (A1), the limited changed-ID claim (A2), the oracle (A3), the counted search of 4,126 runs and the
+    registry witnesses (A4), the path census (A5).
+  - *Next:* the build to design 03 plus the addendum; C; Packet verify in CI; implementation report 03; H; 007
+    WAITING_FOR_REVIEW. Stop and report before any patch if the search finds an uncovered case or a supported
+    schedule stops passing. No self-acceptance.
+
 - **Round 3 started (2026-11-15), design only: review 02 is CHANGES REQUIRED of H
   `14a7ef485282ab2c16d08702be5d61cfeb9997e7`.**
   - *Review:* [review 02](https://github.com/ArrokothI/arrokothi/blob/2a95a49a6e7ff46242a137f9d9ca6835e70ed946/docs/development/work/K1.4-candidate/review-02.md) (Codex GPT-6, `codex/k1.4-candidate-review-02` at
