@@ -2,6 +2,21 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **Round 3 payload C: `41bd3aaa5cf83c51e93d41da567558d34f943410`** (pushed, 2026-11-15). **WAITING_FOR_REVIEW.**
+  - *C:* the name ledger in the candidate (design 03 with addendum 01, owner choice 04); `identity-lab.ts` with
+    the independent oracle; `identity.test.ts` and `identity-search.test.ts`; seven mechanism mutants with their
+    witnesses, probe, registry cases, coverage family and hold-register entries; the README and 017 L-38, L-39,
+    L-42 and L-44; the verification spec. `packages/`, `scripts/` and `tests/tooling/` are byte-identical to B.
+  - *Result:* 12 PASS and 3 REFUSED, unchanged. The 4,126-run search found no uncovered case. Not an E1 result.
+  - *Packet verify:* CI run [`43798331633`](https://github.com/ArrokothI/arrokothi/actions/runs/43798331633) at C: `checks_passed`, 19 of 19; repository tests 5,296 of 5,296 with no skip; the registry 315 cases and 351 kills, each of the twelve candidate cases killed with `semantic_credit: none`; adoption `mappings_complete` (1,199 entries, 315 cases); `run.txt` records revision = head = C (Node v26.10.0, Linux x86_64, 2026-11-16 03:28 to 05:47 UTC).
+  - *H:* [implementation report 03](implementation-03.md), the 007 row and this file.
+  - *For the reviewer:* the search never failed during the build, so its discrimination rests on the oracle's
+    rejection controls and the mutants; the oracle and the adapter have one author; three-way name interactions
+    are outside the search; the identity claim is about IDs within one run (017 L-39).
+  - *Next:* an independent review of the cumulative candidate by a Codex GPT-6 session. No self-acceptance.
+    After an ACCEPT: Prompt C cleanup by a fresh session, then the owner's merge. E1 round 3 is the benchmark
+    owner's separate release.
+
 - **Design check 03 disposed; round-3 build released by the owner (2026-11-15).**
   - *Check:* [design check 03](https://github.com/ArrokothI/arrokothi/blob/62092a70fec6e82ef4dcec17ce27195debf6b5ca/docs/development/work/K1.4-candidate/design-check-03.md) (Codex GPT-6, `codex/k1.4-candidate-design-check-03` at
     `62092a70fec6e82ef4dcec17ce27195debf6b5ca`), APPROVED WITH REQUIRED CHANGES D03-CHK-01..05. Read by commit;
