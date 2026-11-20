@@ -2,6 +2,22 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **Round 4 started (2026-11-20), design only: review 03 is CHANGES REQUIRED of H
+  `ddc53bd132fde4f71bc989ccec7f4d0e430a45dc`.**
+  - *Review:* [review 03](https://github.com/ArrokothI/arrokothi/blob/3e86a8c0f7a310c53810f2ced0533165b1844b54/docs/development/work/K1.4-candidate/review-03.md) (Codex GPT-6, `codex/k1.4-candidate-review-03` at
+    `3e86a8c0f7a310c53810f2ced0533165b1844b54`). K14C-R02-01 is closed. K14C-R03-01 (P2) is open: the oracle checks the primary call's target and
+    the last inspection separately and never joins them to the command, and it ignores calls other than the
+    primary, so another Execution's inspection, a wrong method and an extra mutation pass. K14C-R03-02 (P3): 017
+    L-39's opening sentence says every unnamed timeout gets the label. Read by commit; not merged.
+  - *Owner:* stop-and-redesign fired; owner choice 05 is “Redesign the oracle’s command/call/inspection checks,
+    with a new design check (recommended)” ([record](https://github.com/ArrokothI/arrokothi/blob/3e86a8c0f7a310c53810f2ced0533165b1844b54/docs/development/work/K1.4-candidate/review-03/owner-choice.md)).
+    [Brief 04](https://github.com/ArrokothI/arrokothi/blob/3e86a8c0f7a310c53810f2ced0533165b1844b54/docs/development/work/K1.4-candidate/review-03/brief-04.md) governs.
+  - *Design:* [design 04](design-04.md): one call table per command kind, a sequence and target check of every
+    recorded call, the final inspection tied to the command's Execution and to the Observation, and the legal
+    exits with the calls before each. No Kernel state is predicted. The ledger is not reopened.
+  - *Next:* the design check of design 04 (Codex GPT-6), then the owner's disposition. No candidate code, C or H
+    before that. The Kernel, the fixture and the packet tools stay unchanged.
+
 - **Round 3 payload C: `41bd3aaa5cf83c51e93d41da567558d34f943410`** (pushed, 2026-11-15). **WAITING_FOR_REVIEW.**
   - *C:* the name ledger in the candidate (design 03 with addendum 01, owner choice 04); `identity-lab.ts` with
     the independent oracle; `identity.test.ts` and `identity-search.test.ts`; seven mechanism mutants with their
