@@ -2,6 +2,24 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **Round 5 started (2026-11-20), design only: design check 04 is NOT APPROVED of design 04 at
+  `06e60dd81921946094a6f2323ec8831d61308320`.**
+  - *Check:* [design check 04](https://github.com/ArrokothI/arrokothi/blob/99d411e00049ae87b781a7c1e1008161409ec983/docs/development/work/K1.4-candidate/design-check-04.md) (Codex GPT-6, `codex/k1.4-candidate-design-check-04` at
+    `99d411e00049ae87b781a7c1e1008161409ec983`), D04-CHK-01..03, all P2 and test-side: exits not decided from recorded answers (a swallowed refusal
+    passes); settlement reports outside the recorder, and grant evidence misattributed; the matrix not a reproducible
+    declaration. Read by commit; not merged.
+  - *Owner:* [owner choice 06](owner-choice-06.md), “Judge settlement callbacks too (recommended)”;
+    [owner choice 07](owner-choice-07.md), “Yes, set stop rule”: if design check 05 is not APPROVED or APPROVED WITH
+    REQUIRED CHANGES, the packet takes 006's refined-finishable-claim route, and the coding agent proposes a narrower
+    oracle claim for the owner's approval, with no further design-check loop.
+  - *Design:* [design 05](design-05.md): an answer table and step B2 decide whether an Observation is allowed; the
+    laboratory wraps the Driver in its coordinator subclass and records calls, deliveries and settlement reports at
+    entry, judged by step D2; a declared corpus of 75 cases, 62 rows, 26 slots and 3 delivery slots, 2,708 mutations
+    and 31 declared failures; the first failing record stops judgment. 017 L-39's wording is given. A prototype
+    outside the repository reproduced every count and code.
+  - *Next:* the design check of design 05 (Codex GPT-6), then the owner's disposition. No candidate code, C or H
+    before that. The Kernel, the fixture and the packet tools stay unchanged.
+
 - **Round 4 started (2026-11-20), design only: review 03 is CHANGES REQUIRED of H
   `ddc53bd132fde4f71bc989ccec7f4d0e430a45dc`.**
   - *Review:* [review 03](https://github.com/ArrokothI/arrokothi/blob/3e86a8c0f7a310c53810f2ced0533165b1844b54/docs/development/work/K1.4-candidate/review-03.md) (Codex GPT-6, `codex/k1.4-candidate-review-03` at
