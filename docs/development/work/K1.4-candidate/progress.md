@@ -2,6 +2,27 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **Round 4 payload C: `848b1957ae9e598bb256712c07a3cc22c39fbaf7`** (pushed, 2026-11-21). **WAITING_FOR_REVIEW.**
+  - *Check and route:* [design check 05](https://github.com/ArrokothI/arrokothi/blob/44d9091f6db6d1f382841cd822befcd80e374f7b/docs/development/work/K1.4-candidate/design-check-05.md) (Codex GPT-6, `codex/k1.4-candidate-design-check-05` at
+    `44d9091f6db6d1f382841cd822befcd80e374f7b`) is APPROVED WITH REQUIRED CHANGES of design 05: D05-CHK-01 and D05-CHK-02, both
+    bounded and test-side. Read by commit; not merged. Owner choice 07's stop rule did not fire; the owner's instruction of
+    2026-11-21 took the ordinary route.
+  - *C:* [design 05 addendum 01](design-05-addendum-01.md); the recording laboratory and the oracle in `identity-lab.ts`;
+    `identity.test.ts` (78 tests); the new `identity-oracle.test.ts` (15 tests: the declared matrix and the addendum's
+    controls); the count types in `identity-search.test.ts`; the README, 017 L-39, one boundary entry and one mapping row;
+    the verification spec. `packages/`, `scripts/` and `tests/tooling/` are byte-identical to B. The adapter, the fake
+    Driver and the registry data are unchanged since round 3.
+  - *Result:* 12 PASS and 3 REFUSED, unchanged. The 2,708-mutation matrix gave every declared code and count on its first
+    run, and no stop condition fired. Not an E1 result.
+  - *Packet verify:* CI run [`44876502133`](https://github.com/ArrokothI/arrokothi/actions/runs/44876502133) at C: `checks_passed`, 19 of 19; repository tests 5,322 of 5,322 with no skip; the registry 315 cases and 351 kills, each of the twelve candidate cases killed with `semantic_credit: none`; adoption `mappings_complete` (1,199 entries, 315 cases); `run.txt` records revision = head = C (Node v26.10.0, Linux x86_64, 2026-11-21 06:38 to 08:01 UTC).
+  - *H:* [implementation report 04](implementation-04.md), the 007 row and this file.
+  - *For the reviewer:* the oracle and the adapter have one author, and design check 05 asks the review to enforce their
+    separation; the build reused this session's design-05 prototype; D2's scope is the fake Driver's contract; faults
+    stand in for refusals no genuine schedule makes.
+  - *Next:* an independent review of the cumulative candidate by a Codex GPT-6 session. No self-acceptance.
+    After an ACCEPT: Prompt C cleanup by a fresh session, then the owner's merge. E1 round 3 is the benchmark
+    owner's separate release.
+
 - **Round 5 started (2026-11-20), design only: design check 04 is NOT APPROVED of design 04 at
   `06e60dd81921946094a6f2323ec8831d61308320`.**
   - *Check:* [design check 04](https://github.com/ArrokothI/arrokothi/blob/99d411e00049ae87b781a7c1e1008161409ec983/docs/development/work/K1.4-candidate/design-check-04.md) (Codex GPT-6, `codex/k1.4-candidate-design-check-04` at
