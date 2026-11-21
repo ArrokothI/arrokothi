@@ -126,10 +126,13 @@ them. The candidate translates as follows.
   is never read as the Event's name.
 - **The unnamed timeout Event.** `control-subscription-wait-deadline` step 6 expects `to-gd2`, a timeout the
   Kernel mints when a wait registers with its deadline already due. No command names it. The candidate offers it
-  the name `to-<laboratory name of its own generation>`, at the registration answer that announces it. This is
-  the corpus's own spelling, adopted by the owner as an exception. It keeps that string even if a later
-  `deliver_timer` names it. Another schedule that spelled such an Event differently would fail. The root fix is
-  a fixture revision that lets the laboratory name a wait's timeout Event.
+  the name `to-<laboratory name of its own generation>` at the registration answer that announces it, and only
+  when that generation took the name its `await` offered. This is the corpus's own spelling, adopted by the owner
+  as an exception. If the label already denotes another Event, or the generation did not take its offered name,
+  the timeout gets a fresh string; so does a timeout no answer announced. It keeps the string actually assigned,
+  the label or a fresh string, even if a later `deliver_timer` names it. Another schedule that spelled such an
+  Event differently would fail. The root fix is a fixture revision that lets the laboratory name a wait's timeout
+  Event.
 - **`ingressRefused`** is outside the identity rule. It echoes the command's own name for an input the Kernel
   refused because the destination had ended. No Event exists, so it can equal the string of an Event that does.
 - **`rejection`.** The fixture does not say when a reported rejection ends. The candidate reports the most recent
@@ -142,6 +145,14 @@ them. The candidate translates as follows.
 
 The timeout label, the `rejection` rule and the clock were chosen at design time by reading the corpus. The tests
 show the candidate does not read expectations while it runs; they cannot show how a convention was chosen.
+
+**The identity tests' oracle** (`identity-lab.ts`; designs 04 and 05) judges recorded runs without using the
+candidate's ledger. The laboratory records every coordinator call, every delivery to the Driver and every
+settlement report, in the order each began. For each command the oracle checks the calls against a fixed table
+(method, order, target), whether each recorded Kernel answer lets the command go on, one bare `delivered()` per
+delivery, the exit, five fields the Observation copies from the final inspection, and the identity strings. It
+does not judge the other call arguments, the submission grant, the other Observation fields or the Kernel's own
+delivery decisions; other tests do (design 05 §8). The first failing record stops judgment of its run.
 
 ## What a PASS here does not show
 
@@ -175,12 +186,14 @@ show the candidate does not read expectations while it runs; they cannot show ho
 | `ablation-table.ts` | The five ablation rows: site, obligation, witness schedule, step and fields |
 | `ablation-probe.mjs` | The mutation registry's runner for those rows (`tests/fixtures/packet-tools/mutations.json`) |
 | `conventions.test.ts` | Witnesses for the conventions and limits above |
-| `identity.test.ts` | The identity rule: transitions, the reviews' counterexamples, answer checks, the oracle's own controls |
+| `identity.test.ts` | The identity rule: transitions, the reviews' counterexamples, answer checks, the oracle's own controls and joins |
+| `identity-oracle.test.ts` | The oracle's declared matrix (75 cases, 2,708 mutations) and its missing-value and report-arity controls |
 | `identity-search.test.ts` | The bounded search: 4,126 runs over adversarial names, judged by the oracle |
-| `identity-lab.ts` | A recording laboratory and the independent oracle those tests use |
+| `identity-lab.ts` | A recording laboratory (calls, deliveries, settlement reports) and the independent oracle those tests use |
 | `identity-witnesses.ts`, `identity-mutants.ts` | Seven mechanism mutants of the identity rule and the witness that rejects each |
 | `identity-probe.mjs` | The mutation registry's runner for those seven rows |
 | `support.ts` | Test helpers |
 
 Design records: `docs/development/work/K1.4-candidate/` (design 01 and its addendum 01, design 02, design 03 and
-its addendum 01, owner choices 01 to 04). Design 03 replaces the identity sections of the earlier ones.
+its addendum 01, design 04, design 05 and its addendum 01, owner choices 01 to 04, 06 and 07). Design 03 replaces
+the identity sections of the earlier ones; designs 04 and 05 replace design 03's oracle checks.

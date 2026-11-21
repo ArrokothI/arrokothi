@@ -261,6 +261,9 @@ function runX(slots: readonly Slot[], assignment: Assignment): { readonly run: R
 
 // -- The search ----------------------------------------------------------------------------------------------
 
+/** Every count at zero: the complete `OracleCounts`, for a seed or a running total. */
+const zeroCounts = (): OracleCounts => ({ commands: 0, observations: 0, unknownReferences: 0, contradictions: 0, pairs: 0, calls: 0, deliveries: 0, reports: 0, unjudged: 0 });
+
 const noProblems = (lab: Lab, what: () => string): OracleCounts => {
   const judged = judge(lab);
   if (judged.problems.length > 0) assert.fail(`${what()}: ${judged.problems.join("; ")}`);
@@ -269,7 +272,7 @@ const noProblems = (lab: Lab, what: () => string): OracleCounts => {
 
 describe("K1.4-candidate identity: the bounded search (addendum §A4)", () => {
   const calibrate = (): { slots: Slot[]; calibration: CalibrationE; ordinary: Run } => {
-    const ordinary = runE(slotsE({ timeouts: ["", "", ""], counts: { commands: 0, observations: 0, unknownReferences: 0, contradictions: 0, pairs: 0 } }), new Map());
+    const ordinary = runE(slotsE({ timeouts: ["", "", ""], counts: zeroCounts() }), new Map());
     const calibration = { timeouts: nativeTimeouts(ordinary.lab), counts: noProblems(ordinary.lab, () => "the calibration run") };
     assert.equal(calibration.timeouts.length, 3, "the skeleton mints three timeout Events");
     assert.deepEqual([calibration.counts.commands, calibration.counts.observations], [14, 14]);
@@ -375,7 +378,7 @@ describe("K1.4-candidate identity: the bounded search (addendum §A4)", () => {
     assert.equal(all.length, 500);
     assert.equal(all.length, expectedCount([6, 7, 8, 8, 2, 3], 2));
     const started = process.hrtime.bigint();
-    const totals = { commands: 0, observations: 0, unknownReferences: 0, contradictions: 0, pairs: 0 };
+    const totals = zeroCounts();
     let conflicts = 0;
     for (const [index, assignment] of all.entries()) {
       const { run, natives } = runX(slots, assignment);

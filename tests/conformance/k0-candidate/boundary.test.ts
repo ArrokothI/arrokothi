@@ -43,6 +43,7 @@ const TEST_SIDE = [
   "conventions.test.ts",
   "identity-lab.ts",
   "identity-mutants.ts",
+  "identity-oracle.test.ts",
   "identity-probe.mjs",
   "identity-search.test.ts",
   "identity-witnesses.ts",

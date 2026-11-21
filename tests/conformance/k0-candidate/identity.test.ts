@@ -10,9 +10,13 @@
  * - the association checks and their fault traces (addendum §A1, design check 03 D03-CHK-01);
  * - the first-exposure control (addendum §A2, D03-CHK-02);
  * - the oracle's own rejection controls (addendum §A3, D03-CHK-03);
+ * - the oracle's joins (designs 04 and 05): review 03's four probes, the swallowed-refusal trace, the J-1
+ *   refusal controls, the failed-record policy, the live settlement-report controls, the recorder's entry order
+ *   and nesting, its census of coordinator methods, and the one-coordinator structure guard;
  * - the census controls: `ingressRefused`, and the `eventIdentity` capability refusal (addendum §A5).
  *
- * The bounded search is `identity-search.test.ts`. Faults here are injected into the Kernel's public
+ * The bounded search is `identity-search.test.ts`; the oracle's declared matrix and design 05 addendum 01's
+ * controls are `identity-oracle.test.ts`. Faults here are injected into the Kernel's public
  * answers for the test; none is a claim about the Kernel.
  */
 
@@ -28,17 +32,19 @@ import { createOperationSink } from "../k0/operation-sink.ts";
 import {
   acceptCommand,
   AnswerContradiction,
+  COORDINATOR_METHODS,
   createCommand,
   dispatchCommand,
   judge,
   outcomeOf,
   registerWait,
+  ROWS,
   startLab,
   timerCommand,
   UnknownLaboratoryReference,
   waitDeclaration,
 } from "./identity-lab.ts";
-import type { ExecutionView, Faults, Lab, Tamper } from "./identity-lab.ts";
+import type { AuthenticatedCaller, CallRecord, DeliverySettlement, ExecutionView, Faults, Lab, StepRecord, Tamper } from "./identity-lab.ts";
 import { MUTANT_FILE, MUTANTS } from "./identity-mutants.ts";
 import type { MechanismMutant } from "./identity-mutants.ts";
 import { answerOnly, changedEverywhere, lastFiredGeneration, lastView, nativeTimeouts, WITNESSES } from "./identity-witnesses.ts";
@@ -617,7 +623,209 @@ describe("K1.4-candidate identity: the oracle rejects what it must (addendum §A
     lab.attempt({ kind: "inspect", executionId: "nobody" });
     const { counts, problems } = judge(lab);
     assert.deepEqual(problems, []);
-    assert.deepEqual(counts, { commands: 5, observations: 4, unknownReferences: 1, contradictions: 0, pairs: 12 });
+    assert.deepEqual(counts, { commands: 5, observations: 4, unknownReferences: 1, contradictions: 0, pairs: 12, calls: 9, deliveries: 1, reports: 1, unjudged: 0 });
+  });
+});
+
+describe("K1.4-candidate identity: the oracle joins each command to its calls, answers and reports (designs 04 and 05)", () => {
+  const codesOf = (records: readonly StepRecord[]): string[] => judge({ records }).problems.map((problem) => problem.split(":")[0] as string);
+  const last = (lab: Lab): StepRecord => lab.records.at(-1) as StepRecord;
+  const finalOnly = (record: StepRecord): CallRecord[] => record.calls.filter((call) => call.method !== "inspect");
+
+  // -- Review 03's four oracle probes (oracle-probes.mjs at 3e86a8c0), now rejected ---------------------------
+
+  test("review 03 probe dispatch-x-observe-y: the Observation of another Execution's inspection is inspection", () => {
+    const lab = startLab();
+    lab.apply(createCommand("x", "kx"));
+    lab.apply(createCommand("y", "ky"));
+    lab.apply(dispatchCommand("y"));
+    const prefix = [...lab.records];
+    lab.apply(dispatchCommand("x"));
+    const x = last(lab);
+    lab.apply({ kind: "inspect", executionId: "y" });
+    const y = last(lab);
+    const wrong: StepRecord = { ...x, calls: [...finalOnly(x), ...y.calls], view: y.view, observation: y.observation };
+    assert.deepEqual(codesOf([...prefix, x]), []);
+    assert.deepEqual(codesOf([...prefix, wrong]), ["inspection"]);
+  });
+
+  test("review 03 probes wrong-primary-method and extra-cancellation-after-dispatch: call-method and call-extra", () => {
+    const lab = startLab();
+    lab.apply(createCommand("x", "kx"));
+    const prefix = [...lab.records];
+    lab.apply(dispatchCommand("x"));
+    const dispatched = last(lab);
+    lab.apply({ kind: "accept_cancellation", executionId: "x" });
+    const cancelled = last(lab);
+    assert.deepEqual(codesOf([...prefix, dispatched]), []);
+    assert.deepEqual(codesOf([...prefix, { ...cancelled, command: dispatchCommand("x") }]), ["call-method"]);
+    const extra: StepRecord = { ...dispatched, calls: [...finalOnly(dispatched), ...cancelled.calls], view: cancelled.view, observation: cancelled.observation };
+    assert.deepEqual(codesOf([...prefix, extra]), ["call-extra"]);
+  });
+
+  test("review 03 probe extra-cancellation-before-declared-throw: call-extra, before the legal contradiction", () => {
+    let inject = false;
+    const lab = startLab({ faults: { answer: (method, _args, answer) => (inject && method === "fireTimer" ? { ...(answer as object), timeoutEventId: "absent" } : answer) } });
+    lab.apply(createCommand("x", "kx"));
+    registerWait(lab, "x", "g", 10);
+    lab.apply(timerCommand("x", "g", "t"));
+    const prefix = [...lab.records];
+    inject = true;
+    const contradiction = lab.attempt(timerCommand("x", "g", "t"));
+    assert.equal((contradiction.thrown as AnswerContradiction).code, "timeout_generation");
+    inject = false;
+    lab.apply({ kind: "accept_cancellation", executionId: "x" });
+    const cancelled = last(lab);
+    const wrong: StepRecord = { ...contradiction, calls: [...contradiction.calls, ...cancelled.calls], view: cancelled.view };
+    assert.deepEqual(codesOf([...prefix, contradiction]), []);
+    assert.deepEqual(codesOf([...prefix, wrong]), ["call-extra"]);
+  });
+
+  // -- Answers decide the exit (design 05 §2) ------------------------------------------------------------------
+
+  test("the swallowed-refusal trace: a refused dispatch with an inspection and an Observation is answer; the accepted dispatch passes", () => {
+    const lab = startLab();
+    lab.apply(createCommand("x", "kx"));
+    lab.apply(dispatchCommand("x"));
+    const prefix = [...lab.records];
+    const refused = lab.attempt(dispatchCommand("x"));
+    assert.equal((refused.calls[0]?.answer as { ok: boolean }).ok, false, "the Kernel refused the second dispatch");
+    const inspected = lab.attempt({ kind: "inspect", executionId: "x" });
+    const swallowed: StepRecord = { ...refused, calls: [...refused.calls, ...inspected.calls], view: inspected.view, observation: inspected.observation, thrown: undefined };
+    assert.deepEqual(codesOf(prefix), [], "the accepted dispatch passes");
+    assert.deepEqual(codesOf([...prefix, refused]), ["answer"], "the genuine refusal is a reported failure");
+    assert.deepEqual(codesOf([...prefix, swallowed]), ["answer"], "and swallowing it does not make it pass");
+    const counts = judge({ records: [...prefix, swallowed] }).counts;
+    assert.deepEqual([counts.observations, counts.contradictions], [2, 0], "it adds no Observation and no contradiction");
+  });
+
+  test("J-1: an input or Outcome refusal that names another Execution is inspected there and rejected; the genuine refusals pass", () => {
+    const run = (kind: "input" | "outcome", redirect: boolean): string[] => {
+      let armed = false;
+      let other = "";
+      const faults: Faults = {
+        answer: (method, _args, answer) => {
+          const refusal = answer as { readonly ok?: boolean; readonly error?: object };
+          if (armed && redirect && (method === "submitInput" || method === "submitOutcome") && refusal.ok === false) return { ...refusal, error: { ...refusal.error, executionId: other } };
+          return answer;
+        },
+      };
+      const lab = startLab({ faults });
+      lab.apply(createCommand("x", "kx"));
+      lab.apply(createCommand("y", "ky"));
+      other = lastView(lab).executionId;
+      const open = lab.apply(dispatchCommand("x"));
+      armed = true;
+      if (kind === "input") {
+        lab.apply(acceptCommand("a", "x", "ka"));
+        lab.attempt(acceptCommand("a-other", "x", "ka"));
+      } else {
+        lab.attempt({ kind: "submit_outcome", outcome: { ...outcomeOf(open, { step: "continue" }), baseProgressRevision: -1 } });
+      }
+      assert.equal((last(lab).calls[0]?.answer as { ok: boolean }).ok, false, `${kind}: the Kernel refused`);
+      return codesOf(lab.records);
+    };
+    assert.deepEqual(run("input", false), []);
+    assert.deepEqual(run("input", true), ["inspection"]);
+    assert.deepEqual(run("outcome", false), []);
+    assert.deepEqual(run("outcome", true), ["inspection"]);
+  });
+
+  test("after a failed record judgment stops, and the records after it are counted unjudged (design 05 §6)", () => {
+    const lab = startLab({ tamper: { observation: (observation) => ({ ...observation, queued: observation.queued.slice(0, -1) }) } });
+    lab.attempt(createCommand("x", "kx"));
+    lab.attempt(acceptCommand("in-1", "x", "k1"));
+    const judged = judge(lab);
+    assert.deepEqual(judged.problems.map((problem) => problem.split(":")[0]), ["shape"]);
+    assert.deepEqual([judged.counts.commands, judged.counts.unjudged], [1, 1]);
+  });
+
+  // -- Settlement reports (design 05 §3, owner choice 06) --------------------------------------------------------
+
+  test("settlement reports, live: missing, extra, wrong method and wrong delivery are rejected; the honest neighbor passes", () => {
+    const run = (delivery?: Tamper["delivery"]): string[] => {
+      const lab = startLab(delivery === undefined ? {} : { tamper: { delivery } });
+      lab.apply(createCommand("x", "kx"));
+      lab.attempt(dispatchCommand("x"));
+      lab.attempt({ kind: "redeliver_dispatch", executionId: "x" });
+      return codesOf(lab.records);
+    };
+    const quiet: DeliverySettlement = Object.freeze({ delivered(): void {}, failed(): void {} });
+    assert.deepEqual(run(), []);
+    assert.deepEqual(run((context) => context.forward(context.recording)), [], "forwarding the recording settlement is the default");
+    assert.deepEqual(run((context) => context.forward(quiet)), ["report-missing"]);
+    assert.deepEqual(
+      run((context) => context.forward({ delivered: () => { context.recording.delivered(); context.recording.delivered(); }, failed: context.recording.failed })),
+      ["report-extra"],
+    );
+    assert.deepEqual(run((context) => context.forward({ delivered: () => context.recording.failed("lab"), failed: context.recording.failed })), ["report-method"]);
+    assert.deepEqual(run((context) => context.forward(context.number === 2 ? (context.earlier[0] as DeliverySettlement) : context.recording)), ["report-delivery"]);
+  });
+
+  test("the recorder keeps entry order: a delivery inside its call, a report inside its delivery", () => {
+    const lab = started();
+    const record = lab.attempt(dispatchCommand("x"));
+    assert.deepEqual(record.trace, [{ kind: "call", index: 0 }, { kind: "delivery", number: 1 }, { kind: "report", index: 0 }, { kind: "call", index: 1 }]);
+    assert.deepEqual(record.deliveries.map((delivery) => [delivery.number, delivery.inCall, delivery.executionId === lastView(lab).executionId]), [[1, 0, true]]);
+    assert.deepEqual(record.reports, [{ method: "delivered", args: [], owner: 1, during: 1, inCall: 0 }]);
+  });
+
+  test("the recorder attributes a reentrant call and an inner delivery that throws, and restores both stacks (addendum 01 §A3)", () => {
+    const delivery: Tamper["delivery"] = (context) => {
+      if (context.number === 1) {
+        const caller = (context.calls[0] as CallRecord).args[0] as AuthenticatedCaller;
+        context.coordinator.redeliver(caller, context.activation.executionId);
+        context.forward(context.recording);
+      } else if (context.number === 2) {
+        throw new Error("lab: the Driver throws inside the inner delivery");
+      } else context.forward(context.recording);
+    };
+    const lab = startLab({ tamper: { delivery } });
+    lab.apply(createCommand("x", "kx"));
+    const record = lab.attempt(dispatchCommand("x"));
+    assert.deepEqual(record.calls.map((call) => [call.method, (call.answer as { ok?: boolean }).ok]), [["dispatch", true], ["redeliver", true], ["inspect", true]]);
+    assert.deepEqual(record.trace, [
+      { kind: "call", index: 0 },
+      { kind: "delivery", number: 1 },
+      { kind: "call", index: 1 },
+      { kind: "delivery", number: 2 },
+      { kind: "report", index: 0 },
+      { kind: "call", index: 2 },
+    ]);
+    assert.deepEqual(record.deliveries.map((entry) => [entry.number, entry.inCall]), [[1, 0], [2, 1]]);
+    assert.deepEqual(record.reports, [{ method: "delivered", args: [], owner: 1, during: 1, inCall: 0 }], "after the inner delivery's throw, the report is the outer one's");
+    assert.deepEqual(codesOf(lab.records), ["call-extra"], "the oracle's verdict is separate: the reentrant redeliver is an extra call");
+    // The stacks are empty again for the next command.
+    const next = lab.attempt({ kind: "redeliver_dispatch", executionId: "x" });
+    assert.deepEqual([next.deliveries.map((entry) => [entry.number, entry.inCall]), next.reports.map((report) => [report.owner, report.during, report.inCall])], [[[3, 0]], [[3, 3, 0]]]);
+  });
+
+  test("census: the recorder wraps the coordinator's 13 own methods, and Table 1 uses 11 of them", () => {
+    assert.deepEqual([...COORDINATOR_METHODS].sort(), [
+      "cancelExecution",
+      "createExecution",
+      "dispatch",
+      "fireTimer",
+      "inspect",
+      "pendingTimers",
+      "recoverExecution",
+      "redeliver",
+      "reportProtocolFailure",
+      "requestTakeover",
+      "submitInput",
+      "submitOutcome",
+      "visibleExecutions",
+    ]);
+    const used = new Set(Object.values(ROWS).flatMap((row) => row.map((slot) => slot.method)));
+    assert.deepEqual([...COORDINATOR_METHODS].filter((method) => !used.has(method)).sort(), ["reportProtocolFailure", "visibleExecutions"]);
+    assert.equal(Object.values(ROWS).reduce((total, row) => total + row.length, 0), 26);
+  });
+
+  test("structure, a regression guard (012) and not a proof: the candidate constructs one coordinator, from the class it is given", () => {
+    const code = readFileSync(join(HERE, "kernel-candidate.ts"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+    assert.equal([...code.matchAll(/\bnew\s+Coordinator\s*\(/g)].length, 1);
+    assert.match(code, /const Coordinator = options\.Coordinator \?\? ExecutionCoordinator;/);
+    assert.equal([...code.matchAll(/\bnew\s+ExecutionCoordinator\b|ExecutionCoordinator\s*\.\s*prototype/g)].length, 0);
   });
 });
 
