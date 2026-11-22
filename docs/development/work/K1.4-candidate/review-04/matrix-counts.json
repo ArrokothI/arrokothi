@@ -1,0 +1,48 @@
+{
+  "classes": {
+    "O": 19,
+    "X": 12,
+    "P": 2,
+    "U": 11,
+    "N": 31
+  },
+  "cases": 75,
+  "rows": 62,
+  "slots": 26,
+  "delivery_slots": 3,
+  "calls": {
+    "O": 39,
+    "X": 26,
+    "P": 2,
+    "U": 0,
+    "N": 49
+  },
+  "operators": {
+    "drop/call-missing": 116,
+    "replace/call-method": 780,
+    "insert/call-extra": 1417,
+    "retarget/target": 29,
+    "retarget/inspection": 27,
+    "pending-arity/target": 3,
+    "fire-generation/target": 3,
+    "fire-kind/target": 3,
+    "exchange-activation/target": 4,
+    "exchange-epoch/target": 2,
+    "other-inspection/inspection": 16,
+    "copied-field/inspection": 95,
+    "wrong-exit/exit": 121,
+    "swallow-inspection/answer": 31,
+    "swallow-previous/answer": 31,
+    "report-drop/report-missing": 6,
+    "report-duplicate/report-extra": 6,
+    "report-method/report-method": 6,
+    "report-owner/report-delivery": 6,
+    "report-outside/report-extra": 6
+  },
+  "mutations": 2708,
+  "separate_D05_controls": {
+    "missing_value_cases": 11,
+    "variants_each": 3,
+    "report_arity": 1
+  }
+}

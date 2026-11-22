@@ -1,0 +1,254 @@
+{
+  "workflow_run": 44876502133,
+  "job": 136762253798,
+  "workflow_metadata_head": "c1951226338de6ccd3e4e6289259549551268f61",
+  "artifact_id": 14697524951,
+  "artifact_name": "packet-verify-848b1957ae9e598bb256712c07a3cc22c39fbaf7",
+  "zip_sha256": "ef13b4a3063cddd07e445dfacb7a845ecaee93a62c9ec2c80e2aa42d46873c97",
+  "run_txt": "revision=848b1957ae9e598bb256712c07a3cc22c39fbaf7\nspec=docs/development/work/K1.4-candidate/verification.json\nhead=848b1957ae9e598bb256712c07a3cc22c39fbaf7\nnode=v26.10.0 npm=11.19.1 python=Python 3.13.18\nrunner=Linux x86_64 cpus=4\nstarted=2026-11-21T06:38:51Z\nfinished=2026-11-21T08:01:27Z\nexit=0\n",
+  "verify_revision": "848b1957ae9e598bb256712c07a3cc22c39fbaf7",
+  "verify_result": "checks_passed",
+  "checks_total": 19,
+  "checks_passed": 19,
+  "checks": [
+    {
+      "id": "tool-tests",
+      "passed": true,
+      "counts": {
+        "tests": 777
+      }
+    },
+    {
+      "id": "inventory",
+      "passed": true,
+      "result": "provenance_verified",
+      "counts": {
+        "artifact": 208,
+        "mention": 1333,
+        "additional": 8
+      },
+      "cases": null
+    },
+    {
+      "id": "adoption",
+      "passed": true,
+      "result": "mappings_complete",
+      "counts": {
+        "origins": 1549,
+        "counterexamples": 621,
+        "families": 26,
+        "members": 415,
+        "suite_targets": 74,
+        "preserved": 23,
+        "kills": 0
+      },
+      "cases": null
+    },
+    {
+      "id": "dimensions",
+      "passed": true,
+      "result": "coverage_reported",
+      "counts": null,
+      "cases": null
+    },
+    {
+      "id": "registered-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 351
+      },
+      "cases": 315
+    },
+    {
+      "id": "refusal-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 358
+      },
+      "cases": 358
+    },
+    {
+      "id": "value-cost-mutants",
+      "passed": true,
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 238
+      },
+      "cases": 18
+    },
+    {
+      "id": "refusal-census",
+      "passed": true,
+      "counts": {}
+    },
+    {
+      "id": "oracle-census",
+      "passed": true,
+      "counts": {}
+    },
+    {
+      "id": "typecheck",
+      "passed": true,
+      "counts": {}
+    },
+    {
+      "id": "repository-tests",
+      "passed": true,
+      "counts": {
+        "tests": 5322,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "archive-tests",
+      "passed": true,
+      "counts": {
+        "tests": 4,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "kernel-sweeps",
+      "passed": true,
+      "counts": {}
+    },
+    {
+      "id": "race-search",
+      "passed": true,
+      "counts": {}
+    },
+    {
+      "id": "value-cost-dimensions",
+      "passed": true,
+      "counts": {}
+    },
+    {
+      "id": "value-cost-continuations",
+      "passed": true,
+      "counts": {}
+    },
+    {
+      "id": "example-tests",
+      "passed": true,
+      "counts": {
+        "tests": 18,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      }
+    },
+    {
+      "id": "builder-docs",
+      "passed": true,
+      "counts": {}
+    },
+    {
+      "id": "area-gate",
+      "passed": true,
+      "result": "reported",
+      "counts": null,
+      "cases": null
+    }
+  ],
+  "profiles_not_run": [
+    {
+      "id": "live-provider",
+      "reason": "Owner choice 01: credentialed/paid execution requires a separate run; no run is authorized here.",
+      "checks": [
+        {
+          "id": "profile.gemini-provider-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:gemini"
+          ]
+        },
+        {
+          "id": "profile.mcp-gemini-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:mcp:gemini"
+          ]
+        },
+        {
+          "id": "profile.workflow-scenario-canary",
+          "argv": [
+            "npm",
+            "run",
+            "canary:workflow"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "large-memory-timing",
+      "reason": "Owner choice 01: historical engine-limit, heap and timing studies retained in the pinned inventory; individual semantic mappings/command adapters remain pending P1. No execution credit.",
+      "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9",
+      "sources": [
+        "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts",
+        "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts",
+        "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts",
+        "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+      ],
+      "checks": [
+        {
+          "id": "profile.probe-diagnostics-maxlen",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/probe-diagnostics-maxlen.ts"
+          ],
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.probe-maxlen",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/review-01/probe-maxlen.ts"
+          ],
+          "environment": {
+            "TREE": "$ROOT"
+          },
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.probe-namespace",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/review-01/probe-namespace.ts"
+          ],
+          "environment": {
+            "TREE": "$ROOT"
+          },
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        },
+        {
+          "id": "profile.refusal-cost-probe-04",
+          "argv": [
+            "node",
+            "--experimental-strip-types",
+            "--expose-gc",
+            "docs/development/work/K1.2-correction-01/refusal-cost-probe-04.mjs"
+          ],
+          "source_revision": "66bc041175e6fc191c2e7cf88de198111e7d97c9"
+        }
+      ]
+    }
+  ],
+  "result_reuse": false
+}

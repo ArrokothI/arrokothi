@@ -1,0 +1,423 @@
+{
+  "subject": "a734d03a9eb352bd29988bff1a68d9d6ca9bb2d3",
+  "results": [
+    {
+      "name": "accepted dispatch neighbor",
+      "expected": [],
+      "problems": [],
+      "counts": {
+        "commands": 2,
+        "observations": 2,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 5,
+        "calls": 4,
+        "deliveries": 1,
+        "reports": 1,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "genuine refused dispatch",
+      "expected": [
+        "answer"
+      ],
+      "problems": [
+        "answer: step 2: dispatch call 0 (dispatch): a control command not accepted"
+      ],
+      "counts": {
+        "commands": 3,
+        "observations": 2,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 5,
+        "calls": 4,
+        "deliveries": 1,
+        "reports": 1,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "swallowed refused dispatch",
+      "expected": [
+        "answer"
+      ],
+      "problems": [
+        "answer: step 2: dispatch call 0 (dispatch): a control command not accepted"
+      ],
+      "counts": {
+        "commands": 3,
+        "observations": 2,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 5,
+        "calls": 4,
+        "deliveries": 1,
+        "reports": 1,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "recover neighbor",
+      "expected": [],
+      "problems": [],
+      "counts": {
+        "commands": 3,
+        "observations": 3,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 8,
+        "calls": 7,
+        "deliveries": 1,
+        "reports": 1,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "takeover replaced by complete recover trace",
+      "expected": [
+        "call-method"
+      ],
+      "problems": [
+        "call-method: step 2: takeover: the calls are [inspect, recoverExecution, inspect], and the row is [inspect, requestTakeover, inspect]"
+      ],
+      "counts": {
+        "commands": 3,
+        "observations": 2,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 5,
+        "calls": 4,
+        "deliveries": 1,
+        "reports": 1,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "takeover neighbor",
+      "expected": [],
+      "problems": [],
+      "counts": {
+        "commands": 5,
+        "observations": 5,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 13,
+        "calls": 11,
+        "deliveries": 3,
+        "reports": 3,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "preliminary answer and exchange moved together",
+      "expected": [
+        "call-extra"
+      ],
+      "problems": [
+        "call-extra: step 4: takeover: the calls are [inspect, requestTakeover, inspect], and the row is [inspect]"
+      ],
+      "counts": {
+        "commands": 5,
+        "observations": 4,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 10,
+        "calls": 8,
+        "deliveries": 2,
+        "reports": 2,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "preliminary and exchange targets moved together",
+      "expected": [
+        "target"
+      ],
+      "problems": [
+        "target: step 4: takeover call 0 (inspect): the preliminary inspection addressed execution-12:identity-lab10:k0-fixture2:ky, and the reference denotes execution-12:identity-lab10:k0-fixture2:kx"
+      ],
+      "counts": {
+        "commands": 5,
+        "observations": 4,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 10,
+        "calls": 8,
+        "deliveries": 2,
+        "reports": 2,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "unused view field cannot choose final inspection",
+      "expected": [],
+      "problems": [],
+      "counts": {
+        "commands": 5,
+        "observations": 5,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 13,
+        "calls": 11,
+        "deliveries": 3,
+        "reports": 3,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "unknown neighbor",
+      "expected": [],
+      "problems": [],
+      "counts": {
+        "commands": 2,
+        "observations": 1,
+        "unknownReferences": 1,
+        "contradictions": 0,
+        "pairs": 2,
+        "calls": 2,
+        "deliveries": 0,
+        "reports": 0,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "read after unknown exit",
+      "expected": [
+        "call-extra"
+      ],
+      "problems": [
+        "call-extra: step 1: inspect: the calls are [inspect], and the row is []"
+      ],
+      "counts": {
+        "commands": 2,
+        "observations": 1,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 2,
+        "calls": 2,
+        "deliveries": 0,
+        "reports": 0,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "saved callback known neighbor",
+      "expected": [],
+      "problems": [],
+      "counts": {
+        "commands": 3,
+        "observations": 3,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 8,
+        "calls": 5,
+        "deliveries": 1,
+        "reports": 1,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "saved callback known extra",
+      "expected": [
+        "report-extra"
+      ],
+      "problems": [
+        "report-extra: step 2: a delivered report on delivery 1 outside any delivery"
+      ],
+      "counts": {
+        "commands": 3,
+        "observations": 2,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 5,
+        "calls": 4,
+        "deliveries": 1,
+        "reports": 1,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "saved callback unknown neighbor",
+      "expected": [],
+      "problems": [],
+      "counts": {
+        "commands": 3,
+        "observations": 2,
+        "unknownReferences": 1,
+        "contradictions": 0,
+        "pairs": 5,
+        "calls": 4,
+        "deliveries": 1,
+        "reports": 1,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "saved callback unknown extra",
+      "expected": [
+        "report-extra"
+      ],
+      "problems": [
+        "report-extra: step 2: a delivered report on delivery 1 outside any delivery"
+      ],
+      "counts": {
+        "commands": 3,
+        "observations": 2,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 5,
+        "calls": 4,
+        "deliveries": 1,
+        "reports": 1,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "cross-Execution capability neighbor",
+      "expected": [],
+      "problems": [],
+      "counts": {
+        "commands": 4,
+        "observations": 4,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 10,
+        "calls": 8,
+        "deliveries": 2,
+        "reports": 2,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "cross-Execution capability misuse",
+      "expected": [
+        "report-delivery"
+      ],
+      "problems": [
+        "report-delivery: step 3: during delivery 2, a report on delivery 1's settlement"
+      ],
+      "counts": {
+        "commands": 4,
+        "observations": 3,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 7,
+        "calls": 6,
+        "deliveries": 1,
+        "reports": 1,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "successful reentry still rejected as extra call",
+      "expected": [
+        "call-extra"
+      ],
+      "problems": [
+        "call-extra: step 1: dispatch: the calls are [dispatch, redeliver, inspect], and the row is [dispatch, inspect]"
+      ],
+      "counts": {
+        "commands": 2,
+        "observations": 1,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 2,
+        "calls": 2,
+        "deliveries": 0,
+        "reports": 0,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "successful nesting and subsequent stacks",
+      "trace": [
+        {
+          "kind": "call",
+          "index": 0
+        },
+        {
+          "kind": "delivery",
+          "number": 1
+        },
+        {
+          "kind": "call",
+          "index": 1
+        },
+        {
+          "kind": "delivery",
+          "number": 2
+        },
+        {
+          "kind": "report",
+          "index": 0
+        },
+        {
+          "kind": "report",
+          "index": 1
+        },
+        {
+          "kind": "call",
+          "index": 2
+        }
+      ],
+      "reports": [
+        {
+          "method": "delivered",
+          "args": [],
+          "owner": 2,
+          "during": 2,
+          "inCall": 1
+        },
+        {
+          "method": "delivered",
+          "args": [],
+          "owner": 1,
+          "during": 1,
+          "inCall": 0
+        }
+      ],
+      "nextReports": [
+        {
+          "method": "delivered",
+          "args": [],
+          "owner": 3,
+          "during": 3,
+          "inCall": 0
+        }
+      ]
+    },
+    {
+      "name": "recovery hold honest neighbor",
+      "expected": [],
+      "problems": [],
+      "counts": {
+        "commands": 3,
+        "observations": 3,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 8,
+        "calls": 7,
+        "deliveries": 1,
+        "reports": 1,
+        "unjudged": 0
+      }
+    },
+    {
+      "name": "declared non-identity limit: previous recoveryHold",
+      "expected": [],
+      "problems": [],
+      "counts": {
+        "commands": 3,
+        "observations": 3,
+        "unknownReferences": 0,
+        "contradictions": 0,
+        "pairs": 8,
+        "calls": 7,
+        "deliveries": 1,
+        "reports": 1,
+        "unjudged": 0
+      }
+    }
+  ]
+}
