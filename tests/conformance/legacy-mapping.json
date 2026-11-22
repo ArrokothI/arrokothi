@@ -569,6 +569,70 @@
       "disposition": "R",
       "property": "Typed user input needs a custom controller, which the SDK does not host; native regression only. The deprecated `harness.submitUserInput` refuses by name (inventory S-HARNESS-W)."
     },
+    "tests/conformance/k0-candidate/ablation-table.ts": {
+      "disposition": "S",
+      "property": "K1.4-candidate: support file for this directory's cases."
+    },
+    "tests/conformance/k0-candidate/ablations.test.ts": {
+      "disposition": "U",
+      "property": "K1.4-candidate: the real-Kernel candidate for the K0 fixture, over the Kernel package root; not Harness conformance."
+    },
+    "tests/conformance/k0-candidate/blindness.test.ts": {
+      "disposition": "U",
+      "property": "K1.4-candidate: the real-Kernel candidate for the K0 fixture, over the Kernel package root; not Harness conformance."
+    },
+    "tests/conformance/k0-candidate/boundary.test.ts": {
+      "disposition": "U",
+      "property": "K1.4-candidate: the real-Kernel candidate for the K0 fixture, over the Kernel package root; not Harness conformance."
+    },
+    "tests/conformance/k0-candidate/canonical-json.ts": {
+      "disposition": "S",
+      "property": "K1.4-candidate: support file for this directory's cases."
+    },
+    "tests/conformance/k0-candidate/conventions.test.ts": {
+      "disposition": "U",
+      "property": "K1.4-candidate: the real-Kernel candidate for the K0 fixture, over the Kernel package root; not Harness conformance."
+    },
+    "tests/conformance/k0-candidate/fake-driver.ts": {
+      "disposition": "S",
+      "property": "K1.4-candidate: support file for this directory's cases."
+    },
+    "tests/conformance/k0-candidate/identity-lab.ts": {
+      "disposition": "S",
+      "property": "K1.4-candidate: support file for this directory's cases."
+    },
+    "tests/conformance/k0-candidate/identity-mutants.ts": {
+      "disposition": "S",
+      "property": "K1.4-candidate: support file for this directory's cases."
+    },
+    "tests/conformance/k0-candidate/identity-oracle.test.ts": {
+      "disposition": "U",
+      "property": "K1.4-candidate: the real-Kernel candidate for the K0 fixture, over the Kernel package root; not Harness conformance."
+    },
+    "tests/conformance/k0-candidate/identity-search.test.ts": {
+      "disposition": "U",
+      "property": "K1.4-candidate: the real-Kernel candidate for the K0 fixture, over the Kernel package root; not Harness conformance."
+    },
+    "tests/conformance/k0-candidate/identity-witnesses.ts": {
+      "disposition": "S",
+      "property": "K1.4-candidate: support file for this directory's cases."
+    },
+    "tests/conformance/k0-candidate/identity.test.ts": {
+      "disposition": "U",
+      "property": "K1.4-candidate: the real-Kernel candidate for the K0 fixture, over the Kernel package root; not Harness conformance."
+    },
+    "tests/conformance/k0-candidate/kernel-candidate.ts": {
+      "disposition": "S",
+      "property": "K1.4-candidate: support file for this directory's cases."
+    },
+    "tests/conformance/k0-candidate/support.ts": {
+      "disposition": "S",
+      "property": "K1.4-candidate: support file for this directory's cases."
+    },
+    "tests/conformance/k0-candidate/verdicts.test.ts": {
+      "disposition": "U",
+      "property": "K1.4-candidate: the real-Kernel candidate for the K0 fixture, over the Kernel package root; not Harness conformance."
+    },
     "tests/conformance/k0/blind-spot-regression.test.ts": {
       "disposition": "U",
       "property": "K0 control fixture over the protocol vocabulary, not the Harness."

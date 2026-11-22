@@ -509,7 +509,7 @@ describe("K1.0 legacy quarantine", () => {
     // named exactly rather than excluded by directory, so a second importer under `architecture/`
     // would still fail this check.
     // K1.4 adds the SDK host and bridge files that reach the Kernel through its package root
-    // (owner choices 01 Q1); they are named exactly in SDK_KERNEL_IMPORTERS.
+    // (owner choices 01 Q1); they are named exactly in SDK_KERNEL_IMPORTERS. K1.4-candidate adds the K0 fixture's real-Kernel candidate, named on the list's last line (no line is added: the evidence register keys on line numbers).
     const VERIFIERS = [
       ...SDK_KERNEL_IMPORTERS,
       // K1.4: the bridge corpus forces a Kernel refusal of the Driver's Outcome (B-PROTOCOL-HOLD).
@@ -519,7 +519,7 @@ describe("K1.0 legacy quarantine", () => {
       "packages/sdk/tests/value-capture-inventory.ts", "packages/sdk/tests/value-capture-static.test.ts",
       "packages/sdk/tests/value-capture.test.ts", "packages/sdk/tests/value-diagnostic-work.test.ts",
       "packages/sdk/tests/value-refusal-cost.test.ts", "packages/sdk/tests/wrapper-roots.ts",
-      "tests/conformance/architecture/kernel-landing-zone.test.ts",
+      "tests/conformance/architecture/kernel-landing-zone.test.ts", "tests/conformance/k0-candidate/conventions.test.ts", "tests/conformance/k0-candidate/fake-driver.ts", "tests/conformance/k0-candidate/identity-lab.ts", "tests/conformance/k0-candidate/kernel-candidate.ts",
     ];
 
     const importers: string[] = [];

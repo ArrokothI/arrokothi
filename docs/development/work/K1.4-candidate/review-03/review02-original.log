@@ -1,0 +1,18 @@
+node:internal/modules/run_main:111
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert.ok(third.acknowledged.includes(third.queued[0]))
+
+    at file:///private/tmp/arrokothi-k14-review03/docs/development/work/K1.4-candidate/review-03/review02-original.mjs:75:10 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v26.10.0

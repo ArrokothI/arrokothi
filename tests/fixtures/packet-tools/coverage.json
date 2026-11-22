@@ -10,7 +10,9 @@
     "held-capture",
     "state-owner-bypass",
     "k13-semantic",
-    "historical-family-adoption"
+    "historical-family-adoption",
+    "k14-candidate-ablation",
+    "k14-candidate-identity"
   ],
   "families": [
     {
@@ -3049,6 +3051,144 @@
             "group": "k12c1-review8-f4",
             "environment": "ordinary",
             "stage": "historical-family-adoption"
+          }
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate",
+      "domains": {
+        "site": [
+          "abl-1",
+          "abl-2",
+          "abl-3",
+          "abl-4",
+          "abl-5"
+        ],
+        "environment": [
+          "ordinary"
+        ],
+        "stage": [
+          "k14-candidate-ablation"
+        ]
+      },
+      "cases": [
+        {
+          "case": "k14-candidate.abl-1",
+          "values": {
+            "site": "abl-1",
+            "environment": "ordinary",
+            "stage": "k14-candidate-ablation"
+          }
+        },
+        {
+          "case": "k14-candidate.abl-2",
+          "values": {
+            "site": "abl-2",
+            "environment": "ordinary",
+            "stage": "k14-candidate-ablation"
+          }
+        },
+        {
+          "case": "k14-candidate.abl-3",
+          "values": {
+            "site": "abl-3",
+            "environment": "ordinary",
+            "stage": "k14-candidate-ablation"
+          }
+        },
+        {
+          "case": "k14-candidate.abl-4",
+          "values": {
+            "site": "abl-4",
+            "environment": "ordinary",
+            "stage": "k14-candidate-ablation"
+          }
+        },
+        {
+          "case": "k14-candidate.abl-5",
+          "values": {
+            "site": "abl-5",
+            "environment": "ordinary",
+            "stage": "k14-candidate-ablation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "k14-candidate-identity",
+      "domains": {
+        "site": [
+          "m1",
+          "m2",
+          "m3",
+          "m4",
+          "m5",
+          "m6",
+          "m7"
+        ],
+        "environment": [
+          "ordinary"
+        ],
+        "stage": [
+          "k14-candidate-identity"
+        ]
+      },
+      "cases": [
+        {
+          "case": "k14-candidate.identity-m1",
+          "values": {
+            "site": "m1",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
+          }
+        },
+        {
+          "case": "k14-candidate.identity-m2",
+          "values": {
+            "site": "m2",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
+          }
+        },
+        {
+          "case": "k14-candidate.identity-m3",
+          "values": {
+            "site": "m3",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
+          }
+        },
+        {
+          "case": "k14-candidate.identity-m4",
+          "values": {
+            "site": "m4",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
+          }
+        },
+        {
+          "case": "k14-candidate.identity-m5",
+          "values": {
+            "site": "m5",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
+          }
+        },
+        {
+          "case": "k14-candidate.identity-m6",
+          "values": {
+            "site": "m6",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
+          }
+        },
+        {
+          "case": "k14-candidate.identity-m7",
+          "values": {
+            "site": "m7",
+            "environment": "ordinary",
+            "stage": "k14-candidate-identity"
           }
         }
       ]

@@ -1,9 +1,10 @@
 /**
- * K0.2-C7(a): the only candidate this packet ships against the real repository refuses every scenario.
+ * K0.2-C7(a): the refusal control refuses every scenario.
  *
- * This test is the guard that stops a prepared fixture from being read as a passed gate. If someone
- * later wires a real Kernel in and this file starts reporting PASS, that is a K1 result and it must be
- * claimed as one in K1.4's report — not inherited silently from K0.2's acceptance.
+ * This test is the guard that stops a prepared fixture from being read as a passed gate: nothing in
+ * this directory drives a Kernel, and the control must never report PASS. The real-Kernel candidate is
+ * a separate module with its own pinned verdicts (`tests/conformance/k0-candidate/`, K1.4-candidate),
+ * so a K1 result is claimed there and never inherited from K0.2's acceptance.
  */
 
 import { test, describe } from "node:test";
@@ -13,7 +14,7 @@ import { createOperationSink } from "./operation-sink.ts";
 import { runScenario, FIXTURE_VERSION } from "./fixture.ts";
 import { ALL_SCENARIOS } from "./scenarios.ts";
 
-describe("K0 public fixture: the current tree refuses the target protocol", () => {
+describe("K0 public fixture: the refusal control refuses every scenario", () => {
   test("the fixture is versioned, so an external observer can pin what it ran", () => {
     assert.equal(FIXTURE_VERSION, "arrokothi-k0-public-fixture/1");
   });

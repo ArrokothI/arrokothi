@@ -1,15 +1,14 @@
 # Owner progress summary
 
-Snapshot: checked 2026-11-14 against remote main `eb8472e59f22cab9eefaa559b8b67b745dac4013` (K1.4 integration,
-PR #67); K1.4-candidate release 01 is added on 2026-11-14 by the PR that carries this edit. K1.4 is independently accepted at H
-`e307943d6b315e724e49107c3b26a1100ef4916c`, over payload C `72d452bb39e0ae0f846d85e273441d06a9cd22fb`. Its
-review 05 is recorded at `7bf80555c9549b980b47f60592fc049b9da7e175`, and the acceptance transcription A is at
-`99e54a56d04b98ab2750e2d13e4f67998596a4b9`. Its round 6 documentation correction (CLEANUP-K14-01) is accepted
-at H `64c505bfee13cae340710942e69fe805723aaad9` by review 06, recorded at `8eb918ab238c7253a7327138a1dbbb3ce8c2d075`.
-After [cleanup 02](work/K1.4/cleanup-02.md), K1.4 is [integrated](work/K1.4/integration-01.md) at `eb8472e5`
-(PR #67); its owner closure is not recorded. TOOLS-02 ranges 2–4 are [integrated](work/TOOLS-02/integration-02.md)
-at `3475d5d6` (PR #64). K1.3's [integration](work/K1.3/integration-01.md) is recorded at `71f9b048` (PR #62); its
-owner closure remains pending. The benchmark branch head inspected was
+Snapshot: checked 2026-11-21 against remote main `c1951226338de6ccd3e4e6289259549551268f61` (K1.4-candidate
+release, PR #69). K1.4-candidate is independently accepted at H `a734d03a9eb352bd29988bff1a68d9d6ca9bb2d3`, over
+payload C `848b1957ae9e598bb256712c07a3cc22c39fbaf7`. Its review 04 is recorded at
+`30c5c0860707cf50afdf6389185f919321d40954`, which also carries the acceptance transcription A.
+[Cleanup 01](work/K1.4-candidate/cleanup-01.md) is complete, and integration waits for the owner's merge of
+`claude/k1.4-candidate`. K1.4 is [integrated](work/K1.4/integration-01.md) at `eb8472e5` (PR #67); its owner
+closure is not recorded. TOOLS-02 ranges 2–4 are [integrated](work/TOOLS-02/integration-02.md) at `3475d5d6`
+(PR #64). K1.3's [integration](work/K1.3/integration-01.md) is recorded at `71f9b048` (PR #62); its owner closure
+remains pending. The benchmark's `codex/e1-kernel-acceptance-capture` head inspected was
 `8de04779d279dba82cf834d419e465d2b677ef46`, unchanged since 2026-09-13. Its E1 ledger still records
 `BLOCKED_EXTERNAL` and no gate result. The [status ledger](007-work-packets.md) and linked records own acceptance,
 integration and release.
@@ -29,10 +28,10 @@ integration and release.
 | TOOLS-02 | Independently accepted and integrated (released 2026-10-23, [release 01](work/TOOLS-02/release-01.md), scope B). Range 1 (T2-1, T2-2) is accepted at H `34ab91a5de23beb4997cdd2ae209a3b67aac50a0` and integrated at `4015599e` (PR #59). Ranges 2–4 (T2-3 to T2-5) are accepted at H2 `0c2573eb61b399508df49d9dad16c732d7e1fd3b` and integrated at `3475d5d6` (PR #64). This meets K1.4's TOOLS-02 prerequisite |
 | TOOLS-02A | Independently accepted and integrated (PR #51). The composed verify passes in a clean checkout and runs in the [Packet verify](../../.github/workflows/packet-verify.yml) CI workflow |
 | K1.1-correction-03 | Independently accepted at H `4b121d7b`; integrated at `b976f3a3` (PR #48) |
-| Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-37; K1.4 adds L-29–L-37) under 006 working principle 6 |
+| Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-44; K1.4 adds L-29–L-37 and K1.4-candidate L-38–L-44) under 006 working principle 6 |
 | K1.3 | Independently accepted at H `47c0b7f1`; cleanup complete; integrated at `71f9b048` (PR #62); owner closure pending; no successor released |
 | K1.4 | Independently accepted at H `e307943d` (K14-1 to K14-6); its round 6 documentation correction is accepted at H `64c505bf` (review 06). Integrated at `eb8472e5` (PR #67; [receipt](work/K1.4/integration-01.md)); owner closure not recorded |
-| K1.4-candidate | Released 2026-11-14 ([release 01](work/K1.4-candidate/release-01.md)); not started. A real-Kernel candidate for the K0 fixture, so the benchmark's E1 can capture one |
+| K1.4-candidate | Independently accepted at H `a734d03a` (review 04); [cleanup](work/K1.4-candidate/cleanup-01.md) complete; integration pending the owner's merge. A real-Kernel candidate for the K0 fixture, so the benchmark's E1 can capture one |
 | K1.4-gate | Planned, not released. It depends on K1.4-candidate's integration and the benchmark owner's E1 release that pins it |
 | K1 / E1 | Open; benchmark E1 is BLOCKED_EXTERNAL with NO_RESULT at the inspected revision; supported-entry fixture confirmation remains pending |
 
@@ -154,6 +153,41 @@ acknowledgment means the native mailbox took the Event, not that native work ran
 bridge exchange is refused (L-30). Native cleanup is a request: a running member whose step fails can stay
 `RUNNING` with no hold (L-36). The cleanup census is a bounded syntactic guard (L-37). Legacy Effects run
 natively, outside Kernel governance, until K2. 017 L-29 to L-37 list the rest.
+
+**A K0 fixture candidate that drives the real Kernel.** K1.4-candidate answered whether the K0 public fixture can
+run against the private Kernel's public entry, so that the benchmark's E1 has a real candidate to capture instead of
+recording `REFUSED`. The accepted branch now has, in `tests/conformance/k0-candidate/`:
+
+- `kernelCandidate`, which implements the fixture's `K0Candidate` port by driving `ExecutionCoordinator` through the
+  `@arrokothi/kernel` package root, with a deterministic fake Driver and a laboratory clock. It never reads the
+  fixture's expectations;
+- pinned verdicts through the fixture's unmodified runner and independent operation ledger. 12 schedules PASS. The 3
+  schedules in which a dependency alternative wakes a wait are REFUSED by command capability before any command,
+  because the K1 Kernel has no trusted non-timeout Event source;
+- one name ledger per scope, which translates every Kernel identity into the fixture's names one-to-one and keeps
+  each name for the whole run;
+- a recording laboratory with an identity oracle that judges each command against its recorded coordinator calls,
+  answers, deliveries and settlement reports. It runs over a declared matrix of 75 cases and 2,708 mutations and a
+  bounded search of 4,126 runs;
+- five Kernel ablations, each turning a supported schedule to FAIL at its named step, and seven mutants of the
+  identity rule. All twelve are mutation-registry cases with no semantic credit.
+
+Kernel source is unchanged. By the owner's choice, the K1/E1 gate covers the 12 schedules the K1 Kernel has a
+surface for. The other 3, with the fixture's acknowledgment-order convention, move to K2's E2 gate.
+
+The lesson from its review history is that an oracle must judge how records relate, not each record alone. The
+defects were in the laboratory, never in the Kernel: names that could collide, then an oracle that checked a
+command's call, its answer and the final inspection separately, so another Execution's inspection or a swallowed
+refusal passed. The accepted oracle joins each command to everything it caused and decides how a run ended from the
+recorded answers.
+
+Status: independently accepted at H `a734d03a` (review 04); [cleanup](work/K1.4-candidate/cleanup-01.md) is
+complete; integration is pending the owner's merge, so the candidate is not yet on main. Limits: this is a test-side
+candidate and its own report, not an E1 result. The benchmark has not captured it, and the K1/E1 gate is
+K1.4-gate's. Its fake Driver and in-memory coordinator say nothing about a real Driver, transport, persistence or the
+SDK (L-43). Four Observation fields are bounded projections (L-42), and an empty `effectIntents` and operation ledger
+show no Effect prevention (L-41). The identity search is bounded, and the registry kills earn no semantic credit
+(L-44). 017 L-38 to L-44 list the rest.
 
 **A root-cause audit of accepted design.** DESIGN-AUDIT-01 answered which choices accepted in
 K0.1–K1.2 keep producing defect families, and what the owner's options are for each. It looked hardest at
@@ -385,19 +419,21 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-K1.4 is independently accepted and integrated; its owner closure is not recorded. K1.3 is integrated, and its owner closure remains pending. K1.4-candidate is released by the PR that carries this edit. The
-remaining dependencies below come from 007.
+K1.4-candidate is independently accepted and its cleanup is complete; integration waits for the owner's merge.
+K1.4 is integrated; its owner closure is not recorded. K1.3 is integrated, and its owner closure remains pending.
+The remaining dependencies below come from 007.
 
-1. **K1.4-candidate** (released 2026-11-14) gives the K0 fixture a candidate that drives the real Kernel. No
-   such candidate existed, so E1 could only record `REFUSED`.
+1. **K1.4-candidate's integration.** The owner merges `claude/k1.4-candidate`, and an integration receipt follows
+   the merge. No successor is released by acceptance or cleanup.
 2. **K1.4-gate** then runs the benchmark's E1 fixtures against the Kernel's public entry through that candidate.
    It depends on K1.4-candidate's integration and on the benchmark owner's E1 release that pins it, and is not
    released. In the inspected benchmark ledger,
    E1 remains `BLOCKED_EXTERNAL`: its prepared capture pins the K0 fixture at
    `0535160e677231da41b06d9f822e62e2f0364dd1`, all fifteen real-repository schedules are `REFUSED`, and the gate
-   has `NO_RESULT`. That is a result about the old pin, not about K1.3 or K1.4. The benchmark owner still needs
-   to confirm fixtures that drive the new supported entry, which K1.3's owner closure also waits on. No E1 result
-   is inferred from K1.4's tests or Packet verify.
+   has `NO_RESULT`. That is a result about the old pin, not about K1.3, K1.4 or K1.4-candidate. The benchmark owner
+   still needs to release an E1 capture that pins K1.4-candidate and declares the three excluded schedules before it
+   captures. The benchmark owner also needs to confirm fixtures that drive the new supported entry, which K1.3's
+   owner closure waits on. No E1 result is inferred from K1.4-candidate's tests or Packet verify.
 
 Carry forward:
 - the historical Node 22.22.3 legacy Effect-test cancellation limitation, distinct from TOOLS-01's
