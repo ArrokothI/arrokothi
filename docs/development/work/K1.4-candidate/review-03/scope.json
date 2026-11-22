@@ -1,0 +1,48 @@
+{
+  "result": "passed",
+  "B": "c1951226338de6ccd3e4e6289259549551268f61",
+  "C": "41bd3aaa5cf83c51e93d41da567558d34f943410",
+  "H": "ddc53bd132fde4f71bc989ccec7f4d0e430a45dc",
+  "ancestry": [
+    "B ancestor of C",
+    "C ancestor of H"
+  ],
+  "trees_identical_to_B": {
+    "packages": "3525377b4425feb24132a011938ce5b8fcf6cc63",
+    "scripts": "d69f820075c317a563be3bfa8afc2a3f68e6d836",
+    "tests/tooling": "8931f0f0ecee03a6aeaaf646ad2dd0519e94fb9d"
+  },
+  "C_to_H_administrative_files": [
+    "docs/development/007-work-packets.md",
+    "docs/development/work/K1.4-candidate/implementation-03.md",
+    "docs/development/work/K1.4-candidate/progress.md"
+  ],
+  "fixture_changed_files_manually_reviewed": [
+    "tests/conformance/k0/candidate.ts",
+    "tests/conformance/k0/fixture.ts",
+    "tests/conformance/k0/protocol-vocabulary.ts",
+    "tests/conformance/k0/refusal.test.ts"
+  ],
+  "unchanged_from_B": [
+    "docs/development/006-development-process.md",
+    "docs/development/008-implementation-report.md",
+    "docs/development/009-universal-prompts.md",
+    "docs/development/012-review-methods.md",
+    "package.json",
+    "package-lock.json",
+    ".github/workflows/packet-verify.yml",
+    "tests/conformance/k0/scenarios.ts",
+    "tests/conformance/k0/operation-sink.ts",
+    "tests/conformance/k0/controls.test.ts",
+    "tests/conformance/k0/oracle-discrimination.test.ts",
+    "tests/conformance/k0/blind-spot-regression.test.ts"
+  ],
+  "unchanged_from_review02_H": [
+    "tests/conformance/k0-candidate/ablation-table.ts",
+    "tests/conformance/k0-candidate/ablation-probe.mjs",
+    "tests/conformance/k0-candidate/fake-driver.ts",
+    "tests/conformance/k0-candidate/canonical-json.ts",
+    "tests/conformance/k0-candidate/verdicts.test.ts",
+    "mental-model/mechanisms/evidence.md"
+  ]
+}

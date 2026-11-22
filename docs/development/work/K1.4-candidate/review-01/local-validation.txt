@@ -1,0 +1,31 @@
+Subject H: 484afd13d7652958f6496afc56d9aa9c098d58b1
+Date: 2026-11-15 America/New_York
+Reviewer: Codex GPT-6 independent session; shell operator rex-shih
+Host: MacBookAir; arm64; macOS 26.6.2 (25G83); Darwin 25.6.0
+Node: v26.10.0; npm: 11.19.1
+Fresh clone: /private/tmp/arrokothi-k14-review01-20261115
+PATH prefix for all Node/npm commands: /private/tmp/node-v26.10.0-darwin-arm64/bin
+
+npm ci
+  exit 0; added 190 packages, audited 199. Existing dependency audit/install-script notices
+  were not acted on; package-lock and manifests unchanged.
+npm run typecheck
+  exit 0; tsc --noEmit -p tsconfig.json
+node --test --test-reporter=tap tests/conformance/k0-candidate/*.test.ts tests/conformance/k0/*.test.ts
+  exit 0; tests 968; suites 72; pass 968; fail 0; cancelled 0; skipped 0; todo 0
+node --test --test-reporter=tap tests/conformance/architecture/kernel-landing-zone.test.ts tests/conformance/architecture/legacy-mapping.test.ts
+  exit 0; tests 222; suites 22; pass 222; fail 0; cancelled 0; skipped 0; todo 0
+python3 -B scripts/packet_tools.py candidate --payload 61ea8126507506b043ce5ba6515073f62c19c42f --head 484afd13d7652958f6496afc56d9aa9c098d58b1 --spec docs/development/work/K1.4-candidate/verification.json
+  exit 0; facts_verified; output in candidate.json
+node docs/development/work/K1.4-candidate/review-01/scope-check.mjs
+  exit 0; scope_verified; output in scope.json
+node docs/development/work/K1.4-candidate/review-01/probes.mjs
+  exit 0; output in probes.jsonl
+  The unchanged-Kernel alias collision is reproduced.
+  Duplicate-timeout public-response identity drift also leaves the whole Observation unchanged.
+  Latest-grant mutant: 12 PASS / 3 REFUSED / 0 FAIL; attempt/grant epoch mismatch observed.
+  Supplemental mutant suite: 157 pass / 1 fail; ABL-2 rejects it as expected.
+
+Existing CI run 43676796376 was downloaded and inspected, not started or rerun.
+The full suite, registry runners and sweeps are represented by that pinned C artifact.
+No benchmark E1, native-provider, process-death, or SDK-flake reproduction was run.

@@ -1,0 +1,40 @@
+{
+  "run_id": 43676796376,
+  "job_id": 132698613279,
+  "artifact_id": 14150323794,
+  "revision": "61ea8126507506b043ce5ba6515073f62c19c42f",
+  "artifact_sha256": "285288a5b43909affd1f19eac083beb98983fcd1eef544aa3a6c0657fe5a07b3",
+  "checks": 19,
+  "passed": 19,
+  "repository_tests": {
+    "tests": 5212,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0
+  },
+  "registries": {
+    "registered-mutants": {
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 339
+      },
+      "cases": 303
+    },
+    "refusal-mutants": {
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 358
+      },
+      "cases": 358
+    },
+    "value-cost-mutants": {
+      "result": "selected_cases_passed",
+      "counts": {
+        "killed": 238
+      },
+      "cases": 18
+    }
+  },
+  "interpretation": "Inspected downloaded existing CI evidence; no workflow dispatched or rerun."
+}
