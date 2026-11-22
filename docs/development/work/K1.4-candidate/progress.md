@@ -2,6 +2,17 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **ACCEPTED at H `a734d03a9eb352bd29988bff1a68d9d6ca9bb2d3`** ([review 04](review-04.md), Codex GPT-6, recorded at
+  `30c5c086`, which is also the acceptance transcription A; fast-forwarded). Owner-delegated
+  [cleanup 01](cleanup-01.md) is complete (2026-11-21), and `claude/k1.4-candidate` is merge-ready.
+  - *Records:* design checks 01, 03, 04 and 05 and reviews 01–03 are imported byte for byte from their branches, so
+    [design check 01](design-check-01.md), [review 01](review-01.md), [review 02](review-02.md) and
+    [review 03](review-03.md) and their siblings now resolve here. The pinned commit links above keep working.
+  - *Open:* integration (the owner's manual merge, then the receipt); owner discussion and closure; the
+    supported-entry fixture confirmation.
+  - *Next:* the owner merges `claude/k1.4-candidate`. K1.4-gate stays PLANNED: it needs this packet's integration
+    and the benchmark owner's E1 release, and then its own owner release. `next_release: none`.
+
 - **Round 4 payload C: `848b1957ae9e598bb256712c07a3cc22c39fbaf7`** (pushed, 2026-11-21). **WAITING_FOR_REVIEW.**
   - *Check and route:* [design check 05](https://github.com/ArrokothI/arrokothi/blob/44d9091f6db6d1f382841cd822befcd80e374f7b/docs/development/work/K1.4-candidate/design-check-05.md) (Codex GPT-6, `codex/k1.4-candidate-design-check-05` at
     `44d9091f6db6d1f382841cd822befcd80e374f7b`) is APPROVED WITH REQUIRED CHANGES of design 05: D05-CHK-01 and D05-CHK-02, both
