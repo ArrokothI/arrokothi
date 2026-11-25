@@ -2,6 +2,13 @@
 
 The resume point for any session continuing this packet. Newest facts first.
 
+- **INTEGRATED at `e0064da4820579b89faca44316053171ab4ab63c`** (PR #71, merged by the owner 2026-11-22 02:41:03 UTC).
+  Its parents are B `c1951226` and the cleanup head `33f8cf18`, and its tree equals the cleanup head's.
+  [Integration receipt 01](integration-01.md).
+  - *Open:* owner discussion and closure (not recorded); K1.4's O-3; the supported-entry fixture confirmation.
+  - *Next:* K1.4-gate, which still needs the benchmark owner's E1 release that pins this candidate and its own
+    owner release. `next_release: none`.
+
 - **ACCEPTED at H `a734d03a9eb352bd29988bff1a68d9d6ca9bb2d3`** ([review 04](review-04.md), Codex GPT-6, recorded at
   `30c5c086`, which is also the acceptance transcription A; fast-forwarded). Owner-delegated
   [cleanup 01](cleanup-01.md) is complete (2026-11-21), and `claude/k1.4-candidate` is merge-ready.

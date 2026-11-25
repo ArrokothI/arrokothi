@@ -1,11 +1,11 @@
 # Owner progress summary
 
-Snapshot: checked 2026-11-21 against remote main `c1951226338de6ccd3e4e6289259549551268f61` (K1.4-candidate
-release, PR #69). K1.4-candidate is independently accepted at H `a734d03a9eb352bd29988bff1a68d9d6ca9bb2d3`, over
+Snapshot: checked 2026-11-21 against remote main `e0064da4820579b89faca44316053171ab4ab63c` (K1.4-candidate
+integration, PR #71). K1.4-candidate is independently accepted at H `a734d03a9eb352bd29988bff1a68d9d6ca9bb2d3`, over
 payload C `848b1957ae9e598bb256712c07a3cc22c39fbaf7`. Its review 04 is recorded at
-`30c5c0860707cf50afdf6389185f919321d40954`, which also carries the acceptance transcription A.
-[Cleanup 01](work/K1.4-candidate/cleanup-01.md) is complete, and integration waits for the owner's merge of
-`claude/k1.4-candidate`. K1.4 is [integrated](work/K1.4/integration-01.md) at `eb8472e5` (PR #67); its owner
+`30c5c0860707cf50afdf6389185f919321d40954`, which also carries the acceptance transcription A. After
+[cleanup 01](work/K1.4-candidate/cleanup-01.md), K1.4-candidate is
+[integrated](work/K1.4-candidate/integration-01.md) at `e0064da4` (PR #71); its owner closure is not recorded. K1.4 is [integrated](work/K1.4/integration-01.md) at `eb8472e5` (PR #67); its owner
 closure is not recorded. TOOLS-02 ranges 2–4 are [integrated](work/TOOLS-02/integration-02.md) at `3475d5d6`
 (PR #64). K1.3's [integration](work/K1.3/integration-01.md) is recorded at `71f9b048` (PR #62); its owner closure
 remains pending. The benchmark's `codex/e1-kernel-acceptance-capture` head inspected was
@@ -31,8 +31,8 @@ integration and release.
 | Known limitations | [017](017-known-limitations.md) lists what is deliberately not guaranteed (L-01–L-44; K1.4 adds L-29–L-37 and K1.4-candidate L-38–L-44) under 006 working principle 6 |
 | K1.3 | Independently accepted at H `47c0b7f1`; cleanup complete; integrated at `71f9b048` (PR #62); owner closure pending; no successor released |
 | K1.4 | Independently accepted at H `e307943d` (K14-1 to K14-6); its round 6 documentation correction is accepted at H `64c505bf` (review 06). Integrated at `eb8472e5` (PR #67; [receipt](work/K1.4/integration-01.md)); owner closure not recorded |
-| K1.4-candidate | Independently accepted at H `a734d03a` (review 04); [cleanup](work/K1.4-candidate/cleanup-01.md) complete; integration pending the owner's merge. A real-Kernel candidate for the K0 fixture, so the benchmark's E1 can capture one |
-| K1.4-gate | Planned, not released. It depends on K1.4-candidate's integration and the benchmark owner's E1 release that pins it |
+| K1.4-candidate | Independently accepted at H `a734d03a` (review 04). Integrated at `e0064da4` (PR #71; [receipt](work/K1.4-candidate/integration-01.md)); owner closure not recorded. A real-Kernel candidate for the K0 fixture, so the benchmark's E1 can capture one |
+| K1.4-gate | Planned, not released. Its dependency on K1.4-candidate's integration is met; it still depends on the benchmark owner's E1 release that pins the candidate |
 | K1 / E1 | Open; benchmark E1 is BLOCKED_EXTERNAL with NO_RESULT at the inspected revision; supported-entry fixture confirmation remains pending |
 
 ## What has been achieved
@@ -156,7 +156,7 @@ natively, outside Kernel governance, until K2. 017 L-29 to L-37 list the rest.
 
 **A K0 fixture candidate that drives the real Kernel.** K1.4-candidate answered whether the K0 public fixture can
 run against the private Kernel's public entry, so that the benchmark's E1 has a real candidate to capture instead of
-recording `REFUSED`. The accepted branch now has, in `tests/conformance/k0-candidate/`:
+recording `REFUSED`. Main now has, in `tests/conformance/k0-candidate/`:
 
 - `kernelCandidate`, which implements the fixture's `K0Candidate` port by driving `ExecutionCoordinator` through the
   `@arrokothi/kernel` package root, with a deterministic fake Driver and a laboratory clock. It never reads the
@@ -182,7 +182,8 @@ refusal passed. The accepted oracle joins each command to everything it caused a
 recorded answers.
 
 Status: independently accepted at H `a734d03a` (review 04); [cleanup](work/K1.4-candidate/cleanup-01.md) is
-complete; integration is pending the owner's merge, so the candidate is not yet on main. Limits: this is a test-side
+complete; integrated at `e0064da4` (PR #71, [receipt](work/K1.4-candidate/integration-01.md)); owner closure is not
+recorded. Limits: this is a test-side
 candidate and its own report, not an E1 result. The benchmark has not captured it, and the K1/E1 gate is
 K1.4-gate's. Its fake Driver and in-memory coordinator say nothing about a real Driver, transport, persistence or the
 SDK (L-43). Four Observation fields are bounded projections (L-42), and an empty `effectIntents` and operation ledger
@@ -419,15 +420,13 @@ obligations. The plan is accepted, integrated and owner-closed; it implements no
 
 ## The next few steps
 
-K1.4-candidate is independently accepted and its cleanup is complete; integration waits for the owner's merge.
-K1.4 is integrated; its owner closure is not recorded. K1.3 is integrated, and its owner closure remains pending.
-The remaining dependencies below come from 007.
+K1.4-candidate and K1.4 are independently accepted and integrated; neither owner closure is recorded. K1.3 is
+integrated, and its owner closure remains pending. No successor is released. The remaining dependencies below come
+from 007.
 
-1. **K1.4-candidate's integration.** The owner merges `claude/k1.4-candidate`, and an integration receipt follows
-   the merge. No successor is released by acceptance or cleanup.
-2. **K1.4-gate** then runs the benchmark's E1 fixtures against the Kernel's public entry through that candidate.
-   It depends on K1.4-candidate's integration and on the benchmark owner's E1 release that pins it, and is not
-   released. In the inspected benchmark ledger,
+1. **K1.4-gate** runs the benchmark's E1 fixtures against the Kernel's public entry through K1.4-candidate.
+   Its dependency on K1.4-candidate's integration is met. It still depends on the benchmark owner's E1 release that
+   pins the candidate, and is not released. In the inspected benchmark ledger,
    E1 remains `BLOCKED_EXTERNAL`: its prepared capture pins the K0 fixture at
    `0535160e677231da41b06d9f822e62e2f0364dd1`, all fifteen real-repository schedules are `REFUSED`, and the gate
    has `NO_RESULT`. That is a result about the old pin, not about K1.3, K1.4 or K1.4-candidate. The benchmark owner
